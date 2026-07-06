@@ -40,3 +40,7 @@ synth1.db
 # Старый корень Next при появлении у кого-то локально (субмодуль из монорепо удалён)
 synth-1/
 
+# Renova — отдельный продукт (github.com/PetrFedin/renova), не часть Syntha
+renova/
+renova-os/
+
