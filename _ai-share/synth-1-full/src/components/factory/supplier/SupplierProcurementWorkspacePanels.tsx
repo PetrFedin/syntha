@@ -24,6 +24,9 @@ import {
 import { PLATFORM_CORE_DEMO, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { SupplierProcurementSlaResponseStrip } from '@/components/factory/supplier/SupplierProcurementSlaResponseStrip';
+import { SupplierWmsReserveActionStrip } from '@/components/factory/supplier/SupplierWmsReserveActionStrip';
+import { SupplierProcurementBrandNotifyStrip } from '@/components/factory/supplier/SupplierProcurementBrandNotifyStrip';
+import { buildSupplierOrderCommsSession } from '@/lib/b2b/supplier-order-comms';
 
 type Props = {
   collectionId?: string;
@@ -45,9 +48,28 @@ export function SupplierProcurementBomPanel({
   const lines = snapshot?.supplierProcurement?.bomLines ?? [];
   const summary = useMemo(() => summarizeSupplierProcurementBom(lines), [lines]);
   const rows = useMemo(() => mapSupplierProcurementBomLines(lines), [lines]);
+  const orderId = PLATFORM_CORE_DEMO.demoOrderId;
+  const orderComms = buildSupplierOrderCommsSession({
+    collectionId,
+    articleId,
+    orderId,
+  });
 
   return (
     <div className="space-y-4" data-testid="supplier-procurement-bom-panel">
+      <SupplierWmsReserveActionStrip
+        collectionId={collectionId}
+        articleId={articleId}
+        b2bOrderId={orderId}
+        brandHandoffHref={orderComms.brandOrderHandoffHref}
+        shopTrackingHref={orderComms.shopTrackingHref}
+        testId="sup-op-procurement-bom-wms-reserve-strip"
+      />
+      <SupplierProcurementBrandNotifyStrip
+        collectionId={collectionId}
+        articleId={articleId}
+        orderId={orderId}
+      />
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary">
           BOM {summary.filled}/{summary.total}
@@ -57,23 +79,23 @@ export function SupplierProcurementBomPanel({
       <SupplierProcurementPillarCard compact />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">BOM lines</CardTitle>
-          <CardDescription>Столп 4 · supplier snapshot под PO.</CardDescription>
+          <CardTitle className="text-base">Строки BOM</CardTitle>
+          <CardDescription>Столп 4 · снимок поставщика под PO.</CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Material</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead>Unit</TableHead>
+                <TableHead>Материал</TableHead>
+                <TableHead className="text-right">Кол-во</TableHead>
+                <TableHead>Ед.</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-text-muted text-xs">
-                    Нет строк BOM — откройте materials dossier или дождитесь handoff.
+                    Нет строк BOM — откройте досье материалов или дождитесь передачи.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -107,15 +129,17 @@ export function SupplierProcurementRfqPanel({
       <SupplierProcurementSlaResponseStrip collectionId={collectionId} articleId={articleId} />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Procurement · RFQ chain</CardTitle>
-          <CardDescription>Centric RFQ ↔ brand BOM ↔ materials dossier.</CardDescription>
+          <CardTitle className="text-base">Закупки · цепочка RFQ</CardTitle>
+          <CardDescription>Centric RFQ ↔ BOM бренда ↔ досье материалов.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.rfqHref}>RFQ workspace</Link>
+            <Link href={session.rfqHref} data-testid="supplier-procurement-rfq-inbox-link">
+              RFQ inbox →
+            </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.entitiesHref}>Entity threads</Link>
+            <Link href={session.entitiesHref}>Треды сущностей</Link>
           </Button>
         </CardContent>
       </Card>
@@ -126,7 +150,7 @@ export function SupplierProcurementRfqPanel({
 export function SupplierProcurementInboxHintPanel() {
   return (
     <p className="text-text-secondary text-xs" data-testid="supplier-procurement-inbox-hint">
-      Inbox ниже — contextual threads по заказу и артикулу (столп 5).
+      Inbox ниже — контекстные треды по заказу и артикулу (столп 5).
     </p>
   );
 }

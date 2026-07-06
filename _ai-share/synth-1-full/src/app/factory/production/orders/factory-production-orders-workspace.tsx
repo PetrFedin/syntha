@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { FactoryProductionOrdersCorePage } from '@/app/factory/production/orders/factory-production-orders-core';
 import { ManufacturerProductionAttachTzStrip } from '@/components/factory/ManufacturerProductionAttachTzStrip';
 import { MfrOpProductionOrdersHandoffPeerStrip } from '@/components/factory/MfrOpProductionOrdersHandoffPeerStrip';
+import { ManufacturerCalendarGanttBridgeStrip } from '@/components/factory/manufacturer/ManufacturerCalendarGanttBridgeStrip';
 import {
   ManufacturerProductionCutTicketPanel,
   ManufacturerProductionWipPanel,
@@ -35,7 +36,7 @@ function FactoryProductionOrdersWorkspaceBody() {
     <PillarCapabilityWorkspaceChrome
       workspaceId="manufacturer-production-ops"
       ctx={ctx}
-      crossLinksTitle="Handoff queue · brand cut ticket · shop tracking"
+      crossLinksTitle="Очередь передачи · техкарта бренда · трекинг магазина"
       beforeTabs={<B2bOrderUrlContextBanner variant="manufacturer" />}
     >
       <div className="mb-4 space-y-3">
@@ -51,6 +52,12 @@ function FactoryProductionOrdersWorkspaceBody() {
           collectionId={collectionId}
           articleId={articleId}
           orderId={orderId}
+        />
+        <ManufacturerCalendarGanttBridgeStrip
+          collectionId={collectionId}
+          orderId={orderId}
+          factoryId={factoryId}
+          articleId={articleId}
         />
       </div>
       {activeFeatureId === 'orders' ? (

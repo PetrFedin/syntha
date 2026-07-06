@@ -2,12 +2,34 @@
  * Канон подписей Platform Core: русский UI, латинские аббревиатуры с расшифровкой.
  */
 
+import { isPlatformCoreExtendedRolesEnabled } from '@/lib/platform-core-article-spine';
+
 export const PLATFORM_CORE_CABINET_TITLE = 'Мой кабинет';
 export const PLATFORM_CORE_CABINET_LEAD =
   'Пять столпов цепочки — одна структура у всех ролей.';
 
 /** Hub / header — тот же тон, что «Роли · быстрый вход». */
 export const PLATFORM_CORE_HUB_TITLE = 'SYNTHA · Platform Core';
+
+/** Хлебная крошка «назад на главную» — без слова Hub. */
+export const PLATFORM_CORE_HOME_CRUMB = 'Platform';
+
+/** Полоска 3 шагов на главной (без производства). */
+export const PLATFORM_CORE_CHAIN_STRIP_TITLE = 'Операционная цепочка';
+
+/** Блок аудита на главной. */
+export const PLATFORM_CORE_AUDIT_SECTION_TITLE = 'Оценка готовности';
+export const PLATFORM_CORE_AUDIT_SECTION_LEAD_EXTENDED =
+  'Честные оценки по ролям, столпам и разделам · live при PG, иначе статическая база аудита.';
+export const PLATFORM_CORE_AUDIT_SECTION_LEAD_BASELINE =
+  'Бренд и магазин · оценки по столпам и разделам · связи shop↔brand по цепочке · live при PG, иначе статическая база аудита.';
+
+/** Подзаголовок audit-блока: two-role baseline vs 4 роли с extended flag. */
+export function platformCoreAuditSectionLead(): string {
+  return isPlatformCoreExtendedRolesEnabled()
+    ? PLATFORM_CORE_AUDIT_SECTION_LEAD_EXTENDED
+    : PLATFORM_CORE_AUDIT_SECTION_LEAD_BASELINE;
+}
 
 /** Заголовок блока sidebar в core вместо «Основной контур · ядра 1–3». */
 export const PLATFORM_CORE_SIDEBAR_CLUSTER_LABEL = 'Цепочка · 5 столпов';
@@ -28,6 +50,9 @@ export const SHOWROOM_BRAND_LEAD =
 
 /** Столп 1 бренда — как в hub `development`. */
 export const BRAND_DEVELOPMENT_GROUP_LABEL = 'Разработка';
+
+/** Entity-label столпа development в hub/cabinet — артикулы, без сезона коллекции. */
+export const DEVELOPMENT_PILLAR_ENTITY_LABEL = 'Разработка · артикулы';
 
 /** Столп 4 бренда / цеха — как в hub `order_production`. */
 export const BRAND_PRODUCTION_GROUP_LABEL = 'Производство';
@@ -82,34 +107,41 @@ export const SHOP_CANONICAL_CALENDAR_LAYERS = 'orders,logistics';
 /** Аббревиатуры: EN + перевод (для tooltip). */
 export const PLATFORM_CORE_TERM_TIPS: Record<
   string,
-  { en: string; ru: string }
+  { en: string; ru: string; labelRu: string }
 > = {
   W2: {
     en: 'Workshop 2 — article development workspace',
     ru: 'Цех разработки — разработка артикулов и хранилище досье',
+    labelRu: 'W2',
   },
   B2B: {
     en: 'Business-to-business wholesale',
     ru: 'Оптовые заказы между брендом и магазином',
+    labelRu: 'B2B',
   },
   PO: {
     en: 'Production Order',
     ru: 'Производственный заказ — партия в цехе после передачи',
+    labelRu: 'PO',
   },
   BOM: {
     en: 'Bill of Materials',
     ru: 'Спецификация материалов и фурнитуры',
+    labelRu: 'BOM',
   },
   RFQ: {
     en: 'Request for Quotation',
     ru: 'Запрос цены у поставщика',
+    labelRu: 'RFQ',
   },
   Handoff: {
     en: 'Brand confirms order → factory PO queue',
     ru: 'Передача подтверждённого заказа в производство',
+    labelRu: 'Передача',
   },
   PG: {
     en: 'PostgreSQL — live chain data',
     ru: 'PostgreSQL — живая цепочка после загрузки данных',
+    labelRu: 'PG',
   },
 };

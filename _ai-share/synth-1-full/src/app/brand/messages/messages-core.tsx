@@ -7,8 +7,9 @@ import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import MessagesPage from '@/components/user/messages-os';
 import { PlatformCoreCommsWorkspaceExtras } from '@/components/platform/PlatformCoreCommsWorkspaceExtras';
 import { BrandCommsEntityThreadsPanel } from '@/components/brand/merch/BrandCommsEntityThreadsPanel';
-import { OrderCommsWorkspaceNotificationBar } from '@/components/platform/OrderCommsWorkspaceNotificationBar';
+import { PlatformCoreCommsUniversalInboxStrip } from '@/components/platform/PlatformCoreCommsUniversalInboxStrip';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
+import { PlatformCoreWorkspaceStripsGate } from '@/components/platform/PlatformCoreWorkspaceStripsGate';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { BrandMessagesRuWorkspaceBannerWhenNoUrl } from '@/components/brand/messages/BrandMessagesRuWorkspaceBanner';
 import {
@@ -16,10 +17,12 @@ import {
   brandCommsGoldenPathStepFromFeature,
 } from '@/components/brand/messages/BrandCommsWorkspaceGoldenPathStrip';
 import { BrandCmOrderContextPeerStrip } from '@/components/platform/BrandCmOrderContextPeerStrip';
+import { BrandCmSectionGroupsSpinePeerStrip } from '@/components/platform/BrandCmSectionGroupsSpinePeerStrip';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { ROUTES } from '@/lib/routes';
 import { PLATFORM_CORE_MESSAGES_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 
 type ThreadsSource = 'postgres' | 'memory' | 'empty' | 'unavailable' | 'loading';
 
@@ -58,6 +61,7 @@ function BrandMessagesCoreContent() {
     searchParams.get('wholesaleOrderId')?.trim() ||
     '';
   const source = useBrandMessagesThreadsSource();
+  const coreMode = isPlatformCoreMode();
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-comms-workspace');
   const workspaceCtx = { collectionId, orderId: orderId || undefined };
 
@@ -89,20 +93,31 @@ function BrandMessagesCoreContent() {
     <PillarCapabilityWorkspaceChrome
       workspaceId="brand-comms-workspace"
       ctx={workspaceCtx}
-      crossLinksTitle="Comms · столп 5"
+      crossLinksTitle="Связь · столп 5"
     >
-      <div className="mb-4">
-        <BrandCommsWorkspaceGoldenPathStrip
-          collectionId={collectionId}
-          orderId={orderId || undefined}
-          activeStep={brandCommsGoldenPathStepFromFeature(activeFeatureId)}
-        />
-      </div>
-      {orderId ? <OrderCommsWorkspaceNotificationBar variant="brand" /> : null}
-      {orderId ? (
-        <div className="mb-4">
-          <BrandCmOrderContextPeerStrip collectionId={collectionId} orderId={orderId} />
-        </div>
+      {!coreMode ? (
+        <PlatformCoreWorkspaceStripsGate>
+          <div className="mb-4">
+            <BrandCommsWorkspaceGoldenPathStrip
+              collectionId={collectionId}
+              orderId={orderId || undefined}
+              activeStep={brandCommsGoldenPathStepFromFeature(activeFeatureId)}
+            />
+          </div>
+        </PlatformCoreWorkspaceStripsGate>
+      ) : null}
+      {!coreMode ? (
+        <PlatformCoreWorkspaceStripsGate>
+          <PlatformCoreCommsUniversalInboxStrip variant="brand" />
+        </PlatformCoreWorkspaceStripsGate>
+      ) : null}
+      {orderId && !coreMode ? (
+        <PlatformCoreWorkspaceStripsGate>
+          <div className="mb-4 space-y-2">
+            <BrandCmSectionGroupsSpinePeerStrip collectionId={collectionId} orderId={orderId} />
+            <BrandCmOrderContextPeerStrip collectionId={collectionId} orderId={orderId} />
+          </div>
+        </PlatformCoreWorkspaceStripsGate>
       ) : null}
       {activeFeatureId === 'inbox' ? (
         <>

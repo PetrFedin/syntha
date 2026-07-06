@@ -207,7 +207,7 @@ export function BrandQualityDeskBody() {
               <Link href={ROUTES.brand.products}>Products</Link>
             </Button>
             <Button variant="outline" size="sm" className="h-7 text-[9px]" asChild>
-              <Link href={ROUTES.brand.production}>Production</Link>
+              <Link href={ROUTES.brand.production}>Производство</Link>
             </Button>
             <Button variant="outline" size="sm" className="h-7 text-[9px]" asChild>
               <Link href={ROUTES.brand.reviews}>Отзывы</Link>

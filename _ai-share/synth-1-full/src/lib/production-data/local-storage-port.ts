@@ -8,7 +8,7 @@ import {
 import type { BrandTaskRecord, ProductionDataPort, TechPackDraftV1 } from './port';
 import { loadTechPackDraft, saveTechPackDraft as persistTechPack } from './tech-pack-draft-store';
 import { loadBrandTasksWithMode, persistBrandTasks } from './brand-tasks-client';
-import { loadFloorTabDraft, saveFloorTabDraftToStorage } from './floor-tab-draft-store';
+import { loadFloorTabDraftWithMode, persistFloorTabDraft } from './floor-tab-draft-client';
 import type { FloorTabScope } from './port';
 
 export class LocalStorageProductionDataPort implements ProductionDataPort {
@@ -38,11 +38,12 @@ export class LocalStorageProductionDataPort implements ProductionDataPort {
   }
 
   async getFloorTabDraft(scope: FloorTabScope): Promise<unknown | null> {
-    return loadFloorTabDraft(scope);
+    const { draft } = await loadFloorTabDraftWithMode(scope);
+    return draft;
   }
 
   async saveFloorTabDraft(scope: FloorTabScope, payload: unknown): Promise<void> {
-    saveFloorTabDraftToStorage(scope, payload);
+    await persistFloorTabDraft(scope, payload);
   }
 }
 

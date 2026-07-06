@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
-import { buildShopOrderCommsSession } from '@/lib/b2b/shop-order-comms';
-import { shopB2bCheckoutCollectionHref, shopB2bOrdersCollectionRegistryHref } from '@/lib/routes';
+import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
+import { buildShopOrderCommsSession } from '@/lib/platform-core-ports/b2b/shop-order-comms';
+import { shopB2bCheckoutCollectionHref, shopB2bOrdersCollectionRegistryHref } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   collectionId: string;
@@ -22,17 +24,20 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
   const checkoutHref = shopB2bCheckoutCollectionHref(collectionId);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="shop-cm-cabinet-spine-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="shop-cm-cabinet-spine-peer-strip"
+    >
       {resolvedOrderId ? (
         <>
           <Link href={shopB2bOrdersCollectionRegistryHref(resolvedOrderId)} data-testid="shop-cm-cabinet-registry-link" className={hubGadget.goldenLink}>
-            Registry
+            Реестр
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
           <Link href={session.trackingHref} data-testid="shop-cm-cabinet-tracking-link" className={hubGadget.goldenLink}>
-            Tracking
+            Трекинг
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
@@ -40,19 +45,19 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
         </>
       ) : null}
       <Link href={session.matrixHref} data-testid="shop-cm-cabinet-matrix-link" className={hubGadget.goldenLink}>
-        Matrix
+        Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={checkoutHref} data-testid="shop-cm-cabinet-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={pricelistHref} data-testid="shop-cm-cabinet-brand-pricelist-link" className={hubGadget.goldenLink}>
-        Brand pricelist
+        Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -66,7 +71,7 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
             ·
           </span>
           <Link href={session.brandOrderChatHref} data-testid="shop-cm-cabinet-brand-chat-link" className={hubGadget.goldenLink}>
-            Brand chat
+            Чат бренда
           </Link>
         </>
       ) : null}

@@ -9,8 +9,6 @@ export type ShopReplenishmentGoldenPathStepId =
   | 'alerts'
   | 'stock-atp'
   | 'rules'
-  | 'matrix'
-  | 'checkout'
   | 'supplier-forecast';
 
 type Props = {
@@ -20,12 +18,10 @@ type Props = {
 };
 
 const STEPS: { id: ShopReplenishmentGoldenPathStepId; label: string }[] = [
-  { id: 'alerts', label: 'Alerts' },
-  { id: 'stock-atp', label: 'Stock · ATP' },
-  { id: 'rules', label: 'Rules' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'checkout', label: 'Checkout' },
-  { id: 'supplier-forecast', label: 'Supplier forecast' },
+  { id: 'alerts', label: 'Оповещения' },
+  { id: 'stock-atp', label: 'Склад · ATP' },
+  { id: 'rules', label: 'Правила' },
+  { id: 'supplier-forecast', label: 'Прогноз поставщика' },
 ];
 
 export function ShopReplenishmentGoldenPathStrip({
@@ -39,8 +35,6 @@ export function ShopReplenishmentGoldenPathStrip({
     if (id === 'alerts') return session.alertsHref;
     if (id === 'stock-atp') return session.stockAtpHref;
     if (id === 'rules') return session.rulesHref;
-    if (id === 'matrix') return session.matrixHref;
-    if (id === 'checkout') return session.checkoutHref;
     return session.supplierForecastHref;
   };
 

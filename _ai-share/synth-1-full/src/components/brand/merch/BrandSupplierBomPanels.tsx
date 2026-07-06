@@ -24,6 +24,7 @@ import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { ROUTES } from '@/lib/routes';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
+import { BrandDevBomAltMaterialApprovalStrip } from '@/components/brand/merch/BrandDevBomAltMaterialApprovalStrip';
 import { Loader2 } from 'lucide-react';
 
 type Props = {
@@ -110,6 +111,7 @@ export function BrandSupplierBomLinesPanel({
           Sync BOM
         </Button>
       </div>
+      <BrandDevBomAltMaterialApprovalStrip collectionId={collectionId} articleId={articleId} />
       <SupplierBomPreview demo={{ ...PLATFORM_CORE_DEMO, collectionId, demoArticleId: articleId }} compact hideLead />
       <Card>
         <CardHeader className="pb-2">
@@ -172,7 +174,7 @@ export function BrandSupplierBomProcurementPanel({
             <Link href={session.centricRfqHref}>Centric RFQ</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={threadsHref}>Entity threads</Link>
+            <Link href={threadsHref}>Треды сущностей</Link>
           </Button>
         </CardContent>
       </Card>

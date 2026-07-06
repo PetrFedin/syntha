@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { RoleCoreCabinetHub } from '@/components/platform/RoleCoreCabinetHub';
+import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import type { CoreChainRoleId } from '@/lib/platform-core-hub-matrix';
 
@@ -17,7 +18,11 @@ export function PlatformCoreCabinetPage({ roleId, fallbackHref }: Props) {
   }
 
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        <PlatformCorePillarInsightSkeleton testId="platform-core-cabinet-hub-suspense" />
+      }
+    >
       <RoleCoreCabinetHub roleId={roleId} />
     </Suspense>
   );

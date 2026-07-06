@@ -13,9 +13,47 @@ export type Workshop2MaterialRequisitionRecord = {
   quantity?: number;
   unit?: string;
   status: string;
+  partialShipQty?: number;
+  backorderFlag?: boolean;
   createdAt: string;
   createdBy?: string;
 };
+
+function mapWorkshop2MaterialRequisitionRow(row: {
+  id: unknown;
+  collection_id: unknown;
+  article_id: unknown;
+  bom_line_ref: unknown;
+  material_label: unknown;
+  quantity: unknown;
+  unit: unknown;
+  status: unknown;
+  partial_ship_qty?: unknown;
+  backorder_flag?: unknown;
+  created_at: unknown;
+  created_by: unknown;
+}): Workshop2MaterialRequisitionRecord {
+  return {
+    id: String(row.id),
+    collectionId: String(row.collection_id),
+    articleId: String(row.article_id),
+    bomLineRef: row.bom_line_ref != null ? String(row.bom_line_ref) : undefined,
+    materialLabel: row.material_label != null ? String(row.material_label) : undefined,
+    quantity: row.quantity != null ? Number(row.quantity) : undefined,
+    unit: row.unit != null ? String(row.unit) : undefined,
+    status: String(row.status),
+    partialShipQty:
+      row.partial_ship_qty != null && Number.isFinite(Number(row.partial_ship_qty))
+        ? Number(row.partial_ship_qty)
+        : undefined,
+    backorderFlag: row.backorder_flag === true,
+    createdAt: new Date(row.created_at as string | Date).toISOString(),
+    createdBy: row.created_by != null ? String(row.created_by) : undefined,
+  };
+}
+
+const MATERIAL_REQ_SELECT = `id, collection_id, article_id, bom_line_ref, material_label, quantity, unit, status,
+  partial_ship_qty, backorder_flag, created_at, created_by`;
 
 const memoryReqs: Workshop2MaterialRequisitionRecord[] = [];
 
@@ -150,24 +188,13 @@ export async function listWorkshop2MaterialRequisitions(input: {
   await ensureWorkshop2PgSchema();
   const orgId = input.organizationId?.trim() || 'org-brand-001';
   const res = await getWorkshop2PgPool().query(
-    `SELECT id, collection_id, article_id, bom_line_ref, material_label, quantity, unit, status, created_at, created_by
+    `SELECT ${MATERIAL_REQ_SELECT}
      FROM workshop2_material_requisitions
      WHERE collection_id = $1 AND article_id = $2 AND organization_id = $3
      ORDER BY created_at DESC`,
     [input.collectionId, input.articleId, orgId]
   );
-  return res.rows.map((row) => ({
-    id: String(row.id),
-    collectionId: String(row.collection_id),
-    articleId: String(row.article_id),
-    bomLineRef: row.bom_line_ref != null ? String(row.bom_line_ref) : undefined,
-    materialLabel: row.material_label != null ? String(row.material_label) : undefined,
-    quantity: row.quantity != null ? Number(row.quantity) : undefined,
-    unit: row.unit != null ? String(row.unit) : undefined,
-    status: String(row.status),
-    createdAt: new Date(row.created_at).toISOString(),
-    createdBy: row.created_by != null ? String(row.created_by) : undefined,
-  }));
+  return res.rows.map((row) => mapWorkshop2MaterialRequisitionRow(row));
 }
 
 export async function listWorkshop2MaterialRequisitionsByCollection(input: {
@@ -186,25 +213,14 @@ export async function listWorkshop2MaterialRequisitionsByCollection(input: {
   await ensureWorkshop2PgSchema();
   const orgId = input.organizationId?.trim() || 'org-brand-001';
   const res = await getWorkshop2PgPool().query(
-    `SELECT id, collection_id, article_id, bom_line_ref, material_label, quantity, unit, status, created_at, created_by
+    `SELECT ${MATERIAL_REQ_SELECT}
      FROM workshop2_material_requisitions
      WHERE collection_id = $1 AND organization_id = $2
      ORDER BY created_at DESC
      LIMIT $3`,
     [collectionId, orgId, limit]
   );
-  return res.rows.map((row) => ({
-    id: String(row.id),
-    collectionId: String(row.collection_id),
-    articleId: String(row.article_id),
-    bomLineRef: row.bom_line_ref != null ? String(row.bom_line_ref) : undefined,
-    materialLabel: row.material_label != null ? String(row.material_label) : undefined,
-    quantity: row.quantity != null ? Number(row.quantity) : undefined,
-    unit: row.unit != null ? String(row.unit) : undefined,
-    status: String(row.status),
-    createdAt: new Date(row.created_at).toISOString(),
-    createdBy: row.created_by != null ? String(row.created_by) : undefined,
-  }));
+  return res.rows.map((row) => mapWorkshop2MaterialRequisitionRow(row));
 }
 
 export async function getWorkshop2MaterialRequisitionById(
@@ -219,7 +235,7 @@ export async function getWorkshop2MaterialRequisitionById(
 
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query(
-    `SELECT id, collection_id, article_id, bom_line_ref, material_label, quantity, unit, status, created_at, created_by
+    `SELECT ${MATERIAL_REQ_SELECT}
      FROM workshop2_material_requisitions
      WHERE id = $1
      LIMIT 1`,
@@ -227,18 +243,7 @@ export async function getWorkshop2MaterialRequisitionById(
   );
   const row = res.rows[0];
   if (!row) return null;
-  return {
-    id: String(row.id),
-    collectionId: String(row.collection_id),
-    articleId: String(row.article_id),
-    bomLineRef: row.bom_line_ref != null ? String(row.bom_line_ref) : undefined,
-    materialLabel: row.material_label != null ? String(row.material_label) : undefined,
-    quantity: row.quantity != null ? Number(row.quantity) : undefined,
-    unit: row.unit != null ? String(row.unit) : undefined,
-    status: String(row.status),
-    createdAt: new Date(row.created_at).toISOString(),
-    createdBy: row.created_by != null ? String(row.created_by) : undefined,
-  };
+  return mapWorkshop2MaterialRequisitionRow(row);
 }
 
 export type Workshop2MaterialRequisitionSupplierStatus = 'confirmed' | 'rejected';
@@ -248,38 +253,70 @@ export async function patchWorkshop2MaterialRequisitionSupplierStatus(input: {
   status: Workshop2MaterialRequisitionSupplierStatus;
   note?: string;
   updatedBy?: string;
+  shippedQty?: number;
+  backorder?: boolean;
 }): Promise<Workshop2MaterialRequisitionRecord | null> {
   const existing = await getWorkshop2MaterialRequisitionById(input.id);
   if (!existing) return null;
 
   const nextStatus = input.status === 'confirmed' ? 'supplier_confirmed' : 'supplier_rejected';
+  const requestedQty = existing.quantity ?? 0;
+  const shippedQty =
+    input.shippedQty != null && Number.isFinite(input.shippedQty)
+      ? Math.max(0, Math.round(input.shippedQty))
+      : requestedQty;
+  const backorder =
+    input.backorder === true || (requestedQty > 0 && shippedQty > 0 && shippedQty < requestedQty);
+
+  const partialShipQty = input.status === 'confirmed' ? shippedQty : undefined;
+  const backorderFlag = input.status === 'confirmed' ? backorder : false;
 
   if (!isWorkshop2PostgresEnabled()) {
     const idx = memoryReqs.findIndex((r) => r.id === existing.id);
+    const next = {
+      ...existing,
+      status: nextStatus,
+      partialShipQty,
+      backorderFlag,
+    };
     if (idx >= 0) {
-      memoryReqs[idx] = { ...memoryReqs[idx]!, status: nextStatus };
+      memoryReqs[idx] = next;
       return memoryReqs[idx]!;
     }
-    return { ...existing, status: nextStatus };
+    return next;
   }
 
   await ensureWorkshop2PgSchema();
   await getWorkshop2PgPool().query(
     `UPDATE workshop2_material_requisitions
      SET status = $2,
-         payload = COALESCE(payload, '{}'::jsonb) || $3::jsonb
+         partial_ship_qty = $3,
+         backorder_flag = $4,
+         payload = COALESCE(payload, '{}'::jsonb) || $5::jsonb
      WHERE id = $1`,
     [
       existing.id,
       nextStatus,
+      input.status === 'confirmed' ? partialShipQty ?? null : null,
+      backorderFlag,
       JSON.stringify({
         supplierNote: input.note?.trim() || null,
         supplierRespondedAt: new Date().toISOString(),
         supplierRespondedBy: input.updatedBy ?? null,
+        requestedQty: requestedQty > 0 ? requestedQty : null,
+        shippedQty: input.status === 'confirmed' ? shippedQty : null,
+        backorder: backorderFlag,
+        partialShipQty: input.status === 'confirmed' ? partialShipQty ?? null : null,
+        backorderFlag,
       }),
     ]
   );
-  return { ...existing, status: nextStatus };
+  return {
+    ...existing,
+    status: nextStatus,
+    partialShipQty,
+    backorderFlag,
+  };
 }
 
 export function applyWorkshop2MaterialRequisitionStatusToDossier(input: {

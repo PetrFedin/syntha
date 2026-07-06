@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 
 /** Общие токены hub: быстрый вход ↔ матрица готовности (один DOM, responsive). */
 export const platformCoreHubLayout = {
-  sectionLabel: 'text-text-muted text-[10px] font-black uppercase tracking-widest',
+  sectionLabel: 'text-text-muted text-[11px] font-semibold uppercase tracking-wide',
   sectionStack: 'space-y-2 md:space-y-3',
   /** Строка карточки роли / столпа в быстром входе. */
   quickCardRow: 'min-h-[2.5rem] md:min-h-[2.75rem]',
@@ -27,7 +27,7 @@ export const platformCoreHubLayout = {
     'flex flex-nowrap items-center gap-2 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] max-md:snap-x max-md:snap-mandatory max-md:scroll-px-1 [&::-webkit-scrollbar]:hidden md:flex-wrap md:overflow-visible',
   /** Кнопки задачи планировщика — touch target. */
   plannerTaskActionBtn:
-    'inline-flex min-h-11 min-w-11 items-center justify-center rounded px-2 py-1.5 text-[10px] font-semibold',
+    'inline-flex min-h-11 min-w-11 items-center justify-center rounded px-2 py-1.5 text-[11px] font-semibold',
 } as const;
 
 export function hubSectionLabelClassName(className?: string): string {

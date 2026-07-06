@@ -139,7 +139,7 @@ export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPrevi
 
   return (
     <div
-      className="mt-2 space-y-1 rounded-md border border-sky-200 bg-sky-50/60 px-2 py-1.5 text-[10px] text-sky-950"
+      className="mt-2 min-w-0 space-y-1 rounded-md border border-sky-200 bg-sky-50/60 px-2 py-1.5 text-[10px] text-sky-950"
       data-testid={`shop-co-tracking-shipment-${wholesaleOrderId}`}
       data-audit-legacy={`shop-op-tracking-shipment-${wholesaleOrderId}`}
     >
@@ -149,7 +149,7 @@ export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPrevi
             {channelLabel}
           </Badge>
           {shipment.carrier ? `${shipment.carrier} · ` : ''}
-          <span className="font-mono">{shipment.trackingNumber}</span>
+          <span className="break-all font-mono">{shipment.trackingNumber}</span>
           {shipment.status ? ` · ${shipment.status}` : ''}
         </p>
       ) : canPullInbound ? (
@@ -161,7 +161,7 @@ export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPrevi
             type="button"
             size="sm"
             variant="outline"
-            className="h-6 px-2 text-[9px]"
+            className="min-h-11 px-3 text-[10px] md:h-6 md:min-h-0 md:px-2 md:text-[9px]"
             disabled={pullBusy}
             onClick={() => void pullInbound()}
             data-testid={`shop-inbound-pull-${wholesaleOrderId}`}

@@ -72,6 +72,7 @@ export async function PATCH(req: NextRequest) {
     buyerId,
     orderId,
     stepId,
+    actor: 'shop',
   });
 
   return NextResponse.json({
@@ -81,6 +82,8 @@ export async function PATCH(req: NextRequest) {
     storageMode: shopCollaborativeApprovalStorageMode(),
     messageRu: advanced
       ? `Шаг «${stepId}» подтверждён.`
-      : 'Шаг уже выполнен или заблокирован предыдущими.',
+      : stepId === 'margin'
+        ? 'Маржу согласует бренд в той же PG-сессии.'
+        : 'Шаг уже выполнен или заблокирован предыдущими.',
   });
 }

@@ -2,56 +2,96 @@
 
 import Link from 'next/link';
 import { buildSupplierProcurementSession } from '@/lib/fashion/supplier-procurement-workspace';
-import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
-import { shopB2bTrackingOrderHref } from '@/lib/routes';
+import {
+  buildSupOpCommsTailHref,
+  buildSupOpTrackingTailHref,
+} from '@/lib/platform/wave-yj-sup-op-procurement-chain';
+import { appendSupplierOpPoContextToHref } from '@/lib/b2b/supplier-op-po-context-hrefs';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
   collectionId: string;
   articleId: string;
   orderId?: string;
+  productionOrderId?: string;
 };
 
-/** sup-op-chain workspace · brand chat + tracking + forecast. */
-export function SupOpChainWorkspacePeerStrip({ collectionId, articleId, orderId }: Props) {
-  const session = buildSupplierProcurementSession({ collectionId, articleId, orderId });
-  const brandChatHref =
-    orderId?.trim()
-      ? buildOrderSectionCommsMessagesHref({
-          roleId: 'supplier',
-          orderId,
-          collectionId,
-          sectionId: 'sup-op-chain',
-          pillarId: 'order_production',
-        })
-      : session.entitiesHref;
+/** sup-op-chain workspace · brand chat + tracking + forecast (PO context on tail hrefs, wave YJ). */
+export function SupOpChainWorkspacePeerStrip({
+  collectionId,
+  articleId,
+  orderId,
+  productionOrderId,
+}: Props) {
+  const session = buildSupplierProcurementSession({
+    collectionId,
+    articleId,
+    orderId,
+    productionOrderId,
+  });
+  const poCtx = orderId?.trim()
+    ? { orderId: orderId.trim(), productionOrderId }
+    : undefined;
+  const brandChatHref = poCtx
+    ? buildSupOpCommsTailHref({
+        orderId: poCtx.orderId,
+        collectionId,
+        sectionId: 'sup-op-chain',
+        productionOrderId: poCtx.productionOrderId,
+      })
+    : session.entitiesHref;
+  const trackingHref = poCtx
+    ? buildSupOpTrackingTailHref(poCtx)
+    : session.shopTrackingHref;
+  const forecastHref = poCtx
+    ? appendSupplierOpPoContextToHref(session.forecastHref, poCtx)
+    : session.forecastHref;
+  const supplyHref = poCtx
+    ? appendSupplierOpPoContextToHref(session.supplyHref, poCtx)
+    : session.supplyHref;
 
   return (
     <div className={hubGadget.goldenPath} data-testid="sup-op-chain-workspace-peer-strip">
-      <Link href={brandChatHref} data-testid="sup-op-chain-peer-brand-chat-link" className={hubGadget.goldenLink}>
-        Brand chat
+      <Link
+        href={brandChatHref}
+        data-testid="sup-op-chain-peer-brand-chat-link"
+        data-comms-tail-po={productionOrderId?.trim() || undefined}
+        className={hubGadget.goldenLink}
+      >
+        Чат с брендом
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link
-        href={orderId ? shopB2bTrackingOrderHref(orderId) : session.shopTrackingHref}
+        href={trackingHref}
         data-testid="sup-op-chain-peer-tracking-link"
+        data-comms-tail-po={productionOrderId?.trim() || undefined}
         className={hubGadget.goldenLink}
       >
-        Tracking
+        Трекинг
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.forecastHref} data-testid="sup-op-chain-peer-forecast-link" className={hubGadget.goldenLink}>
-        Forecast
+      <Link
+        href={forecastHref}
+        data-testid="sup-op-chain-peer-forecast-link"
+        data-comms-tail-po={productionOrderId?.trim() || undefined}
+        className={hubGadget.goldenLink}
+      >
+        Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.supplyHref} data-testid="sup-op-chain-peer-supply-link" className={hubGadget.goldenLink}>
-        Supply
+      <Link
+        href={supplyHref}
+        data-testid="sup-op-chain-peer-supply-link"
+        data-comms-tail-po={productionOrderId?.trim() || undefined}
+        className={hubGadget.goldenLink}
+      >
+        Поставка
       </Link>
     </div>
   );

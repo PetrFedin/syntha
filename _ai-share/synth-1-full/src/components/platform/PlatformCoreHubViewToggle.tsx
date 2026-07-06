@@ -23,19 +23,18 @@ type Props = {
   onChange: (views: PlatformCoreHubViews) => void;
 };
 
-const BUTTONS: { id: PlatformCoreHubViewId; label: string; testId: string }[] = [
+const TOGGLE_VIEWS: { id: PlatformCoreHubViewId; label: string; testId: string }[] = [
   { id: 'business', label: 'Продукт', testId: 'platform-core-hub-view-business' },
   { id: 'audit', label: 'Аудит', testId: 'platform-core-hub-view-audit' },
-  { id: 'planner', label: 'План', testId: 'platform-core-hub-view-planner' },
 ];
 
 function activeHubViewCount(views: PlatformCoreHubViews): number {
-  const n = BUTTONS.filter((b) => views[b.id]).length;
+  const n = TOGGLE_VIEWS.filter((b) => views[b.id]).length;
   return n > 0 ? n : 1;
 }
 
 function hubMenuAriaLabel(views: PlatformCoreHubViews): string {
-  const active = BUTTONS.filter((b) => views[b.id]).map((b) => b.label);
+  const active = TOGGLE_VIEWS.filter((b) => views[b.id]).map((b) => b.label);
   if (active.length === 0) return 'Продукт';
   return active.join(', ');
 }
@@ -66,7 +65,7 @@ function HubViewButton({
   );
 }
 
-/** iPhone: иконка + счётчик. iPad / Mac: три кнопки в ряд. */
+/** iPhone: иконка + счётчик. iPad / Mac: Продукт · Аудит (без «План»). */
 export function PlatformCoreHubViewToggle({ value, onChange }: Props) {
   const toggle = (id: PlatformCoreHubViewId) => onChange(toggleHubView(value, id));
   const selectedCount = activeHubViewCount(value);
@@ -76,30 +75,30 @@ export function PlatformCoreHubViewToggle({ value, onChange }: Props) {
       <DropdownMenu>
         <DropdownMenuTrigger
           data-testid="platform-core-hub-view-menu"
-          title={`Разделы: ${hubMenuAriaLabel(value)} (${selectedCount} из 3)`}
+          title={`Разделы: ${hubMenuAriaLabel(value)}`}
           className={cn(
             PLATFORM_CORE_HEADER_ICON_BTN,
             'btn-tab-active sm:hidden border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20'
           )}
-          aria-label={`${hubMenuAriaLabel(value)} · ${selectedCount} из 3 разделов. Открыть список`}
+          aria-label={`${hubMenuAriaLabel(value)} · открыть список`}
         >
-          <LayoutGrid className="h-4 w-4 shrink-0" aria-hidden />
+          <LayoutGrid className="h-3.5 w-3.5 shrink-0" aria-hidden />
           <span
             data-testid="platform-core-hub-view-count"
-            className="bg-accent-primary absolute -right-0.5 -top-0.5 flex h-3.5 min-w-[0.875rem] items-center justify-center rounded-full px-0.5 text-[9px] font-bold leading-none text-white"
+            className="bg-accent-primary absolute -right-0.5 -top-0.5 flex h-3 min-w-[0.75rem] items-center justify-center rounded-full px-0.5 text-[9px] font-bold leading-none text-white"
             aria-hidden
           >
             {selectedCount}
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={8} className="min-w-[10rem] p-1">
-          {BUTTONS.map(({ id, label, testId }) => (
+          {TOGGLE_VIEWS.map(({ id, label, testId }) => (
             <DropdownMenuCheckboxItem
               key={id}
               data-testid={testId}
               checked={value[id]}
               onCheckedChange={() => toggle(id)}
-              className="cursor-pointer text-[10px] font-bold uppercase tracking-wide"
+              className="cursor-pointer text-[11px] font-semibold"
             >
               {label}
             </DropdownMenuCheckboxItem>
@@ -111,9 +110,9 @@ export function PlatformCoreHubViewToggle({ value, onChange }: Props) {
         data-testid="platform-core-hub-view-toggle"
         className="hidden shrink-0 flex-nowrap items-center gap-1 sm:flex"
         role="group"
-        aria-label="Показать на странице: Продукт, Аудит, План — можно несколько сразу"
+        aria-label="Показать на странице: Продукт, Аудит"
       >
-        {BUTTONS.map(({ id, label, testId }) => (
+        {TOGGLE_VIEWS.map(({ id, label, testId }) => (
           <HubViewButton
             key={id}
             id={id}

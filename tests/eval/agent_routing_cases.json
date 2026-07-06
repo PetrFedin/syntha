@@ -1,0 +1,86 @@
+[
+  {
+    "id": "route-w2-hub",
+    "task": "Review workshop2 dossier tech pack completeness for SS27 article",
+    "pillar": "development",
+    "role": "brand",
+    "section_id": "brand-dev-w2-hub",
+    "expect_agent": "product_architect"
+  },
+  {
+    "id": "route-linesheet",
+    "task": "Audit linesheet range planner for FW27 collection assembly",
+    "pillar": "sample_collection",
+    "role": "brand",
+    "section_id": "brand-sc-linesheets",
+    "expect_agent": "product_architect"
+  },
+  {
+    "id": "route-checkout-anomaly",
+    "task": "Detect checkout payment anomaly MOQ violation for wholesale order",
+    "pillar": "collection_order",
+    "role": "shop",
+    "section_id": "shop-co-checkout",
+    "expect_agent": "order_anomaly"
+  },
+  {
+    "id": "route-matrix-quota",
+    "task": "Allocate assortment split quota across shop matrix sizes",
+    "pillar": "collection_order",
+    "role": "shop",
+    "section_id": "shop-co-matrix",
+    "expect_agent": "quota"
+  },
+  {
+    "id": "route-handoff",
+    "task": "factory-ack procurement handoff queue ERP sync delay",
+    "pillar": "order_production",
+    "role": "manufacturer",
+    "section_id": "mfr-op-handoff-queue",
+    "expect_agent": "order_anomaly"
+  },
+  {
+    "id": "route-brand-registry",
+    "task": "Registry duplicate MOQ lines on brand wholesale order list",
+    "pillar": "collection_order",
+    "role": "brand",
+    "section_id": "brand-co-registry",
+    "expect_agent": "order_anomaly"
+  },
+  {
+    "id": "route-pg-sync-tech-debt",
+    "task": "PG mirror drift migration tech debt on brand-dev-pg-sync",
+    "pillar": "development",
+    "role": "brand",
+    "section_id": "brand-dev-pg-sync",
+    "expect_agent": "tech_debt"
+  },
+  {
+    "id": "route-sup-procurement",
+    "task": "Supplier procurement material request anomaly vs factory ack",
+    "pillar": "order_production",
+    "role": "supplier",
+    "section_id": "sup-op-procurement",
+    "expect_agent": "order_anomaly"
+  },
+  {
+    "id": "classify-tech-debt",
+    "task": "Scan migration tech debt TODO stubs in platform core",
+    "expect_task_type": "TECH_DEBT_ITERATION"
+  },
+  {
+    "id": "classify-ui-improvement",
+    "task": "Platform core UI dedup audit tailwind tsx duplicates",
+    "expect_task_type": "UI_IMPROVEMENT_ITERATION"
+  },
+  {
+    "id": "classify-feature-suggestion",
+    "task": "Feature gap master plan missing B2B registry module",
+    "expect_task_type": "FEATURE_SUGGESTION_ITERATION"
+  },
+  {
+    "id": "classify-code-quality",
+    "task": "Run ruff complexity lint scan on app/agents modules",
+    "expect_task_type": "CODE_QUALITY_ITERATION"
+  }
+]

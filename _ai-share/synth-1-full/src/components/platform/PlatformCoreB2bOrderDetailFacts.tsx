@@ -16,7 +16,8 @@ import {
 import { useWorkshop2B2bOrderDetail } from '@/hooks/use-workshop2-b2b-order-detail';
 import { usePlatformCoreOrderDetailPillarId } from '@/hooks/use-platform-core-order-detail-pillar';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import {
   ROUTES,
   brandB2bOrderChainContextHref,
@@ -35,30 +36,71 @@ import {
   shopB2bOrdersProductionRegistryHref,
   shopMessagesB2bOrderContextHref,
   brandB2bOrdersCollectionRegistryHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import {
   getPlatformCoreCollectionLabel,
   getPlatformCoreDemoByOrderId,
+  factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
 import { B2bOrderAmendmentPanel } from '@/components/b2b/B2bOrderAmendmentPanel';
+import { formatBrandPeerStatusSummaryRu } from '@/lib/platform-core-chain-peer-mirror';
+import type { ChainPeerMirrorPayload } from '@/lib/platform-core-chain-peer-mirror';
 import { B2bOrderChainStatusCard } from '@/components/b2b/B2bOrderChainStatusCard';
+import { BrandOpAttachTzPdfPeerStrip } from '@/components/platform/BrandOpAttachTzPdfPeerStrip';
 import { BrandOpDossierProductionPeerStrip } from '@/components/platform/BrandOpDossierProductionPeerStrip';
+import { BrandDossierFactoryDiffPanel } from '@/components/platform/BrandDossierFactoryDiffPanel';
+import { BrandOpCutTicketPgVerifyBadge } from '@/components/platform/BrandOpCutTicketPgVerifyBadge';
+import {
+  BRAND_OP_DOSSIER_FACTORY_DIFF_WRAP_TESTID,
+  BRAND_OP_DOSSIER_LOCKED_BADGE_TESTID,
+  brandOpDossierLockedBadgeRu,
+} from '@/lib/platform-core-ports/fashion/brand-op-wave-vq';
+import {
+  buildBrandOpDossierLockedBadgeCrossLinks,
+  shouldOmitBrandOpDossierInlineDiffSummary,
+  WAVE_YL_BRAND_OP_DOSSIER_LOCKED_ATTACH_TZ_LINK_TESTID,
+  WAVE_YL_BRAND_OP_DOSSIER_LOCKED_CROSS_STRIP_TESTID,
+  WAVE_YL_BRAND_OP_DOSSIER_LOCKED_DIFF_LINK_TESTID,
+  WAVE_YL_DIFF_LOCKED_ATTACH_TZ_RU,
+  WAVE_YL_DIFF_LOCKED_DIFF_LINK_RU,
+} from '@/lib/platform-core-ports/platform/wave-yl-brand-dossier-diff-viewer';
+import { PillarInsightSteps } from '@/components/platform/PillarInsightPrimitives';
+import { ShopCoTrackingChainStatusMirrorBadge } from '@/components/platform/ShopCoTrackingChainStatusMirrorBadge';
 import { ShopCoTrackingEtaPeekStrip } from '@/components/platform/ShopCoTrackingEtaPeekStrip';
-import { ShopCoDetailSpinePeerStrip } from '@/components/shop/b2b/ShopCoDetailSpinePeerStrip';
+import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import {
+  WAVE_XY_SHOP_CO_BRAND_MIRROR_PREFIX_RU,
+  WAVE_XY_SHOP_CO_CHAIN_LIVE_PREFIX_RU,
+  WAVE_XY_SHOP_CO_TRACKING_EMBED_STRIP_RU,
+  shopCoCabinetTrackingEmbedChainMirrorPollTestId,
+  shopCoCabinetTrackingEmbedChainMirrorSseTestId,
+  shopCoCabinetTrackingEmbedChainMirrorTestId,
+} from '@/lib/platform-core-ports/platform/wave-xy-shop-co-tracking-embed';
 import { PLATFORM_CORE_ORDER_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { isIntegrationImportedWholesaleOrderId } from '@/lib/integrations/spine/integration-ui-utils';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import {
+  isIntegrationImportedWholesaleOrderId,
+  mapOperationalStatusLabelRu,
+} from '@/lib/integrations/spine/integration-ui-utils';
+import type { Workshop2B2bOrderDetailView } from '@/hooks/use-workshop2-b2b-order-detail';
 import { OperationalImportedOrderDetailCard } from '@/components/b2b/OperationalImportedOrderDetailCard';
-import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
+import { brandDevelopmentArticleHref } from '@/lib/platform-core-routes';
 import {
   PRODUCTION_HANDOFF_DONE_RU,
   PRODUCTION_HANDOFF_PENDING_RU,
   PRODUCTION_HANDOFF_QUEUE_RU,
 } from '@/lib/platform-core-canonical-labels';
+import { canShopAmendOrder } from '@/lib/platform-core-shop-b2b-amend';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 type Props = {
   orderId: string;
   variant: 'brand' | 'shop';
+  /** Компактный tracking-only embed в кабинете CO (без дубля OP). */
+  embedSurface?: 'cabinetTracking';
+  operationalStatus?: string | null;
+  trackingNumberPreview?: string | null;
 };
 
 type ChainStep = { id: string; labelRu: string; done: boolean };
@@ -76,25 +118,53 @@ type ChainPayload = {
   handedOff?: boolean;
   dossierHref?: string;
   factoryId?: string;
+  poStatus?: string;
   poStatusLabelRu?: string;
   dossierDiff?: ChainDossierDiff;
   steps?: ChainStep[];
 };
 
-export function PlatformCoreB2bOrderDetailFacts({ orderId, variant }: Props) {
+export function PlatformCoreB2bOrderDetailFacts({
+  orderId,
+  variant,
+  embedSurface,
+  operationalStatus,
+  trackingNumberPreview,
+}: Props) {
   if (isIntegrationImportedWholesaleOrderId(orderId)) {
     return <OperationalImportedOrderDetailCard orderId={orderId} variant={variant} />;
   }
-  return <PlatformCoreW2OrderDetailFacts orderId={orderId} variant={variant} />;
+  return (
+    <PlatformCoreW2OrderDetailFacts
+      orderId={orderId}
+      variant={variant}
+      embedSurface={embedSurface}
+      operationalStatus={operationalStatus}
+      trackingNumberPreview={trackingNumberPreview}
+    />
+  );
 }
 
-function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
+function PlatformCoreW2OrderDetailFacts({
+  orderId,
+  variant,
+  embedSurface,
+  operationalStatus,
+  trackingNumberPreview,
+}: Props) {
   const { order, loadState } = useWorkshop2B2bOrderDetail(orderId, true);
   const pillarId = usePlatformCoreOrderDetailPillarId();
   const productionPillar = pillarId === 'order_production';
   const [chain, setChain] = useState<ChainPayload | null>(null);
   const demo = getPlatformCoreDemoByOrderId(orderId);
-  const { tick: chainPollTick } = usePlatformCoreChainStatusPoll(true, [orderId]);
+  const chainPushEnabled = usePlatformCoreChainStatusPushEnabled(
+    variant === 'shop' ? 'shop' : 'brand'
+  );
+  const pollEnabled =
+    embedSurface === 'cabinetTracking' ? chainPushEnabled : true;
+  const { tick: chainPollTick, sseConnected } = usePlatformCoreChainStatusPoll(pollEnabled, [
+    orderId,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -139,24 +209,54 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
     );
   }
 
+  if (embedSurface === 'cabinetTracking' && variant === 'shop') {
+    return (
+      <ShopCoCabinetTrackingEmbedSurface
+        orderId={orderId}
+        order={order}
+        chain={chain}
+        operationalStatus={operationalStatus}
+        trackingNumberPreview={trackingNumberPreview}
+        sseConnected={sseConnected}
+        chainPushEnabled={chainPushEnabled}
+      />
+    );
+  }
+
   const collectionId = order.collectionId ?? demo.collectionId;
   const articleId = order.articleId ?? demo.demoArticleId;
-  const showroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
+  const showroomHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
   const factoryDossierHref =
     chain?.dossierHref ?? factoryProductionDossierHref(articleId, { collectionId });
   const articleHref =
-    variant === 'shop' ? showroomHref : workshop2ArticleHref(collectionId, articleId);
+    variant === 'shop' ? showroomHref : brandDevelopmentArticleHref(collectionId, articleId);
   const poId = chain?.productionOrderId ?? demo.productionOrderId;
   const poHandedOff = chain?.handedOff === true;
   const materialsSuppliedStep = chain?.steps?.find((s) => s.id === 'materials_supplied');
   const materialsSuppliedDone = materialsSuppliedStep?.done === true;
   const dossierDiff = chain?.dossierDiff;
   const dossierChangedSinceHandoff = dossierDiff?.dossierChangedSinceHandoff === true;
-  const canShopAmend = variant === 'shop' && !poHandedOff && order.status === 'submitted';
+  const canShopAmend = canShopAmendOrder({
+    variant,
+    orderStatus: order.status,
+    poHandedOff,
+    chainSteps: chain?.steps,
+  });
   const brandConfirmedDone = chain?.steps?.find((s) => s.id === 'brand_confirmed')?.done === true;
   const coreSlim = isPlatformCoreMode();
 
   const w2DossierHref = brandW2ProductionTzHref(collectionId, articleId);
+  const brandOpLockedCrossLinks =
+    variant === 'brand' && productionPillar && poHandedOff
+      ? buildBrandOpDossierLockedBadgeCrossLinks({
+          orderId,
+          collectionId,
+          articleId,
+          productionOrderId: poId,
+          factoryId: chain?.factoryId,
+        })
+      : null;
+  const omitBrandOpInlineDiffSummary = shouldOmitBrandOpDossierInlineDiffSummary('brand-op');
   const detailPanelTestId =
     variant === 'brand'
       ? productionPillar
@@ -174,9 +274,6 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
           variant={variant}
           productionPillar={productionPillar}
         />
-        {variant === 'shop' && !productionPillar && collectionId ? (
-          <ShopCoDetailSpinePeerStrip orderId={orderId} collectionId={collectionId} />
-        ) : null}
         {!productionPillar ? (
           <B2bOrderAmendmentPanel
             orderId={orderId}
@@ -211,13 +308,50 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
                   <>
                     <Badge
                       variant="outline"
-                      data-testid="brand-order-w2-dossier-locked-badge"
+                      data-testid={
+                        productionPillar
+                          ? BRAND_OP_DOSSIER_LOCKED_BADGE_TESTID
+                          : 'brand-order-w2-dossier-locked-badge'
+                      }
+                      data-audit-legacy="brand-order-w2-dossier-locked-badge"
                       className="mt-1.5 border-emerald-200 bg-emerald-50 text-[9px] text-emerald-800"
                     >
-                      {dossierDiff?.dossierVersionAtHandoff != null
-                        ? `Зафиксировано v${dossierDiff.dossierVersionAtHandoff} при передаче`
-                        : 'Зафиксировано при передаче'}
+                      {productionPillar
+                        ? brandOpDossierLockedBadgeRu({
+                            dossierVersionAtHandoff: dossierDiff?.dossierVersionAtHandoff,
+                            live: dossierDiff?.currentDossierVersion != null,
+                          })
+                        : dossierDiff?.dossierVersionAtHandoff != null
+                          ? `Зафиксировано v${dossierDiff.dossierVersionAtHandoff} при передаче`
+                          : 'Зафиксировано при передаче'}
                     </Badge>
+                    {productionPillar ? (
+                      <BrandOpCutTicketPgVerifyBadge productionOrderId={poId} />
+                    ) : null}
+                    {productionPillar && brandOpLockedCrossLinks ? (
+                      <div
+                        className={`${hubGadget.goldenPath} mt-1.5`}
+                        data-testid={WAVE_YL_BRAND_OP_DOSSIER_LOCKED_CROSS_STRIP_TESTID}
+                      >
+                        <Link
+                          href={brandOpLockedCrossLinks.diffViewerHref}
+                          data-testid={WAVE_YL_BRAND_OP_DOSSIER_LOCKED_DIFF_LINK_TESTID}
+                          className={hubGadget.goldenLink}
+                        >
+                          {WAVE_YL_DIFF_LOCKED_DIFF_LINK_RU}
+                        </Link>
+                        <span className={hubGadget.goldenSep} aria-hidden>
+                          ·
+                        </span>
+                        <Link
+                          href={brandOpLockedCrossLinks.attachTzPoHref}
+                          data-testid={WAVE_YL_BRAND_OP_DOSSIER_LOCKED_ATTACH_TZ_LINK_TESTID}
+                          className={hubGadget.goldenLink}
+                        >
+                          {WAVE_YL_DIFF_LOCKED_ATTACH_TZ_RU}
+                        </Link>
+                      </div>
+                    ) : null}
                     {dossierChangedSinceHandoff ? (
                       <Badge
                         variant="outline"
@@ -229,7 +363,9 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
                     ) : null}
                   </>
                 ) : null}
-                {poHandedOff && dossierDiff?.dossierDiffSummaryRu ? (
+                {poHandedOff &&
+                dossierDiff?.dossierDiffSummaryRu &&
+                !(productionPillar && omitBrandOpInlineDiffSummary) ? (
                   <p
                     className="text-text-muted mt-1 text-[10px]"
                     data-testid="brand-order-w2-dossier-diff-summary"
@@ -260,12 +396,61 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
           </Card>
         ) : null}
         {variant === 'brand' && productionPillar ? (
-          <BrandOpDossierProductionPeerStrip
-            orderId={orderId}
-            collectionId={collectionId}
-            articleId={articleId}
-            poHandedOff={poHandedOff}
-          />
+          <>
+            <div data-testid={BRAND_OP_DOSSIER_FACTORY_DIFF_WRAP_TESTID}>
+              <BrandDossierFactoryDiffPanel
+                collectionId={collectionId}
+                articleId={articleId}
+                orderId={orderId}
+                productionOrderId={chain?.productionOrderId}
+                factoryId={chain?.factoryId}
+                context="brand-op"
+              />
+            </div>
+            <BrandOpAttachTzPdfPeerStrip
+              orderId={orderId}
+              collectionId={collectionId}
+              articleId={articleId}
+              factoryId={chain?.factoryId}
+              productionOrderId={chain?.productionOrderId}
+            />
+            <BrandOpDossierProductionPeerStrip
+              orderId={orderId}
+              collectionId={collectionId}
+              articleId={articleId}
+              poHandedOff={poHandedOff}
+            />
+          </>
+        ) : null}
+        {variant === 'brand' &&
+        productionPillar &&
+        chain?.steps?.some((s) => s.id === 'materials_supplied') &&
+        !materialsSuppliedDone ? (
+          <Card
+            data-testid="brand-op-detail-materials-procurement-cta"
+            className="border-amber-200/70 bg-amber-50/25"
+          >
+            <CardContent className="flex flex-wrap items-center justify-between gap-2 py-3 text-xs">
+              <div className="min-w-0">
+                <p className="text-text-muted text-[10px] font-bold uppercase">
+                  Материалы по заказу
+                </p>
+                <p className="text-text-secondary mt-0.5">
+                  Поставщик ещё не подтвердил BOM — передача в цех заблокирована до закупки.
+                </p>
+              </div>
+              <Link
+                href={factoryMaterialsProcurementHrefForDemo(
+                  { ...demo, demoOrderId: orderId },
+                  { role: 'supplier' }
+                )}
+                data-testid="brand-op-detail-materials-procurement-link"
+                className="text-accent-primary font-semibold hover:underline"
+              >
+                Закупка материалов →
+              </Link>
+            </CardContent>
+          </Card>
         ) : null}
         {variant === 'shop' &&
         !productionPillar &&
@@ -358,7 +543,7 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
         ) : null}
         {poId ? (
           <Card
-            id={variant === 'shop' ? 'order-production-po' : undefined}
+            id={variant === 'shop' ? 'shop-co-buyer-tracking' : undefined}
             data-testid="platform-core-order-po-card"
             className={
               poHandedOff ? 'border-emerald-200/80 bg-emerald-50/30' : 'border-amber-200/60'
@@ -483,7 +668,7 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Строки заказа</CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <CardContent className={hubCabinet.workspaceTableScroll} data-testid="platform-core-order-lines-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -514,6 +699,138 @@ function PlatformCoreW2OrderDetailFacts({ orderId, variant }: Props) {
             </Table>
           </CardContent>
         </Card>
+      </div>
+    </div>
+  );
+}
+
+type CabinetTrackingEmbedProps = {
+  orderId: string;
+  order: Workshop2B2bOrderDetailView;
+  chain: ChainPayload | null;
+  operationalStatus?: string | null;
+  trackingNumberPreview?: string | null;
+  sseConnected: boolean;
+  chainPushEnabled: boolean;
+};
+
+/** Компактный tracking-only слой для shop CO cabinet (Wave SU + XY SSE mirror). */
+function ShopCoCabinetTrackingEmbedSurface({
+  orderId,
+  order,
+  chain,
+  operationalStatus,
+  trackingNumberPreview,
+  sseConnected,
+  chainPushEnabled,
+}: CabinetTrackingEmbedProps) {
+  const lineCount = order.lines?.length ?? 0;
+  const totalRub = Math.round(order.totalRub ?? 0).toLocaleString('ru-RU');
+  const brandConfirmedDone = chain?.steps?.find((s) => s.id === 'brand_confirmed')?.done === true;
+  const productionSteps =
+    chain?.steps?.filter((s) => s.id !== 'shop_sent' && s.id !== 'brand_confirmed') ?? [];
+
+  const mirrorPayload: ChainPeerMirrorPayload | null = chain
+    ? {
+        handedOff: chain.handedOff === true,
+        poStatus: chain.poStatus,
+        poStatusLabelRu: chain.poStatusLabelRu,
+        productionOrderId: chain.productionOrderId,
+        steps: chain.steps,
+      }
+    : null;
+
+  const chainStatusLabel = mirrorPayload
+    ? formatBrandPeerStatusSummaryRu(mirrorPayload)
+    : order.statusLabelRu ?? WAVE_XY_SHOP_CO_CHAIN_LIVE_PREFIX_RU;
+
+  return (
+    <div
+      id="shop-co-buyer-tracking"
+      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 px-3 py-2 text-xs"
+      data-testid="shop-co-cabinet-tracking-embed"
+      data-chain-sse-live={sseConnected && chainPushEnabled ? '1' : '0'}
+    >
+      <p className="text-text-muted text-[10px] font-medium uppercase tracking-wide">
+        {WAVE_XY_SHOP_CO_TRACKING_EMBED_STRIP_RU}
+      </p>
+      <div
+        className="flex flex-wrap items-center gap-2"
+        data-testid="shop-co-cabinet-tracking-embed-facts"
+      >
+        <span className="text-text-secondary font-medium tabular-nums">
+          {totalRub} ₽ · {lineCount} строк
+        </span>
+        {order.statusLabelRu ? (
+          <Badge variant="outline" className="text-[9px]">
+            {order.statusLabelRu}
+          </Badge>
+        ) : null}
+        {operationalStatus ? (
+          <Badge
+            variant="outline"
+            className="border-sky-200 bg-sky-50 text-[9px] text-sky-900"
+            data-testid="shop-co-cabinet-tracking-embed-brand-status"
+          >
+            Бренд · {mapOperationalStatusLabelRu(operationalStatus)}
+          </Badge>
+        ) : null}
+      </div>
+
+      {productionSteps.length > 0 ? (
+        <div data-testid="shop-co-cabinet-tracking-embed-chain">
+          <PillarInsightSteps
+            steps={productionSteps}
+            testId="shop-co-cabinet-tracking-embed-steps"
+          />
+          {mirrorPayload ? (
+            <div
+              className={hubGadget.goldenPath}
+              data-testid="shop-co-cabinet-tracking-embed-brand-mirror"
+            >
+              <span className={hubGadget.muted}>{WAVE_XY_SHOP_CO_BRAND_MIRROR_PREFIX_RU}:</span>
+              <span className="text-xs text-text-primary">{chainStatusLabel}</span>
+            </div>
+          ) : null}
+          <ShopCoTrackingChainStatusMirrorBadge
+            orderId={orderId}
+            statusLabel={chainStatusLabel}
+            sseConnected={sseConnected}
+            enabled={chainPushEnabled && productionSteps.length > 0}
+            mirrorTestId={shopCoCabinetTrackingEmbedChainMirrorTestId(orderId)}
+            sseTestId={shopCoCabinetTrackingEmbedChainMirrorSseTestId(orderId)}
+            pollTestId={shopCoCabinetTrackingEmbedChainMirrorPollTestId(orderId)}
+          />
+        </div>
+      ) : null}
+
+      {brandConfirmedDone && order.status !== 'draft' && order.status !== 'cancelled' ? (
+        <ShopCoTrackingEtaPeekStrip
+          orderId={orderId}
+          variant="cabinet"
+          trackingNumberPreview={trackingNumberPreview}
+          hideNavLinks
+        />
+      ) : null}
+
+      <div className={hubGadget.goldenPath} data-testid="shop-co-cabinet-tracking-embed-nav">
+        <Link
+          href={shopB2bTrackingOrderHref(orderId)}
+          data-testid="shop-co-cabinet-tracking-embed-tracking-link"
+          className={hubGadget.goldenLink}
+        >
+          Трекинг
+        </Link>
+        <span className={hubGadget.goldenSep} aria-hidden>
+          ·
+        </span>
+        <Link
+          href={shopCalendarB2bOrderContextHref(orderId)}
+          data-testid="shop-co-cabinet-tracking-embed-calendar-link"
+          className={hubGadget.goldenLink}
+        >
+          Календарь
+        </Link>
       </div>
     </div>
   );

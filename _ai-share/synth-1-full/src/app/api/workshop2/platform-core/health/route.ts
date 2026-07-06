@@ -26,6 +26,7 @@ export async function GET() {
   const redisConfigured = isPlatformCoreChainStatusRedisEnabled();
   const realtimeHubs = getPlatformCoreRealtimeHubsMeta();
   const chainStatusSseMode = realtimeHubs.chainStatusSseMode;
+  const sampleStatusSseMode = realtimeHubs.sampleStatusSseMode;
 
   const spineOperationalPgPrimary = isSpineOperationalPgPrimary();
   const platformCoreSpinePgPrimary = isPlatformCoreSpinePgPrimary();
@@ -55,6 +56,7 @@ export async function GET() {
     demoSeeded,
     redisConfigured,
     chainStatusSseMode,
+    sampleStatusSseMode,
     realtimeHubs,
     spineOperationalPgPrimary,
     platformCoreSpinePgPrimary,

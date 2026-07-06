@@ -28,7 +28,7 @@ export function SupplierProcurementSlaResponseStrip({ collectionId, articleId, o
       </span>
       <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
         <Link href={session.entitiesHref} data-testid="sup-dev-sla-entities-link">
-          Entity threads
+          Треды сущностей
         </Link>
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>

@@ -31,37 +31,37 @@ export function SupCmOrderContextPeerStrip({ collectionId, articleId, orderId, f
         ·
       </span>
       <Link href={procurement.forecastHref} data-testid="sup-cm-order-forecast-link" className={hubGadget.goldenLink}>
-        Forecast
+        Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.brandOrderHandoffHref} data-testid="sup-cm-order-brand-handoff-link" className={hubGadget.goldenLink}>
-        Brand handoff
+        Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopMatrixHref} data-testid="sup-cm-order-shop-matrix-link" className={hubGadget.goldenLink}>
-        Shop matrix
+        Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopTrackingHref} data-testid="sup-cm-order-shop-tracking-link" className={hubGadget.goldenLink}>
-        Shop tracking
+        Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.manufacturerOrderHref} data-testid="sup-cm-order-mfr-comms-link" className={hubGadget.goldenLink}>
-        Factory comms
+        Чат с производством
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.replenishmentAtpHref} data-testid="sup-cm-order-replenishment-link" className={hubGadget.goldenLink}>
-        Replenishment
+        Пополнение
       </Link>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-registry-poll';
 import { b2bV1SynthaActorRoleHeaders } from '@/lib/auth/b2b-v1-api-client-headers';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { isIntegrationImportedWholesaleOrderId } from '@/lib/integrations/spine/integration-ui-utils';
@@ -11,6 +12,7 @@ import {
   pickPreferredRegistryOrderId,
   resolveActiveWholesaleOrderId,
 } from '@/lib/platform-core-spine-active-order-fallback';
+import { fetchOperationalOrderBrandStatusMirror } from '@/lib/order/fetch-operational-order-brand-status.client';
 
 export type SpineActiveOrderResolveFrom = 'w2_registry' | 'allocation' | 'operational' | 'handoff';
 
@@ -28,6 +30,8 @@ type Options = {
   factoryId?: string;
   collectionId?: string;
   buyerId?: string;
+  /** Brand hub: retailerId (shop1…) для multi-buyer registry spine. */
+  partnerId?: string;
   enabled?: boolean;
 };
 
@@ -40,10 +44,21 @@ type Result = {
 
 type SpineHit = SpineActiveOrderMeta & { wholesaleOrderId: string };
 
+async function enrichHitWithOperationalStatus(
+  hit: SpineHit,
+  actorRole: 'brand' | 'shop' | undefined
+): Promise<SpineHit> {
+  if (hit.status?.trim()) return hit;
+  const role = actorRole ?? 'shop';
+  const status = await fetchOperationalOrderBrandStatusMirror(hit.wholesaleOrderId, role);
+  return status ? { ...hit, status } : hit;
+}
+
 async function fromW2Registry(input: {
   collectionId: string;
   actorRole?: 'brand' | 'shop';
   buyerId?: string;
+  partnerId?: string;
 }): Promise<{ hit: SpineHit | null; registryQueriedEmpty: boolean }> {
   const collectionId = input.collectionId.trim();
   if (!collectionId) return { hit: null, registryQueriedEmpty: false };
@@ -67,10 +82,10 @@ async function fromW2Registry(input: {
     };
   }
 
-  const res = await fetch(
-    `/api/brand/b2b/orders?collectionId=${encodeURIComponent(collectionId)}`,
-    { cache: 'no-store' }
-  );
+  const partner = input.partnerId?.trim();
+  const brandQs = new URLSearchParams({ collectionId });
+  if (partner) brandQs.set('partner', partner);
+  const res = await fetch(`/api/brand/b2b/orders?${brandQs}`, { cache: 'no-store' });
   if (!res.ok) return { hit: null, registryQueriedEmpty: false };
   const json = (await res.json()) as { orders?: Array<{ id?: string | null }> };
   const orders = json.orders ?? [];
@@ -150,6 +165,7 @@ export function useSpineActiveWholesaleOrderId(options: Options): Result {
     factoryId,
     collectionId,
     buyerId,
+    partnerId,
     enabled = true,
   } = options;
   const [spineMeta, setSpineMeta] = useState<SpineHit | null>(null);
@@ -157,6 +173,9 @@ export function useSpineActiveWholesaleOrderId(options: Options): Result {
   const [resolving, setResolving] = useState(true);
 
   const resolveFromIncludesRegistry = resolveFrom.includes('w2_registry');
+  const { tick: registryTick } = usePlatformCoreB2bRegistryPoll(
+    enabled && isPlatformCoreMode() && resolveFromIncludesRegistry
+  );
   const platformCoreGoldenFallback =
     isPlatformCoreMode() &&
     fallbackOrderId.trim().startsWith('B2B-DEMO-') &&
@@ -187,6 +206,7 @@ export function useSpineActiveWholesaleOrderId(options: Options): Result {
               collectionId,
               actorRole,
               buyerId,
+              partnerId,
             });
             registryEmpty = registry.registryQueriedEmpty;
             hit = registry.hit;
@@ -198,8 +218,9 @@ export function useSpineActiveWholesaleOrderId(options: Options): Result {
             hit = await fromHandoffQueue(factoryId);
           }
           if (hit) {
+            const enriched = await enrichHitWithOperationalStatus(hit, actorRole);
             if (!cancelled) {
-              setSpineMeta(hit);
+              setSpineMeta(enriched);
               setRegistryQueriedEmpty(registryEmpty);
             }
             return;
@@ -228,7 +249,9 @@ export function useSpineActiveWholesaleOrderId(options: Options): Result {
     factoryId,
     collectionId,
     buyerId,
+    partnerId,
     reloadNonce,
+    registryTick,
     platformCoreGoldenFallback,
   ]);
 

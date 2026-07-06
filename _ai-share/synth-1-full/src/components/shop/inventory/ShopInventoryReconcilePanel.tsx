@@ -244,13 +244,13 @@ export function ShopInventoryReconcilePanel({ collectionId }: Props) {
           <Link href={session.cycleCountHref}>Cycle counting</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.replenishmentAtpHref}>Replenishment · ATP</Link>
+          <Link href={session.replenishmentAtpHref}>Пополнение · ATP</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
           <Link href={session.matrixHref}>Wholesale matrix</Link>

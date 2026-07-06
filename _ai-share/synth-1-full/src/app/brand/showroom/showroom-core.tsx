@@ -16,11 +16,13 @@ import {
 } from '@/components/brand/showroom/BrandShowroomBuyGoldenPathStrip';
 import { BrandScShowroomRetailPeerStrip } from '@/components/platform/BrandScShowroomRetailPeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
+import { useWorkshop2PublishedArticleCount } from '@/hooks/use-workshop2-published-article-count';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
 function BrandShowroomWorkspaceBody({ collectionId }: { collectionId: string }) {
   const ctx = { collectionId, role: 'brand' as const };
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-showroom-buy');
+  const { count: publishedCount } = useWorkshop2PublishedArticleCount(collectionId);
 
   return (
     <PillarCapabilityWorkspaceChrome
@@ -28,12 +30,15 @@ function BrandShowroomWorkspaceBody({ collectionId }: { collectionId: string }) 
       ctx={ctx}
       crossLinksTitle="Release → shop buy → matrix"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandShowroomBuyGoldenPathStrip
           collectionId={collectionId}
           activeStep={brandShowroomBuyGoldenPathStepFromFeature(activeFeatureId)}
         />
-        <BrandScShowroomRetailPeerStrip collectionId={collectionId} />
+        <BrandScShowroomRetailPeerStrip
+          collectionId={collectionId}
+          omitMatrixPrefillCta={publishedCount > 0}
+        />
       </div>
       {activeFeatureId === 'preview' ? (
         <PlatformCorePublishedShowroom variant="brand" collectionId={collectionId} />
@@ -67,7 +72,7 @@ export function BrandShowroomCorePage() {
   return (
     <CabinetPageContent
       maxWidth="5xl"
-      className="space-y-6 px-4 py-6 pb-24 duration-700 animate-in fade-in sm:px-6"
+      className="pb-safe space-y-6 px-4 py-6 duration-700 animate-in fade-in sm:px-6"
     >
       <Suspense fallback={null}>
         <BrandShowroomCoreInner />

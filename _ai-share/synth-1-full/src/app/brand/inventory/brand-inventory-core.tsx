@@ -11,10 +11,12 @@ import {
   BrandInventoryPhysicalCountPanel,
 } from '@/components/brand/inventory/BrandInventoryPanels';
 import { PlatformCoreInventoryLedgerStrip } from '@/components/platform/PlatformCoreInventoryLedgerStrip';
+import { BrandOpInventoryLedgerStrip } from '@/components/platform/BrandOpInventoryLedgerStrip';
 import {
   BrandInventoryOpsGoldenPathStrip,
   brandInventoryOpsGoldenPathStepFromFeature,
 } from '@/components/brand/inventory/BrandInventoryOpsGoldenPathStrip';
+import { BrandOpInventoryCoPeerStrip } from '@/components/platform/BrandOpInventoryCoPeerStrip';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
@@ -45,14 +47,14 @@ function BrandInventoryWorkspaceBody() {
           orderId={orderId}
           activeStep={brandInventoryOpsGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandOpInventoryCoPeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'overview' ? (
         <div className="space-y-4">
-          <PlatformCoreInventoryLedgerStrip
+          <BrandOpInventoryLedgerStrip
             collectionId={collectionId}
+            orderId={orderId}
             reconcileHref={session.shopInventoryReconcileHref}
-            variant="brand"
-            testId="brand-inventory-ledger-strip"
           />
           <div className="border-border-subtle flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4">
             <div className="space-y-1">

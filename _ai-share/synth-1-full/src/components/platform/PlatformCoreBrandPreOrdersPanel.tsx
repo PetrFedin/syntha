@@ -13,12 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ROUTES, brandB2bOrderHref } from '@/lib/routes';
+import { ROUTES, brandB2bOrderHref } from '@/lib/platform-core-routes';
 import { B2bChainPhaseBadge } from '@/components/b2b/B2bChainPhaseBadge';
 import { useBrandWorkshop2B2bOrdersList } from '@/hooks/use-brand-workshop2-b2b-orders-list';
 import { useWorkshop2B2bChainSummaries } from '@/hooks/use-workshop2-b2b-chain-summaries';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 import { useB2bRegistryIntegrationOverlay } from '@/hooks/use-b2b-registry-integration-overlay';
 import { isIntegrationImportedWholesaleOrderId } from '@/lib/integrations/spine/integration-ui-utils';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -41,7 +42,7 @@ export function PlatformCoreBrandPreOrdersPanel() {
     ...new Set([...prebookRows.map((row) => row.order), ...importedPrebook.map((r) => r.order)]),
   ];
   const { summaries: chainSummaries } = useWorkshop2B2bChainSummaries(chainOrderIds, true);
-  const matrixHref = `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`;
+  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
   const hasRows = prebookRows.length > 0 || importedPrebook.length > 0;
 
   return (

@@ -33,6 +33,7 @@ import { RangePlannerQuickCreateButton } from '@/app/brand/range-planner/range-p
 import { RangePlannerTierPlanEdit } from '@/app/brand/range-planner/range-planner-tier-plan-edit';
 import { RangePlannerTierAssignPanel } from '@/app/brand/range-planner/range-planner-tier-assign';
 import { RangePlannerTierArticleBoard } from '@/app/brand/range-planner/range-planner-tier-article-board';
+import { RangePlannerConflictResolverStrip } from '@/app/brand/range-planner/range-planner-conflict-resolver';
 import { isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
 import type { RangePlannerTier } from '@/lib/production/workshop2-range-planner-bridge';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
@@ -42,6 +43,18 @@ import {
   rangePlannerPgDisclaimerRu,
   type RangePlannerPgSnapshot,
 } from '@/lib/production/workshop2-range-planner-pg';
+import {
+  detectRangePlannerOverlayConflict,
+  fetchRangePlannerOverlayFromServer,
+  getRangePlannerOverlayForCollection,
+  syncRangePlannerOverlayFromDevelopmentStatus,
+  syncRangePlannerOverlayFromPgSnapshot,
+  type RangePlannerOverlayConflict,
+} from '@/lib/production/workshop2-range-planner-overlay';
+import {
+  BRAND_RANGE_PLANNER_SHOP_MATRIX_TIER_BADGE_LINK_TESTID,
+  brandRangePlannerShopMatrixTierBadgeHref,
+} from '@/lib/production/wave-xg-brand-range-planner';
 
 type DevelopmentStatusPayload = {
   articleCount?: number;
@@ -56,9 +69,20 @@ export function RangePlannerCorePage() {
     fallback: PLATFORM_CORE_DEMO.collectionId,
   });
   const [pgSnapshot, setPgSnapshot] = useState<RangePlannerPgSnapshot | null>(null);
+  const [overlayConflict, setOverlayConflict] = useState<RangePlannerOverlayConflict | null>(null);
+  const [overlaySyncBusy, setOverlaySyncBusy] = useState(false);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [reloadTick, setReloadTick] = useState(0);
   const bumpReload = useCallback(() => setReloadTick((n) => n + 1), []);
+  const resyncOverlay = useCallback(async () => {
+    setOverlaySyncBusy(true);
+    try {
+      await syncRangePlannerOverlayFromDevelopmentStatus(collectionId);
+      bumpReload();
+    } finally {
+      setOverlaySyncBusy(false);
+    }
+  }, [collectionId, bumpReload]);
   const { tick: devPollTick } = usePlatformCoreDevelopmentStatusPoll(true, [collectionId]);
   const reloadNonce = reloadTick + devPollTick;
 
@@ -74,7 +98,18 @@ export function RangePlannerCorePage() {
         const json = (await res.json()) as { ok?: boolean; status?: DevelopmentStatusPayload };
         if (cancelled) return;
         if (json.ok && json.status) {
-          setPgSnapshot(parseDevelopmentStatusRangePlanner(json.status, collectionId, res.ok));
+          const next = parseDevelopmentStatusRangePlanner(json.status, collectionId, res.ok);
+          if (next.tiersFromPg) {
+            syncRangePlannerOverlayFromPgSnapshot(next);
+          }
+          void fetchRangePlannerOverlayFromServer(collectionId).then((overlay) => {
+            const conflict = detectRangePlannerOverlayConflict(
+              next,
+              overlay ?? getRangePlannerOverlayForCollection(collectionId)
+            );
+            setOverlayConflict(conflict.hasConflict ? conflict : null);
+          });
+          setPgSnapshot(next);
           setLoadState('ready');
         } else {
           setPgSnapshot(parseDevelopmentStatusRangePlanner(null, collectionId, false));
@@ -118,6 +153,7 @@ export function RangePlannerCorePage() {
   });
   const dossierArticleHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(PLATFORM_CORE_DEMO.demoArticleId)}`;
   const shopMonetization = buildShopShowroomBuySession({ collectionId });
+  const shopMatrixTierBadgeHref = brandRangePlannerShopMatrixTierBadgeHref(collectionId);
   const emptyChain = isPlatformCoreEmptyChainCollection(collectionId);
 
   if (emptyChain) {
@@ -170,7 +206,7 @@ export function RangePlannerCorePage() {
         <h1 className="text-text-primary text-lg font-semibold tracking-tight">
           Планировщик ассортимента
         </h1>
-        <div className="flex flex-col gap-2 max-md:items-stretch md:flex-row md:flex-wrap md:items-center">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           {avgMarginPct != null && loadState === 'ready' ? (
             <Badge
               variant="outline"
@@ -213,9 +249,9 @@ export function RangePlannerCorePage() {
             <Link
               href={w2HubHref}
               data-testid="brand-dev-range-w2-hub-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
-              W2 hub
+              Хаб W2
             </Link>
             <span className={hubGadget.goldenSep} aria-hidden>
               ·
@@ -223,7 +259,7 @@ export function RangePlannerCorePage() {
             <Link
               href={dossierArticleHref}
               data-testid="brand-dev-range-dossier-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
               Досье артикула
             </Link>
@@ -233,7 +269,7 @@ export function RangePlannerCorePage() {
             <Link
               href={factoryDossierHref}
               data-testid="brand-dev-range-factory-dossier-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
               Досье цеха →
             </Link>
@@ -244,7 +280,7 @@ export function RangePlannerCorePage() {
               href={showroomHref}
               data-testid="brand-dev-range-showroom-link"
               data-audit-legacy="range-planner-showroom-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
               Витрина →
             </Link>
@@ -255,7 +291,7 @@ export function RangePlannerCorePage() {
               href={linesheetsHref}
               data-testid="brand-dev-range-linesheets-link"
               data-audit-legacy="range-planner-linesheets-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
               Лайншиты →
             </Link>
@@ -265,7 +301,7 @@ export function RangePlannerCorePage() {
             <Link
               href={shopMonetization.matrixHref}
               data-testid="brand-dev-range-shop-matrix-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
               Shop matrix →
             </Link>
@@ -273,16 +309,52 @@ export function RangePlannerCorePage() {
               ·
             </span>
             <Link
+              href={shopMatrixTierBadgeHref}
+              data-testid={BRAND_RANGE_PLANNER_SHOP_MATRIX_TIER_BADGE_LINK_TESTID}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
+            >
+              Матрица · tier badge →
+            </Link>
+            <span className={hubGadget.goldenSep} aria-hidden>
+              ·
+            </span>
+            <Link
               href={shopMonetization.checkoutHref}
               data-testid="brand-dev-range-shop-checkout-link"
-              className={hubGadget.goldenLink}
+              className={cn(hubGadget.goldenLink, 'shrink-0')}
             >
-              Checkout →
+              Оформление →
             </Link>
           </div>
         ) : null}
 
-        {snapshot.dataSource === 'mock' ? (
+        {loadState === 'error' ? (
+          <Card
+            className="border-amber-200/80 bg-amber-50/40"
+            data-testid="range-planner-core-error"
+          >
+            <CardHeader>
+              <CardTitle className="text-sm">Не удалось загрузить план из PG</CardTitle>
+              <CardDescription>
+                Повторите запрос или откройте цех разработки — демо-уровни не подставляются без
+                ответа API.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                data-testid="range-planner-core-retry"
+                onClick={bumpReload}
+              >
+                Повторить
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {loadState !== 'error' && snapshot.dataSource === 'mock' ? (
           <div
             className="rounded-lg border border-sky-200 bg-sky-50/90 px-3 py-2 text-[12px] text-sky-950"
             role="status"
@@ -292,7 +364,15 @@ export function RangePlannerCorePage() {
           </div>
         ) : null}
 
-        {snapshot.dataSource === 'mock' ? (
+        {overlayConflict?.hasConflict ? (
+          <RangePlannerConflictResolverStrip
+            conflict={overlayConflict}
+            onSync={resyncOverlay}
+            syncing={overlaySyncBusy}
+          />
+        ) : null}
+
+        {loadState !== 'error' && snapshot.dataSource === 'mock' ? (
           <Card className="border-border-default rounded-xl border bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-sm">План ассортимента недоступен</CardTitle>
@@ -327,20 +407,13 @@ export function RangePlannerCorePage() {
               </CardHeader>
               <CardContent>
                 <div
-                  className={cn(
-                    'grid gap-4 md:grid-cols-3',
-                    'max-md:flex max-md:gap-3 max-md:overflow-x-auto max-md:snap-x max-md:overscroll-x-contain max-md:pb-1',
-                    hubCabinet.workspaceTableScroll
-                  )}
+                  className={cn(hubCabinet.workspaceCardGrid, 'lg:grid-cols-3')}
                   data-testid="brand-dev-range-tier-plan-grid"
                 >
                   {snapshot.tiers.map((row) => (
                     <Card
                       key={row.id}
-                      className={cn(
-                        'border-border-default bg-bg-surface2/80 overflow-hidden rounded-xl border',
-                        'max-md:min-w-[min(78vw,18rem)] max-md:snap-start max-md:shrink-0'
-                      )}
+                      className="border-border-default bg-bg-surface2/80 overflow-hidden rounded-xl border"
                     >
                       <CardHeader className="pb-2">
                         <Badge

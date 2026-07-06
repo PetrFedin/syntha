@@ -1,7 +1,7 @@
 'use client';
 
 import { cabinetSurface } from '@/lib/ui/cabinet-surface';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,11 @@ import {
   exportPOToCsvRows,
   type BrandProductionState,
 } from '@/lib/brand-production';
+import {
+  loadBrandProductionOpsWithMode,
+  persistBrandProductionOpsState,
+} from '@/lib/brand-production/brand-production-ops-client';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   ARTICLE_LIFECYCLE_ORDER,
   ARTICLE_LIFECYCLE_LABELS,
@@ -47,6 +52,7 @@ import { BrandProductionCutTicketPanel } from '@/components/brand/production/Bra
 import { BrandProductionOperationsPanel } from '@/components/brand/production/BrandProductionOperationsPanel';
 import { BrandProductionHandoffPanel } from '@/components/brand/production/BrandProductionHandoffPanel';
 import { BrandProductionQcGatePanel } from '@/components/brand/production/BrandProductionQcGatePanel';
+import { BrandOpOperationsHandoffPeerStrip } from '@/components/platform/BrandOpOperationsHandoffPeerStrip';
 import {
   BrandProductionOpsGoldenPathStrip,
   brandProductionOpsGoldenPathStepFromFeature,
@@ -58,6 +64,7 @@ import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
 function ProductionOperationsPageInner() {
   const [state, setState] = useState<BrandProductionState | null>(null);
+  const [opsStorageMode, setOpsStorageMode] = useState<string | null>(null);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>('');
   const searchParams = useSearchParams();
   const orderId =
@@ -69,12 +76,30 @@ function ProductionOperationsPageInner() {
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-production-ops');
 
   const refresh = useCallback(() => {
+    if (isPlatformCoreMode()) {
+      void loadBrandProductionOpsWithMode().then(({ state: next, storageMode }) => {
+        setState(next);
+        setOpsStorageMode(storageMode);
+      });
+      return;
+    }
     setState(loadBrandProductionState());
+    setOpsStorageMode('local');
   }, []);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  const persistSkipRef = useRef(true);
+  useEffect(() => {
+    if (!state || !isPlatformCoreMode() || opsStorageMode !== 'postgres') return;
+    if (persistSkipRef.current) {
+      persistSkipRef.current = false;
+      return;
+    }
+    void persistBrandProductionOpsState(state);
+  }, [state, opsStorageMode]);
 
   useEffect(() => {
     if (state?.collections?.length && !selectedCollectionId) {
@@ -120,10 +145,24 @@ function ProductionOperationsPageInner() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <p className="max-w-2xl text-sm text-slate-500">
-                Единая модель без API: localStorage → REST. Коллекция → артикулы → BOM → PO → QC →
-                B2B.
+                {isPlatformCoreMode()
+                  ? 'Platform Core: состояние производства только в PostgreSQL — без localStorage.'
+                  : 'Единая модель: localStorage → REST. Коллекция → артикулы → BOM → PO → QC → B2B.'}
               </p>
               <div className="flex flex-wrap items-center gap-2">
+                {opsStorageMode === 'postgres' ? (
+                  <Badge variant="outline" className="text-[9px]" data-testid="brand-production-ops-storage-pg">
+                    PG
+                  </Badge>
+                ) : opsStorageMode === 'unavailable' ? (
+                  <Badge
+                    variant="outline"
+                    className="border-amber-500/50 text-[9px] text-amber-800"
+                    data-testid="brand-production-ops-storage-unavailable"
+                  >
+                    PG недоступен
+                  </Badge>
+                ) : null}
                 <span className="text-[10px] uppercase text-slate-500">Роль (мок):</span>
                 <select
                   value={state.currentRole}
@@ -143,7 +182,11 @@ function ProductionOperationsPageInner() {
                   variant="outline"
                   size="sm"
                   className="h-9 gap-1 text-xs"
-                  onClick={() => setState(resetBrandProductionToSeed())}
+                  onClick={() => {
+                    const next = resetBrandProductionToSeed();
+                    setState(next);
+                    if (isPlatformCoreMode()) void persistBrandProductionOpsState(next);
+                  }}
                 >
                   <RefreshCw className="h-3.5 w-3.5" /> Сброс к seed
                 </Button>
@@ -168,6 +211,13 @@ function ProductionOperationsPageInner() {
         </div>
         {activeFeatureId === 'operations' ? (
           <>
+      {orderId ? (
+        <BrandOpOperationsHandoffPeerStrip
+          orderId={orderId}
+          collectionId={collectionId || selectedCollectionId}
+          activeFeature="operations"
+        />
+      ) : null}
       <BrandProductionOperationsPanel
         state={state}
         selectedCollectionId={collectionId || selectedCollectionId}

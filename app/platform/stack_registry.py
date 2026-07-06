@@ -69,7 +69,7 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
             "_ai-share/synth-1-full/src/lib/server/workshop2-pg-pool.ts",
             "_ai-share/synth-1-full/db/migrations/",
         ],
-        "agent_ids": [],
+        "agent_ids": ["tech_debt", "order_anomaly"],
         "env_keys": ["DATABASE_URL", "WORKSHOP2_DATABASE_URL"],
     },
     StackCapabilityId.SQLALCHEMY: {
@@ -125,7 +125,7 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
             "_ai-share/synth-1-full/src/lib/auth/",
             "_ai-share/synth-1-full/src/lib/syntha-api-mode.ts",
         ],
-        "agent_ids": [],
+        "agent_ids": ["architecture_guard", "risk"],
         "env_keys": ["SECRET_KEY", "ACCESS_TOKEN_EXPIRE_MINUTES"],
     },
     StackCapabilityId.USERS: {
@@ -145,7 +145,7 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
         "frontend_modules": [
             "_ai-share/synth-1-full/src/lib/auth/dev-auth-bootstrap.ts",
         ],
-        "agent_ids": [],
+        "agent_ids": ["order_anomaly", "architecture_guard"],
         "env_keys": ["AUTH_USE_DB"],
     },
     StackCapabilityId.PRODUCT_CATALOG: {
@@ -176,6 +176,7 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
             "market_intelligence",
             "content",
             "lookbook",
+            "quota",
         ],
         "env_keys": ["SHOPIFY_SHOP_URL", "SHOPIFY_ACCESS_TOKEN"],
     },
@@ -211,7 +212,7 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
             "_ai-share/synth-1-full/src/lib/firebase/config.ts",
             "_ai-share/synth-1-full/src/lib/firebase/firebase-env.ts",
         ],
-        "agent_ids": [],
+        "agent_ids": ["architecture_guard", "order_anomaly"],
         "env_keys": [
             "NEXT_PUBLIC_FIREBASE_API_KEY",
             "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
@@ -266,10 +267,13 @@ STACK_CAPABILITIES: dict[StackCapabilityId, StackCapabilityMeta] = {
             "market_intelligence",
             "product_architect",
             "ai_module_curator",
+            "feature_suggestion",
             "lookbook",
             "stylist",
             "risk",
             "roadmap",
+            "ui_improvement",
+            "tech_debt",
         ],
         "env_keys": [
             "LLM_PROVIDER",

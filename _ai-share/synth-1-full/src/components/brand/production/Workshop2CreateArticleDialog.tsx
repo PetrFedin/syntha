@@ -4,6 +4,7 @@ import { persistWorkshop2ArticleSkuValidationMirrorToDossier } from '@/lib/produ
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { AcronymWithTooltip } from '@/components/ui/acronym-with-tooltip';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Collapsible,
@@ -54,35 +55,68 @@ import {
   workshop2TzExtraRowFromPreset,
   type Workshop2TzExtraRolePresetId,
 } from '@/lib/production/workshop2-tz-signatory-options';
+import {
+  clearCreateArticleWizardDraft,
+  loadCreateArticleWizardDraftWithMode,
+  persistCreateArticleWizardDraft,
+  type CreateArticleWizardDraftPersistMode,
+} from '@/lib/production/create-article-wizard-draft-client';
+import type { CreateArticleWizardDraftV1 } from '@/lib/production/create-article-wizard-draft.types';
+import {
+  BRAND_SKU_WIZARD_DRAFT_FAIL_CLOSED_BANNER_RU,
+  BRAND_SKU_WIZARD_DRAFT_FAIL_CLOSED_BANNER_TESTID,
+  BRAND_SKU_WIZARD_DRAFT_PG_BADGE_RU,
+  BRAND_SKU_WIZARD_DRAFT_PG_BADGE_TESTID,
+  BRAND_SKU_WIZARD_DRAFT_PG_UNAVAILABLE_RU,
+  BRAND_SKU_WIZARD_DRAFT_PG_UNAVAILABLE_TESTID,
+} from '@/lib/platform/wave-yd-brand-sku-wizard-draft-pg';
 import { cn } from '@/lib/utils';
 import { ChevronDown, X } from 'lucide-react';
 
 const ATTACH_MAX_BYTES = 400_000;
 const ATTACH_MAX_FILES = 5;
 
-const DRAFT_STORAGE_VER = 1;
-
-function workshop2ArticleDraftKey(collectionId: string): string {
-  return `synth.workshop2.articleDraft.v${DRAFT_STORAGE_VER}:${collectionId}`;
+function applyCreateArticleWizardDraft(
+  p: CreateArticleWizardDraftV1,
+  setters: {
+    setMode: (v: 'base' | 'new') => void;
+    setBaseLineId: (v: string) => void;
+    setBaseSearch: (v: string) => void;
+    setSku: (v: string) => void;
+    setName: (v: string) => void;
+    setComment: (v: string) => void;
+    setAudienceId: (v: string) => void;
+    setL1Name: (v: string) => void;
+    setL2Name: (v: string) => void;
+    setL3Name: (v: string) => void;
+    setTzDesigner: (v: string) => void;
+    setTzTechnologist: (v: string) => void;
+    setTzManager: (v: string) => void;
+    setTzExtraRows: (v: Workshop2TzSignatoryExtraRow[]) => void;
+  }
+): void {
+  if (p.mode === 'base' || p.mode === 'new') setters.setMode(p.mode);
+  if (typeof p.baseLineId === 'string') setters.setBaseLineId(p.baseLineId);
+  if (typeof p.baseSearch === 'string') setters.setBaseSearch(p.baseSearch);
+  if (typeof p.sku === 'string') setters.setSku(p.sku);
+  if (typeof p.name === 'string') setters.setName(p.name);
+  if (typeof p.comment === 'string') setters.setComment(p.comment);
+  if (typeof p.audienceId === 'string') setters.setAudienceId(p.audienceId);
+  if (typeof p.l1Name === 'string') setters.setL1Name(p.l1Name);
+  if (typeof p.l2Name === 'string') setters.setL2Name(p.l2Name);
+  if (typeof p.l3Name === 'string') setters.setL3Name(p.l3Name);
+  if (typeof p.tzDesigner === 'string') setters.setTzDesigner(p.tzDesigner);
+  if (typeof p.tzTechnologist === 'string') setters.setTzTechnologist(p.tzTechnologist);
+  if (typeof p.tzManager === 'string') setters.setTzManager(p.tzManager);
+  if (Array.isArray(p.tzExtraRows)) {
+    const cleaned = p.tzExtraRows.filter((r): r is Workshop2TzSignatoryExtraRow =>
+      Boolean(r && typeof r.rowId === 'string' && typeof r.roleTitle === 'string')
+    );
+    setters.setTzExtraRows(cleaned);
+  } else {
+    setters.setTzExtraRows([]);
+  }
 }
-
-type ArticleDraftV1 = {
-  v: 1;
-  mode: 'base' | 'new';
-  baseLineId: string;
-  baseSearch: string;
-  sku: string;
-  name: string;
-  comment: string;
-  audienceId: string;
-  l1Name: string;
-  l2Name: string;
-  l3Name: string;
-  tzDesigner?: string;
-  tzTechnologist?: string;
-  tzManager?: string;
-  tzExtraRows?: Workshop2TzSignatoryExtraRow[];
-};
 
 export type Workshop2EditArticlePayload = {
   articleId: string;
@@ -231,6 +265,8 @@ export function Workshop2CreateArticleDialog({
   const [tzTechnologist, setTzTechnologist] = useState('');
   const [tzManager, setTzManager] = useState('');
   const [tzExtraRows, setTzExtraRows] = useState<Workshop2TzSignatoryExtraRow[]>([]);
+  const [persistMode, setPersistMode] = useState<CreateArticleWizardDraftPersistMode>('local');
+  const [pgUnavailable, setPgUnavailable] = useState(false);
 
   const audiences = useMemo(() => getHandbookAudiencesWorkshop2(), []);
   const signatoryOptions = useMemo(() => getWorkshopTzSignatoryPickerOptions(), []);
@@ -349,37 +385,40 @@ export function Workshop2CreateArticleDialog({
       .slice(0, 50);
   }, [pickerLines, baseSearch]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!open || !collectionId || isEdit || rangePrefill) return;
-    try {
-      const raw = localStorage.getItem(workshop2ArticleDraftKey(collectionId));
-      if (!raw) return;
-      const p = JSON.parse(raw) as ArticleDraftV1;
-      if (!p || p.v !== 1) return;
-      if (p.mode === 'base' || p.mode === 'new') setMode(p.mode);
-      if (typeof p.baseLineId === 'string') setBaseLineId(p.baseLineId);
-      if (typeof p.baseSearch === 'string') setBaseSearch(p.baseSearch);
-      if (typeof p.sku === 'string') setSku(p.sku);
-      if (typeof p.name === 'string') setName(p.name);
-      if (typeof p.comment === 'string') setComment(p.comment);
-      if (typeof p.audienceId === 'string') setAudienceId(p.audienceId);
-      if (typeof p.l1Name === 'string') setL1Name(p.l1Name);
-      if (typeof p.l2Name === 'string') setL2Name(p.l2Name);
-      if (typeof p.l3Name === 'string') setL3Name(p.l3Name);
-      if (typeof p.tzDesigner === 'string') setTzDesigner(p.tzDesigner);
-      if (typeof p.tzTechnologist === 'string') setTzTechnologist(p.tzTechnologist);
-      if (typeof p.tzManager === 'string') setTzManager(p.tzManager);
-      if (Array.isArray(p.tzExtraRows)) {
-        const cleaned = p.tzExtraRows.filter((r): r is Workshop2TzSignatoryExtraRow =>
-          Boolean(r && typeof r.rowId === 'string' && typeof r.roleTitle === 'string')
-        );
-        setTzExtraRows(cleaned);
-      } else {
-        setTzExtraRows([]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const loaded = await loadCreateArticleWizardDraftWithMode(collectionId);
+        if (cancelled) return;
+        setPersistMode(loaded.persistMode);
+        setPgUnavailable(loaded.pgUnavailable);
+        if (loaded.draft) {
+          applyCreateArticleWizardDraft(loaded.draft, {
+            setMode,
+            setBaseLineId,
+            setBaseSearch,
+            setSku,
+            setName,
+            setComment,
+            setAudienceId,
+            setL1Name,
+            setL2Name,
+            setL3Name,
+            setTzDesigner,
+            setTzTechnologist,
+            setTzManager,
+            setTzExtraRows,
+          });
+        }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [open, collectionId, isEdit, rangePrefill]);
 
   useLayoutEffect(() => {
@@ -410,28 +449,26 @@ export function Workshop2CreateArticleDialog({
   useEffect(() => {
     if (!open || !collectionId || isEdit || rangePrefill) return;
     const t = window.setTimeout(() => {
-      try {
-        const payload: ArticleDraftV1 = {
-          v: 1,
-          mode,
-          baseLineId,
-          baseSearch,
-          sku,
-          name,
-          comment,
-          audienceId,
-          l1Name,
-          l2Name,
-          l3Name,
-          tzDesigner,
-          tzTechnologist,
-          tzManager,
-          tzExtraRows,
-        };
-        localStorage.setItem(workshop2ArticleDraftKey(collectionId), JSON.stringify(payload));
-      } catch {
-        /* quota */
-      }
+      const payload: CreateArticleWizardDraftV1 = {
+        v: 1,
+        mode,
+        baseLineId,
+        baseSearch,
+        sku,
+        name,
+        comment,
+        audienceId,
+        l1Name,
+        l2Name,
+        l3Name,
+        tzDesigner,
+        tzTechnologist,
+        tzManager,
+        tzExtraRows,
+      };
+      void persistCreateArticleWizardDraft(collectionId, payload).then((res) => {
+        setPersistMode(res.persistMode);
+      });
     }, 450);
     return () => clearTimeout(t);
   }, [
@@ -651,7 +688,7 @@ export function Workshop2CreateArticleDialog({
       );
     }
     try {
-      if (collectionId) localStorage.removeItem(workshop2ArticleDraftKey(collectionId));
+      if (collectionId) void clearCreateArticleWizardDraft(collectionId);
     } catch {
       /* ignore */
     }
@@ -711,15 +748,46 @@ export function Workshop2CreateArticleDialog({
               ) : (
                 <p>
                   Заведите новый SKU или выберите позицию из базы. Категория L1–L3 задаёт каркас
-                  досье и подсказки ТЗ. Данные и вложения — локально в браузере.
+                  досье и подсказки ТЗ.
+                  {persistMode === 'postgres'
+                    ? ' Черновик сохраняется в PostgreSQL (Platform Core).'
+                    : ' Данные и вложения — локально в браузере.'}
                 </p>
               )}
             </WorkshopInlineHintIcon>
+            {!isEdit && persistMode === 'postgres' && !pgUnavailable ? (
+              <Badge
+                variant="outline"
+                className="shrink-0 text-[9px]"
+                data-testid={BRAND_SKU_WIZARD_DRAFT_PG_BADGE_TESTID}
+              >
+                {BRAND_SKU_WIZARD_DRAFT_PG_BADGE_RU}
+              </Badge>
+            ) : null}
+            {!isEdit && pgUnavailable ? (
+              <Badge
+                variant="destructive"
+                className="shrink-0 text-[9px]"
+                data-testid={BRAND_SKU_WIZARD_DRAFT_PG_UNAVAILABLE_TESTID}
+              >
+                {BRAND_SKU_WIZARD_DRAFT_PG_UNAVAILABLE_RU}
+              </Badge>
+            ) : null}
           </div>
           <DialogDescription id="w2-art-desc" className="sr-only">
             {isEdit ? 'Редактирование артикула' : 'Создание артикула в подборке'}
           </DialogDescription>
         </DialogHeader>
+
+        {!isEdit && pgUnavailable ? (
+          <p
+            className="text-destructive text-xs"
+            role="status"
+            data-testid={BRAND_SKU_WIZARD_DRAFT_FAIL_CLOSED_BANNER_TESTID}
+          >
+            {BRAND_SKU_WIZARD_DRAFT_FAIL_CLOSED_BANNER_RU}
+          </p>
+        ) : null}
 
         {!isEdit ? (
           <div className="flex gap-2 py-1">

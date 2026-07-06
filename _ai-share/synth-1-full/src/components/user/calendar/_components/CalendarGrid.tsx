@@ -99,7 +99,7 @@ export function CalendarGrid({
                   {ev.importance === 'critical' && (
                     <AlertCircle className="h-2 w-2 shrink-0 animate-pulse text-white" />
                   )}
-                  {ev.isSpam && <span className="font-black text-white/80">SPAM:</span>}
+                  {ev.isSpam && <span className="font-black text-white/80">СПАМ:</span>}
                   <span className="truncate leading-tight">{ev.title}</span>
                 </div>
                 {!slimCore && ev.description && (
@@ -196,7 +196,7 @@ export function CalendarGrid({
                 <h4 className="truncate text-sm font-bold">{ev.title}</h4>
                 {ev.isMystery && (
                   <Badge variant="secondary" className="h-4 px-1 text-[9px]">
-                    Mystery
+                    Скрытое
                   </Badge>
                 )}
               </div>

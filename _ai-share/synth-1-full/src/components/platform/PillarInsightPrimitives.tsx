@@ -74,7 +74,7 @@ export function PillarInsightSteps({ steps, testId, preferListFromMd = true }: S
           >
             <span
               className={cn(
-                'mt-0.5 shrink-0 font-mono text-[9px] tabular-nums',
+                'mt-0.5 shrink-0 font-mono text-[11px] tabular-nums',
                 step.done ? 'text-emerald-600' : 'text-text-muted'
               )}
             >

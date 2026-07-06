@@ -9,6 +9,7 @@ import {
   ShopReplenishmentGoldenPathStrip,
   shopReplenishmentGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopReplenishmentGoldenPathStrip';
+import { ShopCoGoldenPathStrip } from '@/components/shop/b2b/ShopCoGoldenPathStrip';
 import { ShopReplenishmentCoSpinePeerStrip } from '@/components/shop/b2b/ShopReplenishmentCoSpinePeerStrip';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
@@ -33,6 +34,11 @@ function ReplenishmentWorkspaceBody() {
       beforeTabs={<B2bOrderUrlContextBanner variant="shop" />}
     >
       <div className="mb-4 space-y-3">
+        <ShopCoGoldenPathStrip
+          collectionId={collectionId}
+          orderId={orderId}
+          activeStep="replenishment"
+        />
         <ShopReplenishmentGoldenPathStrip
           collectionId={collectionId}
           orderId={orderId}

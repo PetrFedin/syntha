@@ -25,6 +25,8 @@ export type PlatformB2bHubSession = {
   workingOrderHref: string;
   replenishmentAtpHref: string;
   brandPublishHref: string;
+  brandCrmBuyerAssignHref: string;
+  shopRegistryGreenfieldHref: string;
 };
 
 export function platformB2bHubFeatureHref(
@@ -66,5 +68,7 @@ export function buildPlatformB2bHubSession(input?: {
     workingOrderHref: marketroom.workingOrderHref,
     replenishmentAtpHref: marketroom.replenishmentAtpHref,
     brandPublishHref: marketroom.brandPublishHref,
+    brandCrmBuyerAssignHref: partners.brandCrmBuyerAssignHref,
+    shopRegistryGreenfieldHref: partners.shopRegistryGreenfieldHref,
   };
 }

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { isWorkshop2PgOnlyMode } from '@/lib/production/workshop2-hub-pg-only-policy';
 import {
   buildShopB2bPartnershipsFallback,
   type ShopB2bPartnership,
@@ -28,6 +30,7 @@ export function useShopB2bPartnerships(input: {
   const refresh = useCallback(() => setReloadTick((n) => n + 1), []);
   const buyerId = input.buyerId ?? SHOP_CORE_DEMO_BUYER_ID;
   const reloadNonce = (input.reloadNonce ?? 0) + reloadTick;
+  const failClosed = isPlatformCoreMode() || isWorkshop2PgOnlyMode();
 
   useEffect(() => {
     if (!input.enabled) {
@@ -53,9 +56,15 @@ export function useShopB2bPartnerships(input: {
           source?: 'pg' | 'fallback';
         };
         if (cancelled) return;
-        if (json.ok && Array.isArray(json.partnerships) && json.partnerships.length) {
+        if (json.ok && Array.isArray(json.partnerships)) {
           setPartnerships(json.partnerships);
-          setSource(json.source ?? 'pg');
+          setSource(json.partnerships.length ? (json.source ?? 'pg') : failClosed ? 'pg' : null);
+          setLoadState('ready');
+          return;
+        }
+        if (failClosed) {
+          setPartnerships([]);
+          setSource('pg');
           setLoadState('ready');
           return;
         }
@@ -65,9 +74,15 @@ export function useShopB2bPartnerships(input: {
         setLoadState('ready');
       } catch {
         if (!cancelled) {
-          setPartnerships(buildShopB2bPartnershipsFallback(input.collectionId));
-          setSource('fallback');
-          setLoadState('error');
+          if (failClosed) {
+            setPartnerships([]);
+            setSource('pg');
+            setLoadState('error');
+          } else {
+            setPartnerships(buildShopB2bPartnershipsFallback(input.collectionId));
+            setSource('fallback');
+            setLoadState('error');
+          }
         }
       }
     })();
@@ -75,7 +90,7 @@ export function useShopB2bPartnerships(input: {
     return () => {
       cancelled = true;
     };
-  }, [input.enabled, input.collectionId, buyerId, reloadNonce]);
+  }, [failClosed, input.enabled, input.collectionId, buyerId, reloadNonce]);
 
   return useMemo(
     () => ({ partnerships, source, loadState, refresh }),

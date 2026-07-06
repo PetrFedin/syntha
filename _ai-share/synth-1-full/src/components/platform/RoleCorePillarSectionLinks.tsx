@@ -8,6 +8,7 @@ import {
   resolvePlatformCoreCollectionId,
 } from '@/lib/platform-core-hub-matrix';
 import { buildSectionSubItems } from '@/lib/platform-core-readiness-sections';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { prefetchPlatformCoreW2FromHref } from '@/lib/platform-core-w2-prefetch';
 
 type Props = {
@@ -16,6 +17,8 @@ type Props = {
   collectionId: string;
   /** Скрыть пункт, ведущий на текущий кабинет этого же столпа. */
   hideSelfCabinet?: boolean;
+  /** Внутри aside кабинета — без второй рамки. */
+  flat?: boolean;
 };
 
 /** Разделы столпа — только active-участие; тот же канон, что в матрице «Оценка готовности». */
@@ -24,6 +27,7 @@ export function RoleCorePillarSectionLinks({
   pillarId,
   collectionId,
   hideSelfCabinet = true,
+  flat = false,
 }: Props) {
   const row = getPlatformCoreHubRow(roleId);
   const cell = row?.pillars[pillarId];
@@ -53,9 +57,13 @@ export function RoleCorePillarSectionLinks({
     <nav
       data-testid="role-pillar-section-links"
       aria-label="Разделы столпа"
-      className="border-border-subtle/80 space-y-1.5 rounded-lg border bg-slate-50/80 px-3 py-2.5"
+      className={
+        flat
+          ? 'space-y-1.5'
+          : 'border-border-subtle/80 space-y-1.5 rounded-lg border bg-slate-50/80 px-3 py-2.5'
+      }
     >
-      <p className="text-text-muted text-[9px] font-black uppercase tracking-widest">
+      <p className="text-text-muted text-[11px] font-semibold uppercase tracking-wide">
         Разделы · {visible.length}
       </p>
       <ol className="space-y-1">
@@ -69,12 +77,13 @@ export function RoleCorePillarSectionLinks({
               onFocus={() => prefetchPlatformCoreW2FromHref(sub.href)}
             >
               <span>
-                <span className="text-text-muted font-mono text-[10px]">{sub.order}.</span>{' '}
                 {sub.label}
               </span>
-              <span className="text-text-muted shrink-0 font-mono text-[10px]">
-                {sub.liveScore.toFixed(1)}
-              </span>
+              {!isPlatformCoreMode() ? (
+                <span className="text-text-muted shrink-0 font-mono text-[11px]">
+                  {sub.liveScore.toFixed(1)}
+                </span>
+              ) : null}
             </Link>
           </li>
         ))}

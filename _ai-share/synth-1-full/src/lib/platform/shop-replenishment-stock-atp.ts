@@ -21,7 +21,7 @@ export type ReplenishmentStockRow = {
   orgId?: string;
 };
 
-export type ReplenishmentStockAtpSource = 'pg' | 'file' | 'memory' | 'demo';
+export type ReplenishmentStockAtpSource = 'pg' | 'pg+wms' | 'wms' | 'file' | 'memory' | 'demo';
 
 const SHOP_ACTOR = { actorId: 'shop1', actorType: 'shop' as const };
 

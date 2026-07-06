@@ -7,8 +7,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Workshop2B2bBuyerTier } from '@/lib/production/workshop2-b2b-campaign-hub';
 import { resolvePlatformCoreCalendarThreadChatId } from '@/lib/platform-core-calendar-thread-link';
 import { getPlatformCoreB2bCalendarEvents } from '@/lib/server/platform-core-calendar-events';
+import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
 
 export async function GET(req: NextRequest) {
+  const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);
+  if (auth instanceof NextResponse) return auth;
+
   const collectionId = req.nextUrl.searchParams.get('collectionId')?.trim();
   if (!collectionId) {
     return NextResponse.json(

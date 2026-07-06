@@ -1,12 +1,21 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { syncLegacyCartToWorkshop2 } from '@/lib/b2b/workshop2-cart-bridge';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import {
+  fetchWorkshop2CartSession,
+  mapWorkshop2CartLinesToCartItems,
+  resolveCheckoutCartSession,
+  upsertWorkshop2CartLine,
+} from '@/lib/b2b/workshop2-cart-bridge';
 import {
   WORKSHOP2_B2B_MATRIX_FALLBACK_IMAGE,
   fetchWorkshop2MatrixProducts,
 } from '@/lib/b2b/workshop2-b2b-matrix-catalog';
-import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import {
+  groupShopMatrixBulkPasteByArticle,
+  parseShopMatrixBulkPaste,
+} from '@/lib/b2b/shop-matrix-bulk-paste';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft,
@@ -27,7 +36,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES, shopB2bCheckoutCollectionHref } from '@/lib/routes';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +58,8 @@ import {
 } from '@/lib/b2b/order-rules';
 import { getCurrentBuyerRights, getProductsVisibleToBuyer } from '@/lib/b2b/buyer-rights';
 import { getRecommendedSize, getSizeUpWarningMessage } from '@/lib/b2b/size-fit';
+import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
+import type { Product } from '@/lib/types';
 
 // Sub-components
 import { OrderAnalyticsTab } from './order/OrderAnalyticsTab';
@@ -91,6 +102,9 @@ export function WholesaleOrderMatrix({
   >('matrix');
   const [activeDrop, setActiveDrop] = useState('Drop 1: July 2026');
   const [isBulkEntryOpen, setIsBulkEntryOpen] = useState(false);
+  const [bulkPasteRaw, setBulkPasteRaw] = useState('');
+  const [bulkPasteBusy, setBulkPasteBusy] = useState(false);
+  const [bulkPasteHint, setBulkPasteHint] = useState<string | null>(null);
   /** Режим заказа: мгновенная отгрузка / повтор / предзаказ. При API — уходит в payload. */
   const [orderMode, setOrderMode] = useState<'buy_now' | 'reorder' | 'pre_order'>(initialOrderMode);
   /** Часть заказа — сэмплы на примерку (Try Before Buy). При API — в payload заказа. */
@@ -98,6 +112,10 @@ export function WholesaleOrderMatrix({
   /** JOOR: заметки к заказу */
   const [orderNotes, setOrderNotes] = useState('');
   const [cartSyncing, setCartSyncing] = useState(false);
+  const [cartSessionId, setCartSessionId] = useState<string | undefined>();
+  const [cartSyncError, setCartSyncError] = useState<string | null>(null);
+  const cartHydratedRef = useRef(false);
+  const persistTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [w2MatrixProducts, setW2MatrixProducts] = useState<any[]>([]);
   const matrixCollectionId = (
     _collectionId ??
@@ -118,11 +136,118 @@ export function WholesaleOrderMatrix({
   }, [matrixCollectionId]);
 
   const coreMode = isPlatformCoreMode();
-  const coreBuyerId = coreMode ? 'shop1' : 'buyer-demo';
+  const { buyerId: coreBuyerIdFromContext } = useShopCoreBuyerId();
+  const coreBuyerId = coreMode ? coreBuyerIdFromContext : 'buyer-demo';
+  const cartTier = orderMode === 'pre_order' ? 'prebook' : 'standard';
 
   useEffect(() => {
     if (coreMode && orderMode !== 'buy_now') setOrderMode('buy_now');
   }, [coreMode, orderMode]);
+
+  useEffect(() => {
+    cartHydratedRef.current = false;
+    setCartSessionId(undefined);
+  }, [matrixCollectionId, coreBuyerId]);
+
+  useEffect(() => {
+    if (!coreMode || w2MatrixProducts.length === 0 || cartHydratedRef.current) return;
+    let cancelled = false;
+    void (async () => {
+      const session = await fetchWorkshop2CartSession();
+      if (cancelled || !session.ok) return;
+      cartHydratedRef.current = true;
+      if (session.sessionId) setCartSessionId(session.sessionId);
+      const hydrated = mapWorkshop2CartLinesToCartItems(
+        session.lines,
+        w2MatrixProducts as Product[],
+        matrixCollectionId
+      );
+      if (hydrated.length > 0) setB2bCart(hydrated);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [coreMode, w2MatrixProducts, matrixCollectionId, setB2bCart]);
+
+  const persistMatrixLineQty = useCallback(
+    (product: Product, size: string, quantity: number, deliveryDate: string) => {
+      if (!coreMode) return;
+      clearTimeout(persistTimerRef.current);
+      persistTimerRef.current = setTimeout(() => {
+        void upsertWorkshop2CartLine({
+          item: { ...product, quantity, selectedSize: size, deliveryDate } as typeof product & {
+            quantity: number;
+            selectedSize: string;
+            deliveryDate: string;
+          },
+          collectionId: matrixCollectionId,
+          buyerId: activeRetailer?.id ?? coreBuyerId,
+          tier: cartTier,
+          sessionId: cartSessionId,
+        }).then((r) => {
+          if (r.sessionId) setCartSessionId(r.sessionId);
+        });
+      }, 400);
+    },
+    [
+      coreMode,
+      matrixCollectionId,
+      activeRetailer?.id,
+      coreBuyerId,
+      cartTier,
+      cartSessionId,
+    ]
+  );
+
+  const goMatrixCheckout = useCallback(() => {
+    if (b2bCart.length === 0 || cartSyncing) return;
+    void (async () => {
+      setCartSyncing(true);
+      setCartSyncError(null);
+      try {
+        if (persistTimerRef.current) {
+          clearTimeout(persistTimerRef.current);
+          persistTimerRef.current = undefined;
+        }
+        const resolved = await resolveCheckoutCartSession({
+          items: b2bCart,
+          collectionId: matrixCollectionId,
+          buyerId: activeRetailer?.id ?? coreBuyerId,
+          tier: cartTier,
+          sessionId: cartSessionId,
+          preferPersistedSession: coreMode,
+        });
+        if (!resolved.ok) {
+          setCartSyncError(resolved.messageRu);
+          return;
+        }
+        const checkoutHref = shopB2bCheckoutCollectionHref(matrixCollectionId);
+        const href = resolved.sessionId
+          ? `${checkoutHref}${checkoutHref.includes('?') ? '&' : '?'}cartSession=${encodeURIComponent(resolved.sessionId)}`
+          : checkoutHref;
+        router.push(href);
+        window.setTimeout(() => {
+          if (!window.location.pathname.startsWith(ROUTES.shop.b2bCheckout)) {
+            window.location.assign(href);
+          }
+        }, 600);
+      } catch {
+        setCartSyncError('Не удалось синхронизировать корзину перед оформлением.');
+      } finally {
+        setCartSyncing(false);
+      }
+    })();
+  }, [
+    b2bCart,
+    cartSyncing,
+    matrixCollectionId,
+    activeRetailer?.id,
+    coreBuyerId,
+    cartTier,
+    cartSessionId,
+    coreMode,
+    router,
+  ]);
 
   /** NuORDER: eventId/priceTier/territory из URL или партнёра — показываем в шапке и уходим в payload. */
   const displayEventId = initialEventId;
@@ -219,6 +344,98 @@ export function WholesaleOrderMatrix({
     });
   }, [b2bCart, totalsByTier.amount, totalsByTier.units, activeRetailer?.brand, displayTerritory]);
 
+  const applyBulkPaste = useCallback(async () => {
+    const { lines, errors } = parseShopMatrixBulkPaste(bulkPasteRaw);
+    if (lines.length === 0) {
+      setBulkPasteHint(errors[0] ?? 'Нет строк для импорта.');
+      return;
+    }
+    setBulkPasteBusy(true);
+    setBulkPasteHint(null);
+    try {
+      const grouped = groupShopMatrixBulkPasteByArticle(lines);
+      let syncedArticles = 0;
+      let syncedLines = 0;
+      const moqNotes: string[] = [];
+
+      for (const [articleId, articleLines] of grouped) {
+        const product =
+          visibleProducts.find(
+            (p: Product) => p.id === articleId || p.sku?.trim() === articleId
+          ) ?? ({
+            id: articleId,
+            name: articleId,
+            sku: articleId,
+            price: articleLines[0]?.qty ? 0 : 0,
+            images: [],
+            category: 'apparel',
+          } as Product);
+
+        for (const line of articleLines) {
+          updateB2bOrderItemQuantity(product.id, line.qty, line.size, activeDrop);
+        }
+
+        if (coreMode) {
+          const res = await fetch('/api/shop/b2b/cart/matrix', {
+            method: 'POST',
+            headers: {
+              ...buildWorkshop2ApiRequestHeaders(),
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId: cartSessionId,
+              collectionId: matrixCollectionId,
+              articleId,
+              updates: articleLines.map((line) => ({
+                colorCode: line.colorCode,
+                size: line.size,
+                qty: line.qty,
+                wholesalePriceRub: product.price ?? undefined,
+              })),
+            }),
+          });
+          const json = (await res.json()) as {
+            ok?: boolean;
+            sessionId?: string;
+            moqViolations?: string[];
+            messageRu?: string;
+          };
+          if (res.ok && json.ok) {
+            syncedArticles += 1;
+            syncedLines += articleLines.length;
+            if (json.sessionId) setCartSessionId(json.sessionId);
+            if (json.moqViolations?.length) moqNotes.push(...json.moqViolations);
+          } else {
+            errors.push(json.messageRu ?? `Ошибка импорта ${articleId}`);
+          }
+        } else {
+          syncedArticles += 1;
+          syncedLines += articleLines.length;
+        }
+      }
+
+      const hintParts = [
+        syncedLines > 0 ? `Импортировано ${syncedLines} строк · ${syncedArticles} арт.` : null,
+        errors.length ? errors.slice(0, 3).join(' · ') : null,
+        moqNotes.length ? `MOQ: ${moqNotes.slice(0, 2).join('; ')}` : null,
+      ].filter(Boolean);
+      setBulkPasteHint(hintParts.join(' · ') || 'Готово.');
+      if (syncedLines > 0) setIsBulkEntryOpen(false);
+    } catch {
+      setBulkPasteHint('Сеть недоступна — повторите импорт.');
+    } finally {
+      setBulkPasteBusy(false);
+    }
+  }, [
+    bulkPasteRaw,
+    visibleProducts,
+    activeDrop,
+    coreMode,
+    cartSessionId,
+    matrixCollectionId,
+    updateB2bOrderItemQuantity,
+  ]);
+
   const renderBulkEntry = () => (
     <Dialog open={isBulkEntryOpen} onOpenChange={setIsBulkEntryOpen}>
       <DialogContent className="max-w-2xl rounded-xl border-none bg-white p-3 shadow-2xl">
@@ -242,11 +459,19 @@ export function WholesaleOrderMatrix({
         <div className="space-y-6">
           <textarea
             className="bg-bg-surface2 focus:ring-accent-primary h-48 w-full resize-none rounded-xl border-none p-4 font-mono text-xs focus:ring-2"
-            placeholder="Артикул, Размер, Количество&#10;CTP-26-001, M, 12&#10;CTP-26-001, L, 8..."
+            placeholder="Артикул, Размер, Количество&#10;demo-ss27-01, M, 12&#10;demo-ss27-01, L, 8..."
+            value={bulkPasteRaw}
+            onChange={(e) => setBulkPasteRaw(e.target.value)}
+            data-testid={coreMode ? 'shop-b2b-matrix-bulk-paste-input' : undefined}
           />
           <div className="flex gap-3">
-            <Button className="bg-text-primary h-10 flex-1 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white">
-              Обработать список
+            <Button
+              className="bg-text-primary h-10 flex-1 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white"
+              disabled={bulkPasteBusy || !bulkPasteRaw.trim()}
+              data-testid={coreMode ? 'shop-b2b-matrix-bulk-paste-apply' : undefined}
+              onClick={() => void applyBulkPaste()}
+            >
+              {bulkPasteBusy ? 'Импорт…' : 'Обработать список'}
             </Button>
             <Button
               variant="outline"
@@ -255,6 +480,14 @@ export function WholesaleOrderMatrix({
               Загрузить XLS
             </Button>
           </div>
+          {bulkPasteHint ? (
+            <p
+              className="text-text-muted text-[10px]"
+              data-testid={coreMode ? 'shop-b2b-matrix-bulk-paste-hint' : undefined}
+            >
+              {bulkPasteHint}
+            </p>
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>
@@ -333,31 +566,26 @@ export function WholesaleOrderMatrix({
             data-testid={coreMode ? 'shop-b2b-matrix-to-checkout' : undefined}
             disabled={b2bCart.length === 0 || cartSyncing}
             onClick={() => {
+              if (coreMode) {
+                goMatrixCheckout();
+                return;
+              }
               if (b2bCart.length === 0 || cartSyncing) return;
-              void (async () => {
-                setCartSyncing(true);
-                try {
-                  const tier = orderMode === 'pre_order' ? 'prebook' : 'standard';
-                  await syncLegacyCartToWorkshop2({
-                    items: b2bCart,
-                    collectionId: matrixCollectionId,
-                    tier,
-                    buyerId: activeRetailer?.id ?? coreBuyerId,
-                  });
-                  const checkoutHref = matrixCollectionId
-                    ? `${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(matrixCollectionId)}`
-                    : ROUTES.shop.b2bCheckout;
-                  router.push(checkoutHref);
-                } finally {
-                  setCartSyncing(false);
-                }
-              })();
+              const checkoutHref = matrixCollectionId
+                ? `${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(matrixCollectionId)}`
+                : ROUTES.shop.b2bCheckout;
+              router.push(checkoutHref);
             }}
           >
             {cartSyncing ? 'Синхронизация…' : 'Подтвердить заказ'}{' '}
             {orderMode === 'pre_order' ? '(Предзаказ)' : ''}{' '}
             {tryBeforeBuy ? '· Try Before Buy' : ''} <FileCheck className="h-4 w-4" />
           </Button>
+          {coreMode && cartSyncError ? (
+            <p className="text-rose-700 text-[10px] font-semibold" data-testid="shop-b2b-matrix-cart-sync-error">
+              {cartSyncError}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -531,7 +759,7 @@ export function WholesaleOrderMatrix({
 
           <div className="min-h-[500px]">
             {activeTab === 'analytics' && <OrderAnalyticsTab />}
-            {activeTab === 'replenish' && <OrderReplenishTab />}
+            {activeTab === 'replenish' && <OrderReplenishTab collectionId={matrixCollectionId} />}
             {activeTab === 'allocation' && <OrderAllocationTab />}
             {activeTab === 'matrix' && (
               <div className="grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-bottom-4">
@@ -677,6 +905,7 @@ export function WholesaleOrderMatrix({
                                             size,
                                             activeDrop
                                           );
+                                          persistMatrixLineQty(product, size, val, activeDrop);
                                         }}
                                         className={cn(
                                           'border-border-subtle bg-bg-surface2 text-text-primary focus:ring-accent-primary h-12 rounded-xl text-center font-black transition-all focus:ring-2',
@@ -687,9 +916,10 @@ export function WholesaleOrderMatrix({
                                       />
                                       {quantity > 0 && (
                                         <button
-                                          onClick={() =>
-                                            removeB2bOrderItem(product.id, size, activeDrop)
-                                          }
+                                          onClick={() => {
+                                            removeB2bOrderItem(product.id, size, activeDrop);
+                                            persistMatrixLineQty(product, size, 0, activeDrop);
+                                          }}
                                           className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
                                         >
                                           <X className="h-3 w-3" />

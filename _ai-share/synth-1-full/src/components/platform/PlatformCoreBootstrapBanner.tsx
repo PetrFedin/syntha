@@ -12,11 +12,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { usePlatformCoreChainOverview } from '@/components/platform/usePlatformCoreChainOverview';
-import { isCabinetPathname } from '@/lib/layout/cabinet-route-match';
+import { isCabinetPathname } from '@/lib/platform-core-ports/legacy/layout/cabinet-route-match';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
-import { isSynthaEmbedClient } from '@/lib/syntha-embed';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
+import { isSynthaEmbedClient } from '@/lib/platform-core-ports/legacy/syntha-embed';
 import { cn } from '@/lib/utils';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 
 type Props = {
   collectionId?: string;
@@ -95,6 +96,8 @@ export function PlatformCoreBootstrapBanner({
   };
 
   if (isSynthaEmbedClient()) return null;
+  /** Platform Core (:3001): demo/offline без иконки bootstrap PG. */
+  if (isPlatformCoreMode()) return null;
   if (health === null && overviewStatus === 'loading') return null;
 
   const pgReachable = health?.pgReachable === true;

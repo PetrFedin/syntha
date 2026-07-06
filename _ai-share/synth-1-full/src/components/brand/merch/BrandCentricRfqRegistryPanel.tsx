@@ -48,7 +48,7 @@ export function BrandCentricRfqRegistryPanel({ collectionId, articleId }: Props)
           Refresh
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={commsHref}>Entity threads</Link>
+          <Link href={commsHref}>Треды сущностей</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
           <Link href={rfqThreadHref}>RFQ chat</Link>

@@ -1,4 +1,5 @@
 import {
+  buildCommsGroupsNavHref,
   buildCommsSectionGroupMessagesHref,
   buildCommsSectionGroupsForRole,
   buildOrderSectionCommsMessagesHref,
@@ -50,6 +51,18 @@ describe('platform-core-comms-section-groups', () => {
     });
     expect(href).toContain('pillar=collection_order');
     expect(href).toContain('section=brand-co-detail');
+  });
+
+  it('buildCommsGroupsNavHref uses first section group', () => {
+    const groups = buildCommsSectionGroupsForRole('brand');
+    const href = buildCommsGroupsNavHref({
+      roleId: 'brand',
+      orderId: 'B2B-42',
+      collectionId: 'SS27',
+    });
+    expect(href).toContain('B2B-42');
+    expect(href).toContain(`section=${groups[0]!.sectionId}`);
+    expect(href).toContain(`pillar=${groups[0]!.pillarId}`);
   });
 
   it('buildOrderSectionCommsMessagesHref for manufacturer and supplier op sections', () => {

@@ -10,6 +10,7 @@ import {
   type Workshop2DomainEventEnvelope,
   type Workshop2DomainEventType,
 } from '@/lib/production/workshop2-domain-event-types';
+import { appendBrandScPublishAuditJournal } from '@/lib/server/brand-sc-publish-audit-repository';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 import { appendWorkshop2ContextualSystemMessage } from '@/lib/server/workshop2-contextual-messages-repository';
@@ -65,6 +66,24 @@ function newEventId(): string {
   const c = globalThis.crypto;
   if (c && typeof c.randomUUID === 'function') return c.randomUUID();
   return `w2evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function mirrorShowroomPublishedToBrandScAuditJournal(input: {
+  collectionId: string;
+  articleId: string;
+  payload: Record<string, unknown>;
+  organizationId?: string;
+}): void {
+  void appendBrandScPublishAuditJournal({
+    collectionId: input.collectionId,
+    articleId: input.articleId,
+    source: String(input.payload.source ?? 'showroom_publish'),
+    campaignName: String(input.payload.campaignName ?? ''),
+    payload: input.payload,
+    organizationId: input.organizationId,
+  }).catch(() => {
+    /* best-effort */
+  });
 }
 
 async function postDomainEventWebhook(row: Workshop2DomainEventOutboxRow): Promise<boolean> {
@@ -322,6 +341,14 @@ export async function enqueueWorkshop2DomainEvent(input: {
     };
     memoryOutbox.push(row);
     flushFileOutbox();
+    if (input.type === 'showroom.published') {
+      mirrorShowroomPublishedToBrandScAuditJournal({
+        collectionId: row.collectionId,
+        articleId: row.articleId,
+        payload,
+        organizationId,
+      });
+    }
     if (input.dispatchNow !== false) {
       try {
         await dispatchRowSubscribers(row);
@@ -362,6 +389,15 @@ export async function enqueueWorkshop2DomainEvent(input: {
     createdAt: pg.created_at.toISOString(),
     organizationId,
   };
+
+  if (input.type === 'showroom.published') {
+    mirrorShowroomPublishedToBrandScAuditJournal({
+      collectionId: row.collectionId,
+      articleId: row.articleId,
+      payload,
+      organizationId,
+    });
+  }
 
   if (input.dispatchNow !== false) {
     try {

@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
+import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,16 +17,23 @@ import {
 } from '@/components/ui/dialog';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES, brandDevelopmentCabinetHref } from '@/lib/platform-core-routes';
 import { ShopDevelopmentBridgeGreenfieldCrmStrip } from '@/components/platform/ShopDevelopmentBridgeGreenfieldCrmStrip';
-import { buildShopShowroomBuySession } from '@/lib/b2b/shop-showroom-buy';
+import { ShopDevelopmentBridgeAssortmentWishlistStrip } from '@/components/platform/ShopDevelopmentBridgeAssortmentWishlistStrip';
+import { ShopDevelopmentBridgePeerStrip } from '@/components/platform/ShopDevelopmentBridgePeerStrip';
+import { requestShopDevelopmentSample } from '@/lib/platform-core-ports/legacy/shop/shop-buyer-assortment-wishlist-client';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
 import { platformCoreW2PrefetchHandlers } from '@/lib/platform-core-w2-prefetch';
-import { WORKSHOP2_COL_PARAM } from '@/lib/production/workshop2-url';
 import { PlatformCoreStepProgressStrip } from '@/components/platform/PlatformCoreStepProgressStrip';
 import { PLATFORM_CORE_PG_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
+import {
+  readShopDevelopmentVisitStore,
+  writeShopDevelopmentVisitStore,
+} from '@/lib/platform-core-ports/b2b/shop-development-visit-store';
+import type { ShopDevelopmentProgressSnapshot } from '@/lib/platform-core-ports/legacy/server/shop-development-progress-server';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 export default function ShopDevelopmentBridge({
   demo,
@@ -37,7 +45,15 @@ export default function ShopDevelopmentBridge({
   embedCrossRole?: boolean;
 }) {
   const { collectionId } = demo;
+  const { buyerId } = useShopCoreBuyerId();
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewSampleArticleId] = useState('demo-ss27-01');
+  const [sampleMsg, setSampleMsg] = useState<string | null>(null);
+  const [sampleBusy, setSampleBusy] = useState(false);
+  const [visitChanges, setVisitChanges] = useState<string[]>([]);
+  const [progressSnapshot, setProgressSnapshot] =
+    useState<ShopDevelopmentProgressSnapshot | null>(null);
+  const [progressLoading, setProgressLoading] = useState(false);
   const devSnap = usePillarSnapshot({
     collectionId,
     pillarId: 'development',
@@ -68,13 +84,83 @@ export default function ShopDevelopmentBridge({
   const readyForBuyers = sampleStatus?.readyForBuyers ?? null;
 
   const brandW2Href =
-    devStatus?.workshop2Href ??
-    `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}`;
+    devStatus?.workshop2Href ?? brandDevelopmentCabinetHref(collectionId);
   const shopShowroomHref =
     sampleStatus?.shopShowroomHref ??
     `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
-  const shopMonetization = buildShopShowroomBuySession({ collectionId });
   const colLabel = getPlatformCoreCollectionLabel(collectionId);
+
+  const loadDevelopmentProgress = useCallback(
+    async (commitVisit: boolean) => {
+      setProgressLoading(true);
+      const visit = readShopDevelopmentVisitStore(collectionId);
+      const params = new URLSearchParams({ collection: collectionId });
+      if (visit?.versionToken) params.set('sinceToken', visit.versionToken);
+      if (visit?.snapshot) params.set('sinceSnapshot', JSON.stringify(visit.snapshot));
+      try {
+        const res = await fetch(`/api/shop/b2b/development-progress?${params}`, {
+          cache: 'no-store',
+        });
+        if (!res.ok) {
+          setVisitChanges([]);
+          setProgressSnapshot(null);
+          return;
+        }
+        const json = (await res.json()) as {
+          ok?: boolean;
+          snapshot?: ShopDevelopmentProgressSnapshot;
+          versionToken?: string;
+          changesSince?: string[];
+        };
+        if (json.ok && json.snapshot) {
+          setProgressSnapshot(json.snapshot);
+          setVisitChanges(json.changesSince ?? []);
+          if (commitVisit && json.versionToken) {
+            writeShopDevelopmentVisitStore(collectionId, {
+              versionToken: json.versionToken,
+              snapshot: {
+                articleCount: json.snapshot.articleCount,
+                sampleQueueCount: json.snapshot.sampleQueueCount,
+                steps: json.snapshot.steps,
+              },
+              visitedAt: new Date().toISOString(),
+            });
+          }
+        }
+      } finally {
+        setProgressLoading(false);
+      }
+    },
+    [collectionId]
+  );
+
+  useEffect(() => {
+    void loadDevelopmentProgress(false);
+  }, [loadDevelopmentProgress]);
+
+  useEffect(() => {
+    if (!previewOpen) return;
+    void loadDevelopmentProgress(true);
+    setSampleMsg(null);
+  }, [previewOpen, loadDevelopmentProgress]);
+
+  const requestPreviewSample = async () => {
+    setSampleMsg(null);
+    setSampleBusy(true);
+    try {
+      const { messageRu } = await requestShopDevelopmentSample({
+        buyerId,
+        collectionId,
+        articleId: previewSampleArticleId,
+      });
+      setSampleMsg(messageRu ?? 'Запрос отправлен бренду.');
+    } finally {
+      setSampleBusy(false);
+    }
+  };
+
+  const previewSteps = progressSnapshot?.steps ?? devSteps;
+  const previewArticleCount = progressSnapshot?.articleCount ?? articleCount;
 
   return (
     <section data-testid="shop-development-bridge" className="min-w-0 space-y-2">
@@ -106,6 +192,15 @@ export default function ShopDevelopmentBridge({
                   variant="horizontal"
                 />
               ) : null}
+              {visitChanges.length > 0 ? (
+                <Badge
+                  variant="outline"
+                  className="border-sky-200 bg-sky-50 text-[9px] text-sky-900"
+                  data-testid="shop-development-bridge-visit-diff-badge"
+                >
+                  {visitChanges.length} изменений с прошлого визита
+                </Badge>
+              ) : null}
             </>
           )}
           <div className={cn(hubGadget.ctaRow, 'min-w-0')}>
@@ -118,40 +213,6 @@ export default function ShopDevelopmentBridge({
             >
               Превью техпака →
             </Button>
-            <Link
-              href={brandW2Href}
-              data-testid="shop-development-bridge-brand-w2"
-              className={cn(hubGadget.ctaLink, 'min-h-11 items-center md:min-h-0')}
-              {...platformCoreW2PrefetchHandlers}
-            >
-              Техпак бренда →
-            </Link>
-            <Link
-              href={shopShowroomHref}
-              data-testid="shop-development-bridge-showroom"
-              className={cn(hubGadget.ctaLink, 'min-h-11 items-center md:min-h-0')}
-              {...platformCoreW2PrefetchHandlers}
-            >
-              Витрина · {colLabel} →
-            </Link>
-            {readyForBuyers ? (
-              <>
-                <Link
-                  href={shopMonetization.matrixHref}
-                  data-testid="shop-development-bridge-matrix"
-                  className={cn(hubGadget.ctaLink, 'min-h-11 items-center md:min-h-0')}
-                >
-                  Матрица →
-                </Link>
-                <Link
-                  href={shopMonetization.checkoutHref}
-                  data-testid="shop-development-bridge-checkout"
-                  className={cn(hubGadget.ctaLink, 'min-h-11 items-center md:min-h-0')}
-                >
-                  Checkout →
-                </Link>
-              </>
-            ) : null}
           </div>
         </CardContent>
       </Card>
@@ -164,30 +225,64 @@ export default function ShopDevelopmentBridge({
           <DialogHeader>
             <DialogTitle className="text-sm">Техпак бренда · {colLabel}</DialogTitle>
             <DialogDescription className="text-xs">
-              Read-only превью прогресса разработки. Редактирование ТЗ доступно только бренду.
+              Только просмотр прогресса разработки. Редактирование ТЗ доступно только бренду.
             </DialogDescription>
           </DialogHeader>
           {loadState === 'loading' ? (
             <p className="text-text-muted text-xs">Загрузка…</p>
           ) : loadState === 'error' ? (
             <p className="text-text-muted text-xs">{PLATFORM_CORE_PG_UNAVAILABLE_RU}</p>
+          ) : progressLoading ? (
+            <p className="text-text-muted text-xs">Загрузка снимка…</p>
           ) : (
             <div className="space-y-2">
-              {articleCount != null ? (
+              {visitChanges.length > 0 ? (
+                <ul
+                  className="list-inside list-disc space-y-0.5 text-[11px] text-sky-900"
+                  data-testid="shop-development-bridge-visit-diff"
+                >
+                  {visitChanges.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {previewArticleCount != null ? (
                 <p className="text-text-secondary text-xs">
-                  {articleCount} артикул(ов) ·{' '}
+                  {previewArticleCount} артикул(ов) ·{' '}
                   {readyForBuyers ? 'опубликовано для байеров' : 'ещё не для витрины'}
                 </p>
               ) : null}
-              {devSteps.length > 0 ? (
+              {previewSteps.length > 0 ? (
                 <PlatformCoreStepProgressStrip
-                  steps={devSteps}
+                  steps={previewSteps}
                   testId="shop-development-bridge-preview-steps"
                   variant="vertical"
                 />
               ) : (
                 <p className="text-text-muted text-xs">Нет шагов development-status для коллекции.</p>
               )}
+              <div className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 p-2">
+                <p className="text-text-secondary text-[11px]">
+                  Запрос образца по артикулу{' '}
+                  <span className="font-mono">{previewSampleArticleId}</span> — уведомление уйдёт
+                  бренду.
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  disabled={sampleBusy}
+                  data-testid="shop-dev-bridge-request-sample-preview-btn"
+                  onClick={() => void requestPreviewSample()}
+                >
+                  Запросить образец
+                </Button>
+                {sampleMsg ? (
+                  <p className="text-emerald-800 text-[11px]" data-testid="shop-dev-bridge-request-sample-msg">
+                    {sampleMsg}
+                  </p>
+                ) : null}
+              </div>
             </div>
           )}
           <DialogFooter className="flex flex-wrap gap-2 sm:justify-start">
@@ -197,7 +292,9 @@ export default function ShopDevelopmentBridge({
               </Link>
             </Button>
             <Button type="button" variant="outline" size="sm" asChild>
-              <Link href={shopMonetization.checkoutHref}>Checkout</Link>
+              <Link href={shopShowroomHref} {...platformCoreW2PrefetchHandlers}>
+                Витрина
+              </Link>
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewOpen(false)}>
               Закрыть
@@ -206,7 +303,9 @@ export default function ShopDevelopmentBridge({
         </DialogContent>
       </Dialog>
 
+      <ShopDevelopmentBridgePeerStrip collectionId={collectionId} readyForBuyers={readyForBuyers} />
       <ShopDevelopmentBridgeGreenfieldCrmStrip collectionId={collectionId} />
+      <ShopDevelopmentBridgeAssortmentWishlistStrip collectionId={collectionId} />
 
       {embedCrossRole ? null : (
         <RolePillarCrossRoleLinks roleId="shop" pillarId="development" variant="compact" />

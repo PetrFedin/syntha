@@ -1,6 +1,6 @@
 'use client';
 
-import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
 import type { BrandTaskRecord } from './port';
 import { loadBrandTasks, saveBrandTasks } from './brand-tasks-store';
 
@@ -20,7 +20,7 @@ export function resetBrandTasksPersistModeCacheForTests(): void {
 
 /** PG `/api/brand/tasks` when доступен; иначе localStorage (не в Platform Core pg-only). */
 export async function loadBrandTasksWithMode(): Promise<BrandTasksLoadResult> {
-  const corePgOnly = isPlatformCoreMode();
+  const corePgOnly = !shouldUseLocalStorageClientFallbackInCore();
   try {
     const res = await fetch('/api/brand/tasks', { cache: 'no-store' });
     if (res.ok) {
@@ -45,10 +45,11 @@ export async function loadBrandTasksWithMode(): Promise<BrandTasksLoadResult> {
 }
 
 export async function persistBrandTasks(tasks: BrandTaskRecord[]): Promise<void> {
+  const corePgOnly = !shouldUseLocalStorageClientFallbackInCore();
   const mode = cachedPersistMode ?? (await loadBrandTasksWithMode()).persistMode;
-  if (mode === 'postgres') {
+  if (corePgOnly || mode === 'postgres') {
     await fetch('/api/brand/tasks', {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tasks }),
     });

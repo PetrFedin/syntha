@@ -44,7 +44,7 @@ export function PartnersFinanceDistributorsBadges() {
 export function ProductionGanttBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.brand.production}>Production</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.brand.production}>Производство</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.productionGantt}>GANTT</SectionBadgeLink>
     </>
   );
@@ -67,7 +67,7 @@ export function FinanceProductionB2BBudgetBadges() {
   return (
     <>
       <SectionBadgeLink href={ROUTES.brand.finance}>Финансы</SectionBadgeLink>
-      <SectionBadgeLink href={ROUTES.brand.production}>Production</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.brand.production}>Производство</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.budgetActual}>План vs Факт</SectionBadgeLink>
     </>
@@ -78,7 +78,7 @@ export function FinanceProductionB2BBudgetBadges() {
 export function FinanceBiHubBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.brand.analyticsBi}>BI Hub</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.brand.analyticsBi}>Аналитика BI</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.finance}>Финансы</SectionBadgeLink>
     </>
   );
@@ -121,7 +121,7 @@ export function ProductionSuppliersFinanceBadges() {
 export function ProductionGanttDailyBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.brand.production}>Production</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.brand.production}>Производство</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.productionDailyOutput}>Отчёты смен</SectionBadgeLink>
     </>
@@ -132,7 +132,7 @@ export function ProductionGanttDailyBadges() {
 export function MaterialsSuppliersBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.brand.materials}>Materials</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.brand.materials}>Материалы</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.suppliers}>Поставщики</SectionBadgeLink>
     </>
   );
@@ -142,7 +142,7 @@ export function MaterialsSuppliersBadges() {
 export function PreOrderQuotaBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.shop.b2bPreOrder}>Pre-order</SectionBadgeLink>
+      <SectionBadgeLink href={ROUTES.shop.b2bPreOrder}>Предзаказ</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.planning}>Планирование</SectionBadgeLink>
     </>

@@ -31,6 +31,16 @@ export function isPlatformCoreMode(): boolean {
   );
 }
 
+/** Strict: legacy page routes → redirect /platform (см. middleware). */
+export function isPlatformCoreStrictMode(): boolean {
+  return (
+    isPlatformCoreMode() &&
+    isPublicOn(
+      typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_PLATFORM_CORE_STRICT : undefined
+    )
+  );
+}
+
 /** Алиас для навигации бренда (совместимость с планом). */
 export function isBrandNavCorePillarsOnly(): boolean {
   return isPlatformCoreMode();

@@ -47,4 +47,5 @@ export const PLATFORM_CORE_UI_FORBIDDEN_DUPES = [
   'BrandMessagesRuWorkspaceBanner при platform core comms',
   'PlatformCorePillarHandoffStrip (удалён — дубль cross-role)',
   'CardHeader коллекции/столпа на workspace при slim ListChrome',
+  'CommsNotificationCenterStrip + OrderCommsWorkspaceNotificationBar на одном экране',
 ] as const;

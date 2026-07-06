@@ -3,9 +3,11 @@
  */
 import type { Workshop2B2bBuyerTier } from '@/lib/production/workshop2-b2b-campaign-hub';
 import { isWorkshop2B2bBuyerTier } from '@/lib/production/workshop2-b2b-campaign-hub';
+import { shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
 
 export const B2B_PARTNER_TIER_COOKIE = 'b2b_partner_tier';
 export const B2B_PARTNER_TIER_STORAGE_KEY = 'b2b_partner_tier';
+export const B2B_PARTNER_SESSION_STORAGE_KEY = 'b2b_partner_session';
 
 function readCookieTier(): string | null {
   if (typeof document === 'undefined') return null;
@@ -21,7 +23,9 @@ export function resolveB2bBuyerTierFromSession(
 ): Workshop2B2bBuyerTier {
   if (typeof window === 'undefined') return fallback;
   const fromCookie = readCookieTier();
-  const fromStorage = localStorage.getItem(B2B_PARTNER_TIER_STORAGE_KEY);
+  const fromStorage = shouldUseLocalStorageClientFallbackInCore()
+    ? localStorage.getItem(B2B_PARTNER_TIER_STORAGE_KEY)
+    : null;
   const raw = (fromCookie ?? fromStorage ?? '').trim();
   return isWorkshop2B2bBuyerTier(raw) ? raw : fallback;
 }

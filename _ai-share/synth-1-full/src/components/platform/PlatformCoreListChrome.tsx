@@ -12,12 +12,15 @@ import {
   resolvePageCollectionId,
 } from '@/lib/platform-core-hub-matrix';
 import { PlatformCoreContextBar } from '@/components/platform/PlatformCoreContextBar';
-import { PlatformCoreChromeShell } from '@/components/platform/PlatformCoreChromeShell';
 import { PlatformCoreRolePillarStrip } from '@/components/platform/PlatformCoreRolePillarStrip';
 import { PlatformCoreEmptyChainBanner } from '@/components/platform/PlatformCoreEmptyChainBanner';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
-import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
+import {
+  PlatformCoreChromeShell,
+  usePlatformCoreDemoContext,
+} from '@/components/platform/usePlatformCoreChainOverview';
 import { ShopCoreBuyerSwitcher } from '@/components/shop/ShopCoreBuyerSwitcher';
+import { usePlatformCoreEmbeddedWorkspace } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
@@ -47,6 +50,7 @@ function PlatformCoreListChromeInner({
 }: Omit<Props, 'pageCollectionId'>) {
   const demo = usePlatformCoreDemoContext();
   const coreMode = isPlatformCoreMode();
+  const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
   const resolvedEntity =
     entityLabel ?? (pillarId ? getPlatformCorePillarEntityLabelForDemo(pillarId, demo) : undefined);
   const collectionParam =
@@ -59,6 +63,19 @@ function PlatformCoreListChromeInner({
   const resolvedBackHref = backHref ?? (coreMode ? cabinetHref : undefined);
   const resolvedBackLabel =
     backLabel === 'Назад' && coreMode && !backHref ? 'Кабинет' : backLabel;
+
+  if (embeddedWorkspace) {
+    return (
+      <div data-testid="platform-core-list-chrome-embedded" className="min-w-0 space-y-4">
+        {highlightRole === 'shop' ? (
+          <div className="shrink-0 self-start">
+            <ShopCoreBuyerSwitcher />
+          </div>
+        ) : null}
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div data-testid="platform-core-list-chrome" className={hubCabinet.listChrome}>

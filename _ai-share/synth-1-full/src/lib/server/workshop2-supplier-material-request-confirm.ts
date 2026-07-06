@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { getOrCreateGlobalRuntime } from '@/lib/server/global-runtime-singleton';
 import {
   applyWorkshop2MaterialRequisitionStatusToDossier,
   createWorkshop2MaterialRequisition,
@@ -11,6 +12,9 @@ import {
 } from '@/lib/server/workshop2-material-requisition-repository';
 import { bumpPlatformCoreChainStatus } from '@/lib/server/platform-core-chain-status-hub';
 import { bumpPlatformCoreB2bRegistry } from '@/lib/server/platform-core-b2b-registry-hub';
+import {
+  patchWorkshop2B2bInventoryReserve,
+} from '@/lib/server/workshop2-b2b-production-handoff';
 import {
   getWorkshop2ServerDossierRecord,
   putWorkshop2ServerDossierRecord,
@@ -29,6 +33,42 @@ import {
   uniqueArticleScopesFromB2bOrder,
   workshop2B2bOrderContextId,
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
+import {
+  buildWorkshop2SupplierBulkConfirmIdempotencyKey,
+} from '@/lib/production/workshop2-supplier-bulk-confirm-idempotency';
+
+const SUPPLIER_BULK_CONFIRM_IDEM_KEY = Symbol.for('syntha.workshop2.supplier.bulk-confirm.idempotency');
+
+type SupplierBulkConfirmIdempotencyRecord = {
+  response: BulkSupplierMaterialConfirmResult;
+  createdAt: string;
+};
+
+function supplierBulkConfirmIdempotencyStore(): Map<string, SupplierBulkConfirmIdempotencyRecord> {
+  return getOrCreateGlobalRuntime(SUPPLIER_BULK_CONFIRM_IDEM_KEY, () => new Map());
+}
+
+export function peekWorkshop2SupplierBulkConfirmIdempotency(
+  key: string
+): BulkSupplierMaterialConfirmResult | undefined {
+  return supplierBulkConfirmIdempotencyStore().get(key.trim())?.response;
+}
+
+export function rememberWorkshop2SupplierBulkConfirmIdempotency(
+  key: string,
+  response: BulkSupplierMaterialConfirmResult
+): void {
+  supplierBulkConfirmIdempotencyStore().set(key.trim(), {
+    response,
+    createdAt: new Date().toISOString(),
+  });
+}
+
+export function resetWorkshop2SupplierBulkConfirmIdempotencyForTests(): void {
+  supplierBulkConfirmIdempotencyStore().clear();
+}
+
+export { buildWorkshop2SupplierBulkConfirmIdempotencyKey };
 
 export type SupplierMaterialRequestConfirmResult = {
   requisition: Workshop2MaterialRequisitionRecord;
@@ -48,6 +88,10 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
   note?: string;
   updatedBy?: string;
   b2bOrderId?: string;
+  shippedQty?: number;
+  backorder?: boolean;
+  /** Bulk-confirm aggregates brand push — per-line confirms skip duplicate notification_events. */
+  skipBrandPush?: boolean;
 }): Promise<SupplierMaterialRequestConfirmResult | null> {
   const existing = await getWorkshop2MaterialRequisitionById(input.requisitionId);
   if (!existing) return null;
@@ -62,6 +106,8 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
         status: input.status,
         note: input.note,
         updatedBy: input.updatedBy,
+        shippedQty: input.shippedQty,
+        backorder: input.backorder,
       });
   if (!requisition) return null;
 
@@ -93,7 +139,13 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
     }
 
     const statusRu = input.status === 'confirmed' ? 'подтверждена' : 'отклонена';
-    const chatLine = `Поставщик: заявка ${requisition.materialLabel ?? requisition.id} — ${statusRu}.${input.note ? ` ${input.note}` : ''}`;
+    const partialRu =
+      input.status === 'confirmed' && input.shippedQty != null
+        ? input.backorder || (existing.quantity != null && input.shippedQty < existing.quantity)
+          ? ` · отгрузка ${input.shippedQty}${existing.quantity ? `/${existing.quantity}` : ''}${input.backorder ? ', backorder' : ''}`
+          : ''
+        : '';
+    const chatLine = `Поставщик: заявка ${requisition.materialLabel ?? requisition.id} — ${statusRu}${partialRu}.${input.note ? ` ${input.note}` : ''}`;
 
     void enqueueWorkshop2DomainEvent({
       type: 'supply.material_request.updated',
@@ -105,8 +157,14 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
         supplierDecision: input.status,
         note: input.note ?? null,
         materialLabel: requisition.materialLabel ?? null,
+        b2bOrderId: b2bOrderId ?? null,
       },
+      dispatchNow: true,
     }).catch(() => {});
+
+    if (input.status === 'confirmed') {
+      bumpPlatformCoreB2bRegistry('materials_supplied');
+    }
 
     void appendWorkshop2ContextualSystemMessage({
       contextType: WORKSHOP2_ARTICLE_CONTEXT_TYPE,
@@ -124,7 +182,29 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
         contextId: workshop2B2bOrderContextId(b2bOrderId),
         message: orderLine,
       }).catch(() => {});
+
+      if (input.status === 'confirmed') {
+        await patchWorkshop2B2bInventoryReserve({
+          orderId: b2bOrderId,
+          source: 'supplier_materials',
+        });
+      }
     }
+  }
+
+  if (
+    input.status === 'confirmed' &&
+    b2bOrderId &&
+    !input.skipBrandPush
+  ) {
+    await pushSupplierMaterialsBrandNotify({
+      b2bOrderId,
+      collectionId: requisition.collectionId,
+      partialShipQty: input.shippedQty,
+      backorder: input.backorder,
+      lineLabel: requisition.materialLabel ?? requisition.id,
+      idempotent,
+    });
   }
 
   return { requisition, idempotent };
@@ -137,7 +217,50 @@ export type BulkSupplierMaterialConfirmResult = {
   created: number;
   requisitionIds: string[];
   messageRu: string;
+  partialShipQty?: number | null;
+  backorderFlag?: boolean;
+  notifyOnly?: boolean;
 };
+
+async function pushSupplierMaterialsBrandNotify(input: {
+  b2bOrderId: string;
+  collectionId: string;
+  partialShipQty?: number;
+  backorder?: boolean;
+  lineLabel?: string;
+  idempotent?: boolean;
+}): Promise<void> {
+  bumpPlatformCoreChainStatus([input.b2bOrderId]);
+  bumpPlatformCoreB2bRegistry('materials_supplied');
+  const { recordPlatformCoreChainNotificationEvents } =
+    await import('@/lib/server/platform-core-notification-events-repository');
+  const partialRu =
+    input.partialShipQty != null
+      ? ` · отгрузка ${input.partialShipQty}${input.backorder ? ' · backorder' : ''}`
+      : '';
+  const lineRu = input.lineLabel ? `Строка BOM: ${input.lineLabel}` : 'Push поставщика · materials_supplied';
+  void recordPlatformCoreChainNotificationEvents({
+    orderId: input.b2bOrderId,
+    collectionId: input.collectionId,
+    kind: 'materials_supplied',
+    titleRu: `Материалы подтверждены · ${input.b2bOrderId}`,
+    bodyRu: input.idempotent
+      ? `${lineRu} · PATCH синхронизирован (идемпотентно)${partialRu}.`
+      : `${lineRu}${partialRu}.`,
+  }).catch(() => {});
+}
+
+function withBulkConfirmJournalFields(
+  result: BulkSupplierMaterialConfirmResult,
+  shippedQty?: number,
+  backorder?: boolean
+): BulkSupplierMaterialConfirmResult {
+  return {
+    ...result,
+    partialShipQty: shippedQty ?? null,
+    backorderFlag: backorder === true,
+  };
+}
 
 /** Bulk confirm всех строк BOM под PO — одним API-вызовом. */
 export async function bulkConfirmWorkshop2SupplierMaterialSupply(input: {
@@ -147,11 +270,68 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupply(input: {
   productionOrderId?: string;
   updatedBy?: string;
   organizationId?: string;
+  shippedQty?: number;
+  backorder?: boolean;
+  idempotencyKey?: string;
+  notifyOnly?: boolean;
 }): Promise<BulkSupplierMaterialConfirmResult> {
+  const idemKey = input.idempotencyKey?.trim();
+  if (idemKey) {
+    const cached = peekWorkshop2SupplierBulkConfirmIdempotency(idemKey);
+    if (cached) {
+      return { ...cached, idempotent: Math.max(cached.idempotent, 1) };
+    }
+  }
+
   const collectionId = input.collectionId.trim();
   const articleId = input.articleId.trim();
   const b2bOrderId = input.b2bOrderId.trim();
   const updatedBy = input.updatedBy?.trim() || 'supplier-procurement';
+
+  if (input.notifyOnly) {
+    const existing = await listWorkshop2MaterialRequisitions({
+      collectionId,
+      articleId,
+      organizationId: input.organizationId,
+    });
+    const anyConfirmed = existing.some((r) => isTerminalRequisitionStatus(r.status));
+    if (!anyConfirmed) {
+      return withBulkConfirmJournalFields(
+        {
+          ok: false,
+          confirmed: 0,
+          idempotent: 0,
+          created: 0,
+          requisitionIds: [],
+          messageRu: 'Сначала подтвердите поставку — push доступен после confirm.',
+          notifyOnly: true,
+        },
+        input.shippedQty,
+        input.backorder
+      );
+    }
+    await pushSupplierMaterialsBrandNotify({
+      b2bOrderId,
+      collectionId,
+      partialShipQty: input.shippedQty,
+      backorder: input.backorder,
+    });
+    const notifyResult = withBulkConfirmJournalFields(
+      {
+        ok: true,
+        confirmed: 0,
+        idempotent: 1,
+        created: 0,
+        requisitionIds: existing.map((r) => r.id),
+        messageRu: 'Push бренду отправлен · materials_supplied.',
+        notifyOnly: true,
+      },
+      input.shippedQty,
+      input.backorder
+    );
+    if (idemKey) rememberWorkshop2SupplierBulkConfirmIdempotency(idemKey, notifyResult);
+    return notifyResult;
+  }
 
   let poQty = 0;
   const poId = input.productionOrderId?.trim();
@@ -220,6 +400,9 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupply(input: {
       status: 'confirmed',
       updatedBy,
       b2bOrderId,
+      shippedQty: input.shippedQty,
+      backorder: input.backorder,
+      skipBrandPush: true,
     });
     if (!result) continue;
     requisitionIds.push(reqId);
@@ -235,6 +418,9 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupply(input: {
       status: 'confirmed',
       updatedBy,
       b2bOrderId,
+      shippedQty: input.shippedQty,
+      backorder: input.backorder,
+      skipBrandPush: true,
     });
     if (!result) continue;
     requisitionIds.push(row.id);
@@ -243,16 +429,47 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupply(input: {
   }
 
   const allIdempotent = confirmed === 0 && idempotent > 0;
-  return {
-    ok: true,
-    confirmed,
-    idempotent,
-    created,
-    requisitionIds: [...new Set(requisitionIds)],
-    messageRu: allIdempotent
-      ? 'Все строки BOM уже подтверждены (идемпотентно).'
-      : `Подтверждено строк: ${confirmed}${created ? ` · создано заявок: ${created}` : ''}.`,
-  };
+  const materialsConfirmed = confirmed > 0 || idempotent > 0;
+
+  if (materialsConfirmed) {
+    await patchWorkshop2B2bInventoryReserve({
+      orderId: b2bOrderId,
+      organizationId: input.organizationId,
+      source: 'supplier_materials',
+    });
+    const { recordPlatformCoreChainNotificationEvents } =
+      await import('@/lib/server/platform-core-notification-events-repository');
+    void recordPlatformCoreChainNotificationEvents({
+      orderId: b2bOrderId,
+      collectionId,
+      kind: 'materials_supplied',
+      titleRu: `Материалы подтверждены · ${b2bOrderId}`,
+      bodyRu: allIdempotent
+        ? 'Все строки BOM уже подтверждены.'
+        : input.backorder || input.shippedQty != null
+          ? `Подтверждено строк: ${confirmed}${input.shippedQty != null ? ` · отгрузка ${input.shippedQty}` : ''}${input.backorder ? ' · backorder' : ''}.`
+          : `Подтверждено строк: ${confirmed}.`,
+    }).catch(() => {});
+  }
+
+  const result = withBulkConfirmJournalFields(
+    {
+      ok: true,
+      confirmed,
+      idempotent,
+      created,
+      requisitionIds: [...new Set(requisitionIds)],
+      messageRu: allIdempotent
+        ? 'Все строки BOM уже подтверждены (идемпотентно).'
+        : input.backorder || input.shippedQty != null
+          ? `Частичная отгрузка: ${confirmed} строк${input.shippedQty != null ? ` · qty ${input.shippedQty}` : ''}${input.backorder ? ' · backorder' : ''}.`
+          : `Подтверждено строк: ${confirmed}${created ? ` · создано заявок: ${created}` : ''}.`,
+    },
+    input.shippedQty,
+    input.backorder
+  );
+  if (idemKey) rememberWorkshop2SupplierBulkConfirmIdempotency(idemKey, result);
+  return result;
 }
 
 export type BulkSupplierMaterialOrderConfirmResult = BulkSupplierMaterialConfirmResult & {
@@ -273,7 +490,24 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupplyForOrder(input: 
   productionOrderId?: string;
   updatedBy?: string;
   organizationId?: string;
+  shippedQty?: number;
+  backorder?: boolean;
+  idempotencyKey?: string;
+  notifyOnly?: boolean;
 }): Promise<BulkSupplierMaterialOrderConfirmResult> {
+  const idemKey = input.idempotencyKey?.trim();
+  if (idemKey) {
+    const cached = peekWorkshop2SupplierBulkConfirmIdempotency(idemKey);
+    if (cached) {
+      return {
+        ...cached,
+        idempotent: Math.max(cached.idempotent, 1),
+        articlesProcessed: cached.requisitionIds.length > 0 ? 1 : 0,
+        articleResults: [],
+      };
+    }
+  }
+
   const b2bOrderId = input.b2bOrderId.trim();
   const order = await getWorkshop2B2bOrder(b2bOrderId);
   if (!order) {
@@ -317,6 +551,9 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupplyForOrder(input: 
       productionOrderId: input.productionOrderId,
       updatedBy: input.updatedBy,
       organizationId: input.organizationId,
+      shippedQty: input.shippedQty,
+      backorder: input.backorder,
+      notifyOnly: input.notifyOnly,
     });
     articleResults.push({
       collectionId: scope.collectionId,
@@ -337,20 +574,27 @@ export async function bulkConfirmWorkshop2SupplierMaterialSupplyForOrder(input: 
   const allFailed = articleResults.every((r) => !r.ok);
   const allIdempotent = totalConfirmed === 0 && totalIdempotent > 0;
 
-  return {
-    ok: anyOk && !allFailed,
-    confirmed: totalConfirmed,
-    idempotent: totalIdempotent,
-    created: totalCreated,
-    requisitionIds: [...new Set(allRequisitionIds)],
-    articlesProcessed: scopes.length,
-    articleResults,
-    messageRu: allFailed
-      ? (articleResults[0]?.messageRu ?? 'Не удалось подтвердить поставку.')
-      : scopes.length === 1
-        ? (articleResults[0]?.messageRu ?? 'Поставка подтверждена.')
-        : allIdempotent
-          ? `Все артикулы заказа (${scopes.length}) уже подтверждены.`
-          : `Подтверждено артикулов: ${articleResults.filter((r) => r.ok && r.confirmed > 0).length || scopes.length} из ${scopes.length}.`,
-  };
+  const orderResult = withBulkConfirmJournalFields(
+    {
+      ok: anyOk && !allFailed,
+      confirmed: totalConfirmed,
+      idempotent: totalIdempotent,
+      created: totalCreated,
+      requisitionIds: [...new Set(allRequisitionIds)],
+      articlesProcessed: scopes.length,
+      articleResults,
+      messageRu: allFailed
+        ? (articleResults[0]?.messageRu ?? 'Не удалось подтвердить поставку.')
+        : scopes.length === 1
+          ? (articleResults[0]?.messageRu ?? 'Поставка подтверждена.')
+          : allIdempotent
+            ? `Все артикулы заказа (${scopes.length}) уже подтверждены.`
+            : `Подтверждено артикулов: ${articleResults.filter((r) => r.ok && r.confirmed > 0).length || scopes.length} из ${scopes.length}.`,
+      notifyOnly: input.notifyOnly,
+    },
+    input.shippedQty,
+    input.backorder
+  );
+  if (idemKey) rememberWorkshop2SupplierBulkConfirmIdempotency(idemKey, orderResult);
+  return orderResult;
 }

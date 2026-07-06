@@ -15,6 +15,7 @@ import {
   BrandPackRulesGoldenPathStrip,
   brandPackRulesGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandPackRulesGoldenPathStrip';
+import { BrandCoPackRulesCoPeerStrip } from '@/components/platform/BrandCoPackRulesCoPeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { ROUTES } from '@/lib/routes';
@@ -113,11 +114,12 @@ function PackRulesWorkspaceBody() {
         </div>
       }
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandPackRulesGoldenPathStrip
           collectionId={collectionId}
           activeStep={brandPackRulesGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoPackRulesCoPeerStrip collectionId={collectionId} />
       </div>
       {activeFeatureId === 'rules' ? (
         <BrandPackRulesTablePanel collectionId={collectionId} />

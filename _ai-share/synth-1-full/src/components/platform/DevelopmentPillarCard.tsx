@@ -9,25 +9,46 @@ import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCor
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { usePlatformCoreDevelopmentStatusPoll } from '@/hooks/use-platform-core-development-status-poll';
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
-import { ROUTES, factoryProductionDossierHref } from '@/lib/routes';
+import { ROUTES, brandDevelopmentCabinetHref, brandDevelopmentArticleHref, brandMessagesWorkshop2ArticleContextHref, factoryProductionDossierHref } from '@/lib/platform-core-routes';
+import { BrandCentricBomConflictPanel } from '@/components/integrations/BrandCentricBomConflictPanel';
 import {
   brandDevelopmentSamplePeerHref,
   brandDevelopmentSamplePeerLabelLong,
   brandDevelopmentSamplePeerLabelShort,
 } from '@/lib/platform-core-brand-sample-peer';
 import { platformCoreW2PrefetchHandlers } from '@/lib/platform-core-w2-prefetch';
-import { WORKSHOP2_COL_PARAM, WORKSHOP2_CREATE_PARAM } from '@/lib/production/workshop2-url';
 import { isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
 import { BrandDevEmptyChainOnboarding } from '@/components/platform/BrandDevEmptyChainOnboarding';
-import { brandSampleLifecycleFeatureHref } from '@/lib/fashion/brand-sample-lifecycle-workspace';
-import { brandAttributeSchemaFeatureHref } from '@/lib/fashion/brand-attribute-schema-workspace';
+import { BrandDevCabinetCoPeerStrip } from '@/components/platform/BrandDevCabinetCoPeerStrip';
+import { BrandDevInvestorReadinessStrip } from '@/components/platform/BrandDevInvestorReadinessStrip';
+import { BrandDevInvestorReadinessPeerStrip } from '@/components/platform/BrandDevInvestorReadinessPeerStrip';
+import { BrandDevTasksKanbanMiniPanel } from '@/components/platform/BrandDevTasksKanbanMiniPanel';
+import { BrandDevGreenfieldMonetizationSegmentStrip } from '@/components/platform/BrandDevGreenfieldMonetizationSegmentStrip';
+import { MfrDevSampleQueueHandoffPeerStrip } from '@/components/factory/MfrDevSampleQueueHandoffPeerStrip';
+import { brandSampleLifecycleFeatureHref } from '@/lib/platform-core-ports/fashion/brand-sample-lifecycle-workspace';
+import { brandAttributeSchemaFeatureHref } from '@/lib/platform-core-ports/fashion/brand-attribute-schema-workspace';
 import { ManufacturerDevFactoryScopeStrip } from '@/components/factory/ManufacturerDevFactoryScopeStrip';
+import { MfrDevDevelopmentStatusMirrorStrip } from '@/components/factory/MfrDevDevelopmentStatusMirrorStrip';
+import { MfrDevDevelopmentStatusPeerStrip } from '@/components/factory/MfrDevDevelopmentStatusPeerStrip';
+import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
+import {
+  shouldShowHubCabinetPgSyncDiagnostics,
+  shouldSuppressHubCabinetChainStatusBadge,
+} from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import {
   PillarInsightHeader,
   PillarInsightSteps,
 } from '@/components/platform/PillarInsightPrimitives';
 import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
+import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
+import { formatPlatformCoreSampleStatusLabelRu } from '@/lib/platform-core-ports/platform/wave-wz-ru-noise-dedup-final';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
+import {
+  WAVE_YF_BOM_BADGE_RU,
+  WAVE_YF_NEW_SKU_RU,
+  WAVE_YF_SCHEMA_ATTR_RU,
+} from '@/lib/platform-core-ports/platform/wave-yf-hub-compact-ru';
 import { cn } from '@/lib/utils';
 
 type Step = { id: string; labelRu: string; done: boolean };
@@ -46,15 +67,21 @@ type Props = {
   collectionId?: string;
   variant?: 'brand' | 'manufacturer';
   compact?: boolean;
+  /** Кабинет hub: без golden path и дублирующего header. */
+  minimalChrome?: boolean;
 };
 
 export function DevelopmentPillarCard({
   collectionId: collectionIdProp,
   variant = 'brand',
   compact = false,
+  minimalChrome = false,
 }: Props) {
   const demo = usePlatformCoreDemoContext();
   const collectionId = collectionIdProp ?? demo.collectionId;
+  const auditUi = usePlatformCoreAuditUi();
+  const suppressChainBadge = shouldSuppressHubCabinetChainStatusBadge({ compact, auditUi });
+  const showPgSyncDiagnostics = shouldShowHubCabinetPgSyncDiagnostics(auditUi);
 
   const { tick: devPollTick, sseConnected } = usePlatformCoreDevelopmentStatusPoll(
     Boolean(collectionId),
@@ -97,16 +124,17 @@ export function DevelopmentPillarCard({
   const devProgressPct =
     devSteps.length > 0 ? Math.round((devDoneCount / devSteps.length) * 100) : null;
 
+  const sampleStatusRu = formatPlatformCoreSampleStatusLabelRu(sampleStatus);
   const sampleNeedsFactoryAck =
     sampleStatus === 'sent' || sampleStatus === 'in_progress';
 
-  const w2HubFallback = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}`;
+  const w2HubFallback = brandDevelopmentCabinetHref(collectionId);
   const w2HubHref = status?.workshop2Href ?? w2HubFallback;
   const mfrDossierFallback = factoryProductionDossierHref(demo.demoArticleId, {
     collectionId,
   });
-  const rangePlannerHref = `${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`;
-  const w2CreateHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}&${WORKSHOP2_CREATE_PARAM}=1`;
+  const rangePlannerHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`);
+  const w2CreateHref = brandDevelopmentCabinetHref(collectionId, undefined, { create: true });
   const brandSampleArticleId = status?.demoArticleId ?? demo.demoArticleId;
   const brandSamplePeerOpts = { sampleStatus };
   const brandSamplePeerHref = brandDevelopmentSamplePeerHref(
@@ -123,7 +151,7 @@ export function DevelopmentPillarCard({
   const emptyChain = isPlatformCoreEmptyChainCollection(collectionId);
 
   const cabinetStrips =
-    compact && variant === 'brand' ? (
+    compact && !minimalChrome && variant === 'brand' ? (
       <div
         className={hubGadget.goldenPath}
         data-testid="brand-dev-cabinet-context-strip"
@@ -155,7 +183,7 @@ export function DevelopmentPillarCard({
           className={hubGadget.goldenLink}
           {...platformCoreW2PrefetchHandlers}
         >
-          + SKU
+          {WAVE_YF_NEW_SKU_RU}
         </Link>
         <span className={hubGadget.goldenSep}>·</span>
         <Link
@@ -184,7 +212,7 @@ export function DevelopmentPillarCard({
           data-testid="brand-dev-cabinet-attribute-schema-link"
           className={hubGadget.goldenLink}
         >
-          Schema
+          {WAVE_YF_SCHEMA_ATTR_RU}
         </Link>
         {status?.supplierBomHref ? (
           <>
@@ -201,8 +229,33 @@ export function DevelopmentPillarCard({
             </Link>
           </>
         ) : null}
+        {status?.factoryDossierHref ? (
+          <>
+            <span className={hubGadget.goldenSep} aria-hidden>
+              ·
+            </span>
+            <Link
+              href={status.factoryDossierHref}
+              data-testid="brand-dev-cross-factory-dossier-link"
+              data-audit-legacy="development-factory-dossier-link"
+              className={hubGadget.goldenLink}
+            >
+              Досье цеха
+            </Link>
+          </>
+        ) : null}
+        <span className={hubGadget.goldenSep} aria-hidden>
+          ·
+        </span>
+        <Link
+          href={brandMessagesWorkshop2ArticleContextHref(collectionId, brandSampleArticleId)}
+          data-testid="brand-dev-cabinet-article-chat-link"
+          className={hubGadget.goldenLink}
+        >
+          Чат ТЗ
+        </Link>
       </div>
-    ) : compact && variant === 'manufacturer' ? (
+    ) : compact && !minimalChrome && variant === 'manufacturer' ? (
       <div className={hubGadget.goldenPath} data-testid="mfr-dev-cabinet-context-strip">
         <Link
           href={w2HubHref}
@@ -245,7 +298,13 @@ export function DevelopmentPillarCard({
 
   if (compact && snapshotLoading && !devPayload) {
     return (
-      <div className={hubGadget.root} data-testid={panelTestId}>
+      <div
+        className={hubGadget.root}
+        data-testid={panelTestId}
+        {...(panelTestId === 'brand-dev-cabinet-panel'
+          ? { 'data-development-sse-live': sseConnected ? '1' : '0' }
+          : {})}
+      >
         {cabinetStrips}
         <PlatformCorePillarInsightSkeleton testId="development-pillar-insight-skeleton" />
       </div>
@@ -253,14 +312,59 @@ export function DevelopmentPillarCard({
   }
 
   return (
-    <div className={compact ? hubGadget.root : undefined} data-testid={panelTestId}>
+    <div
+      className={compact ? hubGadget.root : undefined}
+      data-testid={panelTestId}
+      {...(panelTestId === 'brand-dev-cabinet-panel'
+        ? { 'data-development-sse-live': sseConnected ? '1' : '0' }
+        : {})}
+    >
       {cabinetStrips}
-      {compact && variant === 'manufacturer' ? (
-        <ManufacturerDevFactoryScopeStrip
-          collectionId={collectionId}
-          articleId={brandSampleArticleId}
-          factoryId={demo.factoryId}
-        />
+      {compact && variant === 'brand' && !minimalChrome ? (
+        <>
+          <BrandDevCabinetCoPeerStrip collectionId={collectionId} />
+          <div className="space-y-2" data-testid="brand-dev-dashboard-strips">
+            <BrandDevInvestorReadinessStrip
+              collectionId={collectionId}
+              articleId={brandSampleArticleId}
+              variant="compact"
+            />
+            <BrandDevInvestorReadinessPeerStrip
+              collectionId={collectionId}
+              omitKanbanLink
+              omitReleaseGate
+            />
+            <BrandDevGreenfieldMonetizationSegmentStrip collectionId={collectionId} />
+            <BrandDevTasksKanbanMiniPanel collectionId={collectionId} variant="compact" />
+          </div>
+        </>
+      ) : null}
+      {compact && variant === 'manufacturer' && !minimalChrome ? (
+        <>
+          <ManufacturerDevFactoryScopeStrip
+            collectionId={collectionId}
+            articleId={brandSampleArticleId}
+            factoryId={demo.factoryId}
+          />
+          <MfrDevDevelopmentStatusMirrorStrip
+            collectionId={collectionId}
+            factoryId={demo.factoryId}
+            devPollTick={devPollTick}
+            sseConnected={sseConnected}
+            suppressDevPollHook
+            showDiagnostics={showPgSyncDiagnostics}
+          />
+          <MfrDevDevelopmentStatusPeerStrip
+            collectionId={collectionId}
+            factoryId={demo.factoryId}
+            articleId={brandSampleArticleId}
+          />
+          <MfrDevSampleQueueHandoffPeerStrip
+            factoryId={demo.factoryId}
+            collectionId={collectionId}
+            articleId={brandSampleArticleId}
+          />
+        </>
       ) : null}
       {compact && variant === 'brand' && emptyChain ? (
         <BrandDevEmptyChainOnboarding collectionId={collectionId} variant="cabinet" />
@@ -283,7 +387,7 @@ export function DevelopmentPillarCard({
         </CardHeader>
       ) : null}
       <CardContent className={compact ? hubGadget.pillarBody : 'space-y-3'}>
-        {compact ? (
+        {compact && !minimalChrome ? (
           <PillarInsightHeader
             icon={Sparkles}
             title="ТЗ → образец"
@@ -294,23 +398,16 @@ export function DevelopmentPillarCard({
             }
           />
         ) : null}
-        {compact ? (
+        {compact && !minimalChrome && variant === 'manufacturer' && !suppressChainBadge ? (
           <PlatformCoreChainStatusRefreshBadge
             sseConnected={sseConnected}
             enabled
-            sseTestId={
-              variant === 'brand'
-                ? 'brand-dev-development-sse-live-badge'
-                : 'mfr-dev-development-sse-live-badge'
-            }
-            pollTestId={
-              variant === 'brand'
-                ? 'brand-dev-development-poll-badge'
-                : 'mfr-dev-development-poll-badge'
-            }
+            variant="dot"
+            sseTestId="mfr-dev-development-sse-live-badge"
+            pollTestId="mfr-dev-development-poll-badge"
           />
         ) : null}
-        {compact ? (
+        {compact && !minimalChrome ? (
           <PillarInsightSteps
             steps={
               variant === 'manufacturer'
@@ -319,7 +416,7 @@ export function DevelopmentPillarCard({
             }
             testId="development-pillar-steps"
           />
-        ) : (
+        ) : !compact ? (
         <ul className="space-y-1.5">
           {(variant === 'manufacturer'
             ? (status?.steps ?? []).filter((step) => step.id === 'factory_samples')
@@ -335,8 +432,17 @@ export function DevelopmentPillarCard({
             </li>
           ))}
         </ul>
-        )}
-        {compact ? (
+        ) : null}
+        {compact && !minimalChrome ? (
+          <PlatformCorePillarNotificationCenterCompact
+            variant={variant}
+            compact
+            collectionId={collectionId}
+            orderId={demo.demoOrderId}
+            orderScoped
+          />
+        ) : null}
+        {compact && !minimalChrome ? (
           <div className={hubGadget.statRow}>
             {variant === 'brand' && devProgressPct != null ? (
               <span className={hubGadget.stat} data-testid="development-progress-pct">
@@ -345,12 +451,12 @@ export function DevelopmentPillarCard({
             ) : null}
             {variant === 'brand' && bomLineCount != null && bomLineCount > 0 ? (
               <Badge variant="outline" className={hubGadget.metaBadge} data-testid="development-bom-ready-badge">
-                BOM {bomLineCount}
+                {WAVE_YF_BOM_BADGE_RU} {bomLineCount}
               </Badge>
             ) : null}
             {variant === 'brand' && sampleStatus ? (
               <Badge variant="outline" className={hubGadget.metaBadge} data-testid="development-sample-queue-badge">
-                {sampleStatus}
+                {sampleStatusRu}
                 {sampleQueuePosition != null && sampleQueueTotal != null
                   ? ` · ${sampleQueuePosition}/${sampleQueueTotal}`
                   : ''}
@@ -358,11 +464,19 @@ export function DevelopmentPillarCard({
             ) : null}
             {variant === 'manufacturer' && sampleStatus ? (
               <Badge variant="outline" className={hubGadget.metaBadge} data-testid="mfr-dev-sample-status-badge">
-                {sampleStatus}
+                {sampleStatusRu}
               </Badge>
             ) : null}
           </div>
-        ) : (
+        ) : null}
+        {compact && variant === 'brand' && !minimalChrome ? (
+          <BrandCentricBomConflictPanel
+            collectionId={collectionId}
+            articleId={brandSampleArticleId}
+            compact
+          />
+        ) : null}
+        {!compact ? (
         <div className="flex flex-wrap items-center gap-1">
           {variant === 'brand' && devProgressPct != null ? (
             <Badge
@@ -389,7 +503,7 @@ export function DevelopmentPillarCard({
               data-testid="development-sample-queue-badge"
               className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] text-sky-800"
             >
-              Образец · {sampleStatus}
+              Образец · {sampleStatusRu}
               {sampleQueuePosition != null && sampleQueueTotal != null
                 ? ` · #${sampleQueuePosition}/${sampleQueueTotal}`
                 : ''}
@@ -410,11 +524,11 @@ export function DevelopmentPillarCard({
               data-testid="mfr-dev-sample-status-badge"
               className="h-4 border-amber-200 bg-amber-50 px-1.5 text-[9px] text-amber-900"
             >
-              Образец · {sampleStatus}
+              Образец · {sampleStatusRu}
             </Badge>
           ) : null}
         </div>
-        )}
+        ) : null}
         {!compact ? (
           <>
             {variant === 'brand' && readyForCollection && status?.linesheetHref ? (

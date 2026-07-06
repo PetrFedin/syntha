@@ -27,7 +27,8 @@ import {
   brandSupplierBomGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandSupplierBomGoldenPathStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
+import { resolvePageCollectionId, getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
+import { BrandDevMerchCoSpinePeerStrip } from '@/components/platform/BrandDevMerchCoSpinePeerStrip';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 
 const statusLabels: Record<SupplierRfq['status'], string> = {
@@ -162,6 +163,7 @@ function SupplierRfqWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
   const articleId = searchParams.get('article')?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
+  const demo = getPlatformCoreDemo(collectionId);
   const ctx = { collectionId, articleId };
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-supplier-bom');
 
@@ -186,6 +188,13 @@ function SupplierRfqWorkspaceBody() {
           collectionId={collectionId}
           articleId={articleId}
           activeStep={brandSupplierBomGoldenPathStepFromFeature(activeFeatureId)}
+        />
+      </div>
+      <div className="mb-4">
+        <BrandDevMerchCoSpinePeerStrip
+          variant="supplier-bom"
+          collectionId={collectionId}
+          orderId={demo.demoOrderId}
         />
       </div>
       {activeFeatureId === 'bom' ? (

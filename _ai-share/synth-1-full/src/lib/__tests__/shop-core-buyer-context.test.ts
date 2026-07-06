@@ -2,6 +2,7 @@ import {
   normalizeShopCoreBuyerId,
   resolveShopCoreBuyerIdFromClient,
   resolveShopCoreBuyerIdFromOrganization,
+  resolveShopCoreBuyerIdFromPartnerEmail,
   resolveShopCoreBuyerIdFromSessionUid,
   shopCoreBuyerLabelRu,
 } from '@/lib/order/shop-core-buyer-context';
@@ -71,6 +72,11 @@ describe('shop-core-buyer-context', () => {
     expect(resolveShopCoreBuyerIdFromSessionUid('shop-002')).toBe('shop2');
     expect(resolveShopCoreBuyerIdFromSessionUid('shop-001')).toBe('shop1');
     expect(resolveShopCoreBuyerIdFromSessionUid('unknown')).toBeUndefined();
+  });
+
+  it('maps partner invite email to shop buyer preset', () => {
+    expect(resolveShopCoreBuyerIdFromPartnerEmail('buyer@shop-demo.local')).toBe('shop1');
+    expect(resolveShopCoreBuyerIdFromPartnerEmail('buyer-demo-spb@shop-demo.local')).toBe('shop2');
   });
 
   it('prefers org over session uid over stale cookie', () => {

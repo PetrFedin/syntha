@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 import { B2BPriorityStrategy } from '@/lib/b2b/allocation/allocation-engine';
 import { persistB2bIntakeAllocationPlan } from '@/lib/server/b2b-intake-allocation-repository';
+import { bumpPlatformCoreB2bRegistry } from '@/lib/server/platform-core-b2b-registry-hub';
+import { bumpPlatformCoreCommsInbox } from '@/lib/server/platform-core-comms-inbox-hub';
 import {
   guardWorkshop2Route,
   WORKSHOP2_WRITE_ROLES,
@@ -59,14 +61,23 @@ export async function POST(req: NextRequest) {
     const persisted = await persistB2bIntakeAllocationPlan({
       batchId: payload.batch.batchId,
       plan,
+      idempotent: true,
     });
+
+    if (persisted.mode === 'postgres' && !persisted.idempotent) {
+      bumpPlatformCoreB2bRegistry('b2b.intake_allocated');
+      bumpPlatformCoreCommsInbox('b2b.intake_allocated');
+    }
 
     return NextResponse.json({
       ...plan,
       planId: persisted.planId,
       persistMode: persisted.mode,
+      idempotent: persisted.idempotent === true,
       messageRu:
-        persisted.mode === 'postgres'
+        persisted.idempotent
+          ? `План аллокации ${persisted.planId} уже существует (идемпотентно).`
+          : persisted.mode === 'postgres'
           ? `План аллокации ${persisted.planId} сохранён в PG.`
           : persisted.mode === 'pg_only_blocked'
             ? 'PG-only: план рассчитан, persist заблокирован без PostgreSQL.'

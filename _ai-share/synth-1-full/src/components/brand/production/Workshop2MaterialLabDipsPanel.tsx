@@ -11,9 +11,26 @@ import Image from 'next/image';
 
 interface Workshop2MaterialLabDipsPanelProps {
   materialId: string;
+  collectionId?: string;
+  articleId?: string;
 }
 
-export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialLabDipsPanelProps) {
+function buildLabDipsQuery(input: {
+  materialId: string;
+  collectionId?: string;
+  articleId?: string;
+}): string {
+  const params = new URLSearchParams({ materialId: input.materialId });
+  if (input.collectionId?.trim()) params.set('collectionId', input.collectionId.trim());
+  if (input.articleId?.trim()) params.set('articleId', input.articleId.trim());
+  return params.toString();
+}
+
+export function Workshop2MaterialLabDipsPanel({
+  materialId,
+  collectionId,
+  articleId,
+}: Workshop2MaterialLabDipsPanelProps) {
   const [labDips, setLabDips] = useState<LabDip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +40,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
       try {
         setIsLoading(true);
         const response = await fetch(
-          `/api/brand/workshop2/materials/lab-dips?materialId=${materialId}`
+          `/api/brand/workshop2/materials/lab-dips?${buildLabDipsQuery({ materialId, collectionId, articleId })}`
         );
         if (!response.ok) throw new Error('Failed to fetch lab dips');
         const data = (await response.json()) as { labDips?: LabDip[] };
@@ -36,7 +53,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
     };
 
     fetchLabDips();
-  }, [materialId]);
+  }, [articleId, collectionId, materialId]);
 
   const handleStatusUpdate = async (id: string, newStatus: LabDipStatus) => {
     // Optimistic update
@@ -49,7 +66,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
       const response = await fetch('/api/brand/workshop2/materials/lab-dips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus }),
+        body: JSON.stringify({ id, status: newStatus, collectionId, articleId, materialId }),
       });
 
       if (!response.ok) {
@@ -89,7 +106,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Lab Dips & Strike-offs</CardTitle>
+          <CardTitle>Лабораторные пробы и страйк-оффы</CardTitle>
           <CardDescription>Loading material artifacts...</CardDescription>
         </CardHeader>
       </Card>
@@ -100,7 +117,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Lab Dips & Strike-offs</CardTitle>
+          <CardTitle>Лабораторные пробы и страйк-оффы</CardTitle>
           <CardDescription className="text-red-500">{error}</CardDescription>
         </CardHeader>
       </Card>
@@ -110,7 +127,7 @@ export function Workshop2MaterialLabDipsPanel({ materialId }: Workshop2MaterialL
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Lab Dips & Strike-offs</CardTitle>
+        <CardTitle>Лабораторные пробы и страйк-оффы</CardTitle>
         <CardDescription>
           Review and approve color and print samples for this material.
         </CardDescription>

@@ -22,8 +22,6 @@ export function extractDossierCompositionText(dossier: Workshop2DossierPhase1): 
         .filter(Boolean) ?? [];
     if (labels.length) return labels.join(', ');
   }
-  const specText = dossier.compositionLabelSpec?.compositionText?.trim();
-  if (specText) return specText;
   const line = dossier.productionModel?.materialLines?.find((m) => m.compositionText?.trim());
   return line?.compositionText?.trim() || undefined;
 }

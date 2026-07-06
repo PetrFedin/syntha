@@ -14,6 +14,21 @@ export const PLATFORM_CORE_HUB_CARD_ROW_ROLES = cn(
   'md:mx-0 md:grid md:grid-cols-2 md:gap-3 lg:grid-cols-2'
 );
 
+/** Hub split: роли в левой колонке — вертикальный стек. */
+export const PLATFORM_CORE_HUB_CARD_ROW_ROLES_VERTICAL = cn(
+  'flex w-full min-w-0 flex-col gap-1.5',
+  'md:max-w-[12rem]'
+);
+
+/** Hub: роли в одну строку, выравнивание по левому краю (размер карточки как в сетке). */
+export const PLATFORM_CORE_HUB_CARD_ROW_ROLES_HORIZONTAL = cn(
+  'flex w-full min-w-0 flex-wrap items-start justify-start gap-1.5 md:gap-3'
+);
+
+/** Фиксированная ширина карточки роли в горизонтальном ряду (= колонка vertical split). */
+export const PLATFORM_CORE_HUB_CARD_ROLE_HORIZONTAL_WIDTH =
+  'w-[min(68vw,12rem)] max-w-[12rem] shrink-0';
+
 /** Mobile carousel → md+ grid 3 колонки (столпы). */
 export const PLATFORM_CORE_HUB_CARD_ROW_PILLARS = cn(
   PLATFORM_CORE_HORIZONTAL_SCROLL,

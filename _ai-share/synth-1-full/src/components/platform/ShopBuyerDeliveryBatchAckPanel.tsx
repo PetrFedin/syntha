@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import type { PlatformCoreShopTrackingChain } from '@/hooks/use-platform-core-shop-tracking-chains';
 
 type TrackingRow = {

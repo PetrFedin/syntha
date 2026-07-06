@@ -16,6 +16,8 @@ import {
   shopAgentRepGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopAgentRepGoldenPathStrip';
 import { ShopAgentRepBrandCoPeerStrip } from '@/components/shop/b2b/ShopAgentRepBrandCoPeerStrip';
+import { ShopAgentRepCommissionLedgerRuStrip } from '@/components/shop/b2b/ShopAgentRepCommissionLedgerRuStrip';
+import { ShopAgentRepSectionRuStrip } from '@/components/shop/b2b/ShopAgentRepSectionRuStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { buildShopAgentRepSession, SHOP_AGENT_REP_DEMO_ID } from '@/lib/b2b/shop-agent-rep';
 import { fetchShopAgentRepCommissionSummary } from '@/lib/fashion/brand-agent-rep-ledger-store';
@@ -49,7 +51,8 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
   const [ledgerMode, setLedgerMode] = useState<'postgres' | 'file' | 'memory' | 'empty'>('empty');
   const [ledgerTotalRub, setLedgerTotalRub] = useState(0);
   const [draftCount, setDraftCount] = useState(0);
-  const [draftStorageMode, setDraftStorageMode] = useState<'file' | 'memory'>('memory');
+  const [draftStorageMode, setDraftStorageMode] = useState<'postgres' | 'file' | 'memory' | 'unavailable'>('memory');
+  const [linesheetShareReady, setLinesheetShareReady] = useState<boolean | null>(null);
 
   const refreshLedger = useCallback(async () => {
     const summary = await fetchShopAgentRepCommissionSummary(session.repId);
@@ -81,7 +84,16 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
   useEffect(() => {
     void fetchShopRepOfflineDrafts(session.repId).then(({ config, storageMode }) => {
       setDraftCount(config.drafts.length);
-      setDraftStorageMode(storageMode === 'file' ? 'file' : 'memory');
+      const mode =
+        storageMode === 'postgres'
+          ? 'postgres'
+          : storageMode === 'file'
+            ? 'file'
+            : storageMode === 'unavailable'
+              ? 'unavailable'
+              : 'memory';
+      setDraftStorageMode(mode);
+      setLinesheetShareReady(mode !== 'unavailable');
     });
   }, [session.repId]);
 
@@ -106,10 +118,14 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
 
   const requestPayout = useCallback(async () => {
     try {
-      const res = await fetch('/api/shop/b2b/commissions/payout-request', {
+      const res = await fetch('/api/shop/b2b/commissions/payout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repId: session.repId, orderIds: [session.demoOrderId] }),
+        body: JSON.stringify({
+          repId: session.repId,
+          orderIds: [session.demoOrderId],
+          action: 'payout_request',
+        }),
       });
       const json = (await res.json()) as { messageRu?: string };
       setPayoutMessage(json.messageRu ?? (res.ok ? 'Запрос отправлен' : 'Ошибка payout'));
@@ -125,7 +141,28 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
     );
     const json = (await res.json()) as { shareUrl?: string };
     setShareUrl(json.shareUrl ?? null);
+    setPayoutMessage(res.ok ? 'Share link создан' : `Share link: ошибка (${res.status})`);
   }, [session.demoCampaignId, session.repId]);
+
+  const shareLinesheetEmail = useCallback(async () => {
+    try {
+      const res = await fetch('/api/shop/b2b/linesheet/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          collectionId: session.demoCollectionId,
+          articleId: session.demoArticleId,
+          repId: session.repId,
+          email: 'buyer@demo.ru',
+        }),
+      });
+      const json = (await res.json()) as { messageRu?: string; shareUrl?: string; ok?: boolean };
+      setPayoutMessage(json.messageRu ?? (res.ok ? 'Linesheet share создан' : `Ошибка (${res.status})`));
+      if (json.shareUrl) setShareUrl(json.shareUrl);
+    } catch {
+      setPayoutMessage('Linesheet share: сеть недоступна');
+    }
+  }, [session.demoArticleId, session.demoCollectionId, session.repId]);
 
   const queueOfflineDraft = useCallback(async () => {
     const result = await appendShopRepOfflineDraft({
@@ -134,7 +171,15 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
       payload: { lines: [] },
     });
     setDraftCount(result.config.drafts.length);
-    setDraftStorageMode(result.storageMode === 'file' ? 'file' : 'memory');
+    const mode =
+      result.storageMode === 'postgres'
+        ? 'postgres'
+        : result.storageMode === 'file'
+          ? 'file'
+          : result.storageMode === 'unavailable'
+            ? 'unavailable'
+            : 'memory';
+    setDraftStorageMode(mode);
     setPayoutMessage(`Черновик сохранён (${result.config.drafts.length}) · ${result.storageMode ?? 'memory'}`);
   }, [session.demoCampaignId, session.repId]);
 
@@ -150,9 +195,11 @@ function useShopAgentRepActions(session: ReturnType<typeof buildShopAgentRepSess
     previewCommission,
     requestPayout,
     createShareLink,
+    shareLinesheetEmail,
     queueOfflineDraft,
     draftCount,
     draftStorageMode,
+    linesheetShareReady,
   };
 }
 
@@ -204,7 +251,7 @@ function ShopAgentRepPortalPanel({ session }: { session: ReturnType<typeof build
               <Link href={ROUTES.shop.b2bVipRoomBooking}>Записаться</Link>
             </Button>
             <Button size="sm" variant="outline" asChild>
-              <Link href={session.matrixHref}>Matrix order</Link>
+              <Link href={session.matrixHref}>Заказ в матрице</Link>
             </Button>
           </CardContent>
         </Card>
@@ -220,7 +267,7 @@ function ShopAgentRepPortalPanel({ session }: { session: ReturnType<typeof build
             <Link href={ROUTES.shop.b2bCatalog}>Каталог</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.matrixHref}>Matrix order</Link>
+            <Link href={session.matrixHref}>Заказ в матрице</Link>
           </Button>
         </CardContent>
       </Card>
@@ -233,35 +280,47 @@ function ShopAgentRepCommissionPanel({ session }: { session: ReturnType<typeof b
 
   return (
     <div className="space-y-4" data-testid="shop-agent-rep-commission-panel">
+      <ShopAgentRepCommissionLedgerRuStrip repId={session.repId} orderIds={[session.demoOrderId]} />
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary" data-testid={`shop-agent-rep-commission-source-${actions.ledgerMode}`}>
           {actions.ledgerMode === 'postgres'
-            ? 'PG ledger'
+            ? 'PG · реестр'
             : actions.ledgerMode === 'file'
-              ? 'File ledger'
+              ? 'Файл · реестр'
               : actions.ledgerMode === 'memory'
-                ? 'Memory ledger'
-                : 'Empty'}{' '}
+                ? 'Память · реестр'
+                : 'Пусто'}{' '}
           · {actions.ledgerTotalRub.toLocaleString('ru-RU')} ₽
-        </Badge>
-        <Badge variant="outline" data-testid={`shop-agent-rep-draft-source-${actions.draftStorageMode}`}>
-          Drafts: {actions.draftCount} · {actions.draftStorageMode}
         </Badge>
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Commission · share</CardTitle>
-          <CardDescription>RepSpark-style attribution и offline draft.</CardDescription>
+          <CardTitle className="text-base">Комиссия · доля</CardTitle>
+          <CardDescription>Атрибуция rep и офлайн-черновики.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" onClick={() => void actions.previewCommission()}>
-            Preview commission
+            Рассчитать комиссию
           </Button>
           <Button size="sm" variant="outline" onClick={() => void actions.createShareLink()}>
-            Share linesheet
+            Ссылка для клиента
           </Button>
-          <Button size="sm" variant="outline" onClick={() => void actions.queueOfflineDraft()}>
-            Offline draft
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={actions.linesheetShareReady === false}
+            data-testid="shop-agent-rep-linesheet-share"
+            onClick={() => void actions.shareLinesheetEmail()}
+          >
+            Лайншит по email
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={actions.draftStorageMode === 'unavailable'}
+            onClick={() => void actions.queueOfflineDraft()}
+          >
+            Офлайн-черновик
           </Button>
           {actions.commissionRub != null ? (
             <Badge variant="secondary">{actions.commissionRub.toLocaleString('ru-RU')} ₽</Badge>
@@ -276,13 +335,13 @@ function ShopAgentRepCommissionPanel({ session }: { session: ReturnType<typeof b
       </Card>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Commission ledger</CardTitle>
-          <CardDescription>Строки из workshop2_b2b_commissions по repId.</CardDescription>
+          <CardTitle className="text-base">Реестр комиссий</CardTitle>
+          <CardDescription>Строки workshop2_b2b_commissions по repId.</CardDescription>
         </CardHeader>
         <CardContent>
           {actions.ledgerLines.length === 0 ? (
             <p className="text-text-secondary text-sm" data-testid="shop-agent-rep-commission-empty">
-              Нет строк — нажмите Preview commission после submit заказа.
+              Нет строк — рассчитайте комиссию после submit заказа.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -303,7 +362,7 @@ function ShopAgentRepCommissionPanel({ session }: { session: ReturnType<typeof b
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Wallet className="h-4 w-4" /> Payout request
+            <Wallet className="h-4 w-4" /> Запрос выплаты
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -337,7 +396,7 @@ function ShopAgentRepMatrixPanel({ session }: { session: ReturnType<typeof build
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Matrix order entry</CardTitle>
+          <CardTitle className="text-base">Ввод заказа в матрице</CardTitle>
         </CardHeader>
         <CardContent>
           <B2bMatrixOrderGrid
@@ -377,6 +436,7 @@ function ShopAgentRepWorkspaceBody() {
       }
     >
       <div className="mb-4 space-y-3">
+        <ShopAgentRepSectionRuStrip repId={session.repId} />
         <ShopAgentRepGoldenPathStrip
           collectionId={collectionId}
           orderId={orderId}

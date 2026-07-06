@@ -3,7 +3,7 @@
 import {
   SYNTHA_STYLE_INTELLIGENCE_HERO,
   SYNTHA_STYLE_INTELLIGENCE_TAGLINE,
-} from '@/lib/marketing/syntha-style-intelligence-hero';
+} from '@/lib/platform-core-ports/legacy/marketing/syntha-style-intelligence-hero';
 
 /**
  * Рекламный hero hub Platform Core — тот же слайд, что на главной витрине:

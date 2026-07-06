@@ -14,7 +14,8 @@ describe('wave-ak comms CRM supplier logistics', () => {
       articleId: 'demo-ss27-01',
       orderId: 'B2B-DEMO-1',
     });
-    expect(session.rfqHref).toContain('pcf=rfq');
+    expect(session.rfqHref).toContain('/factory/supplier/rfq-inbox');
+    expect(session.rfqHref).not.toContain('pcf=rfq');
     expect(session.entitiesHref).toContain('pcf=entities');
   });
 

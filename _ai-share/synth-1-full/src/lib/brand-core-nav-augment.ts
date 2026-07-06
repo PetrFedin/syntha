@@ -19,6 +19,7 @@ import {
   W2_WORKSPACE_LEAD,
 } from '@/lib/platform-core-canonical-labels';
 import { sortCommsNavLinksMessagesFirst } from '@/lib/platform-core-nav-comms-order';
+import { withPlatformCoreNavHrefs } from '@/lib/platform-core-nav-augment';
 
 type NavLinkLike = {
   label: string;
@@ -105,7 +106,7 @@ function stripBrandNavLinkForCore<T extends NavLinkLike>(link: T): T {
 /** Доп. пункты меню для встроенных блоков (Range Planner, Materials) — только client nav. */
 export function augmentBrandNavGroupsForCore<T extends NavGroupLike>(groups: readonly T[]): T[] {
   if (!isPlatformCoreMode()) return [...groups];
-  return groups.map((g) => {
+  const out = groups.map((g) => {
     if (g.links) {
       const filtered = g.links
         .filter((l) => !BRAND_CORE_HIDDEN_LINK_VALUES.has(l.value))
@@ -248,4 +249,5 @@ export function augmentBrandNavGroupsForCore<T extends NavGroupLike>(groups: rea
     }
     return g;
   });
+  return withPlatformCoreNavHrefs(out);
 }

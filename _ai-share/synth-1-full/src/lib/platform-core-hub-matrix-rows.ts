@@ -7,7 +7,10 @@ import {
   brandB2bOrderHref,
   brandB2bOrdersAwaitingHandoffRegistryHref,
   brandCalendarB2bOrderContextHref,
+  brandDevelopmentArticleHref,
+  brandDevelopmentCabinetHref,
   brandMessagesB2bOrderContextHref,
+  brandMessagesWorkshop2ArticleContextHref,
   factoryMessagesB2bOrderContextHref,
   factoryMessagesWorkshop2ArticleContextHref,
   factoryProductionDossierHref,
@@ -18,12 +21,11 @@ import {
   shopB2bOrderHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import {
   PLATFORM_CORE_DEMO,
   getPlatformCoreCollectionLabel,
 } from '@/lib/platform-core-demo-context';
-import { WORKSHOP2_COL_PARAM, workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import type { CoreHubRoleRow } from '@/lib/platform-core-hub-matrix.types';
 import {
   brandLinesheetsHrefForDemo,
@@ -36,7 +38,7 @@ import {
 const { collectionId, demoOrderId, demoArticleId, productionOrderId } =
   PLATFORM_CORE_DEMO;
 
-const w2ArticleMessagesHref = `/brand/messages?contextType=workshop2_article&contextId=${encodeURIComponent(`${collectionId}:${demoArticleId}`)}`;
+const w2ArticleMessagesHref = brandMessagesWorkshop2ArticleContextHref(collectionId, demoArticleId);
 const factoryArticleMessagesHref = factoryMessagesWorkshop2ArticleContextHref(
   collectionId,
   demoArticleId
@@ -46,15 +48,14 @@ const factoryArticleMessagesSupplierHref = factorySupplierMessagesWorkshop2Artic
   demoArticleId
 );
 const factoryCalendarManufacturerHref = `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`;
-const w2ColHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${collectionId}`;
+const brandDevelopmentHref = brandDevelopmentCabinetHref(collectionId);
 const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
 const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
 const brandLinesheetsHref = brandLinesheetsHrefForDemo(PLATFORM_CORE_DEMO);
 const brandShowroomHref = brandShowroomHrefForDemo(PLATFORM_CORE_DEMO);
 const factoryDossierHref = factoryProductionDossierHref(demoArticleId, { collectionId });
-const brandW2DossierHref = workshop2ArticleHref(collectionId, demoArticleId, {
-  w2pane: 'tz',
-  w2sec: 'material',
+const brandArticleDevelopmentHref = brandDevelopmentArticleHref(collectionId, demoArticleId, {
+  section: 'material',
 });
 const factoryMaterialsHref = factoryMaterialsHrefForDemo(PLATFORM_CORE_DEMO);
 const factoryMaterialsProcurementHref = factoryMaterialsProcurementHrefForDemo(PLATFORM_CORE_DEMO);
@@ -75,7 +76,7 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
         title: 'Разработка артикулов до эталона',
         lead: 'Цех разработки: наброски, техзадание и досье — для коллекций и индивидуального пошива. Образцы передаются на производство.',
         actions: [
-          { label: 'Цех разработки · артикулы', href: w2ColHref },
+          { label: 'Цех разработки · артикулы', href: brandDevelopmentHref },
           { label: 'Планировщик ассортимента', href: ROUTES.brand.rangePlanner },
         ],
       },
@@ -100,8 +101,8 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
       },
       order_production: {
         kind: 'active',
-        title: 'Подтверждение и передача в цех',
-        lead: 'Принять финальный заказ, оформить производственный заказ и передать цеху с контекстом досье и техзадания.',
+        title: 'Исполнение заказа',
+        lead: 'Подтверждение опта, производственный заказ, передача в цех и контроль сырья — из кабинета бренда.',
         actions: [
           {
             label: 'Реестр · ожидает передачу',
@@ -113,7 +114,7 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
           },
           {
             label: hubDossierLabel,
-            href: brandW2DossierHref,
+            href: brandArticleDevelopmentHref,
           },
         ],
       },

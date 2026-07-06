@@ -21,9 +21,20 @@ import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { B2bOrderUrlContextBanner } from '@/components/b2b/B2bOrderUrlContextBanner';
 import {
-  ShopWholesaleMatrixGoldenPathStrip,
-  shopWholesaleMatrixGoldenPathStepFromFeature,
-} from '@/components/shop/b2b/ShopWholesaleMatrixGoldenPathStrip';
+  ShopCoGoldenPathStrip,
+  shopCoGoldenPathStepFromFeature,
+} from '@/components/shop/b2b/ShopCoGoldenPathStrip';
+import { ShopScLinesheetMatrixPrefillHint } from '@/components/shop/b2b/ShopScLinesheetMatrixPrefillHint';
+import { ShopScShowroomMatrixCarryHint } from '@/components/shop/b2b/ShopScShowroomMatrixCarryHint';
+import {
+  BRAND_SC_CROSS_MATRIX_CARRY_QTY_TOTAL_PARAM,
+  BRAND_SC_CROSS_MATRIX_LINESHEET_ARTICLE_IDS_PARAM,
+} from '@/lib/b2b/brand-sc-cross-matrix';
+import {
+  parseShopShowroomMatrixCarryFromSearchParams,
+  SHOP_SHOWROOM_MATRIX_CARRY_QTY_PARAM,
+  SHOP_SHOWROOM_MATRIX_CARRY_SIZE_PARAM,
+} from '@/lib/b2b/shop-showroom-eligible-for-matrix';
 
 function B2BMatrixPageInner() {
   const router = useRouter();
@@ -38,6 +49,14 @@ function B2BMatrixPageInner() {
     w2col: searchParams.get('w2col'),
   });
   const focusArticleId = searchParams.get('article')?.trim() || undefined;
+  const linesheetArticleIdsParam = searchParams.get(
+    BRAND_SC_CROSS_MATRIX_LINESHEET_ARTICLE_IDS_PARAM
+  );
+  const linesheetCarryQtyParam = searchParams.get(BRAND_SC_CROSS_MATRIX_CARRY_QTY_TOTAL_PARAM);
+  const showroomCarry = parseShopShowroomMatrixCarryFromSearchParams({
+    carryQty: searchParams.get(SHOP_SHOWROOM_MATRIX_CARRY_QTY_PARAM),
+    carrySize: searchParams.get(SHOP_SHOWROOM_MATRIX_CARRY_SIZE_PARAM),
+  });
   const orderId =
     searchParams.get('order') ??
     searchParams.get('orderId') ??
@@ -88,18 +107,28 @@ function B2BMatrixPageInner() {
             beforeTabs={<B2bOrderUrlContextBanner variant="shop" />}
           >
             <div className="mb-4">
-              <ShopWholesaleMatrixGoldenPathStrip
+              <ShopCoGoldenPathStrip
                 collectionId={collectionId}
                 orderId={orderId}
-                articleId={focusArticleId ?? prepackApply?.articleId}
-                activeStep={shopWholesaleMatrixGoldenPathStepFromFeature(activeFeatureId)}
+                activeStep={shopCoGoldenPathStepFromFeature(activeFeatureId)}
               />
             </div>
+            {activeFeatureId === 'matrix' ? (
+              <ShopScLinesheetMatrixPrefillHint
+                linesheetArticleIdsParam={linesheetArticleIdsParam}
+                carryQtyTotalParam={linesheetCarryQtyParam}
+              />
+            ) : null}
+            {activeFeatureId === 'matrix' ? (
+              <ShopScShowroomMatrixCarryHint articleId={focusArticleId} carry={showroomCarry} />
+            ) : null}
             {activeFeatureId === 'matrix' ? (
               <CoreWholesaleMatrix
                 collectionId={collectionId}
                 buyerName="Партнёр"
                 focusArticleId={focusArticleId ?? prepackApply?.articleId}
+                carryQty={showroomCarry.carryQty}
+                carrySize={showroomCarry.carrySize}
                 onOpenArticleInspector={openInspector}
                 prepackApply={prepackApply}
                 hideCabinetGoldenPath

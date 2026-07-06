@@ -22,14 +22,14 @@ type Props = {
 };
 
 const STEPS: { id: BrandOrderCommsGoldenPathStepId; label: string }[] = [
-  { id: 'registry', label: 'Registry' },
-  { id: 'detail', label: 'Detail' },
-  { id: 'chat', label: 'Chat' },
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'shop-matrix', label: 'Shop matrix' },
-  { id: 'checkout', label: 'Checkout' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
-  { id: 'factory-queue', label: 'Factory queue' },
+  { id: 'registry', label: 'Реестр' },
+  { id: 'detail', label: 'Карточка' },
+  { id: 'chat', label: 'Чат' },
+  { id: 'handoff', label: 'Передача' },
+  { id: 'shop-matrix', label: 'Матрица магазина' },
+  { id: 'checkout', label: 'Оформление' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
+  { id: 'factory-queue', label: 'Очередь цеха' },
 ];
 
 export function BrandOrderCommsGoldenPathStrip({

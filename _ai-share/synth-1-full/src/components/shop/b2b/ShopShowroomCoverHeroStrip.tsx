@@ -16,10 +16,10 @@ export function ShopShowroomCoverHeroStrip({
   hero,
   testId = 'shop-showroom-cover-hero',
   className,
-  heightClass = 'h-14',
+  heightClass = 'h-12 md:h-20',
 }: Props) {
   return (
-    <div className={cn('relative w-full overflow-hidden', className)} data-testid={testId}>
+    <div className={cn('relative w-full min-w-0 overflow-hidden rounded-lg border border-border-subtle', className)} data-testid={testId}>
       <div
         className={cn('bg-bg-surface2 w-full bg-cover bg-center', heightClass)}
         style={{ backgroundImage: `url(${hero.url})` }}

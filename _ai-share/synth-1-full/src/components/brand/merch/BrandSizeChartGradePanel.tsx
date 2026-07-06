@@ -143,7 +143,7 @@ export function BrandSizeChartGradePanel({
           <Link href={w2SizeHref}>W2 · size chart</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={prepackHref}>Shop pre-pack</Link>
+          <Link href={prepackHref}>Прекпак магазина</Link>
         </Button>
       </div>
 

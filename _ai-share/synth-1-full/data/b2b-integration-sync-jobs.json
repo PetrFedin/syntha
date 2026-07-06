@@ -1,23 +1,4 @@
 {
   "schemaVersion": 1,
-  "jobs": [
-    {
-      "id": "sync-1781797329773-ied8e",
-      "kind": "orders_import",
-      "status": "completed",
-      "platform": "joor",
-      "createdAt": "2026-06-18T15:42:09.773Z",
-      "startedAt": "2026-06-18T15:42:09.773Z",
-      "finishedAt": "2026-06-18T15:42:09.773Z",
-      "resultCount": 1
-    },
-    {
-      "id": "sync-1781797260965-pss1c",
-      "kind": "orders_import",
-      "status": "running",
-      "platform": "joor",
-      "createdAt": "2026-06-18T15:41:00.965Z",
-      "startedAt": "2026-06-18T15:41:00.966Z"
-    }
-  ]
+  "jobs": []
 }

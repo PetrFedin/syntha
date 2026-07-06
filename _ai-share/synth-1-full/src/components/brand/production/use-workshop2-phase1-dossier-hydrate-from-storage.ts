@@ -4,6 +4,7 @@ import { useEffect, type Dispatch, type MutableRefObject, type SetStateAction } 
 import type { HandbookCheckSnapshot } from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-check-snapshot';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { isPlatformCoreGoldenCollectionId } from '@/lib/platform-core-demo-context';
+import { shouldPersistPhase1DossierOfflineDualWrite } from '@/lib/production/workshop2-pg-read-path-policy';
 import { loadWorkshop2DossierFromApi } from '@/lib/production/workshop2-api-client';
 import {
   emptyWorkshop2DossierPhase1,
@@ -38,7 +39,7 @@ function normalizeHydratedDossier(
   const moqPatched =
     normalized.passportProductionBrief?.moqTargetMaxPieces !==
     raw.passportProductionBrief?.moqTargetMaxPieces;
-  if (moqPatched && !tzWriteDisabled) {
+  if (moqPatched && !tzWriteDisabled && shouldPersistPhase1DossierOfflineDualWrite()) {
     setWorkshop2Phase1Dossier(collectionId, articleId, normalized);
   }
   return normalized;
@@ -84,7 +85,7 @@ export function useWorkshop2Phase1DossierHydrateFromStorage(p: {
             articleSku,
             tzWriteDisabled
           );
-          if (!tzWriteDisabled) {
+          if (!tzWriteDisabled && shouldPersistPhase1DossierOfflineDualWrite()) {
             setWorkshop2Phase1Dossier(collectionId, articleId, normalized);
           }
           setDossierInternal(normalized);

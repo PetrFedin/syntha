@@ -13,8 +13,6 @@ import {
 } from '@/lib/shop/shop-b2b-partnerships';
 import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
 import { useShopB2bPartnerships } from '@/hooks/use-shop-b2b-partnerships';
-import { buildShopB2bPartnersSession } from '@/lib/b2b/shop-b2b-partners-workspace';
-import { ShopScCabinetGoldenPathStrip } from '@/components/platform/ShopScCabinetGoldenPathStrip';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { ShopB2bPartnerInviteRequestPanel } from '@/components/shop/ShopB2bPartnerInviteRequestPanel';
 
@@ -54,7 +52,6 @@ export function ShopB2bPartnersDiscoverGrid({ collectionId }: Props) {
     [partnerships, collectionId, source]
   );
   const connectedPartners = displayPartners.filter((p) => p.status === 'connected');
-  const session = buildShopB2bPartnersSession({ collectionId });
 
   return (
     <div
@@ -73,12 +70,6 @@ export function ShopB2bPartnersDiscoverGrid({ collectionId }: Props) {
             ? 'PG недоступен · показан каталог'
             : `${connectedPartners.length} подключён · ${getPlatformCoreCollectionLabel(collectionId)}${source === 'pg' ? ' · PG' : source === 'fallback' ? ' · каталог' : ''}`}
       </p>
-      <ShopScCabinetGoldenPathStrip collectionId={collectionId} />
-      <div className="mb-3 flex flex-wrap gap-2">
-        <Button size="sm" variant="outline" asChild>
-          <Link href={session.rosterHref}>Roster</Link>
-        </Button>
-      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {displayPartners.map((brand) => {
           const connected = brand.status === 'connected';

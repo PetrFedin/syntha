@@ -97,7 +97,7 @@ export function Workshop2Core1MatrixBridgeCard() {
             «PO → матрица», чтобы подтянуть id строк из плана в выходы этапа без ручного ввода.
           </p>
           <p className="text-[10px] font-semibold">
-            Handoff в серию (до «Площадка и сроки»):{' '}
+            Передача в серию (до «Площадка и сроки»):{' '}
             {state.seriesHandoffReady ? (
               <span className="text-emerald-800">предпосылки закрыты</span>
             ) : (

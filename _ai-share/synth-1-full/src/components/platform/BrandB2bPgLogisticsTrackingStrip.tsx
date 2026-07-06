@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Truck } from 'lucide-react';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { isPlatformCorePgLogisticsWholesaleOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 

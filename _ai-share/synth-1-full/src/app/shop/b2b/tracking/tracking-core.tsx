@@ -12,12 +12,12 @@ import {
   ShopOrderCommsChatPanel,
 } from '@/components/shop/b2b/ShopOrderCommsPanels';
 import { ShopOrderCommsTrackingBridgePanel } from '@/components/shop/b2b/ShopOrderCommsTrackingBridgePanel';
+import { ShopOpTrackingSpinePeerStrip } from '@/components/platform/ShopOpTrackingSpinePeerStrip';
 import { OrderCommsWorkspaceNotificationBar } from '@/components/platform/OrderCommsWorkspaceNotificationBar';
 import {
   ShopOrderCommsGoldenPathStrip,
   shopOrderCommsGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopOrderCommsGoldenPathStrip';
-import { ShopCmOrderContextPeerStrip } from '@/components/platform/ShopCmOrderContextPeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
@@ -36,15 +36,10 @@ function ShopB2bTrackingWorkspaceBody() {
     <PillarCapabilityWorkspaceChrome
       workspaceId="shop-order-comms"
       ctx={ctx}
-      crossLinksTitle="Matrix → collaborative → replenishment"
+      crossLinksTitle="Матрица → совместный заказ → пополнение"
       className="min-w-0"
     >
       <OrderCommsWorkspaceNotificationBar variant="shop" />
-      {orderId ? (
-        <div className="mb-4">
-          <ShopCmOrderContextPeerStrip collectionId={collectionId} orderId={orderId} />
-        </div>
-      ) : null}
       <div className="mb-4">
         <ShopOrderCommsGoldenPathStrip
           orderId={orderId}
@@ -54,6 +49,9 @@ function ShopB2bTrackingWorkspaceBody() {
       </div>
       {activeFeatureId === 'tracking' ? (
         <div className="min-w-0 space-y-3">
+          {orderId ? (
+            <ShopOpTrackingSpinePeerStrip collectionId={collectionId} orderId={orderId} />
+          ) : null}
           <ShopOrderCommsTrackingBridgePanel orderId={orderId} collectionId={collectionId} />
           <PlatformCoreShopB2bTrackingPanel />
         </div>
@@ -72,7 +70,7 @@ export function ShopB2bTrackingCorePage() {
   return (
     <CabinetPageContent
       maxWidth="4xl"
-      className="min-w-0 space-y-6"
+      className="min-w-0 space-y-6 pb-safe"
       data-testid={tid.page('shop-b2b-tracking')}
     >
       <PlatformCoreListChrome highlightRole="shop" pillarId="comms">

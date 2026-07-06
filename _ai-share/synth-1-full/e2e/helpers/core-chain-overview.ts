@@ -3,7 +3,40 @@ import { expect, type APIRequestContext, type Locator, type Page, type Response 
 /** chain-overview на cold PG может занимать >60s на hub. */
 export const CHAIN_OVERVIEW_TIMEOUT_MS = 120_000;
 
+/** Не блокируем viewport-smoke дольше — hub shell виден без overview. */
+export const CHAIN_OVERVIEW_RACE_MS = 25_000;
+
 const GOTO = { waitUntil: 'domcontentloaded' as const, timeout: 60_000 };
+const PLANNER_GOTO = { waitUntil: 'domcontentloaded' as const, timeout: 120_000 };
+
+function hubLandingNeedsChainOverview(path: string): boolean {
+  if (path === '/platform') return true;
+  if (path.startsWith('/platform?')) return true;
+  return false;
+}
+
+function hubShellLocator(page: Page): Locator {
+  return page
+    .getByTestId('platform-core-syntha-style-banner')
+    .or(page.getByTestId('platform-core-hub-main-column'))
+    .or(page.getByTestId('platform-core-hub-quick-entry'))
+    .or(page.getByTestId('platform-core-role-blocks'))
+    .or(page.getByTestId('platform-core-planner-page'))
+    .first();
+}
+
+/** chain-overview или hub shell — что наступит раньше (не вешаем smoke на 120s). */
+async function awaitHubChainOverview(
+  page: Page,
+  chainOverview: Promise<Response> | null
+): Promise<void> {
+  if (!chainOverview) return;
+  await Promise.race([
+    chainOverview.catch(() => undefined),
+    hubShellLocator(page).waitFor({ state: 'visible', timeout: CHAIN_OVERVIEW_RACE_MS }),
+    page.waitForTimeout(CHAIN_OVERVIEW_RACE_MS),
+  ]).catch(() => undefined);
+}
 
 export function waitForChainOverview(
   page: Page,
@@ -32,9 +65,9 @@ export async function gotoPlatformHub(
   const qs = params.toString();
   const url = qs ? `${path}?${qs}` : path;
 
-  const chainOverview = waitForChainOverview(page, {
-    collectionId: options?.collectionId,
-  });
+  const chainOverview = hubLandingNeedsChainOverview(path)
+    ? waitForChainOverview(page, { collectionId: options?.collectionId })
+    : null;
 
   let res: Response | null = null;
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -42,8 +75,61 @@ export async function gotoPlatformHub(
     if ((res?.status() ?? 599) < 500) break;
     await page.waitForTimeout(750);
   }
-  await chainOverview;
+  await awaitHubChainOverview(page, chainOverview);
   return res;
+}
+
+/** Planner route — без ожидания chain-overview (shell сам fetch'ит в фоне). */
+export async function gotoPlatformPlanner(
+  page: Page,
+  options?: { collectionId?: string; query?: Record<string, string> }
+): Promise<Response | null> {
+  const params = new URLSearchParams(options?.query);
+  if (options?.collectionId) params.set('collection', options.collectionId);
+  const qs = params.toString();
+  const url = qs ? `/platform/planner?${qs}` : '/platform/planner';
+
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    res = await page.goto(url, PLANNER_GOTO);
+    if ((res?.status() ?? 599) < 500) break;
+    await page.waitForTimeout(750);
+  }
+  await page.getByTestId('platform-core-planner-page').waitFor({
+    state: 'visible',
+    timeout: 90_000,
+  }).catch(() => undefined);
+  return res;
+}
+
+/** Quick-entry: роль → кабинет default pillar (`/brand/core?pillar=` и т.д.). */
+export async function clickHubRoleQuickEntry(
+  page: Page,
+  roleId: 'brand' | 'shop' | 'manufacturer' | 'supplier',
+  options?: { timeout?: number }
+): Promise<void> {
+  const timeout = options?.timeout ?? 90_000;
+  const block = page.getByTestId(`role-block-${roleId}`);
+  await expect(block).toBeVisible({ timeout });
+  const href = await block.getAttribute('href');
+  expect(href, 'role-block href').toBeTruthy();
+
+  await block.click();
+  const navigated = await page
+    .waitForURL(/\/core\?.*pillar=/, { timeout: 15_000, waitUntil: 'commit' })
+    .then(() => true)
+    .catch(() => false);
+
+  if (!navigated) {
+    const target = href!.startsWith('http') ? href! : new URL(href!, page.url()).href;
+    await gotoRoleCoreCabinet(page, target);
+  }
+
+  await expect(page).toHaveURL(/\/core\?.*pillar=/, { timeout });
+  await page
+    .getByTestId(`role-core-cabinet-${roleId}`)
+    .waitFor({ state: 'visible', timeout: 90_000 })
+    .catch(() => undefined);
 }
 
 /** Hub по умолчанию в режиме «Продукт» — матрица только в «Оценка». */
@@ -105,7 +191,7 @@ export async function gotoRoleCoreCabinet(
     : null;
   let res: Response | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
-    res = await page.goto(url, GOTO);
+    res = await page.goto(url, { waitUntil: 'commit', timeout: 180_000 });
     if ((res?.status() ?? 599) < 500) break;
     await page.waitForTimeout(750);
   }
@@ -197,6 +283,44 @@ export async function expectCabinetAboveFold(page: Page): Promise<void> {
     return { ok: true };
   }, hasPillarInUrl);
   expect(aboveFold.ok, aboveFold.reason).toBe(true);
+}
+
+/** Order detail: rail справа lg+, cross-role под контентом < lg. */
+export async function expectOrderDetailResponsiveLayout(page: Page): Promise<void> {
+  await expect(page.getByTestId('platform-core-order-detail-chrome')).toBeVisible({
+    timeout: 60_000,
+  });
+
+  const layout = await page.evaluate(() => {
+    const vw = window.innerWidth;
+    const isLg = vw >= 1024;
+    const rail = document.querySelector('[data-testid="platform-core-order-detail-rail"]');
+    const mobile = document.querySelector(
+      '[data-testid="platform-core-order-detail-cross-role-mobile"]'
+    );
+    const facts = document.querySelector('[data-testid="platform-core-b2b-order-facts"]');
+    if (!mobile) return { ok: false, reason: 'missing mobile cross-role' };
+    if (isLg) {
+      if (!rail) return { ok: false, reason: 'missing desktop rail' };
+      const railRect = rail.getBoundingClientRect();
+      if (railRect.width < 8) return { ok: false, reason: 'rail not visible on lg' };
+      if (mobile.getBoundingClientRect().height > 4) {
+        return { ok: false, reason: 'mobile cross-role visible on lg' };
+      }
+      return { ok: true };
+    }
+    if (rail && rail.getBoundingClientRect().width > 8) {
+      return { ok: false, reason: 'rail visible below lg' };
+    }
+    if (!facts) return { ok: false, reason: 'missing order facts' };
+    const factsBottom = facts.getBoundingClientRect().bottom;
+    const mobileTop = mobile.getBoundingClientRect().top;
+    if (mobileTop < factsBottom - 8) {
+      return { ok: false, reason: 'cross-role above facts' };
+    }
+    return { ok: true };
+  });
+  expect(layout.ok, layout.reason).toBe(true);
 }
 
 /** md+: aside и panel в одной строке. */

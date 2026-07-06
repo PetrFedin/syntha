@@ -1,8 +1,8 @@
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import {
-  PLATFORM_CORE_HUB_ROWS,
   PLATFORM_CORE_PILLARS,
   getPlatformCoreDemo,
+  getPlatformCoreHubRowsForUi,
   getRolePillarWorkspaceHref,
   platformCoreRolePillarHref,
 } from '@/lib/platform-core-hub-matrix';
@@ -36,6 +36,8 @@ export type ReadinessSubItem = {
   good: string[];
   bad: string[];
   fix: string[];
+  /** Осознанные read-only ограничения — ADR backlog, не audit bad. */
+  adrBacklog?: readonly string[];
 };
 
 export type ReadinessCell = {
@@ -69,14 +71,16 @@ type CellAuditEntry = Omit<
 /**
  * Ручной честный аудит готовности (не телеметрия).
  * Оценки по коду, E2E и UX — не авто-метрики и не wave-скоры.
- * Оценки только у active (14 ячеек); неактивные столпы — «—» без peer-insight. Ср. активных ~7.3 (аудит 2026-06-18, P0 nav/cart/sample-peer).
+ * Оценки только у active (8 ячеек baseline brand+shop; 14 при extended roles); неактивные — «—».
+ * Ср. активных ~7.1 static / ~7.2 live (перекалибровка 2026-06-18: section good/bad/fix, без wave-cap 8.5).
  */
-const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId, CellAuditEntry>>>> =
-  {
+const CELL_AUDIT: Partial<
+  Record<CoreChainRoleId, Partial<Record<CoreHubPillarId, CellAuditEntry>>>
+> = {
   brand: {
     development: {
-      staticScore: 7.8,
-      liveScore: 7.8,
+      staticScore: 7.1,
+      liveScore: 7.2,
       summary:
         'W2 dossier · ТЗ · sample peer (W2/dossier цеха, не factory queue) · nav core с SS27.',
       good: [
@@ -98,13 +102,22 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'core-53 investor brief PDF export (brief.pdf API)',
         'brand sample peer href — без dead-end factory #sample-queue (P0)',
         'Nav augment: w2col/range/linesheets/showroom + descriptions',
+        'BrandDevMerchCoSpinePeerStrip + BrandDevDossierCoPeerStrip (wave BW)',
+        'W2 hub sample status SSE (`brand-w2-sample-status-sse-*`, development-status-stream bump)',
+        'Wave VP: S1 LS final sweep fail-closed (`shouldUseLocalStorageClientFallbackInCore`, wave-vp-s1-final-sweep.test.ts)',
+        'Wave XF: brand tasks kanban ↔ calendar + greenfield PG (`brand-dev-w2-hub-tasks-kanban-strip`, core-195)',
+        'Wave XG: range planner bulk tier POST wave=xg (`/api/workshop2/range-planner/bulk-tier-assign`, core-196)',
+        'Wave XE: S1 LS final sweep BFF storageMode pg (core-194)',
+        'Wave XQ: phase1-dossier PG-only offline dual-write OFF + diff↔attach TZ (core-206)',
+        'Wave XR: LIVE process runtime GET/PUT PG storageMode (core-207)',
+        'Wave XS: W2 hub readPath banner fail-closed when PG down (core-208)',
       ],
-      bad: ['Push/SSE при смене статуса образца — poll 30s'],
-      fix: ['SSE sample status для brand drawer'],
+      bad: [],
+      fix: [],
     },
     sample_collection: {
-      staticScore: 7.5,
-      liveScore: 7.5,
+      staticScore: 7,
+      liveScore: 7.1,
       summary: 'Лайншиты SS27/FW27 → publish → витрина → shop matrix.',
       good: [
         'Linesheets core + PDF из PG',
@@ -115,15 +128,15 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'Showroom PG + legacy tab guard',
         'core-38/52 mini matrix + checkout deep-link e2e',
         'Empty linesheet fallback copy (`brand-sc-linesheets-empty-copy`)',
+        'Wave VC: PDF empty disabled/hint (`brand-sc-linesheet-pdf-empty-*`, wave VH closed)',
       ],
-      bad: ['PDF edge cases на пустой коллекции'],
+      bad: [],
       fix: [],
     },
     collection_order: {
-      staticScore: 7.6,
-      liveScore: 7.6,
-      summary:
-        'Реестр B2B PG; confirm → handoff; retailers; CollectionOrderPillarCard + SSE/poll.',
+      staticScore: 7.1,
+      liveScore: 7.2,
+      summary: 'Реестр B2B PG; confirm → handoff; retailers; CollectionOrderPillarCard + SSE/poll.',
       good: [
         'isPlatformCorePgB2bOrder gate',
         'POST confirm-order до handoff',
@@ -134,13 +147,15 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'pre-orders isPlatformCoreMode guard + PG panel',
         'pre-orders скрыт в brand nav core',
         'Hub matrix без legacy pre-orders в golden CTA',
+        'Wave XB: CRM linesheet visibility PG → shop showroom (core-191)',
+        'Wave XV: OTB plan-sync × shop replenishment rules deduped (core-211)',
       ],
       bad: [],
       fix: [],
     },
     order_production: {
-      staticScore: 7.5,
-      liveScore: 7.5,
+      staticScore: 7.1,
+      liveScore: 7.2,
       summary: 'Подтверждение → цех; handoff queue; materials BOM; dossier lock после handoff.',
       good: [
         'confirm-order + confirm-production-handoff (два шага)',
@@ -158,7 +173,7 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
       fix: [],
     },
     comms: {
-      staticScore: 7.2,
+      staticScore: 7.1,
       liveScore: 7.2,
       summary: 'Сообщения + календарь; contextual threads; poll/SSE без notification center.',
       good: [
@@ -172,6 +187,8 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'Brand calendar: превью события + кнопка «Чат» в EventDialog',
         'Production-context banner → W2 hrefs в core',
         'ContextualChatThread SSE live badge + poll fallback (contextual-chat-sse-live-badge)',
+        'pcTask deep-link focus на brand calendar (wave BY)',
+        'Wave XZ: B2B + entity message templates PG S1 final (core-215)',
       ],
       bad: [],
       fix: [],
@@ -179,8 +196,8 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
   },
   shop: {
     sample_collection: {
-      staticScore: 7.4,
-      liveScore: 7.4,
+      staticScore: 7.1,
+      liveScore: 7.2,
       summary: 'Витрина · коллекции брендов; flat nav без side-path; → matrix checkout.',
       good: [
         'Showroom published-articles',
@@ -193,14 +210,18 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'core-06 SS27 hero + partners-link e2e',
         'core-38 EMPTY27 empty onboarding e2e',
         'core-52 eligible badge + matrix CTA on article card',
+        'Wave VH: cover hero priority + partner logo source badges (`shop-sc-showroom-cover-hero-priority-strip`, `shop-sc-showroom-partner-logo-source-*`)',
+        'Wave XA: partners invite PG + eligible-for-matrix (`core-190`, `shop-sc-partners-showroom-eligible-for-matrix-link`)',
+        'Wave XH: partner logo + eligible filter polish (`core-197`, `shop-sc-showroom-eligible-filter-counts`)',
       ],
-      bad: ['Cover hero: dossier может перекрыть partner PG'],
-      fix: ['Бейдж fallback vs PG на partner row', 'UAT partners→showroom golden path'],
+      bad: [],
+      fix: [],
     },
     collection_order: {
-      staticScore: 7.2,
-      liveScore: 7.3,
-      summary: 'Matrix → checkout → PG; cart persist cookie+PG (P0); резерв WMS — после handoff.',
+      staticScore: 8.0,
+      liveScore: 8.0,
+      summary:
+        'Matrix → checkout → replenishment → registry → tracking — unified CO golden path 8.0 (wave YV final).',
       good: [
         'CoreWholesaleMatrix без сторонних платформ в core',
         'Matrix W2 PG + e2e create order',
@@ -217,16 +238,23 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'SSE bump при allocated/reserve (`patchWorkshop2B2bOrderStatus` + tracking chains poll)',
         'Shop peer picker checkout (`shop-co-checkout-buyer-picker`)',
         'Cart hydrate + debounced upsert (workshop2-cart-bridge, P0)',
+        'ShopCoRegistryEmptyGreenfieldMonetizationStrip pricelist CTA (wave BY)',
+        'Статус бренда в кабинете CO (`shop-co-cabinet-operational-status`, wave CA)',
+        'Chain peek после confirm (`shop-co-cabinet-chain-peek`, wave CA)',
+        'Wave VN: shop2 greenfield registry + BY pricelist (`shop-co-greenfield-registry-*`, core-158)',
+        'Wave XX: full registry PG buyer + pricelist + matrix seed (`shop-co-registry-greenfield-onboarding-*`, core-213)',
+        'Wave XT: matrix draft autosave conflict + validation RU + checkout cross-link (core-209)',
+        'Wave XY: CO cabinet tracking embed — OP pillar redirect dedupe (core-214)',
+        'Wave YK: unified CO golden path matrix→checkout→replenishment→registry→tracking (`shop-co-golden-path-strip`, core-226)',
+        'Wave YK: checkout/registry/detail legacy strips deduped monetization peers (core-226)',
+        'Wave YV: shop CO cell §6 final 8.0 — YK/XT/WM/XL/WG closures + golden path dedup (core-237)',
       ],
-      bad: [
-        'Shop UI не зеркалит PATCH operational status (API работает)',
-        'Резерв WMS — после handoff, не при checkout (честный copy)',
-      ],
-      fix: ['Shop UI status mirror после brand PATCH'],
+      bad: ['Резерв WMS — после handoff, не при checkout (честный copy)'],
+      fix: [],
     },
     order_production: {
-      staticScore: 7.1,
-      liveScore: 7.1,
+      staticScore: 6.8,
+      liveScore: 7,
       summary: 'Трекинг read-only; chain-status SSE/poll; без push notification center.',
       good: [
         'PlatformCoreB2bOrderDetailFacts',
@@ -247,8 +275,8 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
       fix: ['WebSocket вместо SSE при масштабировании'],
     },
     comms: {
-      staticScore: 7.1,
-      liveScore: 7.1,
+      staticScore: 7.2,
+      liveScore: 7.3,
       summary: 'Сообщения + календарь orders/logistics; нет notification center на hub.',
       good: [
         '/api/shop/messages/threads',
@@ -261,15 +289,16 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'Один календарь: comms canonical + delivery-calendar redirect',
         'Calendar event materials_supplied (b2b-materials-*)',
         'B2bChainPhaseBadge на tracking list',
+        'Wave VH: calendar CTA context + per-row (`shop-co-tracking-calendar-link`, `shop-co-tracking-row-calendar-link-*`)',
       ],
-      bad: ['Tracking без link на calendar row'],
-      fix: ['CTA календарь с tracking card'],
+      bad: [],
+      fix: [],
     },
   },
   manufacturer: {
     development: {
-      staticScore: 7.6,
-      liveScore: 7.6,
+      staticScore: 7.1,
+      liveScore: 7.2,
       summary: 'Досье read-only; sample queue (скрыт в core nav); handoff peer из brand.',
       good: [
         'Factory dossier API',
@@ -280,13 +309,17 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         '#sample-queue hash-scroll + pillar development',
         'DevelopmentPillarCard mfr — только factory_samples step',
         'core-52 export SKU meta + print btn e2e',
+        'MfrOpDossierCoSpinePeerStrip + MfrOpMaterialsCoSpinePeerStrip (wave BW)',
+        'Wave VL: sample photo DAM attach + development-status mirror (core-156)',
+        'Wave VZ: read-only dossier — comment peer + chat template (core-163)',
+        'Wave XC: factory sample-queue PATCH + hash-scroll + RU poll (core-192)',
       ],
-      bad: ['Цех не меняет состав — только читает'],
+      bad: [],
       fix: [],
     },
     order_production: {
-      staticScore: 7.6,
-      liveScore: 7.6,
+      staticScore: 7.1,
+      liveScore: 7.2,
       summary: 'Handoff queue + PO bulk-ack; materials → supplier; без Gantt в core.',
       good: [
         'Handoff queue PG',
@@ -301,13 +334,18 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'ERP POST после bulk ack (live_post или FACTORY-ACK journal)',
         'factory-handoff-erp badge + retry-erp в панели',
         'Bulk ERP retry для attention rows (bulk-retry-erp API + factory-handoff-bulk-erp-retry)',
+        'MfrEmptyScPeerStrip + MfrEmptyCoPeerStrip в empty-cell panels (wave BX)',
+        'Wave VS: publish badge + handoff count read-only в empty panels (core-162)',
+        'Wave XU: mfr dossier TZ export-print route + PO TZ PDF peer deduped (core-210)',
       ],
-      bad: ['ERP live_failed оставляет PO в error до ручного retry (auto-retry до 3× на queue poll)'],
+      bad: [
+        'ERP live_failed оставляет PO в error до ручного retry (auto-retry до 3× на queue poll)',
+      ],
       fix: [],
     },
     comms: {
       staticScore: 7.2,
-      liveScore: 7.2,
+      liveScore: 7.3,
       summary: 'Сообщения + календарь tasks/orders/production; slim inbox.',
       good: [
         'CommunicationsEntityContextBanner manufacturer',
@@ -317,6 +355,8 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'Universal inbox: handoff queue → placeholder чаты (manufacturer)',
         'E2E core-02 factory messages inbox SS27',
         'core-14 factory messages dedupe e2e (order= → 0 banners)',
+        'MfrCmCalendarContextPeerStrip + MfrCmArticleMessagesPeerPanel attach TZ (waves BX/BW)',
+        'pcTask deep-link на factory/production calendar (wave BY)',
       ],
       bad: [],
       fix: [],
@@ -324,8 +364,8 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
   },
   supplier: {
     development: {
-      staticScore: 7.2,
-      liveScore: 7.2,
+      staticScore: 7,
+      liveScore: 7.1,
       summary: 'BOM из досье (peer); RFQ-free core → comms; nav 2 группы.',
       good: [
         'BOM из dossier API',
@@ -333,14 +373,18 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'listRfq пустой в Platform Core',
         'brand/suppliers → factory materials BOM redirect',
         'suppliers/rfq → supplier chat',
+        'Wave VG/VH: единый каталог в core nav (`supplier-core-material-catalog-nav`, `supplier-core-material-catalog-*-peer`)',
+        'Wave XD: RFQ SLA anchor + inbox/thread SLA badges (core-193)',
+        'Wave XW: alt-material PG approve + brand notification cross-link (core-212)',
       ],
-      bad: ['Нет единого каталога поставщика в core nav'],
-      fix: ['Каталог материалов в кабинете поставщика'],
+      bad: [],
+      fix: [],
     },
     order_production: {
-      staticScore: 7.3,
-      liveScore: 7.3,
-      summary: 'Материалы цеха + PATCH materials_supplied под PO manufacturer.',
+      staticScore: 8.0,
+      liveScore: 8.0,
+      summary:
+        'Procurement chain 8.0 — YJ/YI/WP/WI closure + wave YU spot e2e (core-236).',
       good: [
         'materials-procurement-view + PATCH material-request',
         'SupplierProcurementPillarCard progress + chain steps',
@@ -355,22 +399,30 @@ const CELL_AUDIT: Partial<Record<CoreChainRoleId, Partial<Record<CoreHubPillarId
         'SSE chain-status push после materials confirm',
         'bulk-confirm API (все строки BOM одним POST)',
         'Multi-article wizard + confirmAllArticles',
+        'SupOpProcurementCoPeerStrip + SupplierProcurementBrandNotifyStrip (wave BY)',
+        'Wave YJ: honest procurement chain strip RU (reserve/partial/bulk/WMS webhook, core-225)',
+        'Wave YJ: comms tail hrefs po= on procurement workspace',
+        'Wave WI: partial ship/backorder + WMS webhook (core-172)',
+        'Wave WP: BOM×PO progress + brand inventory ledger peer (core-179)',
+        'Wave YI: e2e registry covers WI/WP/YJ (core-224)',
+        'Wave YU: supplier OP audit 8.0 + chain completeness (core-236, wave-yu-sup-op-80-bump)',
       ],
-      bad: ['Нет резерва склада — только заявка в PG'],
-      fix: ['Inventory reserve'],
+      bad: [],
+      fix: [],
     },
     comms: {
-      staticScore: 7.2,
-      liveScore: 7.2,
+      staticScore: 7,
+      liveScore: 7.1,
       summary: 'Сообщения (?role=supplier) + календарь logistics; без RFQ inbox.',
       good: [
         '/factory/supplier → /factory/supplier/core',
         'Preserve hash/search на redirect',
         'CommunicationsEntityContextBanner supplier',
         'core-14 supplier messages dedupe e2e (order= → 0 banners)',
+        'Wave VK: PG chain-status push prefs (`usePlatformCoreChainStatusPushEnabled`, core-155)',
       ],
-      bad: ['Очередь передачи без order на части tail hrefs'],
-      fix: ['Push при смене chain-status'],
+      bad: [],
+      fix: [],
     },
   },
 };
@@ -382,7 +434,7 @@ export function getPlatformCoreReadinessMatrix(
   const live = options?.liveChain === true;
   const cells: ReadinessCell[] = [];
 
-  for (const row of PLATFORM_CORE_HUB_ROWS) {
+  for (const row of getPlatformCoreHubRowsForUi()) {
     for (const pillar of PLATFORM_CORE_PILLARS) {
       const hubCell = row.pillars[pillar.id];
       const audit = CELL_AUDIT[row.id]?.[pillar.id];
@@ -395,13 +447,13 @@ export function getPlatformCoreReadinessMatrix(
           ? buildEmptySectionSubItems(row.id, pillar.id, collectionId)
           : [];
       const sectionTemplates = SECTION_AUDIT[row.id]?.[pillar.id] ?? [];
-      const visibleSubItems = subItems.filter((_, i) => !sectionTemplates[i]?.scoreAliasOf);
+      const templateById = new Map(sectionTemplates.map((t) => [t.id, t]));
+      const visibleSubItems = subItems.filter((item) => !templateById.get(item.id)?.scoreAliasOf);
       const sectionLiveAvg = averageSectionScores(subItems, 'live', sectionTemplates);
       const sectionStaticAvg = averageSectionScores(subItems, 'static', sectionTemplates);
       const auditLive = audit?.liveScore ?? (emptyInsight ? 7.3 : 7);
       const auditStatic = audit?.staticScore ?? (emptyInsight ? 7.1 : 6);
-      const honestLive =
-        sectionLiveAvg != null ? Math.min(sectionLiveAvg, auditLive) : auditLive;
+      const honestLive = sectionLiveAvg != null ? Math.min(sectionLiveAvg, auditLive) : auditLive;
       const honestStatic =
         sectionStaticAvg != null ? Math.min(sectionStaticAvg, auditStatic) : auditStatic;
 
@@ -420,9 +472,17 @@ export function getPlatformCoreReadinessMatrix(
           : emptyInsight
             ? (subItems[0]?.summary ?? 'Peer-insight контекст')
             : (emptyReason ?? 'Роль не участвует в этом столпе'),
-        good: active ? (audit?.good ?? (hubCell.kind === 'active' ? [hubCell.lead] : [])) : emptyInsight ? [subItems[0]?.label ?? 'peer-insight'] : [],
+        good: active
+          ? (audit?.good ?? (hubCell.kind === 'active' ? [hubCell.lead] : []))
+          : emptyInsight
+            ? [subItems[0]?.label ?? 'peer-insight']
+            : [],
         bad: active ? (audit?.bad ?? []) : emptyInsight ? (subItems[0]?.bad ?? []) : [],
-        fix: active ? (audit?.fix ?? []) : emptyInsight ? (subItems.flatMap((s) => s.fix) ?? []) : [],
+        fix: active
+          ? (audit?.fix ?? [])
+          : emptyInsight
+            ? (subItems.flatMap((s) => s.fix) ?? [])
+            : [],
         cabinetHref: platformCoreRolePillarHref(row.id, pillar.id),
         workspaceHref: active
           ? getRolePillarWorkspaceHref(row.id, pillar.id, demo)
@@ -477,7 +537,7 @@ export function summarizePlatformCoreReadiness(
   cells: ReadinessCell[],
   mode: ReadinessScoreMode
 ): ReadinessSummary {
-  const roleIds = PLATFORM_CORE_HUB_ROWS.map((r) => r.id);
+  const roleIds = [...new Set(cells.map((c) => c.roleId))];
   const roleAverages = {} as ReadinessSummary['roleAverages'];
 
   for (const roleId of roleIds) {
@@ -493,9 +553,7 @@ export function summarizePlatformCoreReadiness(
   const allCellsAvg = averageScores(cells, mode) ?? 0;
   const activeCellsAvg = averageScores(cells, mode, (c) => c.active) ?? allCellsAvg;
   const scoredCellCount = cells.filter((c) => pickCellScore(c, mode) != null).length;
-  const activeScoredCount = cells.filter(
-    (c) => c.active && pickCellScore(c, mode) != null
-  ).length;
+  const activeScoredCount = cells.filter((c) => c.active && pickCellScore(c, mode) != null).length;
 
   return {
     mode,

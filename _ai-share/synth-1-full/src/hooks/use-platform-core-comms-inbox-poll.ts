@@ -1,11 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-
-const SSE_DOWN_VISIBLE_POLL_MS = 30_000;
-const SSE_DOWN_HIDDEN_POLL_MS = 60_000;
-const SSE_UP_VISIBLE_POLL_MS = 60_000;
-const SSE_UP_HIDDEN_POLL_MS = 120_000;
+import { platformCoreSsePollIntervalMs } from '@/lib/platform-core-sse-poll-intervals';
 
 /** Тик для refetch inbox / contextual threads: SSE push + poll fallback. */
 export function usePlatformCoreCommsInboxPoll(enabled: boolean): {
@@ -61,9 +57,7 @@ export function usePlatformCoreCommsInboxPoll(enabled: boolean): {
     let timer: number | undefined;
     const schedule = () => {
       if (timer !== undefined) window.clearInterval(timer);
-      const visibleMs = sseConnected ? SSE_UP_VISIBLE_POLL_MS : SSE_DOWN_VISIBLE_POLL_MS;
-      const hiddenMs = sseConnected ? SSE_UP_HIDDEN_POLL_MS : SSE_DOWN_HIDDEN_POLL_MS;
-      const ms = document.visibilityState === 'visible' ? visibleMs : hiddenMs;
+      const ms = platformCoreSsePollIntervalMs(sseConnected);
       timer = window.setInterval(() => setTick((t) => t + 1), ms);
     };
     schedule();

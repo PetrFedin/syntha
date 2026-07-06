@@ -19,11 +19,11 @@ type Props = {
 };
 
 const STEPS: { id: ShopOrderCommsGoldenPathStepId; label: string }[] = [
-  { id: 'tracking', label: 'Tracking' },
-  { id: 'chat', label: 'Chat' },
-  { id: 'calendar', label: 'Calendar' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'brand-handoff', label: 'Brand handoff' },
+  { id: 'tracking', label: 'Трекинг' },
+  { id: 'chat', label: 'Чат' },
+  { id: 'calendar', label: 'Календарь' },
+  { id: 'matrix', label: 'Матрица' },
+  { id: 'brand-handoff', label: 'Передача бренда' },
 ];
 
 export function ShopOrderCommsGoldenPathStrip({ orderId, collectionId, activeStep }: Props) {

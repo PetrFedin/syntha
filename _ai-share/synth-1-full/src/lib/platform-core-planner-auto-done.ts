@@ -3,7 +3,7 @@
  * Авто-status `done` — устойчиво к повторному analyze и смене slug id.
  */
 /** Версия закрытой e2e-волны; bump при изменении auto-done registry. */
-export const PLATFORM_CORE_PLANNER_CLOSED_WAVE_GENERATION = 72;
+export const PLATFORM_CORE_PLANNER_CLOSED_WAVE_GENERATION = 75;
 
 export const PLATFORM_CORE_PLANNER_AUTO_DONE_PATTERNS: readonly RegExp[] = [
   /нет e2e mes.*empty27/i,

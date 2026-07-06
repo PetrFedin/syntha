@@ -18,7 +18,6 @@ import {
 } from '@/lib/server/workshop2-b2b-orders-repository';
 import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
-import { resolveShopCoreBuyerIdFromRequest } from '@/lib/order/shop-core-buyer-context';
 
 export async function GET(req: NextRequest) {
   const checkoutAuth = await guardShopB2bCheckoutRoute(req);
@@ -72,7 +71,7 @@ export async function POST(req: NextRequest) {
   const resolvedBuyerId =
     checkoutAuth.mode === 'jwt'
       ? checkoutAuth.buyerId
-      : explicitBuyer || resolveShopCoreBuyerIdFromRequest(req) || checkoutAuth.buyerId;
+      : explicitBuyer || checkoutAuth.buyerId;
 
   const moqViolations = collectWorkshop2B2bOrderLineMoqViolations(lines);
   if (moqViolations.length > 0) {
@@ -81,7 +80,7 @@ export async function POST(req: NextRequest) {
         ok: false,
         code: 'moq_violation',
         moqViolations,
-        messageRu: `Checkout заблокирован: MOQ — ${moqViolations[0]}`,
+        messageRu: `Оформление заблокирован: MOQ — ${moqViolations[0]}`,
       },
       { status: 400 }
     );

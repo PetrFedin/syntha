@@ -19,10 +19,10 @@ type Props = {
 };
 
 const STEPS: { id: BrandSampleLifecycleGoldenPathStepId; label: string }[] = [
-  { id: 'hub', label: 'W2 hub' },
+  { id: 'hub', label: 'Хаб W2' },
   { id: 'rounds', label: 'Rounds' },
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'factory-pack', label: 'Factory pack' },
+  { id: 'handoff', label: 'Передача' },
+  { id: 'factory-pack', label: 'Фабричный пакет' },
   { id: 'release', label: 'Release' },
   { id: 'shop-showroom', label: 'Shop showroom' },
 ];

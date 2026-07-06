@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   ArrowLeft,
@@ -38,6 +39,13 @@ import { PushNotificationBanner } from '@/components/live-process/PushNotificati
 import { LiveProcessMobileQuickActions } from '@/components/live-process/LiveProcessMobileQuickActions';
 import { processLiveUrl } from '@/lib/routes';
 import { ROUTES } from '@/lib/routes';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import {
+  BRAND_PROCESS_RUNTIME_CORE_HINT_RU,
+  BRAND_PROCESS_RUNTIME_PG_BADGE_RU,
+  BRAND_PROCESS_RUNTIME_PG_UNAVAILABLE_RU,
+  brandProcessRuntimeApi,
+} from '@/lib/platform/brand-process-runtime-pg';
 import type { LiveProcessDefinition } from '@/lib/live-process/types';
 
 type ViewMode = 'grid' | 'kanban' | 'gantt' | 'graph';
@@ -123,10 +131,40 @@ export function LiveProcessPageBody({
   }, [processId, staticDefinition]);
 
   const [processIdList, setProcessIdList] = useState<string[]>(() => getAllLiveProcessIds());
+  const coreMode = isPlatformCoreMode();
+  const [runtimeStorageMode, setRuntimeStorageMode] = useState<'pg' | 'unavailable' | 'file' | null>(
+    null
+  );
   const [workflowPersistenceLabel, setWorkflowPersistenceLabel] = useState(
-    'PostgreSQL или `.data/workflow-store.json` (см. API `/api/processes`)'
+    coreMode
+      ? BRAND_PROCESS_RUNTIME_CORE_HINT_RU
+      : 'PostgreSQL или `.data/workflow-store.json` (см. API `/api/processes`)'
   );
   useEffect(() => {
+    if (coreMode) {
+      const ctx = contextId || 'default';
+      void fetch(brandProcessRuntimeApi(processId, ctx), { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((payload: { storageMode?: string } | null) => {
+          const mode = payload?.storageMode;
+          if (mode === 'pg') {
+            setRuntimeStorageMode('pg');
+            setWorkflowPersistenceLabel(
+              'PostgreSQL `platform_core_live_workflow_store` (без localStorage)'
+            );
+          } else if (mode === 'file') {
+            setRuntimeStorageMode('file');
+            setWorkflowPersistenceLabel('файл `.data/workflow-store.json` на сервере');
+          } else if (mode) {
+            setRuntimeStorageMode('unavailable');
+            setWorkflowPersistenceLabel(BRAND_PROCESS_RUNTIME_PG_UNAVAILABLE_RU);
+          }
+        })
+        .catch(() => {
+          setRuntimeStorageMode('unavailable');
+        });
+      return;
+    }
     fetch('/api/processes')
       .then((r) => {
         const raw = r.headers.get('X-Workflow-Store');
@@ -152,10 +190,10 @@ export function LiveProcessPageBody({
         setProcessIdList((prev) => [...new Set([...prev, ...ids])]);
       })
       .catch(() => {});
-  }, []);
+  }, [coreMode, processId, contextId]);
 
   const team = useMemo(() => getLiveProcessTeam(), []);
-  const { runtimes, updateStageRuntime } = useLiveProcessRuntimeWithCalendar(
+  const { runtimes, updateStageRuntime, persistMode } = useLiveProcessRuntimeWithCalendar(
     processId,
     contextId || 'default',
     definition
@@ -298,6 +336,25 @@ export function LiveProcessPageBody({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {coreMode && persistMode === 'postgres' ? (
+            runtimeStorageMode === 'pg' || runtimeStorageMode === null ? (
+              <Badge
+                variant="outline"
+                className="text-[9px]"
+                data-testid="live-process-runtime-storage-pg"
+              >
+                {BRAND_PROCESS_RUNTIME_PG_BADGE_RU}
+              </Badge>
+            ) : runtimeStorageMode === 'unavailable' ? (
+              <Badge
+                variant="outline"
+                className="border-amber-500/50 text-[9px] text-amber-800"
+                data-testid="live-process-runtime-storage-unavailable"
+              >
+                {BRAND_PROCESS_RUNTIME_PG_UNAVAILABLE_RU}
+              </Badge>
+            ) : null
+          ) : null}
           {definition.contextKey && (
             <div className="w-full md:w-auto">
               <ProcessContextSelector
@@ -391,8 +448,7 @@ export function LiveProcessPageBody({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm uppercase tracking-tight">Прогресс по этапам</CardTitle>
           <CardDescription>
-            Ответственные, даты, доступы и обсуждения по каждому этапу. Прогресс — в браузере
-            (localStorage); схема этапов после «Сохранить» в редакторе — в{' '}
+            Ответственные, даты, доступы и обсуждения по каждому этапу. Прогресс этапов — через{' '}
             {workflowPersistenceLabel}.
           </CardDescription>
         </CardHeader>

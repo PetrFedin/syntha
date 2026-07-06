@@ -1,4 +1,5 @@
 import type { BrandProductionState } from './types';
+import { workshop2QcInspectionBlocksShipment } from '@/lib/production/workshop2-qc-gate-shipment';
 
 export type BrandProductionQcGateRow = {
   id: string;
@@ -42,4 +43,14 @@ export function buildBrandProductionQcGateSummary(
     blockedShipments: rows.filter((r) => r.blocksShipment).length,
     rows,
   };
+}
+
+/** Число инспекций, блокирующих handoff (fail/rework + blocksShipment). */
+export function brandProductionQcBlocksHandoffCount(state: BrandProductionState): number {
+  return state.qcInspections.filter((i) =>
+    workshop2QcInspectionBlocksShipment({
+      blocksShipment: i.blocksShipment,
+      result: i.result as 'pass' | 'fail' | 'rework' | 'pending',
+    })
+  ).length;
 }

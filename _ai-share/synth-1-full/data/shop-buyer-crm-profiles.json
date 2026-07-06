@@ -1,0 +1,13 @@
+[
+  {
+    "buyerId": "shop1",
+    "buyerLabelRu": "Демо-магазин · Москва",
+    "segmentKey": "wholesale",
+    "segmentNameRu": "Опт",
+    "priceTier": "retail_b",
+    "netTermDays": 30,
+    "firstOrderDiscountPct": 8,
+    "vatExempt": false,
+    "assignedAt": "2026-06-26T23:29:31.680Z"
+  }
+]

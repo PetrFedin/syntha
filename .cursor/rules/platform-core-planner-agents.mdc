@@ -17,12 +17,15 @@ Runtime state: `_ai-share/synth-1-full/.planning/platform-core-planner-runtime.j
 
 ## Agent workflow
 
-1. Ensure `npm run dev:core` / SYNTHA is up (`GET /api/dev/syntha-status`).
-2. `GET .../planner/next` or `POST .../planner/claim` with `"by": "cursor-agent"`.
-3. Implement **only** the claimed task in canonical paths (`_ai-share/synth-1-full`, FastAPI in `app/`).
-4. Verify (lint / smoke for touched area).
-5. `POST .../planner/complete` with task `id` and short `note`.
-6. Repeat while user session is active and `open` count &gt; 0.
+0. **Start:** `_platform-core-split/platform-core/CURSOR-START-HERE.md` — не `@/lib/routes`; readiness — **один** `*-audit.ts`.
+1. Ensure `npm run dev:core` (`GET /api/dev/syntha-status`).
+2. `npm run validate:platform-core-boundary`.
+3. `npm run planner:analyze` если `open` ≈ 0 (до +10 задач).
+4. `npm run planner:next` → pillar → **syntha-*** subagent (routing table ниже).
+5. Implement **only** claimed task; gateways: `src/lib/platform-core-gateways/`.
+6. Verify (lint / smoke touched area).
+7. `npm run planner:complete -- <id> "note"`.
+8. Repeat while `open` &gt; 0.
 
 ## UI
 
@@ -36,12 +39,73 @@ Hub `/platform` → tab **План** — polls every 5s; **Агенты · onlin
 
 ## CLI (from monorepo root)
 
+Запускайте **по одной строке** (без `#` в той же строке — npm воспримет как аргумент):
+
 ```bash
+npm run core:status
+npm run core:restart
+npm run dev:core
+npm run planner:agent:setup
+npm run planner:agent:loop
 npm run planner:next
 npm run planner:claim
 npm run planner:complete -- <task-id> "note"
 ```
 
+`CURSOR_API_KEY` — в `_ai-share/synth-1-full/.env.local` (не в командной строке).
+
+Если `:3001` занят не Platform Core: `npm run core:restart` или `npm run stop:stale-dev`.
+
+## Pillar × role → preferred backend agent (routing hints)
+
+| Pillar | Brand | Shop | Manufacturer | Supplier |
+|--------|-------|------|--------------|----------|
+| development | product_architect, tech_debt | — | product_architect | — |
+| sample_collection | product_architect, content | product_architect | — | — |
+| collection_order | risk | order_anomaly, risk | — | — |
+| order_production | — | — | order_anomaly, tech_debt | order_anomaly, risk |
+| comms | architecture_guard | architecture_guard | — | — |
+
+Source: `app/agents/hub_agent_routing.py` + `stack_routing.py` + `stack_registry.py`.
+
+Live API:
+`GET /api/v1/platform/stack/agents/routing?pillar=&role=&section_id=&task=`
+
+Returns `preferred_agent`, `section_hint`, `cursor_subagent`, `hub_matrix` (when no filters).
+
 ## Adding manual items
 
 Edit `src/lib/platform-core-planner-agent.ts` → `PLATFORM_CORE_PLANNER_AGENT_ITEMS`.
+
+## Domain Cursor subagents (SYNTHA)
+
+| Subagent | Scope |
+|----------|--------|
+| `syntha-w2-development` | Pillar 1 — артикулы, workshop2, ТЗ, образец |
+| `syntha-sample-collection` | Pillar 2 — лайншиты, showroom, сезон коллекции |
+| `syntha-b2b-order` | Pillar 3 — матрица, checkout, registry, tracking |
+| `syntha-factory-production` | Pillar 4 — PO, handoff, procurement, materials |
+| `syntha-platform-core-e2e` | Playwright core-* specs, core:verify |
+| `syntha-comms` | Pillar 5 — JWT, users, order chat, calendar |
+| `syntha-agent-ops` | Router — pillar/section → backend + subagent + planner |
+
+Files: `.cursor/agents/syntha-*.md` — invoke via Task tool or «Use syntha-w2-development subagent».
+
+Intel map: `npm run agent:intel:refresh` → `.planning/intel/agents-map.md`
+
+## Eval packs
+
+- Routing (no LLM): `npm run agent:eval:routing`
+- Ollama smoke: `npm run agent:eval:ollama` → `.planning/intel/ollama-eval-report.md` (qwen3 preferred)
+- Full eval: `npm run agent:eval:all` (intel map + routing + ollama)
+- Intel map: `npm run agent:intel:refresh` → `.planning/intel/agents-map.md`
+- Full codebase intel: `/gsd-intel refresh`
+
+## Backend orchestrator (FastAPI)
+
+- Registry: `app/agents/registry.py`
+- Wired agents: scan (`tech_debt`, `architecture_guard`, `code_quality`, `ui_improvement`, `ai_module_curator`, `feature_suggestion`) + LLM (`order_anomaly`, …) in `orchestrator_agent.py`
+- Context normalizer: `app/agents/platform_context.py` → `enrich_platform_context()` on `POST /api/v1/ai/task`
+- Platform Core dev bridge: `POST /api/dev/platform-ai/task` → FastAPI `POST /api/v1/ai/task/dev` (development only)
+- UI: `PlatformAiTaskStrip` on brand registry (`brand-co-registry-ai-anomaly`)
+- UI: matrix quota (`shop-co-matrix-quota-ai`), shop registry (`shop-co-registry-ai-anomaly`), handoff (`mfr-op-handoff-queue-ai-anomaly`)

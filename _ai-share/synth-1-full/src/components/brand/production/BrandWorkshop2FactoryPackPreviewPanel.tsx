@@ -183,7 +183,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
         setDossier(stamped);
       }
       onExportNotice?.(
-        `Factory pack snapshot ${res.snapshotId.slice(0, 8)}… — HTML скачан${
+        `Снимок фабричного пакета ${res.snapshotId.slice(0, 8)}… — HTML скачан${
           tzWriteDisabled ? ' (метка в досье недоступна без production:edit)' : ''
         }.`
       );
@@ -253,7 +253,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
         <div
           className="flex flex-wrap gap-1"
           role="tablist"
-          aria-label="Factory pack sheets"
+          aria-label="Листы фабричного пакета"
         >
           {WORKSHOP2_TECHPACK_EXPORT_SHEETS.map((sheet) => {
             const row = readiness.rows.find((r) => r.id === sheet.id);
@@ -282,7 +282,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
         ) : null}
 
         <iframe
-          title={`Factory pack sheet ${activeSheetId}`}
+          title={`Лист фабричного пакета ${activeSheetId}`}
           className="border-border-default h-[min(360px,45vh)] w-full rounded-md border bg-white"
           srcDoc={sheetHtml}
           data-testid="brand-factory-pack-preview-iframe"
@@ -299,7 +299,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
               downloadWorkshop2TechPackHtmlFile(fullPackHtml, exportContext.articleSku)
             }
           >
-            Скачать factory pack (6 листов)
+            Скачать фабричный пакет (6 листов)
           </Button>
           <Button
             type="button"
@@ -310,7 +310,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
             data-testid="brand-factory-pack-server-snapshot-export"
             onClick={() => void handleServerSnapshotExport()}
           >
-            {serverExportBusy ? 'Snapshot…' : 'PG snapshot + download'}
+            {serverExportBusy ? 'Снимок…' : 'Снимок PG + скачать'}
           </Button>
         </div>
       </CardContent>

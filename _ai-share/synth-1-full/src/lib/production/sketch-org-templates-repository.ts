@@ -1,4 +1,8 @@
 import type { Workshop2SketchPinTemplate } from '@/lib/production/workshop2-dossier-phase1.types';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
 /** Версия ключа localStorage — поднимать при несовместимых изменениях формата. */
 export const SKETCH_ORG_TEMPLATES_STORAGE_VERSION = 1;
@@ -43,11 +47,13 @@ export interface SketchOrgPinTemplateRepository {
 class LocalStorageSketchOrgPinTemplateRepository implements SketchOrgPinTemplateRepository {
   async list(collectionId: string): Promise<Workshop2SketchPinTemplate[]> {
     if (typeof window === 'undefined' || !collectionId.trim()) return [];
+    if (!shouldUseLocalStorageClientFallbackInCore()) return [];
     return parseList(localStorage.getItem(sketchOrgTemplatesStorageKey(collectionId)));
   }
 
   async replaceAll(collectionId: string, items: Workshop2SketchPinTemplate[]): Promise<void> {
     if (typeof window === 'undefined' || !collectionId.trim()) return;
+    if (!shouldMirrorPgClientStoreToLocalStorage()) return;
     const next = items.slice(-MAX_ORG_TEMPLATES);
     localStorage.setItem(sketchOrgTemplatesStorageKey(collectionId), JSON.stringify(next));
   }
@@ -71,6 +77,7 @@ export function readOrgSketchPinTemplatesSync(
   collectionId: string | undefined
 ): Workshop2SketchPinTemplate[] {
   if (typeof window === 'undefined' || !collectionId?.trim()) return [];
+  if (!shouldUseLocalStorageClientFallbackInCore()) return [];
   return parseList(localStorage.getItem(sketchOrgTemplatesStorageKey(collectionId)));
 }
 

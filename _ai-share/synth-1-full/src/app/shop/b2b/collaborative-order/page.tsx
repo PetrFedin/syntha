@@ -17,7 +17,9 @@ import {
   ShopCollaborativeOrderGoldenPathStrip,
   shopCollaborativeGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopCollaborativeOrderGoldenPathStrip';
+import { ShopCoGoldenPathStrip } from '@/components/shop/b2b/ShopCoGoldenPathStrip';
 import { ShopCollaborativeOrderExtendedPeerStrip } from '@/components/platform/ShopCollaborativeOrderExtendedPeerStrip';
+import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
 const ShopB2bCollaborativeOrderLegacyPage = dynamic(
   () =>
@@ -29,7 +31,9 @@ const ShopB2bCollaborativeOrderLegacyPage = dynamic(
 
 function CollaborativeOrderWorkspaceBody() {
   const searchParams = useSearchParams();
-  const collectionId = searchParams.get('collection') ?? searchParams.get('collectionId') ?? undefined;
+  const collectionId = resolvePageCollectionId({
+    collection: searchParams.get('collection') ?? searchParams.get('collectionId'),
+  });
   const orderId =
     searchParams.get('order') ?? searchParams.get('orderId') ?? searchParams.get('wholesaleOrderId') ?? undefined;
   const ctx = { collectionId, orderId, role: 'shop' as const };
@@ -42,13 +46,14 @@ function CollaborativeOrderWorkspaceBody() {
       crossLinksTitle="Матрица → согласование → comms"
       beforeTabs={<B2bOrderUrlContextBanner variant="shop" />}
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-3">
+        <ShopCoGoldenPathStrip collectionId={collectionId} orderId={orderId} />
         <ShopCollaborativeOrderGoldenPathStrip
           orderId={orderId}
           collectionId={collectionId}
           activeStep={shopCollaborativeGoldenPathStepFromFeature(activeFeatureId)}
         />
-        <ShopCollaborativeOrderExtendedPeerStrip collectionId={collectionId ?? 'SS27'} orderId={orderId} />
+        <ShopCollaborativeOrderExtendedPeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'session' ? <ShopCollaborativeOrderSessionPanel /> : null}
       {activeFeatureId === 'approvals' ? <ShopCollaborativeOrderApprovalsPanel /> : null}

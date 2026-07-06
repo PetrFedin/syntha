@@ -14,6 +14,7 @@
 |----|------|-------------------|------|
 | ADR-001 | Расширение контура Workshop2 (фаза C — Enterprise) | См. файл | [ADR-001-w2-enterprise-phase-c.md](./architecture/ADR-001-w2-enterprise-phase-c.md) |
 | ADR-002 | Integration map: Centric, NuOrder, JOOR, Apparel Magic, Zedonk, AIMS360 × 5 pillars × 4 roles (v4) | принято | [ADR-002-integration-map-wholesale-plm-platforms.md](./architecture/ADR-002-integration-map-wholesale-plm-platforms.md) |
+| ADR-003 | Platform Core empty cells — intentional read-only peer insight (wave ZA) | принято (stub) | [ADR-003-platform-core-empty-cells-readonly.md](./architecture/ADR-003-platform-core-empty-cells-readonly.md) |
 
 ## Как добавлять новые ADR
 

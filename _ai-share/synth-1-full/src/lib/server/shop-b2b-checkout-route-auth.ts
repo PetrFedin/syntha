@@ -8,6 +8,7 @@ import {
   resolveShopCoreBuyerIdFromOrganization,
   resolveShopCoreBuyerIdFromSessionUid,
 } from '@/lib/order/shop-core-buyer-context';
+import { resolveShopCoreBuyerIdFromRequestAsync } from '@/lib/server/shop-core-buyer-partner-session';
 import {
   assertWorkshop2ApiAccess,
   workshop2AuthJsonResponse,
@@ -31,7 +32,7 @@ export async function guardShopB2bCheckoutRoute(
     return {
       ok: true,
       mode: 'dev',
-      buyerId: normalizeShopCoreBuyerId(explicitBuyerId),
+      buyerId: await resolveShopCoreBuyerIdFromRequestAsync(req, explicitBuyerId),
     };
   }
 
@@ -58,6 +59,8 @@ export async function guardShopB2bCheckoutRoute(
     resolveShopCoreBuyerIdFromSessionUid(actor?.actorId);
 
   const requested = explicitBuyerId?.trim();
+  const resolvedFromPartnerSession = await resolveShopCoreBuyerIdFromRequestAsync(req, requested);
+
   if (requested && buyerFromSession && requested !== buyerFromSession) {
     return NextResponse.json(
       {
@@ -72,6 +75,6 @@ export async function guardShopB2bCheckoutRoute(
   return {
     ok: true,
     mode: 'jwt',
-    buyerId: normalizeShopCoreBuyerId(buyerFromSession ?? requested),
+    buyerId: normalizeShopCoreBuyerId(buyerFromSession ?? resolvedFromPartnerSession),
   };
 }

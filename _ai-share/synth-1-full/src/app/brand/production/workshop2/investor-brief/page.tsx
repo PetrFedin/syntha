@@ -28,7 +28,7 @@ export default function Workshop2InvestorBriefPage() {
   return (
     <div className={W2_OPERATIONAL_PANEL_ROOT} data-testid="workshop2-investor-brief-page">
       <header className="space-y-1">
-        <h1 className="text-text-primary text-lg font-semibold">Investor brief — Workshop2 + B2B</h1>
+        <h1 className="text-text-primary text-lg font-semibold">Бриф для инвестора — Workshop2 + B2B</h1>
         <p className="text-text-secondary text-xs">
           Read-only сводка для показа. Demo ≠ live — см. таблицу demo vs live.
         </p>
@@ -114,7 +114,7 @@ export default function Workshop2InvestorBriefPage() {
             </Button>
             <Button variant="outline" size="sm" asChild>
               <Link href="/brand/production/workshop2/investor-summary" data-testid="workshop2-investor-brief-summary-link">
-                Investor summary
+                Сводка для инвестора
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>

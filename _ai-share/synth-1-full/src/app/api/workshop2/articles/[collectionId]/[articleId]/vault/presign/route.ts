@@ -2,6 +2,10 @@ import { jsonWorkshop2ErrorRu } from '@/lib/production/workshop2-api-error-ru';
 import { withWorkshop2ApiErrorRu } from '@/lib/production/workshop2-api-route-ru';
 import { NextRequest, NextResponse } from 'next/server';
 import { evaluateWorkshop2VaultPresignProdGuard } from '@/lib/production/workshop2-vault-presign-prod-guard';
+import {
+  buildWorkshop2VaultDemoIngestUrl,
+  isWorkshop2VaultPresignCoreDemoBypassEnabled,
+} from '@/lib/production/workshop2-vault-presign-core-demo';
 import { buildWorkshop2VaultVirusScanMetadataPatch } from '@/lib/production/workshop2-vault-virus-scan';
 import {
   presignWorkshop2VaultGet,
@@ -47,8 +51,9 @@ async function postVaultPresign(req: NextRequest, ctx: RouteCtx) {
       { status: 400 }
     );
   }
+  const demoBypass = isWorkshop2VaultPresignCoreDemoBypassEnabled();
   const prodGuard = evaluateWorkshop2VaultPresignProdGuard();
-  if (!prodGuard.allowed) {
+  if (!prodGuard.allowed && !demoBypass) {
     return NextResponse.json(
       {
         ok: false,
@@ -60,6 +65,75 @@ async function postVaultPresign(req: NextRequest, ctx: RouteCtx) {
   }
 
   if (!isWorkshop2VaultS3Configured()) {
+    const intentEarly = String(b.intent ?? 'put')
+      .trim()
+      .toLowerCase();
+    if (intentEarly === 'get') {
+      return NextResponse.json(
+        { ok: false, error: 'vault_demo_get_unavailable', message: 'Demo vault: только PUT ingest.' },
+        { status: 503 }
+      );
+    }
+    if (demoBypass && isWorkshop2PostgresEnabled()) {
+      const documentId = String(b.documentId ?? '').trim();
+      const fileName = String(b.fileName ?? 'file.bin');
+      const contentType = String(b.contentType ?? 'application/octet-stream')
+        .split(';')[0]!
+        .trim();
+      const sizeBytes = Number(b.sizeBytes);
+      if (!documentId) {
+        return NextResponse.json(
+          { ok: false, error: 'document_id_required', message: 'Укажите documentId' },
+          { status: 400 }
+        );
+      }
+      const orgId = resolveWorkshop2OrganizationId(req);
+      const existing = await listWorkshop2VaultDocumentsFromPg({
+        collectionId: cid,
+        articleId: aid,
+        organizationId: orgId,
+      });
+      const row = existing.find((d) => d.documentId === documentId);
+      if (row?.storagePath?.trim()) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: 'document_already_uploaded',
+            message: 'Документ уже загружен.',
+          },
+          { status: 409 }
+        );
+      }
+      const actor = resolveWorkshop2UpdatedBy(req, '', auth.actor);
+      await upsertWorkshop2VaultDocumentToPg({
+        collectionId: cid,
+        articleId: aid,
+        documentId,
+        organizationId: orgId,
+        fileName,
+        mimeType: contentType,
+        sizeBytes: Number.isFinite(sizeBytes) ? sizeBytes : undefined,
+        createdBy: actor,
+        metadata: buildWorkshop2VaultVirusScanMetadataPatch('awaiting_upload', {
+          ...(row?.metadata ?? {}),
+          presignIssuedAt: new Date().toISOString(),
+          demoBypass: true,
+        }),
+      });
+      const uploadUrl = buildWorkshop2VaultDemoIngestUrl({
+        collectionId: cid,
+        articleId: aid,
+        documentId,
+      });
+      return NextResponse.json({
+        ok: true,
+        uploadUrl,
+        storagePath: `demo://vault/${cid}/${aid}/${documentId}`,
+        method: 'PUT',
+        contentType,
+        demoBypass: true,
+      });
+    }
     return NextResponse.json(
       {
         ok: false,

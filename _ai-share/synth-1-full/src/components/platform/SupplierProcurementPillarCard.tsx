@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Circle, Package } from 'lucide-react';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
+import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import {
   factorySupplierMessagesB2bOrderContextHref,
   factorySupplierMessagesWorkshop2ArticleContextHref,
   shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
@@ -36,9 +37,12 @@ import {
   PillarInsightSteps,
 } from '@/components/platform/PillarInsightPrimitives';
 import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
+import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
+import { usePlatformCoreHubAuditLegacyAttrs } from '@/hooks/use-platform-core-hub-audit-legacy-attrs';
 import { formatPlatformCoreWmsReserveCabinetLongRu } from '@/lib/platform-core-wms-reserve-copy';
 import { SupplierOpCabinetSpineNavStrip } from '@/components/factory/supplier/SupplierOpCabinetSpineNavStrip';
 import { SupplierOpHandoffReadSpinePeerStrip } from '@/components/factory/supplier/SupplierOpHandoffReadSpinePeerStrip';
+import { SupplierPartialShipConfirmStrip } from '@/components/factory/supplier/SupplierPartialShipConfirmStrip';
 
 function isBomLineFilled(line: SupplierProcurementBomLine): boolean {
   if (!line.materialName?.trim()) return false;
@@ -49,11 +53,14 @@ const linkClass = 'text-accent-primary text-[10px] font-medium hover:underline';
 
 export function SupplierProcurementPillarCard({
   compact = false,
+  minimalChrome = false,
 }: {
   /** Hub — только шаги и CTA без дублей spine/чата. */
   compact?: boolean;
+  minimalChrome?: boolean;
 }) {
   const demo = usePlatformCoreDemoContext();
+  const auditLegacy = usePlatformCoreHubAuditLegacyAttrs();
   const { collectionId, demoArticleId, factoryId, demoOrderId } = demo;
   const w2Fallback = demoOrderId.startsWith('__') ? '' : demoOrderId;
   const [spineReloadNonce, setSpineReloadNonce] = useState(0);
@@ -65,9 +72,10 @@ export function SupplierProcurementPillarCard({
     factoryId,
     reloadNonce: spineReloadNonce,
   });
+  const chainPushEnabled = usePlatformCoreChainStatusPushEnabled('supplier');
   const pollOrderIds = spineOrderId.trim() ? [spineOrderId] : [];
   const { tick: chainPollTick, sseConnected } = usePlatformCoreChainStatusPoll(
-    pollOrderIds.length > 0,
+    chainPushEnabled && pollOrderIds.length > 0,
     pollOrderIds
   );
 
@@ -119,18 +127,27 @@ export function SupplierProcurementPillarCard({
   return (
     <Card
       data-testid="sup-op-cabinet-panel"
-      data-audit-legacy="supplier-procurement-pillar-card"
+      {...auditLegacy('supplier-procurement-pillar-card')}
       className={cn(compact ? hubGadget.pillarCard : 'border-amber-200/50')}
     >
       <CardContent className={cn(compact ? hubGadget.pillarBody : 'space-y-2 p-3')}>
-        {compact ? (
+        {compact && !minimalChrome ? (
           <PillarInsightHeader
             icon={Package}
             title="Закупка материалов"
             subtitle="BOM, PO и поставка под серию производства."
           />
         ) : null}
-        {compact && cabinetOrderId ? (
+        {compact && !minimalChrome && cabinetOrderId ? (
+          <PlatformCorePillarNotificationCenterCompact
+            variant="supplier"
+            compact
+            collectionId={collectionId}
+            orderId={cabinetOrderId}
+            orderScoped
+          />
+        ) : null}
+        {compact && !minimalChrome && cabinetOrderId ? (
           <SupplierOpCabinetSpineNavStrip demo={demo} orderId={cabinetOrderId} />
         ) : null}
         {!compact ? (
@@ -201,7 +218,7 @@ export function SupplierProcurementPillarCard({
             </div>
           )
         ) : null}
-        {chainSteps.length > 0 ? (
+        {chainSteps.length > 0 && !(compact && minimalChrome) ? (
           compact ? (
             <PillarInsightSteps steps={chainSteps} testId="sup-op-chain-steps" />
           ) : (
@@ -311,6 +328,23 @@ export function SupplierProcurementPillarCard({
             ) : null}
           </div>
         ) : null}
+        {!compact && displayOrderId ? (
+          <SupplierOpHandoffReadSpinePeerStrip
+            collectionId={collectionId}
+            articleId={demoArticleId}
+            orderId={displayOrderId}
+            factoryId={factoryId}
+          />
+        ) : null}
+        {poReady && productionOrderId && displayOrderId && !materialsSuppliedDone && !compact ? (
+          <SupplierPartialShipConfirmStrip
+            collectionId={collectionId}
+            articleId={demoArticleId}
+            orderId={displayOrderId}
+            productionOrderId={productionOrderId}
+            defaultQty={bomTotal > 0 ? bomTotal : undefined}
+          />
+        ) : null}
         {poReady != null && !compact ? (
           <p className="flex flex-wrap items-start gap-x-2 gap-y-1 text-xs">
             {poReady ? (
@@ -334,16 +368,8 @@ export function SupplierProcurementPillarCard({
             ) : null}
           </p>
         ) : null}
-        {!compact && cabinetOrderId ? (
-          <SupplierOpHandoffReadSpinePeerStrip
-            collectionId={collectionId}
-            articleId={demoArticleId}
-            orderId={cabinetOrderId}
-            factoryId={factoryId}
-          />
-        ) : null}
         <div className={compact ? undefined : 'space-y-1.5 border-t border-amber-100/80 pt-2'}>
-          {compact ? (
+          {compact && !minimalChrome ? (
             <div className={hubGadget.goldenPath} data-testid="sup-op-cabinet-cta-production">
               <Link
                 href={factoryMaterialsProcurementHrefForDemo(demoWithOrder, { role: 'supplier' })}
@@ -374,7 +400,7 @@ export function SupplierProcurementPillarCard({
                 Трекинг
               </Link>
             </div>
-          ) : (
+          ) : !compact ? (
             <div
               className="flex flex-wrap gap-x-3 gap-y-1"
               data-testid="sup-op-cabinet-cta-production"
@@ -423,7 +449,7 @@ export function SupplierProcurementPillarCard({
                 ) : null}
               </>
             </div>
-          )}
+          ) : null}
         </div>
       </CardContent>
     </Card>

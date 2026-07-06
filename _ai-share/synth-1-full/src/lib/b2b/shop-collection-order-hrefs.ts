@@ -95,6 +95,15 @@ export function shopCollaborativeTabHref(
   return `${ROUTES.shop.b2bCollaborativeOrder}?${sp.toString()}`;
 }
 
+/** Brand oversight · read-only mirror of shop collaborative session (wave VI). */
+export function shopCollaborativeTabReadOnlyHref(
+  featureId: 'session' | 'approvals' | 'comms' = 'session',
+  orderId: string = PLATFORM_CORE_DEMO.demoOrderId,
+  collectionId?: string
+): string {
+  return `${shopCollaborativeTabHref(featureId, orderId, collectionId)}&readOnly=1`;
+}
+
 export function shopLandedMarginTabHref(
   featureId: 'hub' | 'rollup' | 'pricelist',
   collectionId: string = PLATFORM_CORE_DEMO.collectionId,

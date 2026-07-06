@@ -15,7 +15,7 @@ import {
 } from '@/components/platform/PlatformB2bMarketroomGoldenPathStrip';
 import { PlatformB2bMarketroomCoSpinePeerStrip } from '@/components/platform/PlatformB2bMarketroomCoSpinePeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform-core-ports/platform/pillar-capability-workspaces';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
 function PlatformB2bMarketroomWorkspaceBody() {

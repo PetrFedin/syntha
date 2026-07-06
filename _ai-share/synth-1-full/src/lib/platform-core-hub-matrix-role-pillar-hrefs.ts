@@ -3,12 +3,12 @@ import {
   brandB2bOrderHandoffContextHref,
   brandB2bOrderHref,
   brandMessagesB2bOrderContextHref,
+  brandDevelopmentCabinetHref,
   factoryProductionDossierHref,
   shopB2bTrackingOrderHref,
   shopMessagesB2bOrderContextHref,
   factoryMessagesB2bOrderContextHref,
-} from '@/lib/routes';
-import { WORKSHOP2_COL_PARAM } from '@/lib/production/workshop2-url';
+} from '@/lib/platform-core-routes';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
 import {
   brandLinesheetsHrefForDemo,
@@ -18,6 +18,11 @@ import {
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
 import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix.types';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import {
+  platformCoreNativeMatrixHref,
+  platformCoreNativeShowroomHref,
+} from '@/lib/platform-core-native-href';
 
 /** Role×pillar demo href resolver (extracted from hub-matrix monster). */
 export function getRolePillarDemoHrefForDemo(
@@ -30,13 +35,17 @@ export function getRolePillarDemoHrefForDemo(
   if (!row || cell?.kind !== 'active') return undefined;
 
   const { collectionId, demoOrderId, demoArticleId } = demo;
-  const w2ColHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${collectionId}`;
-  const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
-  const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
+  const brandDevelopmentHref = brandDevelopmentCabinetHref(collectionId);
+  const shopMatrixHref = isPlatformCoreMode()
+    ? platformCoreNativeMatrixHref(collectionId, demoOrderId)
+    : `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
+  const shopShowroomHref = isPlatformCoreMode()
+    ? platformCoreNativeShowroomHref(collectionId, demoOrderId)
+    : `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
   const factoryDossierHref = factoryProductionDossierHref(demoArticleId, { collectionId });
 
   if (pillarId === 'development') {
-    if (roleId === 'brand') return w2ColHref;
+    if (roleId === 'brand') return brandDevelopmentHref;
     if (roleId === 'manufacturer') return factoryDossierHref;
     if (roleId === 'supplier') return factoryMaterialsHrefForDemo(demo);
   }

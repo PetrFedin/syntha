@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   fetchWorkshop2CartSession,
   mapWorkshop2CartLinesToCartItems,
-  syncLegacyCartToWorkshop2,
+  resolveCheckoutCartSession,
   upsertWorkshop2CartLine,
 } from '@/lib/b2b/workshop2-cart-bridge';
 import {
@@ -36,7 +36,8 @@ import { ShopCoSeasonMatrixStrip } from '@/components/shop/b2b/ShopCoSeasonMatri
 import { ShopCoMatrixSpinePeerStrip } from '@/components/platform/ShopCoMatrixSpinePeerStrip';
 import { ShopScMatrixEntryHonestStrip } from '@/components/platform/ShopScMatrixEntryHonestStrip';
 import { ShopScMatrixEntryCoPeerStrip } from '@/components/platform/ShopScMatrixEntryCoPeerStrip';
-import { ShopScCabinetGoldenPathStrip } from '@/components/platform/ShopScCabinetGoldenPathStrip';
+import { ShopCoGoldenPathStrip } from '@/components/shop/b2b/ShopCoGoldenPathStrip';
+import { PlatformAiTaskStrip } from '@/components/platform/PlatformAiTaskStrip';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -49,7 +50,35 @@ import {
   type ShopMatrixPrepackApplyRequest,
 } from '@/lib/b2b/shop-matrix-prepack-apply';
 import { fetchShopMatrixSizeCurveView } from '@/lib/b2b/shop-matrix-size-curve-client';
+import {
+  hydrateShopMatrixDraftFromServer,
+  persistShopMatrixDraftToServer,
+  validateShopMatrixCartSizeRunsViaApi,
+} from '@/lib/b2b/shop-matrix-draft-client';
+import {
+  SHOP_MATRIX_DRAFT_AUTOSAVE_DEBOUNCE_MS,
+  SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU,
+  SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_LINK_TESTID,
+  SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_LINK_RU,
+  SHOP_MATRIX_DRAFT_CONFLICT_BANNER_TESTID,
+  SHOP_MATRIX_DRAFT_CONFLICT_HINT_RU,
+  shopMatrixDraftAutosaveFailCheckoutHref,
+} from '@/lib/b2b/shop-matrix-draft-autosave-wave-xt';
+import {
+  SHOP_MATRIX_SIZE_RUN_CHECKOUT_BLOCK_RU,
+  SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU,
+  buildShopMatrixQtyByArticleFromCartItems,
+  shopMatrixSizeRunFixHref,
+} from '@/lib/b2b/shop-matrix-size-run-cart-validation';
+import { parseShopShowroomInlineSize } from '@/lib/b2b/shop-showroom-inline-qty';
 import { useShopMatrixTierPricing } from '@/hooks/use-shop-matrix-tier-pricing';
+import { SHOP_CO_MATRIX_TIER_SYNC_RECEIVE_BADGE_TESTID } from '@/lib/b2b/brand-co-tier-sync-publish-wn';
+import {
+  SHOP_MATRIX_RANGE_PLANNER_TIER_BADGE_LINK_TESTID,
+  shopMatrixRangePlannerTierBadgeHref,
+} from '@/lib/production/wave-xg-brand-range-planner';
+import { ShopPricelistTierReceiveBadge } from '@/components/shop/b2b/ShopPricelistTierReceiveBadge';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 
 const MATRIX_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
 
@@ -58,6 +87,8 @@ type Props = {
   buyerId?: string;
   buyerName?: string;
   focusArticleId?: string;
+  carryQty?: number;
+  carrySize?: string;
   onOpenArticleInspector?: (articleId: string) => void;
   prepackApply?: ShopMatrixPrepackApplyRequest | ShopMatrixPrepackApplyRequest[];
   /** Workspace chrome already renders golden path — hide duplicate strip inside matrix. */
@@ -69,6 +100,8 @@ export function CoreWholesaleMatrix({
   buyerId: buyerIdProp,
   buyerName: buyerNameProp,
   focusArticleId,
+  carryQty,
+  carrySize,
   onOpenArticleInspector,
   prepackApply,
   hideCabinetGoldenPath = false,
@@ -91,8 +124,19 @@ export function CoreWholesaleMatrix({
   const [cartSessionId, setCartSessionId] = useState<string | undefined>();
   const cartHydratedRef = useRef(false);
   const persistTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const draftUpdatedAtRef = useRef<string | undefined>(undefined);
   const prepackAppliedRef = useRef('');
   const [prepackAppliedNote, setPrepackAppliedNote] = useState<string | null>(null);
+  const [draftStorageMode, setDraftStorageMode] = useState<'pg' | 'local' | null>(null);
+  const [draftValidationHintRu, setDraftValidationHintRu] = useState<string | null>(null);
+  const [draftConflictHintRu, setDraftConflictHintRu] = useState<string | null>(null);
+  const [draftAutosaveFail, setDraftAutosaveFail] = useState(false);
+  const [sizeRunHint, setSizeRunHint] = useState<string | null>(null);
+  const [sizeRunBlockedArticleId, setSizeRunBlockedArticleId] = useState<string | null>(null);
+  const carryAppliedRef = useRef('');
+  const [sampleBusy, setSampleBusy] = useState(false);
+  const [sampleHint, setSampleHint] = useState<string | null>(null);
   const { tierLabel, cartTier, pricingSource, storageMode, resolveUnitPrice, applyToCartItem } =
     useShopMatrixTierPricing(collectionId);
 
@@ -116,6 +160,7 @@ export function CoreWholesaleMatrix({
   useEffect(() => {
     cartHydratedRef.current = false;
     setCartSessionId(undefined);
+    carryAppliedRef.current = '';
   }, [collectionId, buyerId]);
 
   useEffect(() => {
@@ -127,12 +172,94 @@ export function CoreWholesaleMatrix({
       cartHydratedRef.current = true;
       if (session.sessionId) setCartSessionId(session.sessionId);
       const hydrated = mapWorkshop2CartLinesToCartItems(session.lines, products, collectionId);
-      if (hydrated.length > 0) setB2bCart(hydrated);
+      if (hydrated.length > 0) {
+        setB2bCart(hydrated);
+        return;
+      }
+      if (session.sessionId) {
+        const draftHydrate = await hydrateShopMatrixDraftFromServer({
+          sessionId: session.sessionId,
+          collectionId,
+          products,
+        });
+        if (cancelled || draftHydrate.items.length === 0) return;
+        setB2bCart(draftHydrate.items);
+        if (draftHydrate.storageMode === 'pg') setDraftStorageMode('pg');
+        if (draftHydrate.updatedAt) draftUpdatedAtRef.current = draftHydrate.updatedAt;
+      }
     })();
     return () => {
       cancelled = true;
     };
   }, [platformCore, loading, products, collectionId, setB2bCart]);
+
+  useEffect(() => {
+    if (!platformCore || !cartSessionId || b2bCart.length === 0) return;
+    clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = setTimeout(() => {
+      void persistShopMatrixDraftToServer({
+        sessionId: cartSessionId,
+        buyerId,
+        collectionId,
+        items: b2bCart,
+        expectedUpdatedAt: draftUpdatedAtRef.current,
+      }).then((result) => {
+        if (result.mode === 'conflict') {
+          setDraftConflictHintRu(result.messageRu ?? SHOP_MATRIX_DRAFT_CONFLICT_HINT_RU);
+          setDraftAutosaveFail(true);
+          if (result.serverUpdatedAt) draftUpdatedAtRef.current = result.serverUpdatedAt;
+          return;
+        }
+        if (result.mode === 'error') {
+          setDraftConflictHintRu(null);
+          setDraftAutosaveFail(true);
+          return;
+        }
+        setDraftConflictHintRu(null);
+        setDraftAutosaveFail(false);
+        if (result.mode === 'pg' || result.mode === 'local') setDraftStorageMode(result.mode);
+        if (result.updatedAt) draftUpdatedAtRef.current = result.updatedAt;
+        if (result.validationHintsRu?.length) {
+          setDraftValidationHintRu(result.validationHintsRu.join(' · '));
+        } else if (result.validationOk !== false) {
+          setDraftValidationHintRu(null);
+        } else if (result.sizeRunMessageRu) {
+          setDraftValidationHintRu(result.sizeRunMessageRu);
+        }
+      });
+    }, SHOP_MATRIX_DRAFT_AUTOSAVE_DEBOUNCE_MS);
+    return () => {
+      clearTimeout(draftTimerRef.current);
+    };
+  }, [platformCore, cartSessionId, b2bCart, buyerId, collectionId]);
+
+  useEffect(() => {
+    if (!platformCore || b2bCart.length === 0) {
+      setSizeRunHint(null);
+      setSizeRunBlockedArticleId(null);
+      return;
+    }
+    const articles = buildShopMatrixQtyByArticleFromCartItems(b2bCart);
+    if (articles.length === 0) {
+      setSizeRunHint(null);
+      setSizeRunBlockedArticleId(null);
+      return;
+    }
+    let cancelled = false;
+    void validateShopMatrixCartSizeRunsViaApi({ collectionId, articles }).then((res) => {
+      if (cancelled) return;
+      if (res.ok) {
+        setSizeRunHint(null);
+        setSizeRunBlockedArticleId(null);
+        return;
+      }
+      setSizeRunHint(res.messageRu);
+      setSizeRunBlockedArticleId(res.firstFailedArticleId ?? articles[0]?.articleId ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [platformCore, b2bCart, collectionId]);
 
   useEffect(() => {
     const articleId = focusArticleId?.trim();
@@ -170,7 +297,7 @@ export function CoreWholesaleMatrix({
         const lines = buildCartItemsFromPrepackBreakdown(product, breakdown.bySize);
 
         setB2bCart((prev) => [...prev.filter((item) => item.id !== product.id), ...lines]);
-        notes.push(`Pre-pack ×${request.packCount}: ${breakdown.totalUnits} ед. · ${product.name}`);
+        notes.push(`Препак ×${request.packCount}: ${breakdown.totalUnits} ед. · ${product.name}`);
 
         if (platformCore) {
           for (const line of lines) {
@@ -244,6 +371,41 @@ export function CoreWholesaleMatrix({
     [setB2bCart, platformCore, collectionId, buyerId, cartSessionId, applyToCartItem, cartTier]
   );
 
+  useEffect(() => {
+    const articleId = focusArticleId?.trim();
+    const qty = carryQty != null && carryQty > 0 ? Math.floor(carryQty) : 0;
+    if (!platformCore || !articleId || qty <= 0 || loading || products.length === 0) return;
+    if (!cartHydratedRef.current) return;
+
+    const carryKey = `${articleId}:${qty}:${carrySize ?? 'M'}`;
+    if (carryAppliedRef.current === carryKey) return;
+
+    const product = products.find((p) => p.id === articleId || p.sku?.trim() === articleId);
+    if (!product) return;
+
+    const size = parseShopShowroomInlineSize(carrySize);
+    const existing = b2bCart.find(
+      (item) =>
+        (item.id === articleId || item.sku?.trim() === articleId) && item.selectedSize === size
+    );
+    if ((existing?.quantity ?? 0) >= qty) {
+      carryAppliedRef.current = carryKey;
+      return;
+    }
+
+    carryAppliedRef.current = carryKey;
+    setLineQty(product, size, qty);
+  }, [
+    platformCore,
+    focusArticleId,
+    carryQty,
+    carrySize,
+    loading,
+    products,
+    b2bCart,
+    setLineQty,
+  ]);
+
   const totals = useMemo(
     () =>
       b2bCart.reduce(
@@ -275,24 +437,29 @@ export function CoreWholesaleMatrix({
     : showroomHref;
 
   const goCheckout = () => {
-    if (b2bCart.length === 0 || cartSyncing) return;
+    if (b2bCart.length === 0 || cartSyncing || sizeRunBlockedArticleId) return;
     void (async () => {
       setCartSyncing(true);
       setLoadError(null);
       try {
-        const sync = await syncLegacyCartToWorkshop2({
+        if (persistTimerRef.current) {
+          clearTimeout(persistTimerRef.current);
+          persistTimerRef.current = undefined;
+        }
+        const resolved = await resolveCheckoutCartSession({
           items: b2bCart.map(applyToCartItem),
           collectionId,
           buyerId,
           tier: cartTier,
           sessionId: cartSessionId,
+          preferPersistedSession: platformCore,
         });
-        if (!sync.ok) {
-          setLoadError(sync.messageRu);
+        if (!resolved.ok) {
+          setLoadError(resolved.messageRu);
           return;
         }
-        const href = sync.sessionId
-          ? `${checkoutHref}${checkoutHref.includes('?') ? '&' : '?'}cartSession=${encodeURIComponent(sync.sessionId)}`
+        const href = resolved.sessionId
+          ? `${checkoutHref}${checkoutHref.includes('?') ? '&' : '?'}cartSession=${encodeURIComponent(resolved.sessionId)}`
           : checkoutHref;
         router.push(href);
         // Hard navigation fallback — client router can stall after async cart sync (e2e / cold compile).
@@ -378,8 +545,17 @@ export function CoreWholesaleMatrix({
     >
       <div className="space-y-4" data-testid="shop-co-matrix-panel">
         <ShopCoSeasonMatrixStrip activeCollectionId={collectionId} />
-        {!focusArticle ? (
-          <ShopCoMatrixSpinePeerStrip collectionId={collectionId} orderId={spineOrderId || undefined} />
+        {isPlatformCoreMode() ? (
+          <PlatformAiTaskStrip
+            sectionId="shop-co-matrix"
+            pillarId="collection_order"
+            roleId="shop"
+            task="Review assortment quota split across matrix sizes and MOQ compliance"
+            collectionId={collectionId}
+            orderId={spineOrderId || undefined}
+            testId="shop-co-matrix-quota-ai"
+            buttonLabel="Квота ассортимента (AI)"
+          />
         ) : null}
         {prepackAppliedNote ? (
           <div
@@ -387,6 +563,56 @@ export function CoreWholesaleMatrix({
             data-testid="shop-co-matrix-prepack-applied-banner"
           >
             {prepackAppliedNote}
+          </div>
+        ) : null}
+        {sizeRunHint ? (
+          <div
+            className="text-amber-800 rounded-lg border border-amber-200/80 bg-amber-50/50 px-3 py-2 text-[11px]"
+            data-testid="shop-co-matrix-size-run-hint"
+          >
+            <p>{sizeRunHint}</p>
+            <p className="mt-1 text-amber-900">{SHOP_MATRIX_SIZE_RUN_CHECKOUT_BLOCK_RU}</p>
+            {sizeRunBlockedArticleId ? (
+              <Link
+                href={shopMatrixSizeRunFixHref(collectionId, sizeRunBlockedArticleId)}
+                data-testid="shop-co-matrix-size-run-fix-link"
+                className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
+              >
+                {SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU}: {sizeRunBlockedArticleId}
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
+        {draftValidationHintRu ? (
+          <p
+            className="text-amber-900 rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-[11px]"
+            data-testid="shop-co-matrix-draft-validation-hint"
+          >
+            {draftValidationHintRu}
+          </p>
+        ) : null}
+        {draftConflictHintRu ? (
+          <div
+            className="rounded-lg border border-red-200/80 bg-red-50/70 px-3 py-2 text-[11px] text-red-900"
+            data-testid={SHOP_MATRIX_DRAFT_CONFLICT_BANNER_TESTID}
+            role="alert"
+          >
+            <p>{draftConflictHintRu}</p>
+          </div>
+        ) : null}
+        {draftAutosaveFail && cartSessionId ? (
+          <div
+            className="rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-[11px] text-amber-900"
+            role="status"
+          >
+            <p>{SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU}</p>
+            <Link
+              href={shopMatrixDraftAutosaveFailCheckoutHref(collectionId, cartSessionId)}
+              data-testid={SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_LINK_TESTID}
+              className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
+            >
+              {SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_LINK_RU}
+            </Link>
           </div>
         ) : null}
         {focusArticle && !hideCabinetGoldenPath ? (
@@ -431,7 +657,7 @@ export function CoreWholesaleMatrix({
               data-testid="shop-co-matrix-checkout-link"
               className={hubGadget.goldenLink}
             >
-              Checkout
+              Оформление
             </Link>
             <ShopScMatrixEntryHonestStrip
               collectionId={collectionId}
@@ -442,11 +668,16 @@ export function CoreWholesaleMatrix({
           </div>
         ) : null}
         {!hideCabinetGoldenPath && !focusArticle ? (
-          <ShopScCabinetGoldenPathStrip
+          <ShopCoGoldenPathStrip
             collectionId={collectionId}
-            activeOrderId={spineOrderId}
+            orderId={spineOrderId || undefined}
+            activeStep="matrix"
             omitStep="matrix"
+            className="mb-1"
           />
+        ) : null}
+        {!hideCabinetGoldenPath && !focusArticle ? (
+          <ShopCoMatrixSpinePeerStrip collectionId={collectionId} orderId={spineOrderId || undefined} />
         ) : null}
         <div
           className="space-y-4"
@@ -483,6 +714,31 @@ export function CoreWholesaleMatrix({
                   Cart · {cartTier}
                 </Badge>
               ) : null}
+              {platformCore && draftStorageMode === 'pg' ? (
+                <Badge
+                  variant="outline"
+                  className="ml-1 mt-1 text-[10px]"
+                  data-testid="shop-co-matrix-draft-storage-pg"
+                >
+                  PG черновик
+                </Badge>
+              ) : null}
+              {platformCore ? (
+                <ShopPricelistTierReceiveBadge
+                  collectionId={collectionId}
+                  testId={SHOP_CO_MATRIX_TIER_SYNC_RECEIVE_BADGE_TESTID}
+                  className="ml-1 mt-1"
+                />
+              ) : null}
+              {platformCore ? (
+                <Link
+                  href={shopMatrixRangePlannerTierBadgeHref(collectionId)}
+                  data-testid={SHOP_MATRIX_RANGE_PLANNER_TIER_BADGE_LINK_TESTID}
+                  className={cn(hubGadget.goldenLink, 'ml-1 mt-1 inline-flex text-[10px]')}
+                >
+                  Планировщик · tier
+                </Link>
+              ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <div className="text-right text-xs">
@@ -492,7 +748,7 @@ export function CoreWholesaleMatrix({
                 </p>
               </div>
               <Button
-                disabled={b2bCart.length === 0 || cartSyncing}
+                disabled={b2bCart.length === 0 || cartSyncing || Boolean(sizeRunBlockedArticleId)}
                 data-testid="shop-co-matrix-to-checkout"
                 data-audit-legacy="shop-b2b-matrix-to-checkout"
                 className={cn(platformCore && 'min-h-11')}
@@ -506,9 +762,50 @@ export function CoreWholesaleMatrix({
                     Шоурум
                   </Link>
                 </Button>
-              ) : null}
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={cn('text-[10px] font-semibold uppercase', platformCore && 'min-h-11')}
+                  disabled={sampleBusy || products.length === 0}
+                  data-testid="shop-co-matrix-sample-request-cta"
+                  onClick={() => {
+                    const articleId = focusArticleId ?? products[0]?.id;
+                    if (!articleId) return;
+                    setSampleBusy(true);
+                    setSampleHint(null);
+                    void fetch('/api/shop/b2b/sample-request', {
+                      method: 'POST',
+                      headers: {
+                        ...buildWorkshop2ApiRequestHeaders(),
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ collectionId, articleId, buyerId }),
+                    })
+                      .then(async (res) => {
+                        const json = (await res.json()) as { ok?: boolean; messageRu?: string };
+                        setSampleHint(
+                          json.messageRu ??
+                            (json.ok
+                              ? 'Запрос образца отправлен бренду.'
+                              : 'Не удалось отправить запрос.')
+                        );
+                      })
+                      .catch(() => setSampleHint('Сеть недоступна — повторите позже.'))
+                      .finally(() => setSampleBusy(false));
+                  }}
+                >
+                  {sampleBusy ? 'Отправка…' : 'Запрос образца'}
+                </Button>
+              )}
             </div>
           </div>
+          {sampleHint ? (
+            <p className="text-text-muted text-[10px]" data-testid="shop-co-matrix-sample-request-hint">
+              {sampleHint}
+            </p>
+          ) : null}
 
           <div className={cn(platformCore && hubCabinet.workspaceCardGrid)}>
           {products.map((product) => {
@@ -572,7 +869,7 @@ export function CoreWholesaleMatrix({
                                 data-testid={`shop-co-matrix-article-inspector-${product.id}`}
                                 onClick={() => onOpenArticleInspector(product.id)}
                               >
-                                Inspector
+                                Инспектор
                               </button>
                             ) : null}
                           </div>

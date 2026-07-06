@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { PillarCapabilityFeature } from '@/lib/platform/pillar-capability-workspaces';
+import type { PillarCapabilityFeature } from '@/lib/platform-core-ports/platform/pillar-capability-workspaces';
 
 type Props = {
   feature: PillarCapabilityFeature;
@@ -19,7 +19,7 @@ export function PillarCapabilityFeatureStubPanel({ feature, capabilityId, classN
         <div className="flex flex-wrap items-center gap-2">
           <CardTitle className="text-base">{feature.labelRu}</CardTitle>
           <Badge variant="outline" className="text-[10px] uppercase">
-            {feature.status === 'stub' ? 'enhance' : 'planned'}
+            {feature.status === 'stub' ? 'доработка' : 'в планах'}
           </Badge>
           {feature.externalRef ? (
             <Badge variant="secondary" className="text-[10px]">

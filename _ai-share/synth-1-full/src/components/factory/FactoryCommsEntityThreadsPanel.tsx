@@ -24,10 +24,13 @@ import {
   supplierCommsEntitiesHref,
 } from '@/lib/fashion/supplier-comms-entity-threads';
 import { SupplierManufacturerHandoffPeerStrip } from '@/components/factory/supplier/SupplierManufacturerHandoffPeerStrip';
+import { SupplierRfqSlaTimerStrip } from '@/components/factory/supplier/SupplierRfqSlaTimerStrip';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { PLATFORM_CORE_DEMO, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { ROUTES } from '@/lib/routes';
+import { PlatformCoreEntityThreadTemplatesStrip } from '@/components/platform/PlatformCoreEntityThreadTemplatesStrip';
+import type { PlatformCoreEntityThreadKind } from '@/lib/communications/platform-core-entity-thread-templates';
 
 type Props = {
   variant: 'manufacturer' | 'supplier';
@@ -99,7 +102,7 @@ export function FactoryCommsEntityThreadsPanel({ variant }: Props) {
   return (
     <div className="space-y-4" data-testid={`${variant}-comms-entity-threads-panel`}>
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">Entity threads</Badge>
+        <Badge variant="secondary">Треды сущностей</Badge>
         <Badge variant="outline">Столп 5 · comms</Badge>
         <Badge
           variant="outline"
@@ -140,12 +143,27 @@ export function FactoryCommsEntityThreadsPanel({ variant }: Props) {
               className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
               data-testid={`${variant}-comms-entity-thread-${row.id}`}
             >
-              <div>
+              <div className="min-w-0 flex-1 space-y-2">
                 <p className="text-sm font-medium">{row.labelRu}</p>
                 <p className="text-text-muted text-xs">{row.summaryRu}</p>
                 <Badge variant="outline" className="mt-1 text-[9px]">
                   {row.pillarRu}
                 </Badge>
+                {variant === 'supplier' && row.id === 'rfq' ? (
+                  <SupplierRfqSlaTimerStrip
+                    collectionId={collectionId}
+                    articleId={articleId}
+                    variant="inline"
+                    context="thread"
+                  />
+                ) : null}
+                <PlatformCoreEntityThreadTemplatesStrip
+                  variant={variant}
+                  threadKind={row.id as PlatformCoreEntityThreadKind}
+                  collectionId={collectionId}
+                  articleId={articleId}
+                  orderId={orderId}
+                />
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" asChild>

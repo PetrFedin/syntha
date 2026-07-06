@@ -9,6 +9,7 @@ from app.db.models.base import User
 from app.api.schemas.base import GenericResponse
 from app.agents.orchestrator_agent import orchestrator_agent
 from app.agents.order_anomaly_agent import order_anomaly_agent
+from app.agents.platform_context import enrich_platform_context
 from app.ai.services.trend_radar_service import TrendRadarService
 from app.ai.services.pricing_ai_service import PricingAIService
 from app.ai.vector.vector_search_service import VectorSearchService
@@ -29,7 +30,47 @@ class TaskRequest(BaseModel):
     task: str
     context: Optional[Dict[str, Any]] = None
 
-    model_config = {"json_schema_extra": {"examples": [{"task": "Fix import error in order_service", "context": {"file_paths": ["app/services/order_service.py"]}}]}}
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "task": "Scan tech debt in workshop2 development flow",
+                    "context": {
+                        "pillar": "development",
+                        "role": "brand",
+                        "section_id": "brand-dev-w2-hub",
+                        "collectionId": "SS27",
+                        "articleId": "demo-ss27-01",
+                    },
+                }
+            ]
+        }
+    }
+
+
+def _agent_result_payload(result) -> Dict[str, Any]:
+    return {
+        "agent": result.agent_name,
+        "task_type": result.task_type,
+        "files_used": result.files_used,
+        "changes_proposed": result.changes_proposed,
+        "code_changes": result.code_changes,
+        "next_step": result.next_step,
+        "master_plan_updates": result.master_plan_updates,
+    }
+
+
+async def _run_orchestrator(req: TaskRequest, *, db: AsyncSession | None = None, user: User | None = None):
+    task_type = orchestrator_agent._classify_task(req.task)
+    context = enrich_platform_context(req.context)
+    if db is not None and user is not None and task_type in ("CODE_ITERATION", "BUGFIX_ITERATION"):
+        from app.ai.feedback_store import FeedbackStore
+
+        store = FeedbackStore(db, user)
+        examples = await store.get_similar_successful(task_type, req.task, limit=3)
+        if examples:
+            context["feedback_examples"] = examples
+    return await orchestrator_agent.run(req.task, context=context)
 
 
 @router.post("/task", response_model=GenericResponse[Dict[str, Any]])
@@ -42,29 +83,22 @@ async def run_orchestrator_task(
     key = f"ai_task:{current_user.id or current_user.email}"
     if not check_rate_limit(key, settings.AI_TASK_RATE_LIMIT, settings.AI_TASK_RATE_WINDOW):
         raise HTTPException(status_code=429, detail="AI task rate limit exceeded. Try again later.")
-    task_type = orchestrator_agent._classify_task(req.task)
-    context = dict(req.context or {})
-    if task_type in ("CODE_ITERATION", "BUGFIX_ITERATION"):
-        from app.ai.feedback_store import FeedbackStore
-        store = FeedbackStore(db, current_user)
-        examples = await store.get_similar_successful(task_type, req.task, limit=3)
-        if examples:
-            context["feedback_examples"] = examples
-    result = await orchestrator_agent.run(req.task, context=context)
+    result = await _run_orchestrator(req, db=db, user=current_user)
     remaining = get_remaining(key, settings.AI_TASK_RATE_LIMIT, settings.AI_TASK_RATE_WINDOW)
     data = {
         "success": True,
-        "data": {
-            "agent": result.agent_name,
-            "task_type": result.task_type,
-            "files_used": result.files_used,
-            "changes_proposed": result.changes_proposed,
-            "code_changes": result.code_changes,
-            "next_step": result.next_step,
-            "master_plan_updates": result.master_plan_updates,
-        },
+        "data": _agent_result_payload(result),
     }
     return JSONResponse(content=data, headers={"X-RateLimit-Remaining": str(remaining)})
+
+
+@router.post("/task/dev", response_model=GenericResponse[Dict[str, Any]])
+async def run_orchestrator_task_dev(req: TaskRequest):
+    """Platform Core dev (:3001) — orchestrator without JWT. development env only."""
+    if settings.ENVIRONMENT not in ("development", "test"):
+        raise HTTPException(status_code=404, detail="Not found")
+    result = await _run_orchestrator(req)
+    return GenericResponse(data=_agent_result_payload(result))
 
 
 @router.get("/task-types", response_model=GenericResponse[List[str]])

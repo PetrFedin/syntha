@@ -74,3 +74,73 @@ export function summarizeBrandPricelistVersionRows(rows: readonly BrandPricelist
 export function brandPricelistChannelLabel(channel: PriceTierId): string {
   return channel;
 }
+
+export type BrandPricelistVersionDiffField = {
+  field: string;
+  baseValue: string;
+  targetValue: string;
+  changed: boolean;
+};
+
+export function isBrandPricelistVersionActive(
+  row: BrandPricelistVersionRow,
+  asOfDate?: string
+): boolean {
+  const today = asOfDate ?? new Date().toISOString().slice(0, 10);
+  return row.validFrom <= today && row.validTo >= today;
+}
+
+/** Default pair: active (or first) vs same-channel alternate (or next row). */
+export function pickDefaultBrandPricelistVersionDiffPair(
+  rows: readonly BrandPricelistVersionRow[],
+  asOfDate?: string
+): { baseId: string; targetId: string } | null {
+  if (rows.length < 2) return null;
+  const base = rows.find((row) => isBrandPricelistVersionActive(row, asOfDate)) ?? rows[0]!;
+  const sameChannel = rows.find((row) => row.id !== base.id && row.channel === base.channel);
+  const target = sameChannel ?? rows.find((row) => row.id !== base.id) ?? rows[1]!;
+  return { baseId: base.id, targetId: target.id };
+}
+
+export function buildBrandPricelistVersionDiffFields(
+  base: BrandPricelistVersionRow,
+  target: BrandPricelistVersionRow
+): BrandPricelistVersionDiffField[] {
+  const fmtMult = (m?: number) => (m != null ? String(m) : '—');
+  const fmtPeriod = (from: string, to: string) => `${from} – ${to}`;
+  const fmtDisc = (m?: number) =>
+    m != null && Number.isFinite(m) ? `${((1 - m) * 100).toFixed(1)}%` : '—';
+
+  return [
+    {
+      field: 'Name',
+      baseValue: base.name,
+      targetValue: target.name,
+      changed: base.name !== target.name,
+    },
+    {
+      field: 'Channel',
+      baseValue: brandPricelistChannelLabel(base.channel),
+      targetValue: brandPricelistChannelLabel(target.channel),
+      changed: base.channel !== target.channel,
+    },
+    {
+      field: 'Period',
+      baseValue: fmtPeriod(base.validFrom, base.validTo),
+      targetValue: fmtPeriod(target.validFrom, target.validTo),
+      changed: base.validFrom !== target.validFrom || base.validTo !== target.validTo,
+    },
+    {
+      field: 'Multiplier',
+      baseValue: fmtMult(base.multiplier),
+      targetValue: fmtMult(target.multiplier),
+      changed: base.multiplier !== target.multiplier,
+    },
+    {
+      field: 'Discount vs base',
+      baseValue: fmtDisc(base.multiplier),
+      targetValue: fmtDisc(target.multiplier),
+      changed: base.multiplier !== target.multiplier,
+    },
+  ];
+}

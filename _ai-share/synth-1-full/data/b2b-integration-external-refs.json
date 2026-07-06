@@ -1,21 +1,4 @@
 {
   "schemaVersion": 1,
-  "refs": [
-    {
-      "platform": "joor",
-      "externalId": "core33-joor-1781797329615",
-      "lastSyncedAt": "2026-06-18T15:42:09.773Z",
-      "syncDirection": "inbound",
-      "synthaEntityId": "INT-JOOR-core33-joor-1781797329615",
-      "synthaEntityType": "wholesale_order"
-    },
-    {
-      "platform": "joor",
-      "externalId": "core32-joor-1781797236512",
-      "lastSyncedAt": "2026-06-18T15:41:00.965Z",
-      "syncDirection": "inbound",
-      "synthaEntityId": "INT-JOOR-core32-joor-1781797236512",
-      "synthaEntityType": "wholesale_order"
-    }
-  ]
+  "refs": []
 }

@@ -1,6 +1,8 @@
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { buildPlatformB2bMarketroomSession } from '@/lib/b2b/platform-b2b-marketroom';
+import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
 import { buildShopB2bPartnersSession } from '@/lib/b2b/shop-b2b-partners-workspace';
+import { shopB2bOrdersCollectionRegistryHref } from '@/lib/routes';
 import {
   PLATFORM_CORE_B2B_BASE,
   PLATFORM_CORE_B2B_PARTNERS_HREF,
@@ -14,6 +16,8 @@ export type PlatformB2bPartnersSession = {
   marketroomHref: string;
   shopDiscoverHref: string;
   brandCrmHref: string;
+  brandCrmBuyerAssignHref: string;
+  shopRegistryGreenfieldHref: string;
   platformMarketroomDiscoverHref: string;
   buyPathHref: string;
   shopRepHref: string;
@@ -41,6 +45,8 @@ export function buildPlatformB2bPartnersSession(input?: {
     marketroomHref: marketroom.showcaseHref,
     shopDiscoverHref: shop.discoverPageHref,
     brandCrmHref: shop.brandCrmSegmentsHref,
+    brandCrmBuyerAssignHref: brandCrmSegmentationFeatureHref('pricelist', collectionId),
+    shopRegistryGreenfieldHref: `${shopB2bOrdersCollectionRegistryHref()}?buyer=shop2&collection=${encodeURIComponent(collectionId)}`,
     platformMarketroomDiscoverHref: marketroom.discoverHref,
     buyPathHref: marketroom.buyPathHref,
     shopRepHref: shop.repHref,

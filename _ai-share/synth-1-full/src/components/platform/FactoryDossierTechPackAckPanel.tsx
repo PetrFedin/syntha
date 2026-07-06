@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
-import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
-import { summarizeWorkshop2FactoryHandoffBundleStatus } from '@/lib/production/workshop2-factory-handoff-bundle-status';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
+import type { Workshop2DossierPhase1 } from '@/lib/platform-core-ports/dossier-material-preview';
+import { summarizeWorkshop2FactoryHandoffBundleStatus } from '@/lib/platform-core-ports/factory-dossier';
 
 type Props = {
   collectionId: string;

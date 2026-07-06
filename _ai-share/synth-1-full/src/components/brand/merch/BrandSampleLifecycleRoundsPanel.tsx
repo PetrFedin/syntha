@@ -19,6 +19,7 @@ import {
   summarizeBrandSampleLifecycle,
 } from '@/lib/fashion/brand-sample-lifecycle';
 import { BrandSampleLifecycleCommsPeerStrip } from '@/components/brand/merch/BrandSampleLifecycleCommsPeerStrip';
+import { BrandSampleLifecycleRowStatusPushButton } from '@/components/brand/merch/BrandSampleLifecycleRowStatusPushButton';
 import type { Product } from '@/lib/types';
 
 type Props = {
@@ -57,6 +58,7 @@ export function BrandSampleLifecycleRoundsPanel({ products, collectionId }: Prop
                 <TableHead>Round</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Next</TableHead>
+                <TableHead className="text-right">Push</TableHead>
                 <TableHead className="text-right">Peer</TableHead>
               </TableRow>
             </TableHeader>
@@ -77,6 +79,14 @@ export function BrandSampleLifecycleRoundsPanel({ products, collectionId }: Prop
                   <TableCell className="text-xs uppercase">{row.status}</TableCell>
                   <TableCell className="text-text-muted max-w-[180px] text-[10px]">
                     {row.nextActionRu}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <BrandSampleLifecycleRowStatusPushButton
+                      collectionId={collectionId}
+                      articleId={row.articleId}
+                      sku={row.sku}
+                      disabled={row.status === 'approved'}
+                    />
                   </TableCell>
                   <TableCell className="text-right">
                     <Button size="sm" variant="outline" asChild>

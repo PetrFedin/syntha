@@ -322,7 +322,7 @@ export function Workshop2ReleaseFloorPanel({
           <Link href={floorHref}>Открыть пол ({expectedFloorTab})</Link>
         </Button>
         <Button type="button" size="sm" variant="outline" className="h-8 text-[11px]" asChild>
-          <Link href={factoryHubHref}>Factory queue hub</Link>
+          <Link href={factoryHubHref}>Хаб очереди цеха</Link>
         </Button>
         <Button type="button" size="sm" variant="ghost" className="h-8 text-[11px]" asChild>
           <Link

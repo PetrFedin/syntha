@@ -56,7 +56,7 @@ export function Workshop2OverviewKpiStrip({
           ТЗ: <strong>{snap.tzOverallPct}%</strong>
         </span>
         <span className={snap.readyForHandoff ? 'text-emerald-700' : 'text-amber-800'}>
-          {snap.readyForHandoff ? 'Готово к handoff' : 'Handoff заблокирован'}
+          {snap.readyForHandoff ? 'Готово к передаче' : 'Передача заблокирована'}
         </span>
         {snap.blockerCount > 0 ? (
           <span className="text-amber-800">Блокеров: {snap.blockerCount}</span>

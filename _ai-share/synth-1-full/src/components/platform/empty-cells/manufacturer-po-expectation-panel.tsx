@@ -11,9 +11,11 @@ import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factoryMessagesB2bOrderContextHref } from '@/lib/routes';
-import { MfrEmptyCoPeerStrip } from '@/components/platform/empty-cells/MfrEmptyCoPeerStrip';
+import { factoryMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
+import { MfrEmptyCoPeerStrip } from '@/components/platform/empty-cells/MfrEmptyCoPeerStrip';
+import { MfrEmptyHandoffCountBadge } from '@/components/platform/empty-cells/MfrEmptyHandoffCountBadge';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { formatWholesaleOrderDisplayId } from '@/lib/integrations/spine/integration-ui-utils';
 import { PlatformCoreStepProgressStrip } from '@/components/platform/PlatformCoreStepProgressStrip';
 import { PlatformCoreTerm } from '@/components/platform/PlatformCoreTerm';
@@ -22,6 +24,7 @@ import {
   PRODUCTION_HANDOFF_AWAITING_BRAND_RU,
   PRODUCTION_HANDOFF_QUEUE_RU,
 } from '@/lib/platform-core-canonical-labels';
+import { MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID } from '@/lib/platform-core-ports/platform/wave-yv-mfr-empty-pillars-final';
 
 type DevStep = { id: string; labelRu: string; done: boolean };
 
@@ -64,18 +67,54 @@ function ManufacturerPoCtaLinks({
   if (compact) {
     return (
       <div className="flex flex-wrap gap-x-3 gap-y-1">
-        <Link href={handoffHref} data-testid={`${testIdPrefix}-handoff-primary`} className="bg-accent-primary text-accent-primary-foreground inline-flex w-fit items-center gap-2 rounded-lg px-2.5 py-1.5 text-[10px] font-semibold shadow-sm transition-opacity hover:opacity-90">Открыть очередь →</Link>
-        <Link href={messagesHref} data-testid={`${testIdPrefix}-messages`} className="text-accent-primary font-medium hover:underline">Сообщения по заказу →</Link>
-        <Link href={supplierProcurementHref} data-testid={`${testIdPrefix}-supplier-procurement`} className="text-accent-primary font-medium hover:underline">Закупка у поставщика →</Link>
+        <Link
+          href={handoffHref}
+          data-testid={`${testIdPrefix}-handoff-primary`}
+          className="bg-accent-primary text-accent-primary-foreground inline-flex w-fit items-center gap-2 rounded-lg px-2.5 py-1.5 text-[10px] font-semibold shadow-sm transition-opacity hover:opacity-90"
+        >
+          Открыть очередь →
+        </Link>
+        <Link
+          href={messagesHref}
+          data-testid={`${testIdPrefix}-messages`}
+          className="text-accent-primary font-medium hover:underline"
+        >
+          Сообщения по заказу →
+        </Link>
+        <Link
+          href={supplierProcurementHref}
+          data-testid={`${testIdPrefix}-supplier-procurement`}
+          className="text-accent-primary font-medium hover:underline"
+        >
+          Закупка у поставщика →
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <Link href={handoffHref} data-testid={`${testIdPrefix}-handoff-primary`} className="bg-accent-primary text-accent-primary-foreground inline-flex w-fit items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90">Открыть очередь</Link>
-      <Link href={messagesHref} data-testid={`${testIdPrefix}-messages`} className="text-accent-primary font-medium hover:underline">Сообщения по заказу</Link>
-      <Link href={supplierProcurementHref} data-testid={`${testIdPrefix}-supplier-procurement`} className="text-accent-primary font-medium hover:underline">Закупка у поставщика</Link>
+      <Link
+        href={handoffHref}
+        data-testid={`${testIdPrefix}-handoff-primary`}
+        className="bg-accent-primary text-accent-primary-foreground inline-flex w-fit items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+      >
+        Открыть очередь
+      </Link>
+      <Link
+        href={messagesHref}
+        data-testid={`${testIdPrefix}-messages`}
+        className="text-accent-primary font-medium hover:underline"
+      >
+        Сообщения по заказу
+      </Link>
+      <Link
+        href={supplierProcurementHref}
+        data-testid={`${testIdPrefix}-supplier-procurement`}
+        className="text-accent-primary font-medium hover:underline"
+      >
+        Закупка у поставщика
+      </Link>
     </div>
   );
 }
@@ -120,7 +159,10 @@ export default function ManufacturerPoExpectation({
 
   if (compact) {
     return (
-      <section data-testid="manufacturer-collection-order-workspace" className="space-y-1">
+      <section
+        data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID}
+        className="space-y-1"
+      >
         <Card data-testid="manufacturer-po-expectation-mini" className="border-emerald-200/60">
           <CardContent className="space-y-1.5 p-3 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -128,7 +170,10 @@ export default function ManufacturerPoExpectation({
                 <Package className="h-3.5 w-3.5 text-emerald-600" aria-hidden />
                 {B2B_TO_PO_WORKSPACE_LABEL}
               </p>
-              <PlatformCoreLivePollIndicator testId="manufacturer-po-expectation-mini-live-poll" />
+              <div className="flex flex-wrap items-center gap-1.5">
+                <MfrEmptyHandoffCountBadge factoryId={factoryId} />
+                <PlatformCoreLivePollIndicator testId="manufacturer-po-expectation-mini-live-poll" />
+              </div>
             </div>
             <p>
               {contextOrderId ? (
@@ -173,18 +218,27 @@ export default function ManufacturerPoExpectation({
               compact
               testIdPrefix="manufacturer-po-expectation-mini"
             />
+            {isPlatformCoreMode() ? (
+              <MfrEmptyCoPeerStrip demo={demo} orderId={contextOrderId || demo.demoOrderId} />
+            ) : null}
           </CardContent>
         </Card>
-        <MfrEmptyCoPeerStrip demo={demo} orderId={contextOrderId} />
         {embedCrossRole ? (
-          <RolePillarCrossRoleLinks roleId="manufacturer" pillarId="collection_order" variant="compact" />
+          <RolePillarCrossRoleLinks
+            roleId="manufacturer"
+            pillarId="collection_order"
+            variant="compact"
+          />
         ) : null}
       </section>
     );
   }
 
   return (
-    <section data-testid="manufacturer-collection-order-workspace" className="space-y-2">
+    <section
+      data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID}
+      className="space-y-2"
+    >
       <Card data-testid="manufacturer-po-expectation" className="border-emerald-200/60">
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-start justify-between gap-2">
@@ -192,13 +246,16 @@ export default function ManufacturerPoExpectation({
               <Package className="h-4 w-4 text-emerald-600" aria-hidden />
               Ожидание производственного заказа
             </CardTitle>
-            <PlatformCoreLivePollIndicator testId="manufacturer-po-expectation-live-poll" />
+            <div className="flex flex-wrap items-center gap-1.5">
+              <MfrEmptyHandoffCountBadge factoryId={factoryId} />
+              <PlatformCoreLivePollIndicator testId="manufacturer-po-expectation-live-poll" />
+            </div>
           </div>
           {hideLead ? null : (
-          <CardDescription className="text-xs">
-            Оптовый заказ (<PlatformCoreTerm term="B2B" />) между магазином и брендом; цех следит за{' '}
-            <PlatformCoreTerm term="Handoff" /> · {collectionId}.
-          </CardDescription>
+            <CardDescription className="text-xs">
+              Оптовый заказ (<PlatformCoreTerm term="B2B" />) между магазином и брендом; цех следит
+              за <PlatformCoreTerm term="Handoff" /> · {collectionId}.
+            </CardDescription>
           )}
         </CardHeader>
         <CardContent className="space-y-3 text-xs">
@@ -245,13 +302,18 @@ export default function ManufacturerPoExpectation({
             orderId={contextOrderId}
             testIdPrefix="manufacturer-po-expectation"
           />
+          {isPlatformCoreMode() ? (
+            <MfrEmptyCoPeerStrip demo={demo} orderId={contextOrderId || demo.demoOrderId} />
+          ) : null}
         </CardContent>
       </Card>
-      <MfrEmptyCoPeerStrip demo={demo} orderId={contextOrderId} />
       {embedCrossRole ? (
-        <RolePillarCrossRoleLinks roleId="manufacturer" pillarId="collection_order" variant="compact" />
+        <RolePillarCrossRoleLinks
+          roleId="manufacturer"
+          pillarId="collection_order"
+          variant="compact"
+        />
       ) : null}
     </section>
   );
 }
-

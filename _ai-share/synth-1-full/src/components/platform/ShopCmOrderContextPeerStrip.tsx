@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { buildShopOrderCommsSession } from '@/lib/b2b/shop-order-comms';
-import { shopB2bCheckoutCollectionHref, shopB2bOrdersCollectionRegistryHref } from '@/lib/routes';
+import { buildShopOrderCommsSession } from '@/lib/platform-core-ports/b2b/shop-order-comms';
+import { shopB2bCheckoutCollectionHref, shopB2bOrdersCollectionRegistryHref } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   orderId: string;
 };
 
-/** Shop order comms · CO registry + matrix + brand handoff peers. */
+/** Чат по заказу магазина · реестр, матрица, оформление, трекинг. */
 export function ShopCmOrderContextPeerStrip({ collectionId, orderId }: Props) {
   const session = buildShopOrderCommsSession({ collectionId, orderId });
   const checkoutHref = shopB2bCheckoutCollectionHref(collectionId);
@@ -18,37 +18,37 @@ export function ShopCmOrderContextPeerStrip({ collectionId, orderId }: Props) {
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-cm-order-context-strip">
       <Link href={shopB2bOrdersCollectionRegistryHref(orderId)} data-testid="shop-cm-order-registry-link" className={hubGadget.goldenLink}>
-        Registry
+        Реестр
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.matrixHref} data-testid="shop-cm-order-matrix-link" className={hubGadget.goldenLink}>
-        Matrix
+        Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={checkoutHref} data-testid="shop-cm-order-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.brandOrderHandoffHref} data-testid="shop-cm-order-brand-handoff-link" className={hubGadget.goldenLink}>
-        Brand handoff
+        Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.trackingHref} data-testid="shop-cm-order-tracking-link" className={hubGadget.goldenLink}>
-        Tracking
+        Трекинг
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.collaborativeHref} data-testid="shop-cm-order-collaborative-link" className={hubGadget.goldenLink}>
-        Collaborative
+        Согласования
       </Link>
     </div>
   );

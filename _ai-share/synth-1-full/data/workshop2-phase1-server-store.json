@@ -585,12 +585,13 @@
   "SS27::demo-ss27-02": {
     "collectionId": "SS27",
     "articleId": "demo-ss27-02",
-    "version": 2,
-    "updatedAt": "2026-05-29T19:37:52.632Z",
+    "version": 66,
+    "updatedAt": "2026-06-21T01:57:15.049Z",
+    "updatedBy": "Wave S",
     "dossier": {
       "schemaVersion": 1,
       "updatedAt": "2026-05-29T19:37:52.501Z",
-      "updatedBy": "file-store-demo-bootstrap",
+      "updatedBy": "Wave S",
       "selectedAudienceId": "women",
       "isUnisex": false,
       "brandNotes": "SS27 · платье миди · хлопок · демо ТЗ для хаба разработки.",
@@ -682,7 +683,7 @@
       "categorySketchImageDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO2WZxkAAAAASUVORK5CYII=",
       "lifecycleState": "draft",
       "nestingStagingMirror": {
-        "mirroredAt": "2026-05-29T19:37:52.632Z",
+        "mirroredAt": "2026-06-21T01:57:15.049Z",
         "lastActor": "Wave S",
         "lastSource": "local_heuristic",
         "partnerAckRecorded": false,
@@ -692,6 +693,646 @@
         "journal": [
           {
             "at": "2026-05-29T19:37:52.632Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T13:19:01.946Z",
+            "actor": "Wave P",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T13:19:06.562Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T21:57:26.248Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T22:00:28.448Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T22:54:44.709Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:05:39.651Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:06:51.041Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:12:39.061Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:13:15.215Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:22:55.919Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:28:37.983Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:28:58.326Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:30:19.149Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:31:02.712Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:35:51.384Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:38:05.676Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:38:58.086Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:45:16.783Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:46:03.846Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:49:36.929Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:49:52.568Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:50:13.140Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:53:28.816Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:56:50.769Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:56:57.146Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:58:45.873Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:58:56.034Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:59:09.607Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-20T23:59:29.110Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:02:57.928Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:06:44.686Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:07:09.609Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:10:42.155Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:14:29.908Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:16:28.262Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:18:13.831Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:19:17.317Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:26:31.744Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:26:47.354Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:27:03.688Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:27:15.079Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:27:52.012Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:28:11.368Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:28:32.281Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:33:23.552Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:33:53.920Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:40:16.544Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:41:02.719Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:50:25.091Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:52:42.911Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:53:05.110Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:53:25.550Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T00:54:02.894Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:32:19.703Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:32:57.602Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:33:16.129Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:39:52.787Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:49:36.687Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:49:48.641Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:52:26.876Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:52:34.872Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:54:37.486Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:55:42.919Z",
+            "actor": "Wave S",
+            "event": "nesting_simulate",
+            "outcome": "failed",
+            "error": "nesting_stub_disabled_in_production",
+            "partnerAckRecorded": false,
+            "ackId": null,
+            "ackAt": null
+          },
+          {
+            "at": "2026-06-21T01:57:15.049Z",
             "actor": "Wave S",
             "event": "nesting_simulate",
             "outcome": "failed",

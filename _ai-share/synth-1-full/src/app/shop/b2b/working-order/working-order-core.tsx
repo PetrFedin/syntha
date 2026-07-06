@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
+import { PlatformCoreWorkspaceStripsGate } from '@/components/platform/PlatformCoreWorkspaceStripsGate';
 import { B2bOrderUrlContextBanner } from '@/components/b2b/B2bOrderUrlContextBanner';
 import {
   ShopWorkingOrderBulkPanel,
@@ -18,6 +19,7 @@ import {
   ShopWorkingOrderGoldenPathStrip,
   shopWorkingOrderGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopWorkingOrderGoldenPathStrip';
+import { ShopCoGoldenPathStrip } from '@/components/shop/b2b/ShopCoGoldenPathStrip';
 import { ShopWorkingOrderNativeOrderHonestStrip } from '@/components/shop/b2b/ShopWorkingOrderNativeOrderHonestStrip';
 import { ShopWorkingOrderCoSpinePeerStrip } from '@/components/shop/b2b/ShopWorkingOrderCoSpinePeerStrip';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
@@ -79,18 +81,27 @@ function WorkingOrderWorkspaceBody() {
       crossLinksTitle="Matrix → replenishment → collaborative"
       beforeTabs={<B2bOrderUrlContextBanner variant="shop" />}
     >
-      <div className="mb-4">
-        <ShopWorkingOrderGoldenPathStrip
-          wholesaleOrderId={wholesaleOrderId}
-          collectionId={collectionId}
-          activeStep={shopWorkingOrderGoldenPathStepFromFeature(activeFeatureId)}
-        />
-      </div>
-      <ShopWorkingOrderNativeOrderHonestStrip
-        wholesaleOrderId={wholesaleOrderId}
-        collectionId={collectionId}
-      />
-      <ShopWorkingOrderCoSpinePeerStrip wholesaleOrderId={wholesaleOrderId} collectionId={collectionId} />
+      <PlatformCoreWorkspaceStripsGate>
+        <div className="mb-4 space-y-3">
+          <ShopCoGoldenPathStrip collectionId={collectionId} orderId={wholesaleOrderId} />
+          <ShopWorkingOrderGoldenPathStrip
+            wholesaleOrderId={wholesaleOrderId}
+            collectionId={collectionId}
+            activeStep={shopWorkingOrderGoldenPathStepFromFeature(activeFeatureId)}
+          />
+        </div>
+      </PlatformCoreWorkspaceStripsGate>
+      {!isIntegrationImportedWholesaleOrderId(wholesaleOrderId) ? (
+        <PlatformCoreWorkspaceStripsGate>
+          <ShopWorkingOrderNativeOrderHonestStrip
+            wholesaleOrderId={wholesaleOrderId}
+            collectionId={collectionId}
+          />
+        </PlatformCoreWorkspaceStripsGate>
+      ) : null}
+      <PlatformCoreWorkspaceStripsGate>
+        <ShopWorkingOrderCoSpinePeerStrip wholesaleOrderId={wholesaleOrderId} collectionId={collectionId} />
+      </PlatformCoreWorkspaceStripsGate>
       {activeFeatureId === 'versions' ? (
         <ShopWorkingOrderVersionsPanel
           wholesaleOrderId={wholesaleOrderId}

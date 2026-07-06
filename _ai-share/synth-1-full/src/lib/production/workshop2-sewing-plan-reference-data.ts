@@ -1,3 +1,4 @@
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { brands } from '@/lib/placeholder-data';
 import { getB2BOrdersBaseForOperationalApi } from '@/lib/order/b2b-orders-list-read-model.server';
 import {
@@ -72,6 +73,7 @@ function mergeRfSubjects(
 
 export function resolveWorkshop2SewingContractorsPayload(): Workshop2SewingContractorsPayload {
   const fromEnvPartners = parsePartnersJson(process.env.B2B_SEWING_PARTNERS_JSON);
+  const coreMode = isPlatformCoreMode();
   const fromBrands = brands.map((b) => ({
     id: `b2b:${String(b.slug).trim()}`,
     label: String(b.name ?? b.slug).trim() || b.slug,
@@ -85,8 +87,10 @@ export function resolveWorkshop2SewingContractorsPayload(): Workshop2SewingContr
   }
 
   const map = new Map<string, SewingPlanPartnerRow>();
-  for (const p of fromBrands) {
-    map.set(p.id, p);
+  if (!coreMode) {
+    for (const p of fromBrands) {
+      map.set(p.id, p);
+    }
   }
   for (const p of SEWING_ENTERPRISE_PARTNER_OPTIONS) {
     if (!map.has(p.id)) map.set(p.id, p);
@@ -97,7 +101,7 @@ export function resolveWorkshop2SewingContractorsPayload(): Workshop2SewingContr
 
   return {
     partners: [...map.values()].sort((a, b) => a.label.localeCompare(b.label, 'ru')),
-    source: { partners: 'catalog_and_demo' },
+    source: { partners: coreMode ? 'enterprise_and_b2b' : 'catalog_and_demo' },
   };
 }
 

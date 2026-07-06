@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useMemo, type ComponentProps, type Dispatch, type SetStateAction } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ComponentProps, type Dispatch, type SetStateAction } from 'react';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { Workshop2SketchPinLibraryDialog } from '@/components/brand/production/workshop2-phase1-dossier-panel-sketch-pin-library-dialog';
 import { applySaveSketchLabelsSnapshotWithTzLog } from '@/components/brand/production/workshop2-phase1-dossier-panel-sketch-label-snapshot-tz';
 import { pushTzActionLog } from '@/components/brand/production/workshop2-phase1-dossier-panel-tz-action-log';
@@ -8,7 +9,9 @@ import {
   appendOrgSketchPinTemplate,
   readOrgSketchPinTemplatesSync,
   removeOrgSketchPinTemplate,
+  setSketchOrgPinTemplateRepository,
 } from '@/lib/production/sketch-org-templates-repository';
+import { getApiSketchOrgPinTemplateRepository, fetchOrgSketchPinTemplatesRemote } from '@/lib/production/sketch-org-templates-api-client';
 import type {
   Workshop2DossierPhase1,
   Workshop2SketchLabelsSnapshot,
@@ -113,6 +116,12 @@ export function useWorkshop2Phase1DossierSketchPinLibraryZone({
   setOrgSketchLibraryRevision,
   setSketchPinLibraryOpen,
 }: UseWorkshop2Phase1DossierSketchPinLibraryZoneInput) {
+  useEffect(() => {
+    if (isPlatformCoreMode()) {
+      setSketchOrgPinTemplateRepository(getApiSketchOrgPinTemplateRepository());
+    }
+  }, []);
+
   const saveSketchLabelsSnapshot = useCallback(() => {
     const label = window.prompt('Подпись снимка (необязательно)', '')?.trim();
     setDossier((prev: Workshop2DossierPhase1) =>
@@ -248,10 +257,23 @@ export function useWorkshop2Phase1DossierSketchPinLibraryZone({
     [dossier.sketchLabelSnapshots]
   );
 
-  const orgSketchTemplatesList = useMemo(
-    () => readOrgSketchPinTemplatesSync(collectionId),
-    [collectionId, orgSketchLibraryRevision]
+  const [orgSketchTemplatesList, setOrgSketchTemplatesList] = useState<Workshop2SketchPinTemplate[]>(
+    () => readOrgSketchPinTemplatesSync(collectionId)
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    if (isPlatformCoreMode()) {
+      void fetchOrgSketchPinTemplatesRemote(collectionId).then(({ templates }) => {
+        if (!cancelled) setOrgSketchTemplatesList(templates);
+      });
+    } else {
+      setOrgSketchTemplatesList(readOrgSketchPinTemplatesSync(collectionId));
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [collectionId, orgSketchLibraryRevision]);
 
   return {
     saveSketchLabelsSnapshot,

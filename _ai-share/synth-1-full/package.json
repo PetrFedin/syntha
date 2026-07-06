@@ -115,6 +115,7 @@
     "core:demo:check": "node scripts/core-demo-walkthrough.mjs",
     "test:e2e:core": "node scripts/ensure-supported-node.mjs && playwright test --config=playwright.core.config.ts",
     "test:e2e:core:external": "PLAYWRIGHT_SKIP_WEBSERVER=1 node scripts/ensure-supported-node.mjs && PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test --config=playwright.core.config.ts",
+    "test:e2e:core:hub-matrix": "PLAYWRIGHT_SKIP_WEBSERVER=1 node scripts/ensure-supported-node.mjs && PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test --config=playwright.core.config.ts e2e/core-240-wave-yy-hub-live-smoke.spec.ts",
     "db:seed:workshop2-ss27-showroom": "tsx --tsconfig tsconfig.json scripts/seed-workshop2-ss27-showroom.ts",
     "db:seed:workshop2-b2b-production-handoff": "tsx --tsconfig tsconfig.json scripts/seed-workshop2-b2b-production-handoff.ts",
     "db:seed:workshop2-fw27-core": "tsx --tsconfig tsconfig.json scripts/seed-workshop2-fw27-core.ts",
@@ -157,7 +158,8 @@
     "dev:e2e:investor:restart": "npm run dev:e2e:stop && E2E_CLEAR_CACHE=1 npm run dev:e2e:investor",
     "workshop2:staging-keys-checklist": "node scripts/workshop2-staging-keys-checklist.mjs",
     "workshop2:investor-prep": "node scripts/workshop2-investor-prep.mjs",
-    "dev:e2e:wait-ready": "node scripts/dev-e2e-wait-ready.mjs"
+    "dev:e2e:wait-ready": "node scripts/dev-e2e-wait-ready.mjs",
+    "test:e2e:core:golden-cross-role": "PLAYWRIGHT_SKIP_WEBSERVER=1 node scripts/ensure-supported-node.mjs && PLAYWRIGHT_SKIP_WEBSERVER=1 playwright test --config=playwright.core.config.ts e2e/core-249-wave-5-golden-cross-role-embedded.spec.ts"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx}": [

@@ -34,7 +34,7 @@ export function ShopInventoryOverviewBridgePanel({ collectionId }: Props) {
           <Link href={session.cycleCountHref}>Cycle counting</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.replenishmentAtpHref}>Replenishment · ATP</Link>
+          <Link href={session.replenishmentAtpHref}>Пополнение · ATP</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
           <Link href={session.replenishmentRulesHref}>
@@ -43,10 +43,10 @@ export function ShopInventoryOverviewBridgePanel({ collectionId }: Props) {
           </Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
           <Link href={session.brandInventoryOverviewHref}>Brand inventory</Link>

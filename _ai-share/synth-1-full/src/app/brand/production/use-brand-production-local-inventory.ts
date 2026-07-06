@@ -11,6 +11,7 @@ import {
   saveLocalCollectionInventory,
   type LocalCollectionInventory,
 } from '@/lib/production/local-collection-inventory';
+import { shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
 
 function emptyLocalCollectionInventory(): LocalCollectionInventory {
   return {
@@ -34,11 +35,16 @@ export function useBrandProductionLocalInventory() {
   const [localInventoryHydrated, setLocalInventoryHydrated] = useState(false);
 
   useEffect(() => {
+    if (!shouldUseLocalStorageClientFallbackInCore()) {
+      setLocalInventoryHydrated(true);
+      return;
+    }
     setLocalInventory(loadLocalCollectionInventory());
     setLocalInventoryHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!shouldUseLocalStorageClientFallbackInCore()) return;
     saveLocalCollectionInventory(localInventory);
   }, [localInventory]);
 

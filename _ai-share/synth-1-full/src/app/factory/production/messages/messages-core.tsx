@@ -11,11 +11,12 @@ import { FactoryCommsEntityThreadsPanel } from '@/components/factory/FactoryComm
 import { FactoryCommsAttachTzComposeStrip } from '@/components/factory/FactoryCommsAttachTzComposeStrip';
 import { ManufacturerOrderCommsPanel } from '@/components/factory/ManufacturerOrderCommsPanel';
 import { MfrCmOrderContextPeerStrip } from '@/components/factory/MfrCmOrderContextPeerStrip';
+import { MfrCmArticleMessagesPeerPanel } from '@/components/factory/MfrCmArticleMessagesPeerPanel';
 import {
   ManufacturerCommsWorkspaceGoldenPathStrip,
   manufacturerCommsGoldenPathStepFromFeature,
 } from '@/components/factory/ManufacturerCommsWorkspaceGoldenPathStrip';
-import { OrderCommsWorkspaceNotificationBar } from '@/components/platform/OrderCommsWorkspaceNotificationBar';
+import { PlatformCoreCommsUniversalInboxStrip } from '@/components/platform/PlatformCoreCommsUniversalInboxStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { usePlatformCoreCommsThreadsSource } from '@/hooks/use-platform-core-comms-threads-source';
@@ -88,7 +89,7 @@ function FactoryProductionMessagesWorkspaceBody() {
     <PillarCapabilityWorkspaceChrome
       workspaceId="manufacturer-comms-workspace"
       ctx={ctx}
-      crossLinksTitle="Comms · handoff · shop tracking"
+      crossLinksTitle="Связь · передача · трекинг магазина"
     >
       <div className="mb-4">
         <ManufacturerCommsWorkspaceGoldenPathStrip
@@ -103,7 +104,6 @@ function FactoryProductionMessagesWorkspaceBody() {
           <MfrCmOrderContextPeerStrip collectionId={collectionId} orderId={orderId} factoryId={factoryId} />
         </div>
       ) : null}
-      <OrderCommsWorkspaceNotificationBar variant="manufacturer" />
       <FactoryCommsAttachTzComposeStrip variant="manufacturer" />
       {activeFeatureId === 'inbox' ? (
         <MessagesPage initialRole="manufacturer" slimCore />
@@ -139,7 +139,7 @@ function FactoryProductionMessagesCorePageInner() {
           <PlatformCoreCommsWorkspaceExtras variant={variant} />
           <FactoryCommsThreadsGate variant={variant} collectionId={collectionId}>
             <Suspense fallback={null}>
-              <OrderCommsWorkspaceNotificationBar variant="supplier" />
+              <PlatformCoreCommsUniversalInboxStrip variant="supplier" />
             </Suspense>
             <MessagesPage initialRole={variant} slimCore />
           </FactoryCommsThreadsGate>
@@ -152,6 +152,10 @@ function FactoryProductionMessagesCorePageInner() {
     <div className="space-y-4 p-4" data-testid="factory-messages-core">
       <PlatformCoreListChrome highlightRole="manufacturer" pillarId="comms">
         <PlatformCoreCommsWorkspaceExtras variant="manufacturer" />
+        <MfrCmArticleMessagesPeerPanel />
+        <Suspense fallback={null}>
+          <PlatformCoreCommsUniversalInboxStrip variant="manufacturer" />
+        </Suspense>
         <FactoryCommsThreadsGate variant="manufacturer" collectionId={collectionId}>
           <Suspense fallback={null}>
             <FactoryProductionMessagesWorkspaceBody />

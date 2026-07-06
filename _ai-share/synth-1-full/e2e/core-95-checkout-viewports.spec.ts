@@ -14,9 +14,9 @@ test.describe('core-95: shop checkout viewports', () => {
     const chrome = page.getByTestId('platform-core-list-chrome');
     await expect(chrome).toBeVisible({ timeout: 60_000 });
     await expectWorkspacePillarStrip(page, chrome);
-    await expect(page.getByTestId('shop-co-checkout-panel')).toBeVisible();
-    await expect(page.getByTestId('shop-co-checkout-context-strip')).toBeVisible();
-    await expect(page.getByTestId('shop-co-checkout-confirm')).toBeVisible();
+    await expect(page.getByTestId('shop-co-checkout-step-partner')).toBeVisible();
+    await expect(page.getByTestId('shop-co-checkout-step-cart')).toBeVisible();
+    await expect(page.getByTestId('shop-co-checkout-step-confirm')).toBeVisible();
 
     await expect
       .poll(

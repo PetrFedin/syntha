@@ -26,7 +26,7 @@ export function BrandSampleLifecycleFactoryPackPanel({
   return (
     <Card data-testid="brand-sample-lifecycle-factory-pack-panel">
       <CardHeader>
-        <CardTitle className="text-base">Factory pack · export sheets</CardTitle>
+        <CardTitle className="text-base">Фабричный пакет · экспорт листов</CardTitle>
         <CardDescription className="text-xs leading-snug">
           Столп development → handoff: 6 print-листов поверх Workshop 2 dossier (не второй PLM).
         </CardDescription>

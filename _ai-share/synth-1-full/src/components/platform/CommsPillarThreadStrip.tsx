@@ -1,40 +1,29 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronRight, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import type { BrandPgThreadRow } from '@/lib/platform-core-ports/brand/brand-messages-pg-threads';
+import { WORKSHOP2_B2B_ORDER_CONTEXT_TYPE } from '@/lib/platform-core-ports/b2b-order-lifecycle';
+import { commsHubThreadLabel } from '@/lib/platform-core-ports/communications/comms-hub-inbox-rows';
+import { commsCabinetThreadRowKey, COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY } from '@/lib/platform-core-ports/communications/comms-cabinet-thread-keys';
 import {
-  brandMessagesB2bOrderContextHref,
-  brandMessagesWorkshop2ArticleContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesRoleHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  ROUTES,
-  shopMessagesB2bOrderContextHref,
-  shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/routes';
-import { fetchPgContextualThreads } from '@/lib/brand/brand-pg-contextual-chat-client';
-import type { BrandPgThreadRow } from '@/lib/brand/brand-messages-pg-threads';
-import type { PgContextualThreadsCabinet } from '@/lib/server/pg-contextual-message-threads-handler';
-import { WORKSHOP2_B2B_ORDER_CONTEXT_TYPE } from '@/lib/production/workshop2-b2b-order-lifecycle';
-import {
-  commsHubThreadLabel,
-  mergeCommsHubInboxThreadRows,
-} from '@/lib/communications/comms-hub-inbox-rows';
-import {
-  usePlatformCoreB2bInboxOrderIds,
-  type PlatformCoreB2bInboxCabinet,
-} from '@/hooks/use-platform-core-b2b-inbox-order-ids';
-import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
-import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-registry-poll';
-import { usePlatformCoreCommsInboxPoll } from '@/hooks/use-platform-core-comms-inbox-poll';
-import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+  commsCabinetInboxAllHref,
+  commsCabinetRolePrefix,
+  commsCabinetThreadWorkspaceHref,
+  type CommsCabinetVariant,
+} from '@/lib/platform-core-ports/communications/comms-cabinet-thread-nav';
+import { useCommsHubMergedThreads } from '@/hooks/use-comms-hub-merged-threads';
+import { useMinLg } from '@/hooks/use-min-lg';
+import { useCommsCabinetSplitSelectionOptional } from '@/components/platform/CommsCabinetSplitProvider';
+import { usePlatformCoreUniversalInboxOrderUnread } from '@/hooks/use-platform-core-universal-inbox-order-unread';
+import { useCommsSectionContextAutoThread } from '@/hooks/use-comms-section-context-auto-thread';
+import { pillarInsight } from '@/lib/platform-core-cabinet-chrome';
+import { hubSectionLabelClassName } from '@/lib/platform-core-hub-layout';
+import { cn } from '@/lib/utils';
 
-type Variant = 'brand' | 'shop' | 'manufacturer' | 'supplier';
+type Variant = CommsCabinetVariant;
 
 type Props = {
   variant: Variant;
@@ -42,143 +31,69 @@ type Props = {
   orderId: string;
   disabled?: boolean;
   compact?: boolean;
+  /** Universal inbox on /messages: numeric PG unread per order (threads + pgEventUnread). */
+  universalInbox?: boolean;
+  /** Core cabinet: section rows, max 3, 11px+. */
+  minimalChrome?: boolean;
 };
 
 function rolePrefix(variant: Variant): string {
-  if (variant === 'shop') return 'shop-cm-cabinet';
-  if (variant === 'manufacturer') return 'mfr-cm-cabinet';
-  if (variant === 'supplier') return 'sup-cm-cabinet';
-  return 'brand-cm-cabinet';
-}
-
-function pgCabinet(variant: Variant): PgContextualThreadsCabinet {
-  return variant === 'shop' ? 'shop' : variant === 'brand' ? 'brand' : 'factory';
-}
-
-function inboxCabinet(variant: Variant): PlatformCoreB2bInboxCabinet {
-  if (variant === 'shop') return 'shop';
-  if (variant === 'brand') return 'brand';
-  if (variant === 'supplier') return 'supplier';
-  return 'manufacturer';
+  return commsCabinetRolePrefix(variant);
 }
 
 function threadWorkspaceHref(variant: Variant, thread: BrandPgThreadRow): string | null {
-  if (thread.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE) {
-    const id = thread.contextId?.trim();
-    if (!id) return null;
-    if (variant === 'shop') return shopMessagesB2bOrderContextHref(id);
-    if (variant === 'brand') return brandMessagesB2bOrderContextHref(id);
-    if (variant === 'supplier') {
-      return factorySupplierMessagesB2bOrderContextHref(id);
-    }
-    return factoryMessagesB2bOrderContextHref(id, { role: 'manufacturer' });
-  }
-  if (thread.workspaceHref?.trim()) return thread.workspaceHref.trim();
-  const cid = thread.collectionId?.trim();
-  const aid = thread.articleId?.trim();
-  if (!cid || !aid) return null;
-  if (variant === 'shop') return shopMessagesWorkshop2ArticleContextHref(cid, aid);
-  if (variant === 'brand') return brandMessagesWorkshop2ArticleContextHref(cid, aid);
-  if (variant === 'supplier') {
-    return factorySupplierMessagesWorkshop2ArticleContextHref(cid, aid);
-  }
-  return factoryMessagesWorkshop2ArticleContextHref(cid, aid, { role: 'manufacturer' });
+  return commsCabinetThreadWorkspaceHref(variant, thread);
 }
 
 function inboxAllHref(variant: Variant): string {
-  if (variant === 'shop') return ROUTES.shop.messages;
-  if (variant === 'brand') return ROUTES.brand.messages;
-  return factoryMessagesRoleHref(variant === 'supplier' ? 'supplier' : 'manufacturer');
+  return commsCabinetInboxAllHref(variant);
 }
 
-export function CommsPillarThreadStrip({ variant, collectionId, orderId, disabled, compact = false }: Props) {
+export function CommsPillarThreadStrip({
+  variant,
+  collectionId,
+  orderId,
+  disabled,
+  compact = false,
+  universalInbox = false,
+  minimalChrome = false,
+}: Props) {
   const prefix = rolePrefix(variant);
-  const demo = usePlatformCoreDemoContext();
-  const { buyerId: shopBuyerId } = useShopCoreBuyerId();
-  const cabinet = inboxCabinet(variant);
-  const { orderIds: inboxOrderIds, ready: inboxReady } = usePlatformCoreB2bInboxOrderIds(
-    disabled ? null : cabinet,
-    cabinet === 'shop' ? shopBuyerId : undefined
+  const inboxRole =
+    variant === 'shop'
+      ? ('shop' as const)
+      : variant === 'brand'
+        ? ('brand' as const)
+        : variant === 'supplier'
+          ? ('supplier' as const)
+          : ('manufacturer' as const);
+  const pgOrderUnreadEnabled = (universalInbox || minimalChrome) && !disabled;
+  const { resolveOrderUnread } = usePlatformCoreUniversalInboxOrderUnread(
+    inboxRole,
+    pgOrderUnreadEnabled
   );
-  const { tick: registryTick } = usePlatformCoreB2bRegistryPoll(!disabled);
-  const { tick: inboxTick } = usePlatformCoreCommsInboxPoll(!disabled);
+  const sectionContextRow = useCommsSectionContextAutoThread({
+    variant,
+    collectionId,
+    orderId,
+    disabled,
+    enabled: minimalChrome && !disabled,
+  });
+  const { loaded, mergedThreads, poByOrderId } = useCommsHubMergedThreads({
+    variant,
+    collectionId,
+    orderId,
+    disabled,
+  });
+  const isLg = useMinLg();
+  const splitSelection = useCommsCabinetSplitSelectionOptional();
+  const selectOnLg = minimalChrome && isLg && Boolean(splitSelection);
   const [query, setQuery] = useState('');
-  const [pgThreads, setPgThreads] = useState<BrandPgThreadRow[]>([]);
-  const [pgLoaded, setPgLoaded] = useState(false);
-  const [poByOrderId, setPoByOrderId] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (disabled) {
-      setPgThreads([]);
-      setPgLoaded(true);
-      return;
-    }
-    let cancelled = false;
-    void fetchPgContextualThreads(pgCabinet(variant))
-      .then(({ threads: rows }) => {
-        if (!cancelled) setPgThreads(rows);
-      })
-      .finally(() => {
-        if (!cancelled) setPgLoaded(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [variant, disabled, registryTick, inboxTick]);
-
-  useEffect(() => {
-    if (disabled || (variant !== 'manufacturer' && variant !== 'supplier')) {
-      setPoByOrderId({});
-      return;
-    }
-    let cancelled = false;
-    void fetch(
-      `/api/workshop2/factory/production-handoff-queue?factoryId=${encodeURIComponent(demo.factoryId)}`,
-      { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
-    )
-      .then(async (res) => {
-        if (!res.ok) return null;
-        return (await res.json()) as {
-          ok?: boolean;
-          items?: Array<{ b2bOrderId?: string; productionOrderId?: string }>;
-        };
-      })
-      .then((json) => {
-        if (cancelled || !json?.ok || !Array.isArray(json.items)) return;
-        const next: Record<string, string> = {};
-        for (const item of json.items) {
-          const b2b = item.b2bOrderId?.trim();
-          const po = item.productionOrderId?.trim();
-          if (b2b && po) next[b2b] = po;
-        }
-        setPoByOrderId(next);
-      })
-      .catch(() => {
-        if (!cancelled) setPoByOrderId({});
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [disabled, variant, demo.factoryId, registryTick]);
-
-  const mergedThreads = useMemo(() => {
-    if (disabled) return [];
-    const orders =
-      inboxOrderIds.length > 0 ? inboxOrderIds : orderId.trim() ? [orderId.trim()] : [];
-    const rows = mergeCommsHubInboxThreadRows(pgThreads, orders, collectionId);
-    const activeOrder = orderId.trim();
-    return rows.filter((t) => {
-      if (t.messageCount > 0 || Boolean(t.lastMessageAt?.trim())) return true;
-      return (
-        Boolean(activeOrder) &&
-        t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE &&
-        t.contextId?.trim() === activeOrder
-      );
-    });
-  }, [disabled, pgThreads, inboxOrderIds, orderId, collectionId]);
-
-  const loaded = pgLoaded && inboxReady;
-  const maxVisible = variant === 'manufacturer' || variant === 'supplier' ? 8 : 5;
+  const maxVisible = minimalChrome
+    ? 3
+    : variant === 'manufacturer' || variant === 'supplier'
+      ? 8
+      : 5;
 
   const { visible, hiddenOrderCount } = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -213,7 +128,189 @@ export function CommsPillarThreadStrip({ variant, collectionId, orderId, disable
 
   const hasPoInbox = mergedThreads.some((t) => t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE);
 
+  useEffect(() => {
+    if (!selectOnLg || !splitSelection) return;
+    splitSelection.setSelectedThreadKey(null);
+  }, [orderId, selectOnLg, splitSelection?.setSelectedThreadKey]);
+
+  useEffect(() => {
+    if (!selectOnLg || !splitSelection || !loaded || splitSelection.selectedThreadKey) return;
+    const activeOrder = orderId.trim();
+    const preferred =
+      visible.find(
+        (t) =>
+          t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE && t.contextId?.trim() === activeOrder
+      ) ?? visible[0];
+    if (preferred) {
+      splitSelection.setSelectedThreadKey(commsCabinetThreadRowKey(preferred));
+    } else if (sectionContextRow) {
+      splitSelection.setSelectedThreadKey(COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY);
+    }
+  }, [
+    selectOnLg,
+    splitSelection?.setSelectedThreadKey,
+    loaded,
+    visible,
+    orderId,
+    sectionContextRow,
+    splitSelection?.selectedThreadKey,
+  ]);
+
   if (disabled) return null;
+
+  const rowActiveClass = (active: boolean) =>
+    active
+      ? 'border-accent-primary/25 bg-accent-primary/5 ring-1 ring-accent-primary/15'
+      : undefined;
+
+  if (minimalChrome) {
+    return (
+      <section className="space-y-2" data-testid={`${prefix}-thread-strip`}>
+        <p className={hubSectionLabelClassName()}>Треды</p>
+        {loaded && (sectionContextRow || visible.length > 0) ? (
+          <nav
+            className={pillarInsight.sectionList}
+            data-testid={hasPoInbox ? `${prefix}-po-inbox` : `${prefix}-thread-list`}
+          >
+            {sectionContextRow ? (
+              selectOnLg ? (
+                <button
+                  type="button"
+                  data-testid={`${prefix}-section-context-row`}
+                  className={cn(
+                    pillarInsight.sectionRow,
+                    'w-full text-left',
+                    rowActiveClass(
+                      splitSelection?.selectedThreadKey === COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY
+                    )
+                  )}
+                  onClick={() =>
+                    splitSelection?.setSelectedThreadKey(COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY)
+                  }
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className={pillarInsight.sectionRowLabel}>{sectionContextRow.label}</span>
+                    <span className={pillarInsight.sectionRowMeta}>Контекст раздела</span>
+                  </span>
+                  <ChevronRight className="text-text-muted h-4 w-4 shrink-0" aria-hidden />
+                </button>
+              ) : (
+                <Link
+                  href={sectionContextRow.href}
+                  data-testid={`${prefix}-section-context-row`}
+                  className={pillarInsight.sectionRow}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className={pillarInsight.sectionRowLabel}>{sectionContextRow.label}</span>
+                    <span className={pillarInsight.sectionRowMeta}>Контекст раздела</span>
+                  </span>
+                  <ChevronRight className="text-text-muted h-4 w-4 shrink-0" aria-hidden />
+                </Link>
+              )
+            ) : null}
+            {visible.map((t) => {
+              const href = threadWorkspaceHref(variant, t);
+              const rowKey = commsCabinetThreadRowKey(t);
+              const orderThreadId =
+                t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE ? (t.contextId?.trim() ?? '') : '';
+              const unread = pgOrderUnreadEnabled
+                ? t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE
+                  ? resolveOrderUnread(orderThreadId)
+                  : t.lastSeenMessageCount != null && t.messageCount > t.lastSeenMessageCount
+                    ? 1
+                    : 0
+                : t.lastSeenMessageCount != null && t.messageCount > t.lastSeenMessageCount
+                  ? 1
+                  : 0;
+              const preview = t.lastMessagePreview?.trim().slice(0, 48) || 'Без сообщений';
+              const label = commsHubThreadLabel(t, poByOrderId);
+              const showPgNumericBadge =
+                pgOrderUnreadEnabled &&
+                t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE &&
+                unread > 0;
+              const rowBody = (
+                <>
+                  <span className="min-w-0 flex-1">
+                    <span className={pillarInsight.sectionRowLabel}>{label}</span>
+                    <span className={cn(pillarInsight.sectionRowMeta, 'block truncate')}>
+                      {preview}
+                    </span>
+                  </span>
+                  {showPgNumericBadge ? (
+                    <span
+                      className="bg-accent-primary text-text-inverse inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1 text-[11px] font-semibold leading-none"
+                      data-testid={`${prefix}-universal-inbox-order-unread-${orderThreadId}`}
+                      aria-label={`${unread} непрочитанных`}
+                    >
+                      {unread > 99 ? '99+' : unread}
+                    </span>
+                  ) : unread > 0 ? (
+                    <span
+                      className={cn(pillarInsight.liveDot, pillarInsight.liveDotOn)}
+                      title="Непрочитанные"
+                      aria-hidden
+                    />
+                  ) : (
+                    <ChevronRight className="text-text-muted h-4 w-4 shrink-0" aria-hidden />
+                  )}
+                </>
+              );
+              if (!href) {
+                return (
+                  <div key={rowKey} className={pillarInsight.sectionRow}>
+                    <span className={pillarInsight.sectionRowLabel}>{label}</span>
+                    <span className={pillarInsight.sectionRowMeta}>{preview}</span>
+                  </div>
+                );
+              }
+              if (selectOnLg) {
+                return (
+                  <button
+                    key={rowKey}
+                    type="button"
+                    data-testid={`${prefix}-thread-item`}
+                    className={cn(
+                      pillarInsight.sectionRow,
+                      'w-full text-left',
+                      rowActiveClass(splitSelection?.selectedThreadKey === rowKey)
+                    )}
+                    onClick={() => splitSelection?.setSelectedThreadKey(rowKey)}
+                  >
+                    {rowBody}
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={rowKey}
+                  href={href}
+                  data-testid={`${prefix}-thread-item`}
+                  className={pillarInsight.sectionRow}
+                >
+                  {rowBody}
+                </Link>
+              );
+            })}
+          </nav>
+        ) : loaded ? (
+          <p className="text-text-muted text-[11px]" data-testid={`${prefix}-thread-empty`}>
+            Треды после первого сообщения
+          </p>
+        ) : null}
+        {loaded && (hiddenOrderCount > 0 || mergedThreads.length > visible.length) ? (
+          <Link
+            href={inboxAllHref(variant)}
+            data-testid={`${prefix}-po-inbox-more`}
+            className="text-accent-primary inline-flex min-h-10 items-center text-[11px] font-medium hover:underline"
+          >
+            Все треды
+            {hiddenOrderCount > 0 ? ` · +${hiddenOrderCount}` : null}
+            <ChevronRight className="ml-0.5 h-3.5 w-3.5" aria-hidden />
+          </Link>
+        ) : null}
+      </section>
+    );
+  }
 
   return (
     <div className="space-y-1.5" data-testid={`${prefix}-thread-strip`}>
@@ -241,8 +338,14 @@ export function CommsPillarThreadStrip({ variant, collectionId, orderId, disable
         >
           {visible.map((t) => {
             const href = threadWorkspaceHref(variant, t);
-            const unread =
-              t.lastSeenMessageCount != null && t.messageCount > t.lastSeenMessageCount;
+            const orderId = t.contextId?.trim() ?? '';
+            const unread = universalInbox
+              ? t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE
+                ? resolveOrderUnread(orderId)
+                : 0
+              : t.lastSeenMessageCount != null && t.messageCount > t.lastSeenMessageCount
+                ? 1
+                : 0;
             const preview = t.lastMessagePreview?.trim().slice(0, 56) || 'Без сообщений';
             const label = commsHubThreadLabel(t, poByOrderId);
             return (
@@ -254,8 +357,18 @@ export function CommsPillarThreadStrip({ variant, collectionId, orderId, disable
                     className="text-accent-primary hover:bg-bg-surface2 block rounded px-1 py-0.5 text-[10px] font-medium leading-snug"
                   >
                     <span className="font-mono">{label}</span>
-                    {unread ? (
-                      <span className="bg-accent-primary ml-1 inline-block h-1.5 w-1.5 rounded-full align-middle" />
+                    {unread > 0 ? (
+                      universalInbox ? (
+                        <span
+                          className="bg-accent-primary text-text-inverse ml-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold leading-none align-middle"
+                          data-testid={`${prefix}-universal-inbox-order-unread-${orderId}`}
+                          aria-label={`${unread} непрочитанных`}
+                        >
+                          {unread > 99 ? '99+' : unread}
+                        </span>
+                      ) : (
+                        <span className="bg-accent-primary ml-1 inline-block h-1.5 w-1.5 rounded-full align-middle" />
+                      )
                     ) : null}
                     <span className="text-text-muted block font-normal">· {preview}</span>
                   </Link>

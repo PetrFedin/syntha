@@ -16,7 +16,7 @@ import {
 import { PlatformB2bHubCoSpinePeerStrip } from '@/components/platform/PlatformB2bHubCoSpinePeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
-import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform-core-ports/platform/pillar-capability-workspaces';
 
 function PlatformB2bHubWorkspaceBody() {
   const searchParams = useSearchParams();

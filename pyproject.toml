@@ -6,7 +6,7 @@ authors = ["Petr <petr@example.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.14"
 fastapi = "^0.109.0"
 uvicorn = {extras = ["standard"], version = "^0.27.0"}
 pydantic = "^2.6.0"
@@ -41,6 +41,15 @@ mypy = "^1.8.0"
 ruff = "^0.2.1"
 pre-commit = "^3.6.0"
 
+[tool.poetry.group.analytics]
+optional = true
+
+[tool.poetry.group.analytics.dependencies]
+duckdb = "^1.1.0"
+polars = "^1.0.0"
+pyarrow = "^17.0.0"
+ortools = "^9.10.0"
+
 [tool.black]
 line-length = 88
 target-version = ['py311']
@@ -73,6 +82,7 @@ asyncio_mode = "auto"
 pythonpath = ["."]
 markers = [
     "smoke_core: MVP contract endpoints (docs/MVP_CONTRACT.md); used by scripts/run-core-smoke.sh",
+    "integration: live external services (Ollama, etc.)",
 ]
 
 [build-system]

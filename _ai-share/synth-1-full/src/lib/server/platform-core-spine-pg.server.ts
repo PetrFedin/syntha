@@ -26,7 +26,9 @@ export type PlatformCoreSpineStoreId =
   | 'b2b_orders'
   | 'dossier'
   | 'brand_tasks'
+  | 'brand_production_ops'
   | 'calendar_tasks'
+  | 'greenfield_crm_segment'
   | 'b2b_invoice'
   | 'live_workflow';
 
@@ -67,8 +69,20 @@ export function buildPlatformCoreSpineStoreMatrix(): PlatformCoreSpineStoreStatu
       pgPrimary,
     },
     {
+      id: 'brand_production_ops',
+      pgTable: 'brand_production_ops_state',
+      mode: pg ? 'postgres' : 'localStorage_client',
+      pgPrimary,
+    },
+    {
       id: 'calendar_tasks',
       pgTable: 'platform_core_user_calendar_tasks',
+      mode: pg ? 'postgres' : 'file_fallback',
+      pgPrimary,
+    },
+    {
+      id: 'greenfield_crm_segment',
+      pgTable: 'shop_buyer_crm_profiles',
       mode: pg ? 'postgres' : 'file_fallback',
       pgPrimary,
     },

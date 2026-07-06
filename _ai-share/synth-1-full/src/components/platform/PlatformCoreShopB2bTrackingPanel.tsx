@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CommsContextualThreadLink } from '@/components/platform/CommsContextualThreadLink';
+import { PillarInsightSteps } from '@/components/platform/PillarInsightPrimitives';
 import { B2bChainPhaseBadge } from '@/components/b2b/B2bChainPhaseBadge';
 import { Badge } from '@/components/ui/badge';
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
@@ -13,8 +14,9 @@ import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles
 import { Button } from '@/components/ui/button';
 import { downloadB2bRegistryCsv } from '@/lib/platform-core-b2b-registry-csv';
 import { filterPlatformCoreShopOrderRows } from '@/lib/platform-core-b2b-registry-url';
-import { buildShopOrderCommsSession } from '@/lib/b2b/shop-order-comms';
-import { buildBrandOrderCommsSession } from '@/lib/b2b/brand-order-comms';
+import { buildShopOrderCommsSession } from '@/lib/platform-core-ports/b2b/shop-order-comms';
+import { SHOP_CO_TRACKING_BRAND_REGISTRY_LINK_TESTID } from '@/lib/platform-core-ports/b2b/brand-co-wave-yg';
+import { buildBrandOrderCommsSession } from '@/lib/platform-core-ports/b2b/brand-order-comms';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useShopWorkshop2B2bOrdersList } from '@/hooks/use-shop-workshop2-b2b-orders-list';
 import {
@@ -22,6 +24,8 @@ import {
   type PlatformCoreShopTrackingChain,
 } from '@/hooks/use-platform-core-shop-tracking-chains';
 import { formatShopB2bTrackingReserveLabelRu } from '@/lib/platform-core-tracking-reserve-label';
+import { ShopCoTrackingChainStatusMirrorBadge } from '@/components/platform/ShopCoTrackingChainStatusMirrorBadge';
+import { ShopCoTrackingMaterialsPushStrip } from '@/components/platform/ShopCoTrackingMaterialsPushStrip';
 import { PlatformCoreWmsReserveStrip } from '@/components/platform/PlatformCoreWmsReserveStrip';
 import {
   shopB2bMatrixReorderHref,
@@ -30,7 +34,12 @@ import {
   shopB2bOrdersProductionRegistryHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
+import {
+  WAVE_YN_BRAND_CHAT_RU,
+  WAVE_YN_ORDER_CHAT_RU,
+  WAVE_YN_ORDER_CHAT_SHORT_RU,
+} from '@/lib/platform-core-ports/platform/wave-yn-comms-contextual-thread';
 import { cn } from '@/lib/utils';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { ShopBuyerDeliveryBatchAckPanel } from '@/components/platform/ShopBuyerDeliveryBatchAckPanel';
@@ -53,8 +62,8 @@ import {
   legacyShopOpTrackingTestId,
   shopCoTrackingTestId,
 } from '@/lib/platform-core-shop-co-test-ids';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
-import { workshop2B2bOrderStatusLabelRu } from '@/lib/production/workshop2-b2b-order-lifecycle';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
+import { workshop2B2bOrderStatusLabelRu } from '@/lib/platform-core-ports/b2b-order-lifecycle';
 import {
   applyShopBuyerChainVisibility,
   getShopProductionVisibilityPolicy,
@@ -175,6 +184,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
     lastFetchedAt,
     refresh: refreshChains,
     sseConnected,
+    chainPollTick,
   } = usePlatformCoreShopTrackingChains(orderIds, { enabled: Boolean(rows?.length) });
 
   const [focusChainOverride, setFocusChainOverride] =
@@ -271,7 +281,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
         <CardContent className="space-y-2 py-6 text-center text-sm text-amber-900">
           <p>Нет оптовых заказов для отслеживания по этой коллекции.</p>
           <p className="text-xs text-amber-800/80">
-            Добавьте `?order={demoOrderId}` для order-context или откройте демо-цепочку ниже.
+            Добавьте параметр order с номером заказа или откройте демо-цепочку ниже.
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs">
             <Link
@@ -279,7 +289,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
               data-testid="shop-tracking-empty-demo-order-link"
               className="text-accent-primary font-medium hover:underline"
             >
-              Demo tracking
+              Демо-трекинг
             </Link>
             <Link
               href={shopB2bOrdersProductionRegistryHref()}
@@ -300,15 +310,18 @@ export function PlatformCoreShopB2bTrackingPanel() {
               data-testid="shop-tracking-empty-margin-link"
               className="text-accent-primary font-medium hover:underline"
             >
-              Landed margin
+              Маржа с доставкой
             </Link>
-            <Link
+            <CommsContextualThreadLink
               href={emptyBrand.chatHref}
+              orderId={emptyShop.orderId}
+              collectionId={contextCollectionId}
+              contextualSource="tracking"
               data-testid="shop-tracking-empty-brand-chat-link"
               className="text-accent-primary font-medium hover:underline"
             >
-              Brand chat
-            </Link>
+              {WAVE_YN_BRAND_CHAT_RU}
+            </CommsContextualThreadLink>
           </div>
         </CardContent>
       </Card>
@@ -373,13 +386,28 @@ export function PlatformCoreShopB2bTrackingPanel() {
             Календарь
           </Link>
           <span className={hubGadget.goldenSep}>·</span>
-          <Link
+          <CommsContextualThreadLink
             href={shopMessagesB2bOrderContextHref(focusOrderId)}
+            orderId={focusOrderId}
+            collectionId={contextCollectionId}
+            contextualSource="tracking"
             data-testid="shop-co-tracking-order-chat-link"
             className={hubGadget.goldenLink}
           >
-            Чат по заказу
-          </Link>
+            {WAVE_YN_ORDER_CHAT_RU}
+          </CommsContextualThreadLink>
+          {orderCommsSession ? (
+            <>
+              <span className={hubGadget.goldenSep}>·</span>
+              <Link
+                href={orderCommsSession.brandRegistryHref}
+                data-testid={SHOP_CO_TRACKING_BRAND_REGISTRY_LINK_TESTID}
+                className={hubGadget.goldenLink}
+              >
+                Реестр бренда
+              </Link>
+            </>
+          ) : null}
           {orderCommsSession ? (
             <>
               <span className={hubGadget.goldenSep}>·</span>
@@ -396,7 +424,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
                 data-testid="shop-co-tracking-collaborative-link"
                 className={hubGadget.goldenLink}
               >
-                Approvals
+                Согласования
               </Link>
               <span className={hubGadget.goldenSep}>·</span>
               <Link
@@ -404,23 +432,27 @@ export function PlatformCoreShopB2bTrackingPanel() {
                 data-testid="shop-co-tracking-margin-link"
                 className={hubGadget.goldenLink}
               >
-                Margin
+                Маржа
               </Link>
-              <span className={hubGadget.goldenSep}>·</span>
-              <Link
-                href={orderCommsSession.workingOrderHref}
-                data-testid="shop-co-tracking-working-order-link"
-                className={hubGadget.goldenLink}
-              >
-                Working order
-              </Link>
+              {focusOrderId && isIntegrationImportedWholesaleOrderId(focusOrderId) ? (
+                <>
+                  <span className={hubGadget.goldenSep}>·</span>
+                  <Link
+                    href={orderCommsSession.workingOrderHref}
+                    data-testid="shop-co-tracking-working-order-link"
+                    className={hubGadget.goldenLink}
+                  >
+                    Рабочий заказ
+                  </Link>
+                </>
+              ) : null}
               <span className={hubGadget.goldenSep}>·</span>
               <Link
                 href={orderCommsSession.replenishmentAtpHref}
                 data-testid="shop-co-tracking-replenishment-link"
                 className={hubGadget.goldenLink}
               >
-                Replenishment
+                Пополнение
               </Link>
             </>
           ) : null}
@@ -530,6 +562,20 @@ export function PlatformCoreShopB2bTrackingPanel() {
                       </span>
                     ) : null}
                   </CardDescription>
+                  {coreSlim && isHubTrackingRow && chain ? (
+                    <ShopCoTrackingChainStatusMirrorBadge
+                      orderId={row.order}
+                      statusLabel={
+                        chain.status
+                          ? workshop2B2bOrderStatusLabelRu(
+                              chain.status as Parameters<typeof workshop2B2bOrderStatusLabelRu>[0]
+                            )
+                          : row.status
+                      }
+                      sseConnected={sseConnected}
+                      enabled={Boolean(chain.steps?.length)}
+                    />
+                  ) : null}
                   {reserve ? (
                     <PlatformCoreWmsReserveStrip
                       variant="tracking"
@@ -541,6 +587,16 @@ export function PlatformCoreShopB2bTrackingPanel() {
                           ? `shop-co-tracking-reserve-${row.order}`
                           : `platform-core-tracking-reserve-${row.order}`
                       }
+                    />
+                  ) : null}
+                  {isHubTrackingRow && chain ? (
+                    <ShopCoTrackingMaterialsPushStrip
+                      orderId={row.order}
+                      materialsDone={materialsDone}
+                      materialsPending={materialsPending}
+                      handedOff={chain.handedOff === true}
+                      sseConnected={sseConnected}
+                      refreshTick={chainPollTick}
                     />
                   ) : null}
                 </div>
@@ -559,8 +615,11 @@ export function PlatformCoreShopB2bTrackingPanel() {
                   >
                     Календарь
                   </Link>
-                  <Link
+                  <CommsContextualThreadLink
                     href={shopMessagesB2bOrderContextHref(row.order)}
+                    orderId={row.order}
+                    collectionId={row.collectionId ?? contextCollectionId}
+                    contextualSource="tracking"
                     className={trackingRowQuickLinkClass}
                     data-testid={
                       isHubTrackingRow
@@ -568,8 +627,8 @@ export function PlatformCoreShopB2bTrackingPanel() {
                         : undefined
                     }
                   >
-                    Чат
-                  </Link>
+                    {WAVE_YN_ORDER_CHAT_SHORT_RU}
+                  </CommsContextualThreadLink>
                   {chain?.steps?.some((s) => s.id === 'production_po') && !coreSlim ? (
                     <Link
                       href={shopB2bOrderProductionContextHref(row.order)}
@@ -677,7 +736,8 @@ export function PlatformCoreShopB2bTrackingPanel() {
                   ) : null}
                 </div>
               </div>
-              {isIntegrationImportedWholesaleOrderId(row.order) || /^B2B-\d+$/.test(row.order) ? (
+              {isIntegrationImportedWholesaleOrderId(row.order) ||
+              isPlatformCorePgB2bOrder(row.order) ? (
                 <ShopOrderShipmentTrackingStrip wholesaleOrderId={row.order} />
               ) : null}
               {chain?.handedOff && isIntegrationImportedWholesaleOrderId(row.order) ? (
@@ -690,57 +750,34 @@ export function PlatformCoreShopB2bTrackingPanel() {
             </CardHeader>
             {chain?.steps?.length ? (
               <CardContent className="min-w-0">
-                <ul
-                  className="space-y-1.5"
-                  data-testid={
+                <PillarInsightSteps
+                  steps={chain.steps.map((step) => ({
+                    id: step.id,
+                    labelRu: step.labelRu,
+                    done: step.done,
+                  }))}
+                  testId={
                     coreSlim || isHubTrackingRow
                       ? `shop-co-tracking-timeline-${row.order}`
                       : undefined
                   }
-                >
-                  {chain.steps.map((step) => (
-                    <li
-                      key={step.id}
-                      className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-0.5 text-xs"
-                      data-testid={`platform-core-chain-step-${step.id}`}
-                      data-order={row.order}
-                      data-done={step.done ? 'true' : 'false'}
-                    >
-                      {step.done ? (
-                        <CheckCircle2
-                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
-                          aria-hidden
-                        />
-                      ) : (
-                        <Circle
-                          className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0"
-                          aria-hidden
-                        />
-                      )}
-                      <span
-                        className={cn(
-                          'min-w-0 break-words',
-                          step.done ? 'text-text-primary' : 'text-text-muted'
-                        )}
-                      >
-                        {step.labelRu}
-                      </span>
-                      {step.id === 'materials_supplied' && step.done ? (
-                        <Link
-                          href={shopB2bOrderProductionContextHref(row.order)}
-                          data-testid={
-                            isHubTrackingRow
-                              ? `shop-co-tracking-materials-step-link-${row.order}`
-                              : undefined
-                          }
-                          className="text-accent-primary text-[10px] font-medium hover:underline"
-                        >
-                          Выпуск
-                        </Link>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
+                />
+                {chain.steps.some((s) => s.id === 'materials_supplied' && s.done) ? (
+                  <Link
+                    href={shopB2bOrderProductionContextHref(row.order)}
+                    data-testid={
+                      isHubTrackingRow
+                        ? `shop-co-tracking-materials-step-link-${row.order}`
+                        : undefined
+                    }
+                    className={cn(
+                      trackingRowQuickLinkClass,
+                      'mt-2 inline-flex justify-start sm:mt-1'
+                    )}
+                  >
+                    Выпуск
+                  </Link>
+                ) : null}
               </CardContent>
             ) : null}
           </Card>

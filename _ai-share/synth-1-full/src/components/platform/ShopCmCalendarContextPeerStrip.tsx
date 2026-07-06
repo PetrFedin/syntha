@@ -1,16 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
-import { shopReplenishmentTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
-import { shopOrderCommsFeatureHref } from '@/lib/b2b/shop-order-comms';
+import { CommsContextualThreadLink } from '@/components/platform/CommsContextualThreadLink';
+import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
+import { shopReplenishmentTabHref } from '@/lib/platform-core-ports/b2b/shop-collection-order-hrefs';
+import { shopOrderCommsFeatureHref } from '@/lib/platform-core-ports/b2b/shop-order-comms';
 import {
   ROUTES,
   shopB2bCheckoutCollectionHref,
   shopB2bTrackingOrderHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { WAVE_YN_ORDER_CHAT_RU } from '@/lib/platform-core-ports/platform/wave-yn-comms-contextual-thread';
+import {
+  platformCoreCmCalendarNotificationDetailLinkTestId,
+  platformCoreCommsNotificationDetailHref,
+  WAVE_YX_NOTIFICATION_DETAIL_RU,
+} from '@/lib/platform-core-ports/platform/wave-yt-notification-center-final';
+import { cn } from '@/lib/utils';
 
 type Props = {
   collectionId: string;
@@ -36,31 +45,56 @@ export function ShopCmCalendarContextPeerStrip({ collectionId, orderId }: Props)
   );
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="shop-cm-calendar-context-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="shop-cm-calendar-context-peer-strip"
+    >
       {resolvedOrderId ? (
         <>
-          <Link href={trackingHref} data-testid="shop-cm-calendar-tracking-link" className={hubGadget.goldenLink}>
-            Tracking
+          <Link
+            href={trackingHref}
+            data-testid="shop-cm-calendar-tracking-link"
+            data-audit-deep-link="shop-cm-calendar-tracking-deep-link"
+            className={hubGadget.goldenLink}
+          >
+            Трекинг
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={chatHref} data-testid="shop-cm-calendar-order-chat-link" className={hubGadget.goldenLink}>
-            Order chat
+          <Link
+            href={platformCoreCommsNotificationDetailHref('shop', collectionId, resolvedOrderId)}
+            data-testid={platformCoreCmCalendarNotificationDetailLinkTestId('shop')}
+            className={hubGadget.goldenLink}
+          >
+            {WAVE_YX_NOTIFICATION_DETAIL_RU}
           </Link>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <CommsContextualThreadLink
+            href={chatHref}
+            orderId={resolvedOrderId}
+            collectionId={collectionId}
+            contextualSource="calendar"
+            data-testid="shop-cm-calendar-order-chat-link"
+            className={hubGadget.goldenLink}
+          >
+            {WAVE_YN_ORDER_CHAT_RU}
+          </CommsContextualThreadLink>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
         </>
       ) : null}
       <Link href={orderCommsHref} data-testid="shop-cm-calendar-order-comms-link" className={hubGadget.goldenLink}>
-        Order comms
+        Связь по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={replenishmentHref} data-testid="shop-cm-calendar-replenishment-link" className={hubGadget.goldenLink}>
-        Replenishment
+        Пополнение
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -70,7 +104,7 @@ export function ShopCmCalendarContextPeerStrip({ collectionId, orderId }: Props)
         data-testid="shop-cm-calendar-checkout-link"
         className={hubGadget.goldenLink}
       >
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -80,7 +114,7 @@ export function ShopCmCalendarContextPeerStrip({ collectionId, orderId }: Props)
         data-testid="shop-cm-calendar-brand-crm-link"
         className={hubGadget.goldenLink}
       >
-        Brand CRM
+        CRM бренда
       </Link>
     </div>
   );

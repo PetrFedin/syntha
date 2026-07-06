@@ -127,7 +127,7 @@ export function BrandAgentRepRepsPanel() {
               <div key={name} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
                 <span>{name}</span>
                 <Button size="sm" variant="ghost" asChild>
-                  <Link href={brandAgentRepShopCommissionHref()}>Shop commission</Link>
+                  <Link href={brandAgentRepShopCommissionHref()}>Комиссия магазина</Link>
                 </Button>
               </div>
             ))
@@ -146,11 +146,11 @@ export function BrandAgentRepShopPortalPanel() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Shop-side rep tools</CardTitle>
-          <CardDescription>Cross-role links — столп 3 shop · brand oversight.</CardDescription>
+          <CardDescription>Сквозные роли — столп 3 магазин · контроль бренда.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={brandAgentRepShopPortalHref()}>Sales rep portal</Link>
+            <Link href={brandAgentRepShopPortalHref()}>Портал торгового представителя</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={brandAgentRepShopCommissionHref()}>Rep commission tab</Link>

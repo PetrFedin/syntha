@@ -8,10 +8,23 @@ import type { MatrixStepStatus } from '@/lib/production/unified-sku-flow-store';
 import {
   BRAND_COLLECTION_STAGE_MODULES_SAVED,
   getStepModule,
-  loadCollectionStageModules,
+  loadCollectionStageModulesWithMode,
   patchStepModuleFields,
   saveCollectionStageModules,
+  type CollectionStageModulesDoc,
 } from '@/lib/production/collection-stage-modules-store';
+import {
+  BRAND_COLLECTION_STAGE_MODULES_ACTOR_LABEL_RU,
+  BRAND_COLLECTION_STAGE_MODULES_ACTOR_PLACEHOLDER_RU,
+  BRAND_COLLECTION_STAGE_MODULES_ATTACHMENTS_BTN_RU,
+  BRAND_COLLECTION_STAGE_MODULES_DRAFT_FILLED_RU,
+  BRAND_COLLECTION_STAGE_MODULES_LOADING_RU,
+  BRAND_COLLECTION_STAGE_MODULES_PG_BADGE_RU,
+  BRAND_COLLECTION_STAGE_MODULES_PG_BADGE_TESTID,
+  BRAND_COLLECTION_STAGE_MODULES_PG_UNAVAILABLE_RU,
+  BRAND_COLLECTION_STAGE_MODULES_PG_UNAVAILABLE_TESTID,
+  BRAND_COLLECTION_STAGE_MODULES_SYNC_RU,
+} from '@/lib/platform/wave-xj-collection-stage-modules-pg';
 import {
   getFormFieldsForStep,
   hasSubstantiveModuleContent,
@@ -92,30 +105,43 @@ export function CollectionStageModuleHubCard({
   moduleLinkExtra,
 }: Props) {
   const fieldDefs = useMemo(() => getFormFieldsForStep(stepId), [stepId]);
-  const [doc, setDoc] = useState<ReturnType<typeof loadCollectionStageModules>>(() => ({
-    v: 1,
-    steps: {},
-  }));
+  const [doc, setDoc] = useState<CollectionStageModulesDoc>(() => ({ v: 1, steps: {} }));
   const [draftFields, setDraftFields] = useState<Record<string, string>>({});
   const [actorLabel, setActorLabel] = useState('Демо-пользователь');
+  const [modulesLoading, setModulesLoading] = useState(true);
+  const [modulesStoragePg, setModulesStoragePg] = useState(false);
+  const [modulesPgUnavailable, setModulesPgUnavailable] = useState(false);
 
-  const refresh = useCallback(() => {
-    const d = loadCollectionStageModules(collectionFlowKey);
-    setDoc(d);
-    const m = getStepModule(d, stepId);
-    const merged: Record<string, string> = {};
-    for (const def of fieldDefs) merged[def.key] = m.fields[def.key] ?? '';
-    setDraftFields(merged);
-  }, [collectionFlowKey, fieldDefs, stepId]);
+  const applyDocToDraft = useCallback(
+    (d: CollectionStageModulesDoc) => {
+      setDoc(d);
+      const m = getStepModule(d, stepId);
+      const merged: Record<string, string> = {};
+      for (const def of fieldDefs) merged[def.key] = m.fields[def.key] ?? '';
+      setDraftFields(merged);
+    },
+    [fieldDefs, stepId]
+  );
+
+  const refresh = useCallback(async () => {
+    setModulesLoading(true);
+    const { doc: d, persistMode, pgUnavailable } = await loadCollectionStageModulesWithMode(
+      collectionFlowKey
+    );
+    setModulesStoragePg(persistMode === 'postgres' && !pgUnavailable);
+    setModulesPgUnavailable(persistMode === 'postgres' && pgUnavailable);
+    applyDocToDraft(d);
+    setModulesLoading(false);
+  }, [applyDocToDraft, collectionFlowKey]);
 
   useEffect(() => {
-    refresh();
+    void refresh();
   }, [refresh]);
 
   useEffect(() => {
     const h = (e: Event) => {
       const k = (e as CustomEvent<{ collectionKey?: string }>).detail?.collectionKey;
-      if (k === collectionFlowKey) refresh();
+      if (k === collectionFlowKey) void refresh();
     };
     window.addEventListener(BRAND_COLLECTION_STAGE_MODULES_SAVED, h as EventListener);
     return () =>
@@ -168,13 +194,36 @@ export function CollectionStageModuleHubCard({
           ) : null}
           {substantive ? (
             <Badge className="h-5 bg-emerald-600/90 text-[7px] font-bold uppercase">
-              Черновик заполнен
+              {BRAND_COLLECTION_STAGE_MODULES_DRAFT_FILLED_RU}
             </Badge>
           ) : (
             <Badge variant="secondary" className="text-text-secondary h-5 text-[7px] font-semibold">
-              Синхрон с модулем этапа в ленте
+              {BRAND_COLLECTION_STAGE_MODULES_SYNC_RU}
             </Badge>
           )}
+          {modulesLoading ? (
+            <Badge variant="outline" className="text-text-muted h-5 text-[7px] font-semibold">
+              {BRAND_COLLECTION_STAGE_MODULES_LOADING_RU}
+            </Badge>
+          ) : null}
+          {modulesStoragePg ? (
+            <Badge
+              variant="outline"
+              className="h-5 text-[7px] font-semibold"
+              data-testid={BRAND_COLLECTION_STAGE_MODULES_PG_BADGE_TESTID}
+            >
+              {BRAND_COLLECTION_STAGE_MODULES_PG_BADGE_RU}
+            </Badge>
+          ) : null}
+          {modulesPgUnavailable ? (
+            <Badge
+              variant="destructive"
+              className="h-5 text-[7px] font-semibold"
+              data-testid={BRAND_COLLECTION_STAGE_MODULES_PG_UNAVAILABLE_TESTID}
+            >
+              {BRAND_COLLECTION_STAGE_MODULES_PG_UNAVAILABLE_RU}
+            </Badge>
+          ) : null}
         </div>
         <CardDescription className="text-xs leading-relaxed">
           Коллекция: <strong className="text-text-primary">{collectionLabel}</strong>. {cardHint}{' '}
@@ -191,12 +240,14 @@ export function CollectionStageModuleHubCard({
           <div className="flex min-w-[200px] flex-1 items-center gap-2">
             <UserCircle className="text-text-muted h-4 w-4 shrink-0" aria-hidden />
             <div className="min-w-0 flex-1">
-              <p className="text-text-muted text-[9px] font-bold uppercase">Кто вносит изменения</p>
+              <p className="text-text-muted text-[9px] font-bold uppercase">
+                {BRAND_COLLECTION_STAGE_MODULES_ACTOR_LABEL_RU}
+              </p>
               <Input
                 className="mt-0.5 h-8 text-xs"
                 value={actorLabel}
                 onChange={(e) => setActorLabel(e.target.value)}
-                placeholder="ФИО или роль"
+                placeholder={BRAND_COLLECTION_STAGE_MODULES_ACTOR_PLACEHOLDER_RU}
               />
             </div>
           </div>
@@ -256,7 +307,7 @@ export function CollectionStageModuleHubCard({
             onClick={onOpenFullDialog}
           >
             <LayoutPanelLeft className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            Вложения, история, согласование
+            {BRAND_COLLECTION_STAGE_MODULES_ATTACHMENTS_BTN_RU}
           </Button>
           {moduleLink ? (
             <Button type="button" variant="secondary" size="sm" className="h-9 text-[10px]" asChild>

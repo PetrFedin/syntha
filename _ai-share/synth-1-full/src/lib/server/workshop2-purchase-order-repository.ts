@@ -5,11 +5,12 @@ import {
   type FactoryMesReleaseStage,
   resolveFactoryMesReleaseStage,
 } from '@/lib/production/workshop2-factory-mes-release-stage';
+import type { ProductionOrderCutTicketStub } from '@/lib/production/brand-op-production-order-cut-ticket';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 
 const PO_SELECT_COLUMNS = `id, collection_id, article_id, line_ref, supplier_id, qty, status,
-  erp_external_id, synced_at, payload, created_at, updated_at, mes_release_stage`;
+  erp_external_id, synced_at, payload, created_at, updated_at, mes_release_stage, wip_status, cut_ticket`;
 
 /** Статус PO: draft → pending_erp → synced | error */
 export type Workshop2PurchaseOrderStatus = 'draft' | 'pending_erp' | 'synced' | 'error';
@@ -29,10 +30,13 @@ export type Workshop2PurchaseOrderRecord = {
   qty: number;
   status: Workshop2PurchaseOrderStatus;
   mesReleaseStage: FactoryMesReleaseStage;
+  /** Wave WO · floor tablet WIP (PG wip_status, mirrors mes_release_stage). */
+  wipStatus: FactoryMesReleaseStage;
   erpExternalId?: string;
   syncedAt?: string;
   lastError?: string;
   payload: Record<string, unknown>;
+  cutTicket: ProductionOrderCutTicketStub;
   createdAt: string;
   updatedAt: string;
 };
@@ -48,17 +52,27 @@ function mapRow(row: {
   qty: string | number;
   status: string;
   mes_release_stage?: string | null;
+  wip_status?: string | null;
   erp_external_id: string | null;
   synced_at: Date | null;
   payload: Record<string, unknown> | null;
+  cut_ticket?: Record<string, unknown> | null;
   created_at: Date;
   updated_at: Date;
 }): Workshop2PurchaseOrderRecord {
   const payload = row.payload ?? {};
+  const cutTicket = (row.cut_ticket ?? {}) as ProductionOrderCutTicketStub;
   const mesReleaseStage = resolveFactoryMesReleaseStage(
     row.mes_release_stage != null
       ? String(row.mes_release_stage)
       : String(payload.mesReleaseStage ?? 'queued')
+  );
+  const wipStatus = resolveFactoryMesReleaseStage(
+    row.wip_status != null
+      ? String(row.wip_status)
+      : row.mes_release_stage != null
+        ? String(row.mes_release_stage)
+        : String(payload.wipStatus ?? payload.mesReleaseStage ?? 'queued')
   );
   return {
     id: String(row.id),
@@ -69,9 +83,11 @@ function mapRow(row: {
     qty: Number(row.qty),
     status: row.status as Workshop2PurchaseOrderStatus,
     mesReleaseStage,
+    wipStatus,
     erpExternalId: row.erp_external_id != null ? String(row.erp_external_id) : undefined,
     syncedAt: row.synced_at?.toISOString(),
     payload,
+    cutTicket,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   };
@@ -172,7 +188,11 @@ export async function upsertWorkshop2PurchaseOrder(input: {
     mesReleaseStage: resolveFactoryMesReleaseStage(
       String(input.payload?.mesReleaseStage ?? 'queued')
     ),
+    wipStatus: resolveFactoryMesReleaseStage(
+      String(input.payload?.wipStatus ?? input.payload?.mesReleaseStage ?? 'queued')
+    ),
     payload: input.payload ?? {},
+    cutTicket: {},
     createdAt: now,
     updatedAt: now,
   };
@@ -295,7 +315,11 @@ export async function createWorkshop2PurchaseOrder(input: {
     mesReleaseStage: resolveFactoryMesReleaseStage(
       String(input.payload?.mesReleaseStage ?? 'queued')
     ),
+    wipStatus: resolveFactoryMesReleaseStage(
+      String(input.payload?.wipStatus ?? input.payload?.mesReleaseStage ?? 'queued')
+    ),
     payload: input.payload ?? {},
+    cutTicket: {},
     createdAt: now,
     updatedAt: now,
   };
@@ -353,6 +377,9 @@ export async function updateWorkshop2PurchaseOrderErpSync(input: {
       mesReleaseStage: resolveFactoryMesReleaseStage(
         String(nextPayload.mesReleaseStage ?? prev.mesReleaseStage)
       ),
+      wipStatus: resolveFactoryMesReleaseStage(
+        String(nextPayload.wipStatus ?? nextPayload.mesReleaseStage ?? prev.wipStatus)
+      ),
       erpExternalId: input.erpExternalId ?? prev.erpExternalId,
       syncedAt: input.status === 'synced' ? syncedAt : prev.syncedAt,
       payload: nextPayload,
@@ -400,8 +427,11 @@ export async function updateWorkshop2PurchaseOrderMesReleaseStage(input: {
   const at = new Date().toISOString();
   const payloadPatch = {
     mesReleaseStage: stage,
+    wipStatus: stage,
     mesReleaseStageAt: at,
     mesReleaseStageBy: input.actor?.trim() || 'factory_mes',
+    wipStatusAt: at,
+    wipStatusBy: input.actor?.trim() || 'factory-floor-tablet',
   };
 
   if (!isWorkshop2PostgresEnabled()) {
@@ -411,6 +441,7 @@ export async function updateWorkshop2PurchaseOrderMesReleaseStage(input: {
     const next: Workshop2PurchaseOrderRecord = {
       ...prev,
       mesReleaseStage: stage,
+      wipStatus: stage,
       payload: { ...prev.payload, ...payloadPatch },
       updatedAt: at,
     };
@@ -422,6 +453,7 @@ export async function updateWorkshop2PurchaseOrderMesReleaseStage(input: {
   const res = await getWorkshop2PgPool().query(
     `UPDATE workshop2_purchase_orders
      SET mes_release_stage = $4,
+         wip_status = $4,
          payload = payload || $5::jsonb,
          updated_at = NOW()
      WHERE id = $1 AND collection_id = $2 AND article_id = $3
@@ -474,6 +506,49 @@ export async function createWorkshop2PurchaseOrdersFromRequisitions(input: {
     created.push(po);
   }
   return created;
+}
+
+export async function updateWorkshop2ProductionOrderCutTicket(input: {
+  id: string;
+  collectionId: string;
+  articleId: string;
+  cutTicket: ProductionOrderCutTicketStub;
+  actor?: string;
+}): Promise<Workshop2PurchaseOrderRecord | null> {
+  const at = new Date().toISOString();
+  const cutTicket: ProductionOrderCutTicketStub = {
+    ...input.cutTicket,
+    updatedAt: input.cutTicket.updatedAt ?? at,
+    updatedBy: input.cutTicket.updatedBy ?? (input.actor?.trim() || 'brand-cut-ticket'),
+  };
+
+  if (!isWorkshop2PostgresEnabled()) {
+    const idx = memoryPos.findIndex((p) => p.id === input.id);
+    if (idx < 0) return null;
+    const prev = memoryPos[idx]!;
+    if (prev.collectionId !== input.collectionId || prev.articleId !== input.articleId) {
+      return null;
+    }
+    const next: Workshop2PurchaseOrderRecord = {
+      ...prev,
+      cutTicket,
+      updatedAt: at,
+    };
+    memoryPos[idx] = next;
+    return next;
+  }
+
+  await ensureWorkshop2PgSchema();
+  const res = await getWorkshop2PgPool().query(
+    `UPDATE workshop2_purchase_orders
+     SET cut_ticket = $4::jsonb,
+         updated_at = NOW()
+     WHERE id = $1 AND collection_id = $2 AND article_id = $3
+     RETURNING ${PO_SELECT_COLUMNS}`,
+    [input.id, input.collectionId, input.articleId, JSON.stringify(cutTicket)]
+  );
+  const row = res.rows[0];
+  return row ? mapRow(row) : null;
 }
 
 export async function linkPurchaseOrdersToSampleOrder(input: {

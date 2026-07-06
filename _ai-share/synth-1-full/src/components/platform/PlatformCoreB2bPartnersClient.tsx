@@ -14,7 +14,7 @@ import {
   platformB2bPartnersGoldenPathStepFromFeature,
 } from '@/components/platform/PlatformB2bPartnersGoldenPathStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform-core-ports/platform/pillar-capability-workspaces';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 
 function PlatformB2bPartnersWorkspaceBody() {

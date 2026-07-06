@@ -20,11 +20,11 @@ type Props = {
 };
 
 const STEPS: { id: ShopLandedMarginGoldenPathStepId; label: string }[] = [
-  { id: 'hub', label: 'Hub' },
-  { id: 'rollup', label: 'Rollup' },
-  { id: 'pricelist', label: 'Pricelist' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'checkout', label: 'Checkout' },
+  { id: 'hub', label: 'Кабинет' },
+  { id: 'rollup', label: 'Сводка' },
+  { id: 'pricelist', label: 'Прайс-лист' },
+  { id: 'matrix', label: 'Матрица' },
+  { id: 'checkout', label: 'Оформление' },
 ];
 
 export function ShopLandedMarginGoldenPathStrip({

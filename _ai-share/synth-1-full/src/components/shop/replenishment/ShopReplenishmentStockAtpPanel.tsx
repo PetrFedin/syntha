@@ -29,13 +29,16 @@ import {
   buildReplenishmentStockSliceHref,
   readReplenishmentStockSliceFromSearchParams,
   REPLENISHMENT_STOCK_SLICE_PARAMS,
-  REPLENISHMENT_STOCK_SLICE_PRESETS,
+  type ReplenishmentStockSlice,
 } from '@/lib/platform/shop-replenishment-stock-slices';
 import {
-  fetchShopReplenishmentStockSlice,
-  saveShopReplenishmentStockSlice,
-} from '@/lib/shop/shop-replenishment-stock-slice-store';
-import { cn } from '@/lib/utils';
+  fetchShopReplenishmentFilterSlices,
+  postShopReplenishmentFilterSlice,
+  type ShopReplenishmentFilterSliceRecord,
+} from '@/lib/shop/shop-replenishment-filter-slices-client';
+import { ShopReplenishmentFilterSlicesSidebar } from '@/components/shop/replenishment/ShopReplenishmentFilterSlicesSidebar';
+import { ShopReplenishmentWmsAtpBadge } from '@/components/shop/replenishment/ShopReplenishmentWmsAtpBadge';
+import { ShopReplenishmentMatrixAutoLinesStrip } from '@/components/shop/replenishment/ShopReplenishmentMatrixAutoLinesStrip';
 
 type Props = {
   collectionId?: string;
@@ -58,22 +61,47 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
   const [rows, setRows] = useState<ReplenishmentStockRow[]>(demoRows);
   const [source, setSource] = useState<ReplenishmentStockAtpSource>('demo');
   const [sliceStorageMode, setSliceStorageMode] = useState<string | null>(null);
+  const [savedSlices, setSavedSlices] = useState<ShopReplenishmentFilterSliceRecord[]>([]);
+  const [activeSliceId, setActiveSliceId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [allocating, setAllocating] = useState(false);
   const [allocateResult, setAllocateResult] = useState<IntakeAllocationResult | null>(null);
   const [allocateError, setAllocateError] = useState<string | null>(null);
+  const [matrixLinesHint, setMatrixLinesHint] = useState<string | null>(null);
+  const [matrixReorderCount, setMatrixReorderCount] = useState(0);
+  const [matrixAtpQtyTotal, setMatrixAtpQtyTotal] = useState(0);
+  const [matrixApplying, setMatrixApplying] = useState(false);
+  const [matrixApplyMessage, setMatrixApplyMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const hasSliceParams =
-      searchParams.has(REPLENISHMENT_STOCK_SLICE_PARAMS.org) ||
-      searchParams.has(REPLENISHMENT_STOCK_SLICE_PARAMS.season);
-    if (hasSliceParams) return;
-    void fetchShopReplenishmentStockSlice().then(({ slice, storageMode }) => {
-      if (!slice) return;
-      setSliceStorageMode(storageMode ?? null);
+    if (!collectionId?.trim()) return;
+    const qs = new URLSearchParams({ collectionId });
+    if (orderId?.trim()) qs.set('orderId', orderId.trim());
+    void fetch(`/api/shop/b2b/replenishment/matrix-lines?${qs.toString()}`)
+      .then((res) => res.json())
+      .then((json: { ok?: boolean; messageRu?: string; lines?: unknown[] }) => {
+        if (json.ok && json.messageRu) setMatrixLinesHint(json.messageRu);
+        if (json.ok && Array.isArray(json.lines)) {
+          setMatrixReorderCount(json.lines.length);
+        }
+      })
+      .catch(() => {
+        /* optional */
+      });
+  }, [collectionId, orderId]);
+
+  useEffect(() => {
+    void fetchShopReplenishmentFilterSlices().then((json) => {
+      if (json.storageMode) setSliceStorageMode(json.storageMode);
+      if (json.savedSlices?.length) setSavedSlices(json.savedSlices);
+      if (json.activeSliceId) setActiveSliceId(json.activeSliceId);
+      const hasSliceParams =
+        searchParams.has(REPLENISHMENT_STOCK_SLICE_PARAMS.org) ||
+        searchParams.has(REPLENISHMENT_STOCK_SLICE_PARAMS.season);
+      if (hasSliceParams || !json.activeSlice) return;
       const href = buildReplenishmentStockSliceHref(
         pathname,
-        slice,
+        json.activeSlice,
         new URLSearchParams(searchParams.toString())
       );
       router.replace(href, { scroll: false });
@@ -109,6 +137,41 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
 
   const lowAtp = rows.filter((r) => r.atp < 5).length;
 
+  const runMatrixApply = () => {
+    if (!collectionId?.trim()) return;
+    setMatrixApplying(true);
+    setMatrixApplyMessage(null);
+    void fetch('/api/shop/b2b/replenishment/allocate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        collectionId,
+        orderId: session.orderId || orderId,
+      }),
+    })
+      .then((res) => res.json())
+      .then(
+        (json: {
+          ok?: boolean;
+          matrixHref?: string;
+          messageRu?: string;
+          atpQtyTotal?: number;
+          applied?: number;
+        }) => {
+          if (json.atpQtyTotal != null) setMatrixAtpQtyTotal(json.atpQtyTotal);
+          if (json.ok && json.matrixHref) {
+            router.push(json.matrixHref);
+            return;
+          }
+          setMatrixApplyMessage(json.messageRu ?? 'Не удалось перенести SKU в матрицу.');
+        }
+      )
+      .catch(() => {
+        setMatrixApplyMessage('Ошибка API переноса в матрицу.');
+      })
+      .finally(() => setMatrixApplying(false));
+  };
+
   const runIntakeAllocate = () => {
     setAllocating(true);
     setAllocateError(null);
@@ -127,66 +190,68 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
       .finally(() => setAllocating(false));
   };
 
-  const setSlice = (preset: (typeof REPLENISHMENT_STOCK_SLICE_PRESETS)[number]) => {
-    void saveShopReplenishmentStockSlice(preset).then((res) => {
+  const setSlice = (next: ReplenishmentStockSlice, sliceId?: string) => {
+    void postShopReplenishmentFilterSlice(next, 'shop1', sliceId).then((res) => {
       if (res.storageMode) setSliceStorageMode(res.storageMode);
+      void fetchShopReplenishmentFilterSlices().then((json) => {
+        if (json.savedSlices?.length) setSavedSlices(json.savedSlices);
+        if (json.activeSliceId) setActiveSliceId(json.activeSliceId);
+      });
     });
     const href = buildReplenishmentStockSliceHref(
       pathname,
-      preset,
+      next,
       new URLSearchParams(searchParams.toString())
     );
     router.replace(href, { scroll: false });
   };
 
+  const sidebarSlices =
+    savedSlices.length > 0
+      ? savedSlices
+      : [
+          {
+            sliceId: `${slice.orgId}::${slice.seasonId}::${slice.collectionId}`,
+            ...slice,
+            isActive: true,
+          },
+        ];
+
   return (
     <div className="space-y-4" data-testid="shop-replenishment-feature-stock-atp">
-      <div className="space-y-2">
-        <p className="text-text-muted text-[10px] uppercase">Filter slices</p>
-        <div className="flex flex-wrap gap-1">
-          {REPLENISHMENT_STOCK_SLICE_PRESETS.map((preset) => {
-            const active =
-              preset.orgId === slice.orgId &&
-              preset.seasonId === slice.seasonId &&
-              preset.collectionId === slice.collectionId;
-            return (
-              <button
-                key={preset.labelRu}
-                type="button"
-                onClick={() => setSlice(preset)}
-                className={cn(
-                  'rounded-md border px-2 py-1 text-[11px] font-medium transition-colors',
-                  active
-                    ? 'border-accent-primary bg-accent-primary/10 text-accent-primary'
-                    : 'border-border-subtle text-text-secondary hover:bg-bg-surface2'
-                )}
-                data-testid={`shop-replenishment-slice-${preset.seasonId}`}
-              >
-                {preset.labelRu}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
+      <div className="flex flex-col gap-4 md:flex-row md:items-start">
+        <ShopReplenishmentFilterSlicesSidebar
+          slices={sidebarSlices}
+          activeSliceId={activeSliceId ?? sidebarSlices.find((s) => s.isActive)?.sliceId ?? null}
+          storageMode={sliceStorageMode}
+          onSelect={(row) =>
+            setSlice(
+              {
+                orgId: row.orgId,
+                seasonId: row.seasonId,
+                collectionId: row.collectionId,
+                labelRu: row.labelRu,
+              },
+              row.sliceId
+            )
+          }
+        />
+        <div className="min-w-0 flex-1 space-y-4">
+      <ShopReplenishmentMatrixAutoLinesStrip
+        collectionId={collectionId}
+        orderId={orderId}
+        lineCount={matrixReorderCount}
+        atpQtyTotal={matrixAtpQtyTotal}
+        hintRu={matrixLinesHint}
+        buyerId="shop1"
+      />
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary">SKU: {rows.length}</Badge>
         <Badge variant="outline">{slice.labelRu}</Badge>
-        <Badge
-          variant="outline"
-          data-testid={`shop-replenishment-stock-atp-source-${source}`}
-          className={source === 'pg' ? 'border-emerald-500/40 text-emerald-700' : ''}
-        >
-          {source === 'pg' ? 'PG grains' : source === 'demo' ? 'Demo grains' : `Source: ${source}`}
-        </Badge>
-        {sliceStorageMode === 'pg' ? (
-          <Badge variant="outline" className="border-sky-500/40 text-sky-700">
-            Slice saved · PG
-          </Badge>
-        ) : null}
+        <ShopReplenishmentWmsAtpBadge collectionId={collectionId} buyerId="shop1" />
         {loading ? (
           <Badge variant="outline" className="animate-pulse">
-            Loading ATP…
+            Загрузка ATP…
           </Badge>
         ) : null}
         <Badge variant="outline" className="border-amber-500/40 text-amber-700">
@@ -199,8 +264,27 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
           <Link href={session.rulesHref}>Правила</Link>
         </Button>
         <Button size="sm" asChild data-testid="shop-replenishment-stock-atp-matrix-link">
-          <Link href={session.matrixHref}>Reorder · матрица</Link>
+          <Link href={session.matrixHref}>Дозаказ · матрица</Link>
         </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          type="button"
+          disabled={matrixApplying || loading || !collectionId?.trim()}
+          onClick={runMatrixApply}
+          data-testid="shop-replenishment-matrix-lines-apply"
+        >
+          {matrixApplying
+            ? 'Перенос…'
+            : matrixReorderCount > 0
+              ? `В матрицу · ${matrixReorderCount} SKU${matrixAtpQtyTotal > 0 ? ` · ATP ${matrixAtpQtyTotal}` : ''}`
+              : 'В матрицу · ATP'}
+        </Button>
+        {matrixApplyMessage ? (
+          <span className="text-destructive text-[10px]" data-testid="shop-replenishment-matrix-apply-error">
+            {matrixApplyMessage}
+          </span>
+        ) : null}
         <Button
           variant="secondary"
           size="sm"
@@ -209,28 +293,28 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
           onClick={runIntakeAllocate}
           data-testid="shop-replenishment-intake-allocate-run"
         >
-          {allocating ? 'Аллокация…' : 'Intake · allocate'}
+          {allocating ? 'Аллокация…' : 'Приёмка · распределение'}
         </Button>
         <Button variant="outline" size="sm" asChild data-testid="shop-replenishment-supplier-forecast-link">
-          <Link href={session.supplierForecastHref}>Supplier · forecast</Link>
+          <Link href={session.supplierForecastHref}>Поставщик · прогноз</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.prepackHref}>Pre-pack</Link>
+          <Link href={session.prepackHref}>Препак</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.workingOrderHref}>Working order · bulk</Link>
+          <Link href={session.workingOrderHref}>Рабочий заказ · пакетно</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.collaborativeApprovalsHref}>Collaborative approvals</Link>
+          <Link href={session.collaborativeApprovalsHref}>Согласования совместного заказа</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.brandOrderChatHref}>Brand order chat</Link>
+          <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
         </Button>
       </div>
 
@@ -244,7 +328,7 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
               {allocateResult.messageRu ?? `План ${allocateResult.planId} сохранён.`}
             </p>
             <p className="text-text-muted mt-1 text-xs">
-              Allocations: {allocateResult.allocations?.length ?? 0} · Unallocated:{' '}
+              Распределено: {allocateResult.allocations?.length ?? 0} · Нераспределено:{' '}
               {allocateResult.unallocated?.length ?? 0}
               {allocateResult.persistMode ? ` · ${allocateResult.persistMode}` : ''}
             </p>
@@ -259,10 +343,19 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
 
       <Card className="border-border-subtle">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Stock details</CardTitle>
+          <CardTitle className="text-base">Остатки и ATP</CardTitle>
           <CardDescription>
-            Onfinity-style: on hand, reserved, ATP — ledger grains
-            {source === 'pg' ? ' из PostgreSQL' : source === 'demo' ? ' (demo fallback)' : ''}.
+            На руках, резерв, ATP — зёрна ledger
+            {source === 'pg'
+              ? ' из PostgreSQL'
+              : source === 'pg+wms'
+                ? ' · PG + WMS'
+                : source === 'wms'
+                  ? ' · WMS'
+                  : source === 'demo'
+                    ? ' (демо)'
+                    : ''}
+            .
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -270,11 +363,11 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
             <TableHeader>
               <TableRow>
                 <TableHead>SKU</TableHead>
-                <TableHead className="text-right">On hand</TableHead>
-                <TableHead className="text-right">Reserved</TableHead>
+                <TableHead className="text-right">На складе</TableHead>
+                <TableHead className="text-right">Резерв</TableHead>
                 <TableHead className="text-right">ATP</TableHead>
-                <TableHead className="text-right">In transit</TableHead>
-                <TableHead className="text-right">Unconfirmed</TableHead>
+                <TableHead className="text-right">В пути</TableHead>
+                <TableHead className="text-right">Не подтв.</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -299,6 +392,8 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
           </Table>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

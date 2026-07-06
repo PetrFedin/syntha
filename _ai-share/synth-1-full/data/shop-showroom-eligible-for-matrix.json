@@ -1,0 +1,56 @@
+[
+  {
+    "id": "efm-1782005267654-v5879l",
+    "buyerId": "shop1",
+    "collectionId": "SS27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-21T01:27:47.654Z"
+  },
+  {
+    "id": "efm-1782005269046-qkembr",
+    "buyerId": "shop1",
+    "collectionId": "SS27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-21T01:27:49.046Z"
+  },
+  {
+    "id": "efm-1782005286343-jt4u6g",
+    "buyerId": "shop1",
+    "collectionId": "SS27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-21T01:28:06.343Z"
+  },
+  {
+    "id": "efm-1782481358977-1gwagb",
+    "buyerId": "shop1",
+    "collectionId": "FW27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-26T13:42:38.977Z"
+  },
+  {
+    "id": "efm-1782482288893-sti5hj",
+    "buyerId": "shop1",
+    "collectionId": "SS27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-26T13:58:08.893Z"
+  },
+  {
+    "id": "efm-1782482289285-g8s6f1",
+    "buyerId": "shop1",
+    "collectionId": "SS27",
+    "publishedCount": 0,
+    "eligibleCount": 0,
+    "filterActive": false,
+    "createdAt": "2026-06-26T13:58:09.285Z"
+  }
+]

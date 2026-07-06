@@ -14,12 +14,15 @@ type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
 export function useBrandWorkshop2B2bOrdersList(
   enabled: boolean,
-  reloadNonce = 0
+  reloadNonce = 0,
+  partnerFilter: string | null = null
 ): {
   rows: BrandB2bOrderListRow[] | null;
+  partnerIds: string[];
   loadState: LoadState;
 } {
   const [rows, setRows] = useState<BrandB2bOrderListRow[] | null>(null);
+  const [partnerIds, setPartnerIds] = useState<string[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const { tick: registryTick } = usePlatformCoreB2bRegistryPoll(enabled);
 
@@ -32,35 +35,49 @@ export function useBrandWorkshop2B2bOrdersList(
 
     let cancelled = false;
     setLoadState('loading');
+    const partner =
+      partnerFilter && partnerFilter.trim() && partnerFilter !== 'all' ? partnerFilter.trim() : null;
 
     (async () => {
       try {
         const headers = buildWorkshop2ApiRequestHeaders();
         const responses = await Promise.all(
           BRAND_CORE_W2_COLLECTION_IDS.map(async (collectionId) => {
-            const res = await fetch(
-              `/api/brand/b2b/orders?collectionId=${encodeURIComponent(collectionId)}`,
-              { headers, cache: 'no-store' }
-            );
-            if (!res.ok) return [] as Workshop2B2bOrderRecord[];
+            const params = new URLSearchParams({ collectionId });
+            if (partner) params.set('partner', partner);
+            const res = await fetch(`/api/brand/b2b/orders?${params.toString()}`, {
+              headers,
+              cache: 'no-store',
+            });
+            if (!res.ok) return { orders: [] as Workshop2B2bOrderRecord[], partnerIds: [] as string[] };
             const json = (await res.json()) as {
               ok?: boolean;
               orders?: Workshop2B2bOrderRecord[];
+              partnerIds?: string[];
             };
-            return json.ok && Array.isArray(json.orders) ? json.orders : [];
+            return {
+              orders: json.ok && Array.isArray(json.orders) ? json.orders : [],
+              partnerIds: json.ok && Array.isArray(json.partnerIds) ? json.partnerIds : [],
+            };
           })
         );
+        const mergedPartnerIds = new Set<string>();
+        for (const r of responses) {
+          for (const id of r.partnerIds) mergedPartnerIds.add(id);
+        }
         const merged = responses
-          .flat()
+          .flatMap((r) => r.orders)
           .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
           .map(workshop2B2bOrderToBrandListRow);
         if (!cancelled) {
           setRows(merged);
+          setPartnerIds([...mergedPartnerIds].sort());
           setLoadState('ready');
         }
       } catch {
         if (!cancelled) {
           setRows([]);
+          setPartnerIds([]);
           setLoadState('error');
         }
       }
@@ -69,7 +86,7 @@ export function useBrandWorkshop2B2bOrdersList(
     return () => {
       cancelled = true;
     };
-  }, [enabled, reloadNonce, registryTick]);
+  }, [enabled, reloadNonce, registryTick, partnerFilter]);
 
-  return useMemo(() => ({ rows, loadState }), [rows, loadState]);
+  return useMemo(() => ({ rows, partnerIds, loadState }), [rows, partnerIds, loadState]);
 }

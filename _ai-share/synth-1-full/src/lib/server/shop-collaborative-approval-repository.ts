@@ -7,9 +7,14 @@ import {
   defaultShopCollaborativeApprovalState,
   type ShopCollaborativeApprovalState,
   type ShopCollaborativeApprovalStepId,
+  type ShopCollaborativeApprovalActor,
   shopCollaborativeApprovalCanAdvance,
   shopCollaborativeApprovalStepDone,
 } from '@/lib/shop/shop-collaborative-approval-feed';
+import {
+  appendBrandCollaborativeMarginJournal,
+  appendShopCollaborativeStepJournal,
+} from '@/lib/server/shop-collaborative-session-journal-repository';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 
@@ -61,6 +66,7 @@ function rowToState(row: {
   matrix_done: boolean;
   margin_done: boolean;
   submit_done: boolean;
+  brand_actor: string | null;
   updated_at: Date;
 }): ShopCollaborativeApprovalState {
   return {
@@ -69,6 +75,7 @@ function rowToState(row: {
     matrixDone: row.matrix_done,
     marginDone: row.margin_done,
     submitDone: row.submit_done,
+    brandActor: row.brand_actor ?? undefined,
     updatedAt: row.updated_at.toISOString(),
   };
 }
@@ -90,9 +97,10 @@ export async function getShopCollaborativeApprovalServer(input: {
         matrix_done: boolean;
         margin_done: boolean;
         submit_done: boolean;
+        brand_actor: string | null;
         updated_at: Date;
       }>(
-        `SELECT buyer_id, order_id, matrix_done, margin_done, submit_done, updated_at
+        `SELECT buyer_id, order_id, matrix_done, margin_done, submit_done, brand_actor, updated_at
          FROM shop_collaborative_approvals
          WHERE buyer_id = $1 AND order_id = $2`,
         [buyerId, orderId]
@@ -125,12 +133,13 @@ async function persistShopCollaborativeApprovalState(
       await ensureWorkshop2PgSchema();
       await getWorkshop2PgPool().query(
         `INSERT INTO shop_collaborative_approvals
-           (buyer_id, order_id, matrix_done, margin_done, submit_done, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6::timestamptz)
+           (buyer_id, order_id, matrix_done, margin_done, submit_done, brand_actor, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7::timestamptz)
          ON CONFLICT (buyer_id, order_id) DO UPDATE SET
            matrix_done = EXCLUDED.matrix_done,
            margin_done = EXCLUDED.margin_done,
            submit_done = EXCLUDED.submit_done,
+           brand_actor = COALESCE(EXCLUDED.brand_actor, shop_collaborative_approvals.brand_actor),
            updated_at = EXCLUDED.updated_at`,
         [
           next.buyerId,
@@ -138,6 +147,7 @@ async function persistShopCollaborativeApprovalState(
           next.matrixDone,
           next.marginDone,
           next.submitDone,
+          next.brandActor ?? null,
           next.updatedAt,
         ]
       );
@@ -160,9 +170,12 @@ export async function advanceShopCollaborativeApprovalStepServer(input: {
   buyerId: string;
   orderId: string;
   stepId: ShopCollaborativeApprovalStepId;
+  actor?: ShopCollaborativeApprovalActor;
+  brandActorLabel?: string;
 }): Promise<{ state: ShopCollaborativeApprovalState; advanced: boolean }> {
   const buyerId = input.buyerId.trim() || 'shop1';
   const orderId = input.orderId.trim();
+  const actor = input.actor ?? 'shop';
   if (!orderId) {
     throw new Error('orderId required');
   }
@@ -171,7 +184,7 @@ export async function advanceShopCollaborativeApprovalStepServer(input: {
     (await getShopCollaborativeApprovalServer({ buyerId, orderId })) ??
     defaultShopCollaborativeApprovalState({ buyerId, orderId });
 
-  if (!shopCollaborativeApprovalCanAdvance(existing, input.stepId)) {
+  if (!shopCollaborativeApprovalCanAdvance(existing, input.stepId, actor)) {
     return { state: existing, advanced: false };
   }
 
@@ -183,11 +196,38 @@ export async function advanceShopCollaborativeApprovalStepServer(input: {
       input.stepId === 'margin' ? true : shopCollaborativeApprovalStepDone(existing, 'margin'),
     submitDone:
       input.stepId === 'submit' ? true : shopCollaborativeApprovalStepDone(existing, 'submit'),
+    brandActor:
+      input.stepId === 'margin' && actor === 'brand'
+        ? input.brandActorLabel?.trim() || 'brand'
+        : existing.brandActor,
     updatedAt: new Date().toISOString(),
   };
 
   const saved = await persistShopCollaborativeApprovalState(next);
+  if (actor === 'brand' && input.stepId === 'margin') {
+    await appendBrandCollaborativeMarginJournal({
+      buyerId,
+      orderId,
+      brandActorLabel: input.brandActorLabel,
+    });
+  } else if (actor === 'shop') {
+    await appendShopCollaborativeStepJournal({ buyerId, orderId, stepId: input.stepId });
+  }
   return { state: saved, advanced: true };
+}
+
+export async function approveBrandCollaborativeMarginServer(input: {
+  buyerId: string;
+  orderId: string;
+  brandActorLabel?: string;
+}): Promise<{ state: ShopCollaborativeApprovalState; advanced: boolean }> {
+  return advanceShopCollaborativeApprovalStepServer({
+    buyerId: input.buyerId,
+    orderId: input.orderId,
+    stepId: 'margin',
+    actor: 'brand',
+    brandActorLabel: input.brandActorLabel,
+  });
 }
 
 export function shopCollaborativeApprovalStorageMode(): 'pg' | 'file' | 'memory' {

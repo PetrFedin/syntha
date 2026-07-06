@@ -10,44 +10,44 @@ type Props = {
   orderId?: string;
 };
 
-/** Mfr handoff queue workspace · brand + shop + production ops spine. */
+/** Очередь передачи · бренд, магазин, заказы на выпуск. */
 export function MfrOpHandoffQueueCoSpinePeerStrip({ factoryId, collectionId, orderId }: Props) {
   const session = buildManufacturerHandoffQueueSession({ factoryId, collectionId, orderId });
 
   return (
     <div className={hubGadget.goldenPath} data-testid="mfr-op-handoff-queue-co-spine-peer-strip">
       <Link href={session.brandHandoffHref} data-testid="mfr-op-handoff-queue-brand-handoff-link" className={hubGadget.goldenLink}>
-        Brand handoff
+        Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopTrackingHref} data-testid="mfr-op-handoff-queue-shop-tracking-link" className={hubGadget.goldenLink}>
-        Shop tracking
+        Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.factoryOrdersHref} data-testid="mfr-op-handoff-queue-prod-orders-link" className={hubGadget.goldenLink}>
-        Prod orders
+        Заказы на выпуск
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.techpackAckHref} data-testid="mfr-op-handoff-queue-techpack-ack-link" className={hubGadget.goldenLink}>
-        Techpack ack
+        Подтверждение ТЗ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.productionOpsCutTicketHref} data-testid="mfr-op-handoff-queue-cut-ticket-link" className={hubGadget.goldenLink}>
-        Cut ticket
+        Техкарта раскроя
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopOrderCommsHref} data-testid="mfr-op-handoff-queue-shop-comms-link" className={hubGadget.goldenLink}>
-        Shop comms
+        Чат с магазином
       </Link>
     </div>
   );

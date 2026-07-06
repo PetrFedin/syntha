@@ -36,6 +36,9 @@ import {
 } from '@/lib/communications/use-communications-unread';
 import { usePgCommunicationsUnread } from '@/lib/communications/use-pg-communications-unread';
 import { PlatformCoreB2bMessageTemplates } from '@/components/platform/PlatformCoreB2bMessageTemplates';
+import { PlatformCoreEntityThreadTemplatePicker } from '@/components/platform/PlatformCoreEntityThreadTemplatePicker';
+import { parseSynthaOverlayContext } from '@/lib/communications/syntha-overlay-context';
+import { PLATFORM_CORE_DEMO, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import type { ChatMessage } from '@/lib/types';
 import type { ID } from './types';
 
@@ -161,6 +164,33 @@ export default function MessagesPage({
     if (role === 'manufacturer') return 'mfr-cm-thread-search';
     return 'brand-cm-thread-search';
   }, [initialRole, currentRole]);
+
+  const entityTemplatePickerVariant = React.useMemo((): 'brand' | 'shop' | 'manufacturer' | 'supplier' => {
+    const role = initialRole ?? currentRole;
+    if (role === 'shop' || role === 'b2b') return 'shop';
+    if (role === 'supplier') return 'supplier';
+    if (role === 'manufacturer') return 'manufacturer';
+    return 'brand';
+  }, [initialRole, currentRole]);
+
+  const entityPickerContext = React.useMemo(() => {
+    const overlay = parseSynthaOverlayContext(searchParams);
+    const collectionId =
+      resolvePageCollectionId({ collection: searchParams.get('collection') }) ||
+      overlay.collectionId ||
+      PLATFORM_CORE_DEMO.collectionId;
+    const orderId =
+      searchParams.get('order')?.trim() ||
+      searchParams.get('orderId')?.trim() ||
+      overlay.orderId ||
+      undefined;
+    const articleId =
+      searchParams.get('article')?.trim() ||
+      searchParams.get('articleId')?.trim() ||
+      overlay.articleId ||
+      undefined;
+    return { collectionId, orderId, articleId };
+  }, [searchParams]);
 
   const visibleChats = React.useMemo(() => {
     const raw = chatQuery.trim().toLowerCase();
@@ -352,10 +382,19 @@ export default function MessagesPage({
                     setReminderOpen={() => {}}
                   />
                   {slimCore ? (
-                    <PlatformCoreB2bMessageTemplates
-                      draftText={chatState.composerText}
-                      onInsert={(text) => chatState.setComposerText(text)}
-                    />
+                    <>
+                      <PlatformCoreB2bMessageTemplates
+                        draftText={chatState.composerText}
+                        onInsert={(text) => chatState.setComposerText(text)}
+                      />
+                      <PlatformCoreEntityThreadTemplatePicker
+                        variant={entityTemplatePickerVariant}
+                        collectionId={entityPickerContext.collectionId}
+                        orderId={entityPickerContext.orderId}
+                        articleId={entityPickerContext.articleId}
+                        onInsert={(text) => chatState.setComposerText(text)}
+                      />
+                    </>
                   ) : null}
                   <Composer
                     activeChat={activeChat}

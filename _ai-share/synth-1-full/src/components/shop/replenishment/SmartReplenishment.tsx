@@ -81,7 +81,7 @@ export default function SmartReplenishment({ collectionId, orderId }: Props) {
             B2B Inventory Intelligence
           </Badge>
           <h1 className="text-text-primary text-sm font-black uppercase leading-none tracking-tight">
-            Smart <span className="italic text-amber-500">Replenishment</span>
+            Умное <span className="italic text-amber-500">пополнение</span>
           </h1>
           <p className="text-text-secondary mt-4 max-w-xl font-medium">
             AI анализирует ваши POS-данные и остатки, чтобы предотвратить упущенную выгоду. Система
@@ -130,7 +130,7 @@ export default function SmartReplenishment({ collectionId, orderId }: Props) {
         </Link>
         <span className={hubGadget.goldenSep}>·</span>
         <Link href={session.collaborativeApprovalsHref} className={hubGadget.goldenLink}>
-          Collaborative
+          Совместный заказ
         </Link>
         <span className={hubGadget.goldenSep}>·</span>
         <Link href={session.inventoryOverviewHref} className={hubGadget.goldenLink}>
@@ -301,7 +301,7 @@ export default function SmartReplenishment({ collectionId, orderId }: Props) {
                   Автоматический режим
                 </Badge>
                 <h3 className="text-sm font-black uppercase italic leading-none tracking-tight">
-                  Replenishment <br /> Strategy
+                  Стратегия <br /> пополнения
                 </h3>
               </header>
 

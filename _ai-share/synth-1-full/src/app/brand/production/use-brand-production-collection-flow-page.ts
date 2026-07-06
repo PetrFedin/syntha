@@ -33,6 +33,9 @@ import { useBrandProductionCollectionArticlesModel } from '@/app/brand/productio
 import { useBrandProductionWorkshopFloorMocks } from '@/app/brand/production/use-brand-production-workshop-floor-mocks';
 import { useBrandProductionCollectionArticlesListUi } from '@/app/brand/production/use-brand-production-collection-articles-list-ui';
 import { useBrandProductionCollectionChecklist } from '@/app/brand/production/use-brand-production-collection-checklist';
+import { useBrandProductionCollectionInventoryOverlay } from '@/app/brand/production/use-brand-production-collection-inventory-overlay';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { mergeCollectionInventoryOverlayArticles } from '@/lib/production/collection-inventory-overlay-store';
 
 export function useBrandProductionCollectionFlowPage(): BrandProductionCollectionFlowPageViewProps {
   const { toast } = useToast();
@@ -72,6 +75,14 @@ export function useBrandProductionCollectionFlowPage(): BrandProductionCollectio
     importLocalInventory,
   } = useBrandProductionLocalInventory();
 
+  const {
+    overlayArticles,
+    persistMode: overlayPersistMode,
+    pgUnavailable: overlayPgUnavailable,
+    overlayHydrated,
+    updateOverlayArticles,
+  } = useBrandProductionCollectionInventoryOverlay(collectionIdFromQuery);
+
   const collectionSelectOptions = useMemo(
     () => mergeCollectionSelectOptions(collectionOptions, localInventory.userCollections),
     [collectionOptions, localInventory.userCollections]
@@ -89,15 +100,21 @@ export function useBrandProductionCollectionFlowPage(): BrandProductionCollectio
     [collectionIdFromQuery]
   );
 
-  const itemsForCollection = useMemo(
-    () =>
-      buildItemsForCollection({
-        collectionIdFromQuery,
-        initialOrderItems: initialOrderItems as readonly ProductionPageOrderLike[],
-        articlesByCollection: localInventory.articlesByCollection,
-      }),
-    [collectionIdFromQuery, localInventory.articlesByCollection]
-  );
+  const itemsForCollection = useMemo(() => {
+    const seedItems = buildItemsForCollection({
+      collectionIdFromQuery,
+      initialOrderItems: initialOrderItems as readonly ProductionPageOrderLike[],
+      articlesByCollection: isPlatformCoreMode() ? {} : localInventory.articlesByCollection,
+    });
+    if (isPlatformCoreMode()) {
+      return mergeCollectionInventoryOverlayArticles(
+        seedItems,
+        overlayArticles,
+        collectionIdFromQuery
+      ) as ProductionPageOrderLike[];
+    }
+    return seedItems;
+  }, [collectionIdFromQuery, localInventory.articlesByCollection, overlayArticles]);
 
   const localRemovableArticles = useMemo(
     () =>
@@ -139,6 +156,7 @@ export function useBrandProductionCollectionFlowPage(): BrandProductionCollectio
       setLocalInventory,
       setUnifiedDoc,
       pendingFocusLocalSkuRef,
+      updateOverlayArticles,
     });
 
   const {
@@ -163,7 +181,7 @@ export function useBrandProductionCollectionFlowPage(): BrandProductionCollectio
     router,
     toast,
     tab,
-    localInventoryHydrated,
+    localInventoryHydrated: isPlatformCoreMode() ? overlayHydrated : localInventoryHydrated,
     collectionFlowKey,
     itemsForCollection,
     flowDocReady,
@@ -286,5 +304,12 @@ export function useBrandProductionCollectionFlowPage(): BrandProductionCollectio
     tab,
     onTabChange: setTab,
     shell: floorTabsShellProps,
+    inventoryOverlayStrip: {
+      collectionId: collectionIdFromQuery,
+      overlayCount: overlayArticles.length,
+      persistMode: overlayPersistMode,
+      pgUnavailable: overlayPgUnavailable,
+      loading: !overlayHydrated,
+    },
   };
 }

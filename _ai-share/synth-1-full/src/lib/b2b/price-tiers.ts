@@ -12,6 +12,14 @@ export const PRICE_TIER_LABELS: Record<PriceTierId, string> = {
   outlet: 'Outlet',
 };
 
+const PRICE_TIER_IDS: PriceTierId[] = ['retail_a', 'retail_b', 'outlet'];
+
+/** Map CRM segment tier string → canonical PriceTierId (null if unknown). */
+export function parsePriceTierId(value: string | null | undefined): PriceTierId | null {
+  const normalized = String(value ?? '').trim() as PriceTierId;
+  return PRICE_TIER_IDS.includes(normalized) ? normalized : null;
+}
+
 /** Множитель к базовой оптовой цене по уровню. При API — с бэкенда по партнёру. */
 const TIER_MULTIPLIER: Record<PriceTierId, number> = {
   retail_a: 1,

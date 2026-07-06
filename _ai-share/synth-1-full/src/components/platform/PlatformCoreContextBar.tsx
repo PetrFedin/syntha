@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import {
-  PLATFORM_CORE_DEMO,
   PLATFORM_CORE_PILLARS,
   PLATFORM_CORE_ROLE_LABELS,
   factoryHandoffQueueHrefForDemo,
@@ -16,12 +15,15 @@ import {
 } from '@/lib/platform-core-hub-matrix';
 import { isPlatformCoreDemoPinOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
-import { PLATFORM_CORE_HUB_TITLE } from '@/lib/platform-core-canonical-labels';
+import { PLATFORM_CORE_HOME_CRUMB } from '@/lib/platform-core-canonical-labels';
+import { isDefaultPlatformCoreCollectionId, platformHomeHref } from '@/lib/platform-core-url-canon';
 import {
   ROUTES,
   brandB2bOrderHref,
+  brandDevelopmentArticleHref,
   shopB2bOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
+import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-demo-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 
@@ -38,6 +40,10 @@ type Props = {
   showWorkspaceBack?: boolean;
   workspaceBackHref?: string;
   workspaceBackLabel?: string;
+  /** Core cabinet: одна строка ← Platform · роль · столп (сезон не в пути при demo pin). */
+  compactCabinet?: boolean;
+  /** Comms / order context — одна строка chips под bar. */
+  contextChips?: Array<{ label: string; href: string; testId: string }>;
 };
 
 function DemoIdChip({
@@ -75,13 +81,15 @@ export function PlatformCoreContextBar({
   showWorkspaceBack = false,
   workspaceBackHref,
   workspaceBackLabel = 'Кабинет',
+  compactCabinet = false,
+  contextChips,
 }: Props) {
   const demo = usePlatformCoreDemoContext();
   const coreMode = isPlatformCoreMode();
   const emptyChain = isPlatformCoreEmptyChainDemo(demo);
   const collectionId = resolvePageCollectionId({ collection: demo.collectionId });
   const collectionParam =
-    collectionId !== PLATFORM_CORE_DEMO.collectionId ? collectionId : undefined;
+    collectionId && !isDefaultPlatformCoreCollectionId(collectionId) ? collectionId : undefined;
   const pillarTitle = pillarId
     ? PLATFORM_CORE_PILLARS.find((p) => p.id === pillarId)?.title
     : null;
@@ -100,13 +108,72 @@ export function PlatformCoreContextBar({
     (!isPlatformCoreDemoPinOrderId(orderId) || orderId === demo.demoOrderId.trim());
   const orderHref =
     roleId === 'shop' ? shopB2bOrderHref(orderId) : brandB2bOrderHref(orderId);
-  const brandW2ArticleHref = `${ROUTES.brand.productionWorkshop2}?w2col=${encodeURIComponent(demo.collectionId)}&article=${encodeURIComponent(demo.demoArticleId)}`;
+  const brandW2ArticleHref = brandDevelopmentArticleHref(demo.collectionId, demo.demoArticleId);
   const articleHref =
     roleId === 'brand' || roleId === 'shop'
       ? brandW2ArticleHref
       : `/factory/production/dossier/${encodeURIComponent(demo.demoArticleId)}?collection=${encodeURIComponent(demo.collectionId)}`;
-  const collectionHref = `/platform?collection=${encodeURIComponent(collectionId)}`;
+  const collectionHref = platformHomeHref(collectionId);
   const poHref = factoryHandoffQueueHrefForDemo(demo);
+  const collectionLabel = getPlatformCoreCollectionLabel(collectionId);
+  const homeHref = platformHomeHref(collectionId);
+  const showCollectionInPath = !isDefaultPlatformCoreCollectionId(collectionId);
+
+  if (coreMode && compactCabinet) {
+    return (
+      <div className="min-w-0" data-testid="platform-core-context-bar-wrap">
+        <nav
+          data-testid="platform-core-context-bar"
+          aria-label="Контекст Platform Core"
+          className={hubCabinet.contextBar}
+        >
+          <Link href={homeHref} data-testid="platform-core-cabinet-back-home" className={hubCabinet.contextBarBack}>
+            <ArrowLeft className="h-3 w-3 shrink-0" aria-hidden />
+            {PLATFORM_CORE_HOME_CRUMB}
+          </Link>
+          <span className={hubCabinet.contextBarSep} aria-hidden>
+            ·
+          </span>
+          <span className="text-text-primary shrink-0 font-semibold">
+            {PLATFORM_CORE_ROLE_LABELS[roleId]}
+          </span>
+          {showCollectionInPath ? (
+            <>
+              <span className={hubCabinet.contextBarSep} aria-hidden>
+                ·
+              </span>
+              <span className="text-text-secondary shrink-0">{collectionLabel}</span>
+            </>
+          ) : null}
+          {pillarTitle ? (
+            <>
+              <span className={hubCabinet.contextBarSep} aria-hidden>
+                ·
+              </span>
+              <span className="text-text-primary shrink-0 font-medium">{pillarTitle}</span>
+            </>
+          ) : null}
+        </nav>
+        {contextChips && contextChips.length > 0 ? (
+          <div
+            className="flex flex-wrap gap-1.5 pt-1"
+            data-testid="platform-core-context-chips"
+          >
+            {contextChips.map((chip) => (
+              <Link
+                key={chip.testId}
+                href={chip.href}
+                data-testid={chip.testId}
+                className={hubCabinet.contextBarEntity}
+              >
+                {chip.label}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   if (coreMode && showWorkspaceBack) {
     return (
@@ -172,10 +239,10 @@ export function PlatformCoreContextBar({
       <nav
         data-testid="platform-core-context-bar"
         aria-label="Контекст Platform Core"
-        className="text-text-muted flex flex-wrap items-center gap-1.5 text-[10px] font-medium"
+        className={hubCabinet.contextBar}
       >
         <Link href="/platform" className="text-text-secondary hover:text-text-primary hover:underline">
-          {PLATFORM_CORE_HUB_TITLE}
+          {PLATFORM_CORE_HOME_CRUMB}
         </Link>
         <span aria-hidden>/</span>
         <Link
@@ -202,14 +269,14 @@ export function PlatformCoreContextBar({
                 href={entityHref}
                 data-testid="platform-core-context-entity"
                 title={`Контекст столпа · ${pillarTitle ?? pillarId}`}
-                className="bg-bg-surface2 text-text-muted hover:text-text-primary rounded px-1.5 py-0.5 text-[9px] font-medium transition-colors hover:underline"
+                className={hubCabinet.contextBarEntity}
               >
                 {entityLabel}
               </Link>
             ) : (
               <code
                 data-testid="platform-core-context-entity"
-                className="bg-bg-surface2 text-text-muted rounded px-1.5 py-0.5 text-[9px] font-medium"
+                className={hubCabinet.contextBarEntity}
               >
                 {entityLabel}
               </code>

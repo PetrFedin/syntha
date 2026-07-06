@@ -5,7 +5,7 @@ import {
   describeWorkshop2TzExportBundleFailure,
   downloadWorkshop2TzExportBundleApi,
   saveWorkshop2TzExportBundleBlob,
-} from '@/lib/production/workshop2-tz-export-api-client';
+} from '@/lib/platform-core-ports/tz-client';
 
 type Props = {
   collectionId: string;

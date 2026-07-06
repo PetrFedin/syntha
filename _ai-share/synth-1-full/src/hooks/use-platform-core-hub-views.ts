@@ -19,17 +19,26 @@ export function usePlatformCoreHubViews() {
   useEffect(() => {
     const fromUrl = parseHubViewsFromUrl(searchParams);
     if (fromUrl) {
-      setHubViews(fromUrl);
-      writePlatformCoreHubViews(fromUrl);
+      if (fromUrl.planner && !fromUrl.business && !fromUrl.audit) {
+        const collection = searchParams.get('collection');
+        const q = collection ? `?collection=${encodeURIComponent(collection)}` : '';
+        router.replace(`/platform/planner${q}`);
+        return;
+      }
+      const withoutPlanner = { ...fromUrl, planner: false };
+      setHubViews(withoutPlanner);
+      writePlatformCoreHubViews(withoutPlanner);
+      window.dispatchEvent(new Event('platform-core-hub-views'));
       return;
     }
     setHubViews(readPlatformCoreHubViews());
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const onHubViewsChange = useCallback(
     (views: PlatformCoreHubViews) => {
       setHubViews(views);
       writePlatformCoreHubViews(views);
+      window.dispatchEvent(new Event('platform-core-hub-views'));
       const url = new URL(window.location.href);
       url.searchParams.delete('view');
       url.searchParams.delete('hub');

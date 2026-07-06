@@ -1,12 +1,14 @@
 /**
  * Метаданные пяти столпов Platform Core hub.
  */
+import { DEVELOPMENT_PILLAR_ENTITY_LABEL } from '@/lib/platform-core-canonical-labels';
 import {
   getPlatformCoreCollectionLabel,
   PLATFORM_CORE_DEMO,
   type PlatformCoreDemoContext,
 } from '@/lib/platform-core-demo-context';
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix.types';
+import { PLATFORM_CORE_ARTICLE_SPINE_LEAD } from '@/lib/platform-core-article-spine';
 
 export const PLATFORM_CORE_PILLARS: readonly {
   id: CoreHubPillarId;
@@ -16,12 +18,12 @@ export const PLATFORM_CORE_PILLARS: readonly {
   {
     id: 'development',
     title: 'Разработка',
-    subtitle: 'ТЗ, досье и образец',
+    subtitle: 'Артикул · ТЗ · образец',
   },
   {
     id: 'sample_collection',
-    title: 'Коллекция и витрина',
-    subtitle: 'Лайншит и B2B-витрина',
+    title: 'Коллекция',
+    subtitle: 'Сэмплы → лайншит и витрина',
   },
   {
     id: 'collection_order',
@@ -30,8 +32,8 @@ export const PLATFORM_CORE_PILLARS: readonly {
   },
   {
     id: 'order_production',
-    title: 'Производство',
-    subtitle: 'Выпуск, ТЗ и сырьё',
+    title: 'Исполнение',
+    subtitle: 'Выпуск под заказ · PO',
   },
   {
     id: 'comms',
@@ -40,10 +42,9 @@ export const PLATFORM_CORE_PILLARS: readonly {
   },
 ];
 
-export const PLATFORM_CORE_CHAIN_LEAD =
-  'Бренд доводит артикул до образца → собирает коллекцию (лайншиты, витрина) → магазин формирует оптовый заказ → бренд подтверждает и передаёт на производство по техзаданию досье → цех и поставщик закрывают выпуск. Координация — чат и календарь.';
+export const PLATFORM_CORE_CHAIN_LEAD = PLATFORM_CORE_ARTICLE_SPINE_LEAD;
 
-export const PLATFORM_CORE_HUB_HEADING = 'Цепочка: пять столпов × четыре роли';
+export const PLATFORM_CORE_HUB_HEADING = 'Бренд и магазин · article spine';
 
 /** Подписи столпов без технических id заказов/PO (investor UI). */
 export function buildPillarEntityLabels(
@@ -51,7 +52,7 @@ export function buildPillarEntityLabels(
 ): Record<CoreHubPillarId, string> {
   const col = getPlatformCoreCollectionLabel(demo.collectionId);
   return {
-    development: `Разработка · ${col}`,
+    development: DEVELOPMENT_PILLAR_ENTITY_LABEL,
     sample_collection: col,
     collection_order: `Оптовый заказ · ${col}`,
     order_production: `Выпуск · ${col}`,

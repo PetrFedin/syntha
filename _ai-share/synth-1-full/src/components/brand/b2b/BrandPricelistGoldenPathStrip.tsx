@@ -25,7 +25,7 @@ const STEPS: { id: BrandPricelistGoldenPathStepId; label: string }[] = [
   { id: 'shop-sync', label: 'Shop sync' },
   { id: 'shop-matrix', label: 'Shop matrix' },
   { id: 'crm-segments', label: 'CRM segments' },
-  { id: 'checkout', label: 'Checkout' },
+  { id: 'checkout', label: 'Оформление' },
 ];
 
 export function BrandPricelistGoldenPathStrip({

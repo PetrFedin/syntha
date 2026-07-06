@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { brandLinesheetsHrefForDemo } from '@/lib/platform-core-hub-matrix';
-import { buildShopShowroomBuySession } from '@/lib/b2b/shop-showroom-buy';
-import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
+import { buildShopShowroomBuySession } from '@/lib/platform-core-ports/b2b/shop-showroom-buy';
+import { manufacturerHandoffFeatureHref } from '@/lib/platform-core-ports/manufacturer-handoff';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -30,7 +30,7 @@ export function MfrEmptyScPeerStrip({ demo }: Props) {
         ·
       </span>
       <Link href={shop.matrixHref} data-testid="mfr-empty-sc-shop-matrix-link" className={hubGadget.goldenLink}>
-        Shop matrix
+        Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -42,7 +42,7 @@ export function MfrEmptyScPeerStrip({ demo }: Props) {
         ·
       </span>
       <Link href={sampleQueueHref} data-testid="mfr-empty-sc-sample-queue-link" className={hubGadget.goldenLink}>
-        Sample queue
+        Очередь образцов
       </Link>
     </div>
   );

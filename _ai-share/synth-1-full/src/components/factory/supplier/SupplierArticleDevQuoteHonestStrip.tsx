@@ -7,7 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { PLATFORM_CORE_B2B_MESSAGE_TEMPLATES } from '@/lib/communications/platform-core-b2b-message-templates';
-import { factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/routes';
+import { factorySupplierMessagesWorkshop2ArticleContextHref, factorySupplierRfqInboxHref } from '@/lib/routes';
+import { SUP_CM_ARTICLE_QUOTE_RFQ_INBOX_LINK_TESTID } from '@/lib/fashion/supplier-logistics-wave-vo';
 
 /** sup-cm-article · quote card UI (не только template) на article context. */
 export function SupplierArticleDevQuoteHonestStrip() {
@@ -26,7 +27,7 @@ export function SupplierArticleDevQuoteHonestStrip() {
 
   const quoteTemplate = PLATFORM_CORE_B2B_MESSAGE_TEMPLATES.find((t) => t.id === 'article-price-quote');
   const quotePreview = quoteTemplate?.buildBody({ collectionId, articleId }) ?? '';
-  const chatHref = `${factorySupplierMessagesWorkshop2ArticleContextHref(collectionId, articleId)}&template=article-price-quote`;
+  const rfqInboxHref = factorySupplierRfqInboxHref({ collectionId, articleId });
 
   if (!articleId.trim()) return null;
 
@@ -35,7 +36,7 @@ export function SupplierArticleDevQuoteHonestStrip() {
       <CardContent className="space-y-2 px-3 py-3">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline" className="text-[10px] uppercase">
-            Quote card
+            Котировка
           </Badge>
           <span className="text-text-muted text-xs">{articleId}</span>
         </div>
@@ -56,11 +57,21 @@ export function SupplierArticleDevQuoteHonestStrip() {
         <p className="text-text-muted line-clamp-2 text-[10px]" data-testid="sup-cm-article-quote-preview">
           {quotePreview.slice(0, 160)}
         </p>
-        <Button size="sm" variant="outline" asChild className="h-8 text-[11px]">
-          <Link href={chatHref} data-testid="sup-cm-article-quote-send-link">
-            Отправить котировку
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-1.5">
+          <Button size="sm" variant="outline" asChild className="h-8 text-[11px]">
+            <Link
+              href={`${factorySupplierMessagesWorkshop2ArticleContextHref(collectionId, articleId)}&template=article-price-quote`}
+              data-testid="sup-cm-article-quote-send-link"
+            >
+              Отправить котировку
+            </Link>
+          </Button>
+          <Button size="sm" variant="ghost" asChild className="h-8 text-[11px]">
+            <Link href={rfqInboxHref} data-testid={SUP_CM_ARTICLE_QUOTE_RFQ_INBOX_LINK_TESTID}>
+              Входящие RFQ
+            </Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -118,7 +118,7 @@ export function B2bOrderUrlContextBanner({
                   })}
                   className="border-border-subtle hover:bg-bg-surface2 rounded-md border px-2 py-1"
                 >
-                  Handoff queue
+                  Очередь передачи
                 </Link>
                 <Link
                   href={factoryProductionDossierContextHref(articleId, { collectionId, orderId: orderId || undefined })}
@@ -136,7 +136,7 @@ export function B2bOrderUrlContextBanner({
                   href={`${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=techpack-gate`}
                   className="border-border-subtle hover:bg-bg-surface2 rounded-md border px-2 py-1"
                 >
-                  Factory pack gate
+                  Гейт фабричного пакета
                 </Link>
               </>
             )}

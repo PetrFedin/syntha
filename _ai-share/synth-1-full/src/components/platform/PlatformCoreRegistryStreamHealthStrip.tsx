@@ -7,7 +7,7 @@ import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-re
 import {
   brandB2bOrdersCollectionRegistryHref,
   shopB2bOrdersCollectionRegistryHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 
 type Props = {
   variant: 'brand' | 'shop';
@@ -37,12 +37,12 @@ export function PlatformCoreRegistryStreamHealthStrip({ variant, orderId, testId
         }
         data-testid={`${testIdPrefix}-registry-sse-${sseConnected ? 'live' : 'poll'}`}
       >
-        Registry {sseConnected ? 'SSE live' : 'poll fallback'}
+        Реестр {sseConnected ? 'SSE в эфире' : 'опрос по таймеру'}
       </Badge>
       <span className="text-text-muted">
         {sseConnected
-          ? 'Push refetch при новом заказе.'
-          : 'Poll каждые 20–60с — нажмите refresh при необходимости.'}
+          ? 'Push-обновление при новом заказе.'
+          : 'Опрос каждые 20–60 с — нажмите «Обновить» при необходимости.'}
       </span>
       <Button
         size="sm"
@@ -52,7 +52,7 @@ export function PlatformCoreRegistryStreamHealthStrip({ variant, orderId, testId
         onClick={refresh}
         data-testid={`${testIdPrefix}-registry-stream-refresh`}
       >
-        Refresh registry
+        Обновить реестр
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
         <Link href={registryHref} data-testid={`${testIdPrefix}-registry-stream-link`}>

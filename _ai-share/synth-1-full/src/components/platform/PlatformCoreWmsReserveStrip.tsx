@@ -91,12 +91,12 @@ export function PlatformCoreWmsReserveStrip(props: Props) {
         <span className="text-text-secondary">{PLATFORM_CORE_WMS_RESERVE_SUPPLIER_PROCUREMENT_RU}</span>
         <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
           <Link href={props.brandHandoffHref} data-testid={`${testId}-brand-handoff-link`}>
-            Brand handoff
+            Передача бренда
           </Link>
         </Button>
         <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
           <Link href={props.shopTrackingHref} data-testid={`${testId}-shop-tracking-link`}>
-            Shop tracking
+            Трекинг магазина
           </Link>
         </Button>
       </div>
@@ -112,12 +112,12 @@ export function PlatformCoreWmsReserveStrip(props: Props) {
       <span className="text-text-secondary">{PLATFORM_CORE_WMS_RESERVE_CHECKOUT_RU}</span>
       <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
         <Link href={props.checkoutHref} data-testid={`${testId}-checkout-link`}>
-          Checkout
+          Оформление
         </Link>
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
         <Link href={props.trackingHref} data-testid={`${testId}-tracking-link`}>
-          Tracking · reserve
+          Трекинг · резерв
         </Link>
       </Button>
     </div>

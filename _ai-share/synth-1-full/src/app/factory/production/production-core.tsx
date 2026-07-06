@@ -16,11 +16,15 @@ import {
 } from '@/lib/platform-core-hub-matrix';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
+import { usePlatformCoreHashScroll } from '@/hooks/use-platform-core-hash-scroll';
+import {
+  parseFactorySampleQueueHash,
+  WAVE_XC_FACTORY_SAMPLE_QUEUE_SECTION_HASH,
+} from '@/lib/platform/wave-xc-mfr-sample-status-patch';
 import {
   ManufacturerHandoffQueueGoldenPathStrip,
   manufacturerHandoffGoldenPathStepFromFeature,
 } from '@/components/factory/ManufacturerHandoffQueueGoldenPathStrip';
-import { MfrOpHandoffQueueCoSpinePeerStrip } from '@/components/factory/MfrOpHandoffQueueCoSpinePeerStrip';
 
 function pillarForFeature(featureId: string): CoreHubPillarId {
   return featureId === 'sample-queue' ? 'development' : 'order_production';
@@ -46,12 +50,23 @@ function FactoryProductionWorkspaceBody() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const hash = window.location.hash.replace(/^#/, '');
-    if (hash !== 'handoff-queue') return;
     if (searchParams.get(PILLAR_CAPABILITY_FEATURE_PARAM)) return;
     const sp = new URLSearchParams(searchParams.toString());
-    sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'handoff');
-    router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+    if (hash === 'handoff-queue') {
+      sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'handoff');
+      router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+      return;
+    }
+    const sampleHash = parseFactorySampleQueueHash(hash);
+    if (sampleHash?.section === WAVE_XC_FACTORY_SAMPLE_QUEUE_SECTION_HASH) {
+      sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'sample-queue');
+      router.replace(`${pathname}?${sp.toString()}`, { scroll: false });
+    }
   }, [pathname, router, searchParams]);
+
+  usePlatformCoreHashScroll(['sample-queue', 'handoff-queue'], {
+    itemHashPrefix: WAVE_XC_FACTORY_SAMPLE_QUEUE_SECTION_HASH,
+  });
 
   return (
     <PlatformCoreListChrome highlightRole="manufacturer" pillarId={pillarId}>
@@ -59,7 +74,7 @@ function FactoryProductionWorkspaceBody() {
         <PillarCapabilityWorkspaceChrome
           workspaceId="manufacturer-handoff-queue"
           ctx={ctx}
-          crossLinksTitle="Handoff → QC gate → shop tracking"
+          crossLinksTitle="Передача → гейт КК → трекинг магазина"
         >
           <div className="mb-4">
             <ManufacturerHandoffQueueGoldenPathStrip
@@ -69,7 +84,6 @@ function FactoryProductionWorkspaceBody() {
               articleId={articleId}
               activeStep={manufacturerHandoffGoldenPathStepFromFeature(activeFeatureId)}
             />
-            <MfrOpHandoffQueueCoSpinePeerStrip factoryId={factoryId} collectionId={collectionId} orderId={orderId} />
           </div>
           {activeFeatureId === 'sample-queue' ? (
             <section id="sample-queue" className="scroll-mt-4">
@@ -78,7 +92,11 @@ function FactoryProductionWorkspaceBody() {
           ) : null}
           {activeFeatureId === 'handoff' ? (
             <section id="handoff-queue" className="scroll-mt-4">
-              <FactoryWorkshop2ProductionHandoffPanel factoryId={factoryId} />
+              <FactoryWorkshop2ProductionHandoffPanel
+                factoryId={factoryId}
+                collectionId={collectionId}
+                orderId={orderId}
+              />
             </section>
           ) : null}
           {activeFeatureId === 'orders-bridge' ? (

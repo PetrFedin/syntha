@@ -109,7 +109,7 @@ export function Workshop2ReleaseCutTicketPanel({
     });
     await persistDossier(next, dossier);
     toast({
-      title: 'Cut ticket создан',
+      title: 'Техкарта раскроя создана',
       description: `${ticketNo} · черновик`,
     });
   };
@@ -123,7 +123,7 @@ export function Workshop2ReleaseCutTicketPanel({
     await persistDossier(next, dossier);
     const t = next.cutTickets?.find((x) => x.id === ticketId);
     toast({
-      title: 'Статус cut ticket',
+      title: 'Статус техкарты раскроя',
       description: t ? labelWorkshop2CutTicketStatusRu(t.status) : 'Обновлено',
     });
   };
@@ -135,7 +135,7 @@ export function Workshop2ReleaseCutTicketPanel({
     >
       <p className="text-text-primary flex items-center gap-1.5 text-sm font-semibold">
         <Scissors className="h-4 w-4 text-indigo-500" />
-        Cut ticket · Roll-lot
+        Техкарта раскроя · Рулон-партия
       </p>
       <p className="text-text-secondary text-[11px]">{workshop2PgMirrorStr(mirror, 'hintRu')}</p>
 
@@ -145,8 +145,8 @@ export function Workshop2ReleaseCutTicketPanel({
           data-testid="workshop2-cut-ticket-gate-chip"
         >
           {mirror.blockerBulkPo
-            ? 'Gate: cut ticket обязателен (WORKSHOP2_CUT_TICKET_REQUIRED)'
-            : 'Gate cut ticket: OK'}
+            ? 'Гейт: техкарта раскроя обязательна (WORKSHOP2_CUT_TICKET_REQUIRED)'
+            : 'Гейт техкарты: OK'}
         </Badge>
       ) : null}
 
@@ -187,7 +187,7 @@ export function Workshop2ReleaseCutTicketPanel({
       </div>
 
       {tickets.length === 0 ? (
-        <p className="text-text-muted text-[11px]">Cut tickets не созданы.</p>
+        <p className="text-text-muted text-[11px]">Техкарты раскроя не созданы.</p>
       ) : (
         <ul className="space-y-2 text-[11px]" data-testid="workshop2-cut-ticket-list">
           {tickets.map((t) => {

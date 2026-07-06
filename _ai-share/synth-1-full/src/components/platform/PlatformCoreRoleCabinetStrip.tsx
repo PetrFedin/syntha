@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { Factory, ShoppingBag, Store, Warehouse } from 'lucide-react';
 import type { CoreChainRoleId } from '@/lib/platform-core-hub-matrix';
-import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix';
+import { getPlatformCoreHubRowsForUi } from '@/lib/platform-core-hub-matrix';
+import { roleCoreCabinetLandingHref } from '@/lib/platform-core-cabinet-url';
 
 const ROLE_ICONS: Record<CoreChainRoleId, typeof Store> = {
   brand: Store,
@@ -23,13 +24,13 @@ export function PlatformCoreRoleCabinetStrip({ highlightRole }: Props) {
       aria-label="Личные кабинеты ролей"
       className="flex flex-wrap gap-2"
     >
-      {PLATFORM_CORE_HUB_ROWS.map((row) => {
+      {getPlatformCoreHubRowsForUi().map((row) => {
         const Icon = ROLE_ICONS[row.id];
         const active = highlightRole === row.id;
         return (
           <Link
             key={row.id}
-            href={row.landingHref}
+            href={roleCoreCabinetLandingHref(row.id)}
             data-testid={`role-cabinet-link-${row.id}`}
             className={
               active

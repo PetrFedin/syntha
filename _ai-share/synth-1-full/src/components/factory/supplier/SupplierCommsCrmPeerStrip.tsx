@@ -21,34 +21,34 @@ export function SupplierCommsCrmPeerStrip({ collectionId, orderId }: Props) {
       className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-violet-50/40 px-3 py-2 text-xs"
       data-testid="sup-cm-crm-peer-strip"
     >
-      <span className="text-text-secondary">CRM peer:</span>
+      <span className="text-text-secondary">CRM · peer:</span>
       <Link
         href={brandCrmSegmentationFeatureHref('segments', collectionId)}
         data-testid="sup-cm-crm-brand-segments-link"
         className={hubGadget.goldenLink}
       >
-        Brand segments
+        Сегменты бренда
       </Link>
       <Link
         href={brandCrmSegmentationFeatureHref('pricelist', collectionId)}
         data-testid="sup-cm-crm-brand-pricelist-link"
         className={hubGadget.goldenLink}
       >
-        Pricelist
+        Прайс-лист
       </Link>
       <Link
         href={`${ROUTES.brand.retailers}${retailersQuery}`}
         data-testid="sup-cm-crm-brand-retailers-link"
         className={hubGadget.goldenLink}
       >
-        Retailers
+        Ритейлеры
       </Link>
       <Link
         href={shopPartnersHref}
         data-testid="sup-cm-crm-shop-partners-link"
         className={hubGadget.goldenLink}
       >
-        Shop partners
+        Партнёры магазина
       </Link>
     </div>
   );

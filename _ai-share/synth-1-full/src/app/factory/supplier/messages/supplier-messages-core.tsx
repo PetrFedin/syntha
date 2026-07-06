@@ -22,6 +22,8 @@ import {
   SupplierProcurementGoldenPathStrip,
   supplierProcurementGoldenPathStepFromFeature,
 } from '@/components/factory/supplier/SupplierProcurementGoldenPathStrip';
+import { SupOpProcurementCoPeerStrip } from '@/components/factory/supplier/SupOpProcurementCoPeerStrip';
+import { PlatformCoreCommsUniversalInboxStrip } from '@/components/platform/PlatformCoreCommsUniversalInboxStrip';
 
 function SupplierMessagesWorkspaceContent() {
   const searchParams = useSearchParams();
@@ -38,13 +40,19 @@ function SupplierMessagesWorkspaceContent() {
       ctx={ctx}
       crossLinksTitle="BOM → RFQ → brand comms"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <SupplierProcurementGoldenPathStrip
           collectionId={collectionId}
           articleId={articleId}
           orderId={orderId}
           factoryId={factoryId}
           activeStep={supplierProcurementGoldenPathStepFromFeature(activeFeatureId)}
+        />
+        <SupOpProcurementCoPeerStrip
+          collectionId={collectionId}
+          articleId={articleId}
+          orderId={orderId}
+          factoryId={factoryId}
         />
       </div>
       {activeFeatureId === 'bom' ? (
@@ -88,6 +96,9 @@ export function FactorySupplierMessagesCorePage() {
     <CabinetPageContent maxWidth="full" className="w-full space-y-4 pb-16">
       <PlatformCoreListChrome highlightRole="supplier" pillarId="comms">
         <PlatformCoreCommsWorkspaceExtras variant="supplier" />
+        <Suspense fallback={null}>
+          <PlatformCoreCommsUniversalInboxStrip variant="supplier" />
+        </Suspense>
         <Suspense fallback={null}>
           <SupplierMessagesWorkspaceContent />
         </Suspense>

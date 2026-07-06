@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { buildPlatformB2bMarketroomSession } from '@/lib/b2b/platform-b2b-marketroom';
+import { buildPlatformB2bMarketroomSession } from '@/lib/platform-core-ports/b2b/platform-b2b-marketroom';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -28,13 +28,13 @@ export function PlatformB2bMarketroomCoSpinePeerStrip({ collectionId, orderId }:
         ·
       </span>
       <Link href={session.shopBuyHref} data-testid="platform-b2b-marketroom-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopOrderCommsHref} data-testid="platform-b2b-marketroom-order-comms-link" className={hubGadget.goldenLink}>
-        Order comms
+        Чат по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·

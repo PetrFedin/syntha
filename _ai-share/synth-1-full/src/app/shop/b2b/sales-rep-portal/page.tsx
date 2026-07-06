@@ -411,7 +411,7 @@ export default function SalesRepPortalPage() {
 
         <Card className="mb-6" data-testid="shop-b2b-rep-matrix-panel">
           <CardHeader>
-            <CardTitle className="text-base">Matrix order entry</CardTitle>
+            <CardTitle className="text-base">Ввод заказа в матрице</CardTitle>
             <CardDescription>Тот же grid, что в buyer showroom — batch cart/matrix API.</CardDescription>
           </CardHeader>
           <CardContent>

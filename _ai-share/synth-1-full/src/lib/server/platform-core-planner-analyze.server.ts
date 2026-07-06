@@ -1,9 +1,6 @@
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
-import {
-  getPlatformCoreReadinessMatrix,
-  ROLE_LABELS,
-} from '@/lib/platform-core-readiness-audit';
+import { getPlatformCoreReadinessMatrix, ROLE_LABELS } from '@/lib/platform-core-readiness-audit';
 import { PLATFORM_CORE_PILLARS } from '@/lib/platform-core-hub-matrix';
 import { buildPlatformCorePlanner, type PlannerPriority } from '@/lib/platform-core-planner';
 import type {
@@ -13,6 +10,11 @@ import type {
 } from '@/lib/server/platform-core-planner-runtime.server';
 import { runtimeToOverlay } from '@/lib/server/platform-core-planner-runtime.server';
 import { isPlatformCorePlannerAutoDoneTitle } from '@/lib/platform-core-planner-auto-done';
+import {
+  backendAgentForSection,
+  plannerDispatchAgentLines,
+} from '@/lib/platform-core-planner-agent-routing';
+import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix.types';
 
 const SCAN_DIRS = [
   'src/components/platform',
@@ -28,12 +30,20 @@ const CODE_MARKERS: { re: RegExp; category: string; priority: PlannerPriority }[
   { re: /\bFIXME\b/i, category: 'error', priority: 'P1' },
   { re: /\bHACK\b/i, category: 'error', priority: 'P1' },
   { re: /placeholder|PLACEHOLDER|mock-data|MOCK_/i, category: 'stub', priority: 'P1' },
-  { re: /not implemented|NotImplemented|throw new Error\(['"]unimplemented/i, category: 'stub', priority: 'P1' },
+  {
+    re: /not implemented|NotImplemented|throw new Error\(['"]unimplemented/i,
+    category: 'stub',
+    priority: 'P1',
+  },
   { re: /legacy|_archive|deprecated/i, category: 'demo-dupe', priority: 'P2' },
 ];
 
 function slugId(parts: string[]) {
-  return parts.join('-').replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 80);
+  return parts
+    .join('-')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .toLowerCase()
+    .slice(0, 80);
 }
 
 function normTitle(t: string) {
@@ -287,7 +297,10 @@ export async function analyzeProjectForPlanner(
         {
           id: slugId(['an-cell-bad', cell.roleId, cell.pillarId, bad.slice(0, 24)]),
           kind: 'add',
-          priority: inferPriority(bad, cell.liveScore != null && cell.liveScore < 6.5 ? 'P0' : 'P2'),
+          priority: inferPriority(
+            bad,
+            cell.liveScore != null && cell.liveScore < 6.5 ? 'P0' : 'P2'
+          ),
           title: `[${roleLabel}] ${bad}`,
           evidence: `столп ${cell.pillarId} · live ${cell.liveScore ?? '—'}`,
           href: cell.workspaceHref,
@@ -358,12 +371,15 @@ export async function analyzeProjectForPlanner(
         );
       }
       if (sub.liveScore < 7 && sub.summary) {
+        const agentHint = backendAgentForSection(sub.id);
         pushDev(
           {
             id: slugId(['an-sub-score', sub.id]),
             kind: 'improve',
             priority: sub.liveScore < 6.5 ? 'P0' : 'P1',
-            title: `Раздел «${sub.label}» · ${sub.liveScore}/10`,
+            title: agentHint
+              ? `Раздел «${sub.label}» · ${sub.liveScore}/10 · agent:${agentHint}`
+              : `Раздел «${sub.label}» · ${sub.liveScore}/10`,
             evidence: sub.summary.slice(0, 200),
             href: sub.href,
             roleId: cell.roleId,
@@ -428,7 +444,15 @@ export function buildAgentDispatchPrompt(task: {
   priority: string;
   source?: string;
   href?: string;
+  pillarId?: CoreHubPillarId;
+  roleId?: CoreChainRoleId;
+  sectionId?: string;
 }): string {
+  const agentLines = plannerDispatchAgentLines({
+    pillarId: task.pillarId,
+    roleId: task.roleId,
+    sectionId: task.sectionId,
+  });
   return [
     'SYNTHA Platform Core — задача для Cursor SDK (local agent, cwd=Projects).',
     `ID: ${task.id}`,
@@ -436,6 +460,7 @@ export function buildAgentDispatchPrompt(task: {
     `Задача: ${task.title}`,
     task.source ? `Источник: ${task.source}` : '',
     task.href ? `Маршрут в продукте: ${task.href}` : '',
+    ...agentLines,
     '',
     'Репозиторий: монорепо Projects — фронт _ai-share/synth-1-full, бэкенд app/',
     '',

@@ -42,7 +42,7 @@ export function mergeBrandSupplierBomFeedRows(
   if (persistedRows.length) {
     return persistedRows.map((row) => ({ ...row, source: row.source === 'seed' ? 'pg' : row.source }));
   }
-  if (snapshotRows.length) return snapshotRows;
+  if (snapshotRows.length) return [...snapshotRows];
   return buildBrandSupplierBomSeedFeedRows().map((row) => ({ ...row, source: 'pg' as const }));
 }
 

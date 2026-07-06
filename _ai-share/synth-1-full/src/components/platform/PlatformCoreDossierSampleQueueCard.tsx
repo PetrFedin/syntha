@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, Circle, Shirt } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
-import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { usePlatformCoreDevelopmentStatusPoll } from '@/hooks/use-platform-core-development-status-poll';
+import { manufacturerHandoffFeatureHref } from '@/lib/platform-core-ports/manufacturer-handoff';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 
 type QueueItem = {
   orderId: string;
@@ -33,35 +34,37 @@ export function PlatformCoreDossierSampleQueueCard({
   const factoryId = factoryIdProp?.trim() || demoFactoryId;
   const [item, setItem] = useState<QueueItem | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
+  const { tick: devPollTick } = usePlatformCoreDevelopmentStatusPoll(
+    true,
+    [collectionId],
+    factoryId
+  );
+
+  const loadQueue = useCallback(async () => {
+    setLoadState('loading');
+    try {
+      const res = await fetch(
+        `/api/workshop2/factory/sample-queue?factoryId=${encodeURIComponent(factoryId)}`,
+        { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
+      );
+      const json = (await res.json()) as { ok?: boolean; items?: QueueItem[] };
+      if (json.ok && json.items) {
+        const hit = json.items.find(
+          (i) => i.articleId === articleId && i.collectionId === collectionId
+        );
+        setItem(hit ?? null);
+        setLoadState(hit ? 'ready' : 'empty');
+      } else {
+        setLoadState('error');
+      }
+    } catch {
+      setLoadState('error');
+    }
+  }, [articleId, collectionId, factoryId]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(
-          `/api/workshop2/factory/sample-queue?factoryId=${encodeURIComponent(factoryId)}`,
-          { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
-        );
-        const json = (await res.json()) as { ok?: boolean; items?: QueueItem[] };
-        if (!cancelled) {
-          if (json.ok && json.items) {
-            const hit = json.items.find(
-              (i) => i.articleId === articleId && i.collectionId === collectionId
-            );
-            setItem(hit ?? null);
-            setLoadState(hit ? 'ready' : 'empty');
-          } else {
-            setLoadState('error');
-          }
-        }
-      } catch {
-        if (!cancelled) setLoadState('error');
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [articleId, collectionId, factoryId]);
+    void loadQueue();
+  }, [loadQueue, devPollTick]);
 
   const sampleQueueHref = manufacturerHandoffFeatureHref('sample-queue', {
     factoryId,
@@ -76,7 +79,7 @@ export function PlatformCoreDossierSampleQueueCard({
     >
       <Shirt className="h-3.5 w-3.5 text-sky-700" aria-hidden />
       <Badge variant="outline" className="border-sky-300 text-[9px] text-sky-800">
-        Sample queue
+        Очередь образцов
       </Badge>
       {loadState === 'loading' ? (
         <span className="text-text-muted">Загрузка…</span>
@@ -96,7 +99,7 @@ export function PlatformCoreDossierSampleQueueCard({
       )}
       <Button size="sm" variant="outline" className="ml-auto h-7 text-[10px]" asChild>
         <Link href={sampleQueueHref} data-testid="dossier-sample-queue-handoff-tab-link">
-          Handoff · sample-queue
+          Передача · очередь образцов
         </Link>
       </Button>
     </div>

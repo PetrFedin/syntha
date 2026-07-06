@@ -34,6 +34,21 @@ import {
 
 export type ShopCollaborativeParticipantStatus = 'editing' | 'approved' | 'pending';
 
+export function shopCollaborativeParticipantStatusRu(
+  status: ShopCollaborativeParticipantStatus
+): string {
+  switch (status) {
+    case 'editing':
+      return 'редактирует';
+    case 'approved':
+      return 'согласовано';
+    case 'pending':
+      return 'ожидание';
+    default:
+      return status;
+  }
+}
+
 export type ShopCollaborativeParticipant = {
   id: string;
   name: string;
@@ -67,6 +82,8 @@ export type ShopCollaborativeOrderSession = {
   landedMarginHref: string;
   brandOrderChatHref: string;
   brandOrderHandoffHref: string;
+  /** Read-only ссылка на co-approve strip бренда (та же PG-сессия). */
+  brandCoApprovePortalHref: string;
   brandLandedMarginHref: string;
   shopMarginPricelistHref: string;
   inventoryOverviewHref: string;
@@ -104,9 +121,9 @@ export function buildShopCollaborativeParticipants(
       : 'editing';
 
   return [
-    { id: 'buyer-1', name: `${shopCoreBuyerLabelRu(buyerId)} · lead`, status: leadStatus },
-    { id: 'buyer-2', name: 'Category mgr', status: categoryStatus },
-    { id: 'buyer-3', name: 'Finance', status: financeStatus },
+    { id: 'buyer-1', name: `${shopCoreBuyerLabelRu(buyerId)} · закупки`, status: leadStatus },
+    { id: 'buyer-2', name: 'Категорийный менеджер', status: categoryStatus },
+    { id: 'buyer-3', name: 'Финансы', status: financeStatus },
   ];
 }
 
@@ -144,6 +161,7 @@ export function buildShopCollaborativeOrderSession(input?: {
     landedMarginHref: shopLandedMarginFeatureHref('rollup', collectionId, orderId),
     brandOrderChatHref: brandOrderCommsFeatureHref(orderId, 'chat', collectionId),
     brandOrderHandoffHref: brandOrderCommsTabHref('handoff', orderId, collectionId),
+    brandCoApprovePortalHref: brandOrderCommsTabHref('detail', orderId, collectionId),
     brandLandedMarginHref: brandLandedMarginTabHref('simulator', collectionId, orderId),
     shopMarginPricelistHref: shopLandedMarginTabHref('pricelist', collectionId, orderId),
     inventoryOverviewHref: `${ROUTES.shop.inventory}?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(collectionId)}`,

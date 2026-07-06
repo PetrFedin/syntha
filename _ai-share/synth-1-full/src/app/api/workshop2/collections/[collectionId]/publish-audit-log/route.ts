@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { BRAND_SC_PUBLISH_AUDIT_EMPTY_RU } from '@/lib/production/brand-sc-publish-audit';
+import {
+  brandScPublishAuditStorageMode,
+  listBrandScPublishAuditJournalForCollection,
+} from '@/lib/server/brand-sc-publish-audit-repository';
 import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
-import { listWorkshop2DomainEventsForCollection } from '@/lib/server/workshop2-domain-events';
 
 type RouteCtx = { params: Promise<{ collectionId: string }> };
 
@@ -19,19 +23,27 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
   const limitRaw = Number(req.nextUrl.searchParams.get('limit') ?? 20);
   const limit = Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 20;
 
-  const events = await listWorkshop2DomainEventsForCollection({
-    collectionId,
-    eventType: 'showroom.published',
-    limit,
-  });
+  const journal = await listBrandScPublishAuditJournalForCollection(collectionId, limit);
+  const events = journal.map((row) => ({
+    id: row.id,
+    type: row.eventType,
+    collectionId: row.collectionId,
+    articleId: row.articleId,
+    payload: {
+      ...row.payload,
+      source: row.source,
+      campaignName: row.campaignName ?? row.payload.campaignName,
+    },
+    createdAt: row.createdAt,
+    organizationId: row.organizationId,
+  }));
 
   return NextResponse.json({
     ok: true,
     collectionId,
     events,
+    storageMode: brandScPublishAuditStorageMode(),
     messageRu:
-      events.length > 0
-        ? `${events.length} записей публикации`
-        : 'Публикаций пока нет — используйте batch publish или W2 gate.',
+      events.length > 0 ? `${events.length} записей публикации` : BRAND_SC_PUBLISH_AUDIT_EMPTY_RU,
   });
 }

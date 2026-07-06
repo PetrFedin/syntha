@@ -6,6 +6,7 @@ import { isWorkshop2VaultS3Configured } from '@/lib/server/workshop2-vault-s3';
 import { workshop2DevBypassAuthEnabled } from '@/lib/server/workshop2-api-auth';
 import { getWorkshop2GenkitApiKeyStatus } from '@/lib/server/workshop2-genkit-health';
 import { isWorkshop2InternalWmsEnabled } from '@/lib/production/workshop2-internal-wms';
+import { isWorkshop2MarkingApiConfigured } from '@/lib/production/workshop2-marking-honest-sign';
 import { shouldPlatformCorePersistAuxiliaryToFile } from '@/lib/server/platform-core-pg-primary-file-policy';
 
 export const dynamic = 'force-dynamic';
@@ -46,6 +47,9 @@ export async function GET() {
         genkitConfigured: genkit === 'configured',
       },
       devAuthBypass: workshop2DevBypassAuthEnabled(),
+      integrations: {
+        markingApiConfigured: isWorkshop2MarkingApiConfigured(),
+      },
     },
     { status: ok ? 200 : 503 }
   );

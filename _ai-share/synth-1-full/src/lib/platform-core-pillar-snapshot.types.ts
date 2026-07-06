@@ -74,12 +74,18 @@ export type SupplierCollectionOrderForecastSnapshot = {
   orderStatusLabel: string | null;
   totalUnits: number;
   rows: SupplierCollectionOrderForecastRow[];
+  /** Handoff queue PG · read-only expected PO date for supplier empty CO. */
+  productionOrderId?: string | null;
+  expectedHandoffAt?: string | null;
 };
 
 export type OrderProductionHandoffItem = {
   b2bOrderId: string;
   productionOrderId: string;
   articleId?: string;
+  collectionId?: string;
+  status?: string;
+  wipStatus?: string;
 };
 
 export type OrderProductionPillarSnapshot = {

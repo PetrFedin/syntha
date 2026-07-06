@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 import {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
@@ -25,7 +27,11 @@ export function BrandDevW2HubContextStrip({ collectionId }: Props) {
 
   return (
     <div
-      className={hubGadget.goldenPath}
+      className={cn(
+        hubGadget.goldenPath,
+        hubCabinet.workspaceTableScroll,
+        'max-md:flex-nowrap'
+      )}
       data-testid="brand-dev-w2-hub-context-strip"
       data-audit-legacy="brand-w2-hub-cross-links"
     >

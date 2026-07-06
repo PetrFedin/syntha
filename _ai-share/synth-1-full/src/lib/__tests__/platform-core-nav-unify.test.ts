@@ -220,6 +220,31 @@ describe('platform core nav unify (wave 17)', () => {
       'materials-catalog-core',
       'materials-procurement-core',
     ]);
+    const catalog = pim.links!.find((l) => l.value === 'materials-catalog-core')!;
+    expect(catalog.href).toContain('/factory/supplier/core?pillar=order_production');
+    expect(catalog.href).toContain('pcf=materials-catalog');
+    expect((catalog as { testId?: string }).testId).toBe('supplier-sidebar-materials-catalog-nav');
+  });
+
+  it('supplier comms: RFQ inbox nav — отдельный маршрут, не alias messages', () => {
+    const groups = augmentSupplierNavForCoreCabinet([
+      {
+        id: 'comms',
+        links: [
+          { label: 'Календарь', value: 'calendar', href: '/brand/calendar', icon: null },
+          { label: 'Сообщения', value: 'messages', href: '/brand/messages', icon: null },
+        ],
+      },
+    ]);
+    const comms = groups.find((g) => g.id === 'comms')!;
+    expect(comms.links!.map((l) => l.value)).toEqual(['messages', 'rfq-inbox-core', 'calendar']);
+    const rfq = comms.links!.find((l) => l.value === 'rfq-inbox-core')!;
+    expect(rfq.href).toContain('/factory/supplier/rfq-inbox');
+    expect(rfq.href).not.toContain('feature=rfq');
+    expect(rfq.label).toBe('Запросы цен');
+    expect((rfq as { testId?: string }).testId).toBe('supplier-sidebar-rfq-inbox-nav');
+    const messages = comms.links!.find((l) => l.value === 'messages')!;
+    expect(messages.href).toContain('/factory/supplier/core?pillar=comms');
   });
 
   it('getRoleGoldenPathQuickLinks returns deduped workspace links for brand', () => {
@@ -312,7 +337,7 @@ describe('platform core nav unify (wave 17)', () => {
     }
   });
 
-  it('supplier comms: messages before calendar in core augment', () => {
+  it('supplier comms: messages → RFQ → calendar in core augment', () => {
     const groups = augmentSupplierNavForCoreCabinet([
       {
         id: 'comms',
@@ -323,7 +348,7 @@ describe('platform core nav unify (wave 17)', () => {
       },
     ]);
     const comms = groups.find((g) => g.id === 'comms')!;
-    expect(comms.links!.map((l) => l.value)).toEqual(['messages', 'calendar']);
+    expect(comms.links!.map((l) => l.value)).toEqual(['messages', 'rfq-inbox-core', 'calendar']);
   });
 
   it('role nav reference matches augmented brand structure', () => {
@@ -372,16 +397,18 @@ describe('platform core nav unify (wave 17)', () => {
       },
     ]);
     const w2 = groups.find((g) => g.id === 'development')!.links!.find((l) => l.value === 'workshop2')!;
-    expect(w2.href).toContain('w2col=SS27');
+    expect(w2.href).toContain('/brand/core?pillar=development');
+    expect(w2.href).toContain('collection=SS27');
     expect(w2.description).toMatch(/лайншит/i);
 
     const pim = groups.find((g) => g.id === 'pim')!;
     const linesheets = pim.links!.find((l) => l.value === 'linesheets-core')!;
+    expect(linesheets.href).toContain('/brand/core?pillar=sample_collection');
     expect(linesheets.href).toContain('collection=SS27');
     const showroom = pim.links!.find((l) => l.value === 'showroom')!;
-    expect(showroom.href).toContain('collection=SS27');
+    expect(showroom.href).toContain('/brand/core?pillar=sample_collection');
 
     const range = groups.find((g) => g.id === 'development')!.links!.find((l) => l.value === 'range-planner')!;
-    expect(range?.href).toContain('collection=SS27');
+    expect(range?.href).toContain('/brand/core?pillar=development');
   });
 });

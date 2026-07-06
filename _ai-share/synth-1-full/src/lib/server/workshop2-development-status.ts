@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { listWorkshop2FactorySampleQueue } from '@/lib/production/workshop2-factory-sample-queue';
-import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
+import { getWorkshop2PgPool, isWorkshop2PostgresEnabled, withWorkshop2PgFallback } from '@/lib/server/workshop2-pg-pool';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getPlatformCoreDemo, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { getWorkshop2CoreCollectionRangePlannerMetadataRaw } from '@/lib/production/workshop2-core-collection-range-planner-metadata';
@@ -9,9 +9,11 @@ import {
   buildRangePlannerPgSnapshot,
   extractRangePlannerHintsFromDossierJson,
   parseRangePlannerCollectionMetadata,
+  parseRangePlannerTierArticleOrder,
   type RangePlannerCollectionMetadata,
   type RangePlannerPgSnapshot,
 } from '@/lib/production/workshop2-range-planner-pg';
+import { factorySampleQueueDeepHref } from '@/lib/platform/wave-xc-mfr-sample-status-patch';
 import { W2_WORKSPACE_SHORT } from '@/lib/platform-core-canonical-labels';
 
 export type Workshop2DevelopmentStep = {
@@ -39,26 +41,39 @@ export type Workshop2DevelopmentStatus = {
 };
 
 async function countCollectionArticles(collectionId: string): Promise<number> {
-  if (!isWorkshop2PostgresEnabled()) return 0;
-  await ensureWorkshop2PgSchema();
-  const res = await getWorkshop2PgPool().query<{ n: string }>(
-    `SELECT COUNT(*)::text AS n FROM workshop2_articles WHERE collection_id = $1`,
-    [collectionId]
+  return withWorkshop2PgFallback(
+    async () => {
+      await ensureWorkshop2PgSchema();
+      const res = await getWorkshop2PgPool().query<{ n: string }>(
+        `SELECT COUNT(*)::text AS n FROM workshop2_articles WHERE collection_id = $1`,
+        [collectionId]
+      );
+      return Number(res.rows[0]?.n ?? 0);
+    },
+    () => {
+      const demo = getPlatformCoreDemo(collectionId);
+      return demo.demoArticleId?.trim() && !demo.demoArticleId.startsWith('__') ? 1 : 0;
+    }
   );
-  return Number(res.rows[0]?.n ?? 0);
 }
 
 async function listCollectionArticleIds(collectionId: string): Promise<string[]> {
-  if (!isWorkshop2PostgresEnabled()) {
-    const demo = getPlatformCoreDemo(collectionId);
-    return demo.demoArticleId?.trim() ? [demo.demoArticleId.trim()] : [];
-  }
-  await ensureWorkshop2PgSchema();
-  const res = await getWorkshop2PgPool().query<{ article_id: string }>(
-    `SELECT id AS article_id FROM workshop2_articles WHERE collection_id = $1 ORDER BY id LIMIT 200`,
-    [collectionId]
+  return withWorkshop2PgFallback(
+    async () => {
+      await ensureWorkshop2PgSchema();
+      const res = await getWorkshop2PgPool().query<{ article_id: string }>(
+        `SELECT id AS article_id FROM workshop2_articles WHERE collection_id = $1 ORDER BY id LIMIT 200`,
+        [collectionId]
+      );
+      return res.rows.map((r) => r.article_id.trim()).filter(Boolean);
+    },
+    () => {
+      const demo = getPlatformCoreDemo(collectionId);
+      return demo.demoArticleId?.trim() && !demo.demoArticleId.startsWith('__')
+        ? [demo.demoArticleId.trim()]
+        : [];
+    }
   );
-  return res.rows.map((r) => r.article_id.trim()).filter(Boolean);
 }
 
 function coreCollectionRangePlannerMetadataFallback(
@@ -68,38 +83,60 @@ function coreCollectionRangePlannerMetadataFallback(
   return raw ? parseRangePlannerCollectionMetadata(raw) : null;
 }
 
+function mergeRangePlannerCollectionMetadata(
+  metadata: unknown,
+  collectionId: string
+): RangePlannerCollectionMetadata | null {
+  const base =
+    parseRangePlannerCollectionMetadata(metadata) ??
+    coreCollectionRangePlannerMetadataFallback(collectionId);
+  if (!base) return null;
+  const tierArticleOrder = parseRangePlannerTierArticleOrder(metadata);
+  return tierArticleOrder ? { ...base, tierArticleOrder } : base;
+}
+
 async function loadCollectionRangePlannerMetadata(
   collectionId: string
 ): Promise<RangePlannerCollectionMetadata | null> {
-  if (!isWorkshop2PostgresEnabled()) {
-    return coreCollectionRangePlannerMetadataFallback(collectionId);
-  }
-  await ensureWorkshop2PgSchema();
-  const res = await getWorkshop2PgPool().query<{ metadata: unknown }>(
-    `SELECT metadata FROM workshop2_collections WHERE id = $1`,
-    [collectionId]
+  return withWorkshop2PgFallback(
+    async () => {
+      await ensureWorkshop2PgSchema();
+      const res = await getWorkshop2PgPool().query<{ metadata: unknown }>(
+        `SELECT metadata FROM workshop2_collections WHERE id = $1`,
+        [collectionId]
+      );
+      const merged = mergeRangePlannerCollectionMetadata(res.rows[0]?.metadata ?? null, collectionId);
+      if (merged) return merged;
+      return coreCollectionRangePlannerMetadataFallback(collectionId);
+    },
+    () =>
+      mergeRangePlannerCollectionMetadata(
+        getWorkshop2CoreCollectionRangePlannerMetadataRaw(collectionId),
+        collectionId
+      )
   );
-  const fromPg = parseRangePlannerCollectionMetadata(res.rows[0]?.metadata ?? null);
-  if (fromPg) return fromPg;
-  return coreCollectionRangePlannerMetadataFallback(collectionId);
 }
 
 async function listCollectionRangePlannerHints(collectionId: string) {
-  if (!isWorkshop2PostgresEnabled()) return [];
-  await ensureWorkshop2PgSchema();
-  const res = await getWorkshop2PgPool().query<{
-    article_id: string;
-    dossier_json: unknown;
-  }>(
-    `SELECT a.id AS article_id, d.dossier_json
+  return withWorkshop2PgFallback(
+    async () => {
+      await ensureWorkshop2PgSchema();
+      const res = await getWorkshop2PgPool().query<{
+        article_id: string;
+        dossier_json: unknown;
+      }>(
+        `SELECT a.id AS article_id, d.dossier_json
      FROM workshop2_articles a
      LEFT JOIN workshop2_dossiers d
        ON d.collection_id = a.collection_id AND d.article_id = a.id
      WHERE a.collection_id = $1`,
-    [collectionId]
-  );
-  return res.rows.map((row) =>
-    extractRangePlannerHintsFromDossierJson(row.article_id, row.dossier_json)
+        [collectionId]
+      );
+      return res.rows.map((row) =>
+        extractRangePlannerHintsFromDossierJson(row.article_id, row.dossier_json)
+      );
+    },
+    () => []
   );
 }
 
@@ -134,6 +171,8 @@ export async function getWorkshop2DevelopmentStatus(
   });
   const sampleItems = queue.items.filter((i) => i.collectionId === cid);
   const sampleQueueCount = sampleItems.length;
+  const firstActiveSample =
+    sampleItems.find((i) => i.status === 'sent' || i.status === 'in_progress') ?? sampleItems[0];
   const hasArticles = articleCount > 0;
   const hasSamples = sampleQueueCount > 0;
 
@@ -166,7 +205,12 @@ export async function getWorkshop2DevelopmentStatus(
     factoryId,
     steps,
     workshop2Href: `/brand/production/workshop2?w2col=${encodeURIComponent(cid)}&article=${encodeURIComponent(demoArticleId)}`,
-    factorySampleHref: `/factory/production?collection=${encodeURIComponent(cid)}&article=${encodeURIComponent(demoArticleId)}#sample-queue`, // manufacturer sample-queue UI
+    factorySampleHref: factorySampleQueueDeepHref({
+      collectionId: cid,
+      articleId: firstActiveSample?.articleId ?? demoArticleId,
+      factoryId,
+      orderId: firstActiveSample?.orderId,
+    }),
     factoryDossierHref: `/factory/production/dossier/${encodeURIComponent(demoArticleId)}?collection=${encodeURIComponent(cid)}`,
     supplierBomHref: `/factory/production/materials?collection=${encodeURIComponent(cid)}&article=${encodeURIComponent(demoArticleId)}&view=development`,
     linesheetHref,

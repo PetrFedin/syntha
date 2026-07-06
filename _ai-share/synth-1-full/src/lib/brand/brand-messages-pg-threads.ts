@@ -6,6 +6,7 @@ import {
   WORKSHOP2_B2B_ORDER_CONTEXT_TYPE,
   workshop2B2bOrderContextId,
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
+import { WAVE_YN_PLACEHOLDER_SUBTITLE_RU } from '@/lib/platform/wave-yn-comms-contextual-thread';
 
 export type BrandPgThreadRow = {
   contextType: string;
@@ -70,7 +71,7 @@ export function buildPlaceholderB2bOrderChat(orderId: string): Chat {
   return {
     id: buildPgB2bOrderChatId(trimmed),
     title: `B2B заказ · ${trimmed}`,
-    subtitle: 'Начните переписку по заказу',
+    subtitle: WAVE_YN_PLACEHOLDER_SUBTITLE_RU,
     participantsCount: 1,
     type: 'b2b_orders',
     isPinned: false,

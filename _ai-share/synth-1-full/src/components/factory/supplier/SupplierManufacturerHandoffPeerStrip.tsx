@@ -12,7 +12,7 @@ type Props = {
   orderId?: string;
 };
 
-/** Peer insight: supplier collection_order → manufacturer handoff queue (SSE + poll). */
+/** Peer: закупки поставщика → очередь передачи производства (SSE + poll). */
 export function SupplierManufacturerHandoffPeerStrip({
   factoryId,
   collectionId,
@@ -31,21 +31,21 @@ export function SupplierManufacturerHandoffPeerStrip({
       data-testid="supplier-manufacturer-handoff-peer-strip"
     >
       <Badge variant="outline" className="border-sky-300 text-[9px] text-sky-800">
-        Peer · manufacturer
+        Peer · производство
       </Badge>
       <span className="text-text-secondary">
-        Очередь handoff цеха — материалы под PO после brand confirm.
+        Очередь передачи цеха — материалы под PO после подтверждения бренда.
       </span>
       <Badge
         variant="outline"
         className="text-[9px]"
         data-testid={`supplier-handoff-peer-sse-${sseConnected ? 'live' : 'poll'}`}
       >
-        {sseConnected ? 'SSE live' : 'poll fallback'}
+        {sseConnected ? 'SSE в эфире' : 'резервный poll'}
       </Badge>
       <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
         <Link href={handoffHref} data-testid="supplier-handoff-peer-queue-link">
-          Factory handoff queue
+          Очередь передачи
         </Link>
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
@@ -57,7 +57,7 @@ export function SupplierManufacturerHandoffPeerStrip({
           })}
           data-testid="supplier-handoff-peer-factory-ack-link"
         >
-          Factory-ack
+          Подтверждение ТЗ
         </Link>
       </Button>
     </div>

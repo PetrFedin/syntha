@@ -1,4 +1,4 @@
-import { ROUTES } from '@/lib/routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 import {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,

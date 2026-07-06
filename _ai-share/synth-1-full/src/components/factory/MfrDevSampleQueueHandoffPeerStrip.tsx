@@ -5,6 +5,8 @@ import { buildManufacturerProductionOpsSession } from '@/lib/production/manufact
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { factoryProductionDossierHref } from '@/lib/routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   factoryId: string;
@@ -46,33 +48,36 @@ export function MfrDevSampleQueueHandoffPeerStrip({
   const dossierHref = factoryProductionDossierHref(resolvedArticleId, { collectionId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="mfr-dev-sample-queue-handoff-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="mfr-dev-sample-queue-handoff-peer-strip"
+    >
       <Link href={handoffHref} data-testid="mfr-dev-sample-queue-handoff-link" className={hubGadget.goldenLink}>
-        Handoff
+        Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={qcHref} data-testid="mfr-dev-sample-queue-qc-link" className={hubGadget.goldenLink}>
-        QC gate
+        Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={techpackHref} data-testid="mfr-dev-sample-queue-techpack-link" className={hubGadget.goldenLink}>
-        Techpack ack
+        Подтверждение техпака
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={dossierHref} data-testid="mfr-dev-sample-queue-dossier-link" className={hubGadget.goldenLink}>
-        Dossier
+        Досье
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={ops.ordersHref} data-testid="mfr-dev-sample-queue-production-ops-link" className={hubGadget.goldenLink}>
-        Production ops
+        Операции цеха
       </Link>
     </div>
   );

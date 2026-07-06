@@ -104,7 +104,7 @@ export function useWorkshop2Phase1DossierFinalTzWizardController({
       persist(stamped, { freezeUpdatedAt: true });
     }
     toast({
-      title: 'Factory pack скачан',
+      title: 'Фабричный пакет скачан',
       description: tzWriteDisabled
         ? '6 листов в браузере; метка в досье — только с production:edit.'
         : 'Мета factory pack export сохранена в досье.',

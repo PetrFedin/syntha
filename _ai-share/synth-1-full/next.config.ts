@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
   env: {
     WORKSHOP2_INVESTOR_DEMO_MODE: process.env.WORKSHOP2_INVESTOR_DEMO_MODE,
     WORKSHOP2_UNIT_TESTS_PASSING: process.env.WORKSHOP2_UNIT_TESTS_PASSING,
+    /** Platform Core — middleware (Edge) читает только из next.config.env + .env* */
+    NEXT_PUBLIC_PLATFORM_CORE_MODE: process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE,
+    NEXT_PUBLIC_PLATFORM_CORE_STRICT: process.env.NEXT_PUBLIC_PLATFORM_CORE_STRICT,
   },
   /** Turbopack (`dev:fast`) — относительный alias (absolute ломает resolve в 15.3). */
   turbopack: {

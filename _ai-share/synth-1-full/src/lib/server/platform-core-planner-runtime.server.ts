@@ -60,6 +60,8 @@ export type PlannerRuntimeState = {
   statusById: Record<string, PlannerTaskStatus>;
   claims: Record<string, PlannerRuntimeClaim>;
   notes: Record<string, string>;
+  /** Wave-level closure notes (wave YS sync). */
+  waveNotes?: Record<string, string>;
   discoveredDevelopment: PlannerDiscoveredDevItem[];
   discoveredTechDebt: PlannerDiscoveredTechDebtItem[];
   agentDispatch: PlannerAgentDispatch | null;
@@ -107,6 +109,7 @@ export async function readPlannerRuntimeState(): Promise<PlannerRuntimeState> {
       statusById: parsed.statusById ?? {},
       claims: parsed.claims ?? {},
       notes: parsed.notes ?? {},
+      waveNotes: parsed.waveNotes ?? {},
       discoveredDevelopment: parsed.discoveredDevelopment ?? [],
       discoveredTechDebt: parsed.discoveredTechDebt ?? [],
       agentDispatch: parsed.agentDispatch ?? null,

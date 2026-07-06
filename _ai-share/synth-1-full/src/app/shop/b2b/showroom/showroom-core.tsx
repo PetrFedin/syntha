@@ -23,6 +23,7 @@ import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 function ShopShowroomWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
+  const eligibleOnlyFromUrl = searchParams.get('eligibleOnly') === '1';
   const orderId =
     searchParams.get('order')?.trim() ||
     searchParams.get('orderId')?.trim() ||
@@ -37,7 +38,7 @@ function ShopShowroomWorkspaceBody() {
       ctx={ctx}
       crossLinksTitle="Showroom → matrix → checkout"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <ShopShowroomBuyGoldenPathStrip
           collectionId={collectionId}
           orderId={orderId}
@@ -47,7 +48,11 @@ function ShopShowroomWorkspaceBody() {
         <ShopScShowroomB2bPeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'showroom' ? (
-        <PlatformCorePublishedShowroom variant="shop" collectionId={collectionId} />
+        <PlatformCorePublishedShowroom
+          variant="shop"
+          collectionId={collectionId}
+          initialEligibleFilterActive={eligibleOnlyFromUrl}
+        />
       ) : null}
       {activeFeatureId === 'linesheet' ? (
         <ShopShowroomLinesheetPanel collectionId={collectionId} orderId={orderId} />
@@ -64,7 +69,7 @@ function ShopShowroomWorkspaceBody() {
 
 export function ShopB2bShowroomCorePage() {
   return (
-    <CabinetPageContent maxWidth="5xl" className="space-y-6">
+    <CabinetPageContent maxWidth="5xl" className="space-y-6 pb-safe">
       <PlatformCoreListChrome highlightRole="shop" pillarId="sample_collection">
         <Suspense fallback={null}>
           <ShopShowroomWorkspaceBody />

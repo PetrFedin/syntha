@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   listBrandCrmSegmentsServer,
   patchBrandCrmSegmentServer,
+  reorderBrandCrmSegmentsServer,
 } from '@/lib/server/brand-crm-segments-repository';
 
 /** GET — brand CRM segments as persisted objects (PG seed on empty). */
@@ -28,6 +29,19 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ ok: false, error: { code: 'INVALID_BODY' } }, { status: 400 });
   }
   const segmentKey = String(body.segmentKey ?? '').trim();
+  const reorderSegmentKeys = Array.isArray(body.reorderSegmentKeys)
+    ? body.reorderSegmentKeys.map((key) => String(key).trim()).filter(Boolean)
+    : null;
+
+  if (reorderSegmentKeys?.length) {
+    const reordered = await reorderBrandCrmSegmentsServer({ segmentKeys: reorderSegmentKeys });
+    return NextResponse.json({
+      ok: true,
+      segments: reordered.segments,
+      storageMode: reordered.storageMode,
+    });
+  }
+
   if (!segmentKey) {
     return NextResponse.json({ ok: false, error: { code: 'MISSING_FIELDS' } }, { status: 400 });
   }

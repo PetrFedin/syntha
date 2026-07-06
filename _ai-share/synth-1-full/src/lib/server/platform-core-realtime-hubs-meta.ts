@@ -15,6 +15,7 @@ export type PlatformCoreRealtimeHubMeta = {
 export function getPlatformCoreRealtimeHubsMeta(): {
   redisConfigured: boolean;
   chainStatusSseMode: 'poll+bump' | 'poll+bump+redis';
+  sampleStatusSseMode: 'poll+bump' | 'poll+bump+redis';
   hubs: PlatformCoreRealtimeHubMeta[];
 } {
   const redisConfigured = isWorkshop2RedisConfigured();
@@ -23,10 +24,12 @@ export function getPlatformCoreRealtimeHubsMeta(): {
   return {
     redisConfigured,
     chainStatusSseMode: mode,
+    sampleStatusSseMode: mode,
     hubs: [
       { id: 'chain-status', redis: isPlatformCoreChainStatusRedisEnabled(), mode },
       { id: 'b2b-registry', redis: isPlatformCoreB2bRegistryRedisEnabled(), mode },
       { id: 'development-status', redis: isPlatformCoreDevelopmentStatusRedisEnabled(), mode },
+      { id: 'sample-status', redis: isPlatformCoreDevelopmentStatusRedisEnabled(), mode },
       { id: 'comms-inbox', redis: isPlatformCoreCommsInboxRedisEnabled(), mode },
     ],
   };

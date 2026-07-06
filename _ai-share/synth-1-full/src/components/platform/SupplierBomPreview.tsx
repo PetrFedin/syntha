@@ -4,19 +4,19 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
-import { buildBrandSupplierBomSession } from '@/lib/fashion/brand-supplier-bom-workspace';
+import { buildBrandSupplierBomSession } from '@/lib/platform-core-ports/fashion/brand-supplier-bom-workspace';
 import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/routes';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 import {
   formatDossierMaterialPreviewLine,
   type Workshop2DossierMaterialPreview,
-} from '@/lib/production/workshop2-dossier-material-preview';
+} from '@/lib/platform-core-ports/dossier-material-preview';
 import { PLATFORM_CORE_BOM_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
 import {
   estimateSupplierMaterialNeed,
@@ -26,7 +26,11 @@ import { SupplierBomDrawer } from '@/components/platform/SupplierBomDrawer';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
 import { SupplierDevCabinetSpinePeerStrip } from '@/components/factory/supplier/SupplierDevCabinetSpinePeerStrip';
 import { SupDevBomMfrDevPeerStrip } from '@/components/factory/supplier/SupDevBomMfrDevPeerStrip';
+import { SupDevBomAltMaterialApprovalStrip } from '@/components/factory/supplier/SupDevBomAltMaterialApprovalStrip';
+import { SupDevBomBrandFeedStrip } from '@/components/factory/supplier/SupDevBomBrandFeedStrip';
+import { SupDevBomBrandDevPeerStrip } from '@/components/factory/supplier/SupDevBomBrandDevPeerStrip';
 import { PlatformCoreTerm } from '@/components/platform/PlatformCoreTerm';
+import { SupEmptyScLinesheetNotifyStrip } from '@/components/platform/empty-cells/SupEmptyScLinesheetNotifyStrip';
 
 type PublishedArticleRow = {
   articleId: string;
@@ -64,9 +68,7 @@ function BomPreviewLine({
   orderQty?: number | null;
 }) {
   const need =
-    orderQty && orderQty > 0
-      ? estimateSupplierMaterialNeed({ preview, orderQty })
-      : null;
+    orderQty && orderQty > 0 ? estimateSupplierMaterialNeed({ preview, orderQty }) : null;
   return (
     <li>
       {formatDossierMaterialPreviewLine(preview)}
@@ -160,9 +162,7 @@ export function SupplierBomPreview({
     factoryId,
   });
   const dev =
-    snapshot?.pillarId === 'development' && 'development' in snapshot
-      ? snapshot.development
-      : null;
+    snapshot?.pillarId === 'development' && 'development' in snapshot ? snapshot.development : null;
   const previews: Workshop2DossierMaterialPreview[] = dev?.bomMaterialPreviews ?? [];
   const articleId = dev?.status.demoArticleId ?? pickedArticleId;
   const materialsWorkspaceHref = factoryMaterialsHrefForDemo({
@@ -202,76 +202,84 @@ export function SupplierBomPreview({
     return (
       <section data-testid="supplier-sample-collection-workspace" className="space-y-1.5">
         <Card data-testid="supplier-bom-preview-mini" className="border-amber-200/60">
-        <CardContent className="space-y-1.5 p-3 text-xs">
-          {catalogPicker}
-          <p className="font-semibold">
-            Состав материалов · {articleId}
-            {previews.length > 0 ? (
-              <span
-                className="text-text-muted ml-1 font-normal"
-                data-testid="supplier-bom-completeness-pct"
-              >
-                · {previews.length} поз.
-                {orderQty ? ` · заказ ${orderQty} ед.` : ''}
-              </span>
-            ) : null}
-          </p>
-          {loading ? (
-            <p className="text-text-muted">Загрузка BOM…</p>
-          ) : preview.length > 0 ? (
-            <ul className="text-text-secondary list-inside list-disc">
-              {preview.map((p) => (
-                <BomPreviewLine key={p.name} preview={p} orderQty={orderQty} />
-              ))}
-              {previews.length > 2 ? (
-                <li className="text-text-muted list-none">+{previews.length - 2} поз.</li>
+          <CardContent className="space-y-1.5 p-3 text-xs">
+            {catalogPicker}
+            <p className="font-semibold">
+              Состав материалов · {articleId}
+              {previews.length > 0 ? (
+                <span
+                  className="text-text-muted ml-1 font-normal"
+                  data-testid="supplier-bom-completeness-pct"
+                >
+                  · {previews.length} поз.
+                  {orderQty ? ` · заказ ${orderQty} ед.` : ''}
+                </span>
               ) : null}
-            </ul>
-          ) : (
-            <p className="text-text-muted">{PLATFORM_CORE_BOM_UNAVAILABLE_RU}</p>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
-            {previews.length > 0 ? (
-              <SupplierBomDrawer
-                collectionId={collectionId}
-                articleId={articleId}
-                orderQty={orderQty ?? undefined}
-                previewCount={previews.length}
-                testId="supplier-bom-preview-mini-drawer"
-              />
-            ) : null}
-            <Link
-              href={bomDevelopmentHref}
-              data-testid="supplier-bom-preview-mini-link"
-              className="text-accent-primary font-medium hover:underline"
-            >
-              BOM · материалы →
-            </Link>
-            <Link
-              href={brandBomHref}
-              data-testid="sup-dev-bom-brand-peer-link"
-              className="text-accent-primary font-medium hover:underline"
-            >
-              Brand BOM peer →
-            </Link>
-            <Link
-              href={materialsWorkspaceHref}
-              data-testid="supplier-dev-materials-workspace-link"
-              className="text-accent-primary font-medium hover:underline"
-            >
-              Материалы →
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+            </p>
+            {loading ? (
+              <p className="text-text-muted">Загрузка BOM…</p>
+            ) : preview.length > 0 ? (
+              <ul className="text-text-secondary list-inside list-disc">
+                {preview.map((p) => (
+                  <BomPreviewLine key={p.name} preview={p} orderQty={orderQty} />
+                ))}
+                {previews.length > 2 ? (
+                  <li className="text-text-muted list-none">+{previews.length - 2} поз.</li>
+                ) : null}
+              </ul>
+            ) : (
+              <p className="text-text-muted">{PLATFORM_CORE_BOM_UNAVAILABLE_RU}</p>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {previews.length > 0 ? (
+                <SupplierBomDrawer
+                  collectionId={collectionId}
+                  articleId={articleId}
+                  orderQty={orderQty ?? undefined}
+                  previewCount={previews.length}
+                  testId="supplier-bom-preview-mini-drawer"
+                />
+              ) : null}
+              <Link
+                href={bomDevelopmentHref}
+                data-testid="supplier-bom-preview-mini-link"
+                className="text-accent-primary font-medium hover:underline"
+              >
+                BOM · материалы →
+              </Link>
+              <Link
+                href={brandBomHref}
+                data-testid="sup-dev-bom-brand-peer-link"
+                className="text-accent-primary font-medium hover:underline"
+              >
+                Brand BOM peer →
+              </Link>
+              <Link
+                href={materialsWorkspaceHref}
+                data-testid="supplier-dev-materials-workspace-link"
+                className="text-accent-primary font-medium hover:underline"
+              >
+                Материалы →
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+        <SupEmptyScLinesheetNotifyStrip collectionId={collectionId} articleId={articleId} />
         <SupplierDevCabinetSpinePeerStrip
           collectionId={collectionId}
           articleId={articleId}
           orderId={activeOrderId || undefined}
         />
+        <SupDevBomAltMaterialApprovalStrip collectionId={collectionId} articleId={articleId} />
+        <SupDevBomBrandFeedStrip collectionId={collectionId} articleId={articleId} />
+        <SupDevBomBrandDevPeerStrip collectionId={collectionId} articleId={articleId} />
         <SupDevBomMfrDevPeerStrip collectionId={collectionId} articleId={articleId} />
         {embedCrossRole ? (
-          <RolePillarCrossRoleLinks roleId="supplier" pillarId="sample_collection" variant="compact" />
+          <RolePillarCrossRoleLinks
+            roleId="supplier"
+            pillarId="sample_collection"
+            variant="compact"
+          />
         ) : null}
       </section>
     );
@@ -343,9 +351,16 @@ export function SupplierBomPreview({
           </div>
         </CardContent>
       </Card>
+      <SupDevBomAltMaterialApprovalStrip collectionId={collectionId} articleId={articleId} />
+      <SupDevBomBrandFeedStrip collectionId={collectionId} articleId={articleId} />
+      <SupDevBomBrandDevPeerStrip collectionId={collectionId} articleId={articleId} />
       <SupDevBomMfrDevPeerStrip collectionId={collectionId} articleId={articleId} />
       {embedCrossRole ? (
-        <RolePillarCrossRoleLinks roleId="supplier" pillarId="sample_collection" variant="compact" />
+        <RolePillarCrossRoleLinks
+          roleId="supplier"
+          pillarId="sample_collection"
+          variant="compact"
+        />
       ) : null}
     </section>
   );

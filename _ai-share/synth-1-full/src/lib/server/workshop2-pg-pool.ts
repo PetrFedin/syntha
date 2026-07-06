@@ -16,6 +16,24 @@ export function isWorkshop2PostgresEnabled(): boolean {
 }
 
 /** ECONNREFUSED / timeout — PG URL задан, но инстанс не поднят (OrbStack off). */
+/** PG URL задан, но инстанс недоступен — тихий demo/file fallback вместо 503 в UI. */
+export async function withWorkshop2PgFallback<T>(
+  attempt: () => Promise<T>,
+  fallback: () => T | Promise<T>
+): Promise<T> {
+  if (!isWorkshop2PostgresEnabled()) {
+    return fallback();
+  }
+  try {
+    return await attempt();
+  } catch (err) {
+    if (isWorkshop2PgConnectionError(err)) {
+      return fallback();
+    }
+    throw err;
+  }
+}
+
 export function isWorkshop2PgConnectionError(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false;
   const e = error as { code?: string; message?: string; errors?: Array<{ code?: string }> };

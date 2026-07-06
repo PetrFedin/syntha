@@ -1,4 +1,5 @@
 import { brandOrderCommsFeatureHref } from '@/lib/b2b/brand-order-comms';
+import { appendSupplierOpPoContextToHref } from '@/lib/b2b/supplier-op-po-context-hrefs';
 import {
   brandOrderCommsTabHref,
 } from '@/lib/b2b/brand-collection-order-hrefs';
@@ -46,11 +47,17 @@ export function buildSupplierOrderCommsSession(input?: {
   orderId?: string;
   collectionId?: string;
   articleId?: string;
+  productionOrderId?: string;
 }): SupplierOrderCommsSession {
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
-  const base = `${ROUTES.factory.supplierMessages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
+  const productionOrderId = input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
+  const poCtx = { orderId, productionOrderId };
+  const base = appendSupplierOpPoContextToHref(
+    `${ROUTES.factory.supplierMessages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
+    poCtx
+  );
   const supply = buildSupplierMrpSupplySession({ collectionId, articleId, orderId });
   const inventory = buildShopInventoryOpsSession({ collectionId, orderId });
 
@@ -59,27 +66,62 @@ export function buildSupplierOrderCommsSession(input?: {
     collectionId,
     articleId,
     orderTabHref: `${base}&${PILLAR_CAPABILITY_FEATURE_PARAM}=order`,
-    messagesHref: factorySupplierMessagesB2bOrderContextHref(orderId),
-    calendarHref: factorySupplierCalendarB2bOrderContextHref(orderId),
-    supplyTabHref: supply.supplyTabHref,
-    brandBomHref: supply.brandBomHref,
-    shopTrackingHref: `${shopB2bTrackingOrderHref(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=tracking`,
-    shopOrderCommsHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
-    brandOrderChatHref: brandOrderCommsFeatureHref(orderId, 'chat', collectionId),
-    brandOrderHandoffHref: brandOrderCommsTabHref('handoff', orderId, collectionId),
-    shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),
-    shopMatrixHref: shopMatrixWorkspaceTabHref('matrix', collectionId, orderId),
-    replenishmentAtpHref: shopReplenishmentTabHref('stock-atp', collectionId, orderId),
-    inventoryOverviewHref: inventory.overviewHref,
-    manufacturerOrderHref: manufacturerOrderCommsFeatureHref(orderId, collectionId),
-    entitiesHref: supplierCommsEntitiesHref(collectionId, articleId),
+    messagesHref: appendSupplierOpPoContextToHref(
+      factorySupplierMessagesB2bOrderContextHref(orderId),
+      poCtx
+    ),
+    calendarHref: appendSupplierOpPoContextToHref(
+      factorySupplierCalendarB2bOrderContextHref(orderId),
+      poCtx
+    ),
+    supplyTabHref: appendSupplierOpPoContextToHref(supply.supplyTabHref, poCtx),
+    brandBomHref: appendSupplierOpPoContextToHref(supply.brandBomHref, poCtx),
+    shopTrackingHref: appendSupplierOpPoContextToHref(
+      `${shopB2bTrackingOrderHref(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=tracking`,
+      poCtx
+    ),
+    shopOrderCommsHref: appendSupplierOpPoContextToHref(
+      shopOrderCommsTabHref('tracking', orderId, collectionId),
+      poCtx
+    ),
+    brandOrderChatHref: appendSupplierOpPoContextToHref(
+      brandOrderCommsFeatureHref(orderId, 'chat', collectionId),
+      poCtx
+    ),
+    brandOrderHandoffHref: appendSupplierOpPoContextToHref(
+      brandOrderCommsTabHref('handoff', orderId, collectionId),
+      poCtx
+    ),
+    shopLandedMarginHref: appendSupplierOpPoContextToHref(
+      shopLandedMarginTabHref('rollup', collectionId, orderId),
+      poCtx
+    ),
+    shopMatrixHref: appendSupplierOpPoContextToHref(
+      shopMatrixWorkspaceTabHref('matrix', collectionId, orderId),
+      poCtx
+    ),
+    replenishmentAtpHref: appendSupplierOpPoContextToHref(
+      shopReplenishmentTabHref('stock-atp', collectionId, orderId),
+      poCtx
+    ),
+    inventoryOverviewHref: appendSupplierOpPoContextToHref(inventory.overviewHref, poCtx),
+    manufacturerOrderHref: appendSupplierOpPoContextToHref(
+      manufacturerOrderCommsFeatureHref(orderId, collectionId),
+      poCtx
+    ),
+    entitiesHref: appendSupplierOpPoContextToHref(
+      supplierCommsEntitiesHref(collectionId, articleId),
+      poCtx
+    ),
   };
 }
 
 export function supplierOrderCommsFeatureHref(
   orderId: string,
   collectionId?: string,
-  articleId?: string
+  articleId?: string,
+  productionOrderId?: string
 ): string {
-  return buildSupplierOrderCommsSession({ orderId, collectionId, articleId }).orderTabHref;
+  return buildSupplierOrderCommsSession({ orderId, collectionId, articleId, productionOrderId })
+    .orderTabHref;
 }

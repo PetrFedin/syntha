@@ -56,7 +56,7 @@ export function Workshop2InvestorDemoHubBanner() {
         href="/brand/production/workshop2/investor-brief"
         className="text-accent-primary text-xs font-bold uppercase tracking-wide underline"
       >
-        Investor brief →
+        Бриф для инвестора →
       </Link>
       <Link
         href="/brand/production/workshop2/investor-summary"

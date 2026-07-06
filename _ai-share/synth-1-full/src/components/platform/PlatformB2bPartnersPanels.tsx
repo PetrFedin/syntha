@@ -5,13 +5,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { buildPlatformB2bPartnersSession } from '@/lib/b2b/platform-b2b-partners';
+import { buildPlatformB2bPartnersSession } from '@/lib/platform-core-ports/b2b/platform-b2b-partners';
 import { PlatformB2bSpineGoldenPathStrip } from '@/components/platform/PlatformB2bSpineGoldenPathStrip';
 import {
   fetchPlatformB2bPartnersOnboarding,
   postShopB2bPartnershipAction,
-} from '@/lib/platform/platform-b2b-partners-onboarding-store';
-import type { PlatformB2bPartnerOnboardingRow } from '@/lib/platform/platform-b2b-partners-onboarding-types';
+} from '@/lib/platform-core-ports/platform/platform-b2b-partners-onboarding-store';
+import type { PlatformB2bPartnerOnboardingRow } from '@/lib/platform-core-ports/platform/platform-b2b-partners-onboarding-types';
 import { Compass, ShoppingBag, Store } from 'lucide-react';
 
 type Props = {
@@ -66,13 +66,40 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
         activeStep="partners"
         testIdPrefix="platform-b2b-partners"
       />
+      <div
+        className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+        data-testid="platform-b2b-greenfield-buyer-onboarding-strip"
+      >
+        <Badge variant="outline" className="text-[9px] uppercase">
+          Новый магазин
+        </Badge>
+        <span className="text-text-secondary">
+          Новый покупатель без заказов: CRM бренда → синхронизация тира → реестр и оформление.
+        </span>
+        <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
+          <Link
+            href={session.brandCrmBuyerAssignHref}
+            data-testid="platform-b2b-greenfield-brand-crm-assign-link"
+          >
+            Назначение в CRM бренда
+          </Link>
+        </Button>
+        <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
+          <Link
+            href={session.shopRegistryGreenfieldHref}
+            data-testid="platform-b2b-greenfield-shop-registry-link"
+          >
+            Реестр магазина
+          </Link>
+        </Button>
+      </div>
       <div className="flex flex-wrap gap-2">
         <Badge variant="outline" data-testid={`platform-partners-onboarding-source-${storageMode}`}>
-          {storageMode === 'pg' ? 'PG onboarding' : 'Fallback'}
+          {storageMode === 'pg' ? 'Онбординг PG' : 'Резервный режим'}
         </Badge>
-        <Badge variant="secondary">{counts.connected} connected</Badge>
-        <Badge variant="outline">{counts.requested} requested</Badge>
-        <Badge variant="outline">{counts.profile} profile</Badge>
+        <Badge variant="secondary">{counts.connected} подключено</Badge>
+        <Badge variant="outline">{counts.requested} запрошено</Badge>
+        <Badge variant="outline">{counts.profile} профиль</Badge>
       </div>
       {actionMessage ? (
         <p className="text-text-secondary text-xs" data-testid="platform-partners-onboarding-message">
@@ -81,9 +108,9 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
       ) : null}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Partners onboarding directory</CardTitle>
+          <CardTitle className="text-base">Справочник онбординга партнёров</CardTitle>
           <CardDescription>
-            profile → requested → connected · shop_b2b_partnerships PG · demo buyer shop1.
+            профиль → запрос → подключение · shop_b2b_partnerships PG · демо-покупатель shop1.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -112,7 +139,7 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
                         variant="outline"
                         onClick={() => void runAction(row.brandId, 'request')}
                       >
-                        Request
+                        Запросить
                       </Button>
                     ) : null}
                     {row.status === 'requested' || row.status === 'profile' ? (
@@ -121,12 +148,12 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
                         onClick={() => void runAction(row.brandId, 'connect')}
                         data-testid={`platform-partners-connect-${row.brandId}`}
                       >
-                        Connect
+                        Подключить
                       </Button>
                     ) : null}
                     {row.status === 'connected' ? (
                       <Button size="sm" variant="ghost" asChild>
-                        <Link href={row.showroomHref}>Showroom</Link>
+                        <Link href={row.showroomHref}>Шоурум</Link>
                       </Button>
                     ) : null}
                   </div>
@@ -149,18 +176,18 @@ export function PlatformB2bPartnersShopRosterPanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Store className="h-4 w-4" />
-            <CardTitle className="text-base">Shop partnerships</CardTitle>
+            <CardTitle className="text-base">Партнёрства магазина</CardTitle>
           </div>
-          <CardDescription>Buy-side roster · discover · rep portal (столп 2 → 3).</CardDescription>
+          <CardDescription>Ростер покупателя · подбор · портал представителя (столп 2 → 3).</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.shopRosterHref} data-testid="platform-partners-shop-roster-link">
-              Shop roster
+              Ростер магазина
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shopDiscoverHref}>Discover radar</Link>
+            <Link href={session.shopDiscoverHref}>Радар подбора</Link>
           </Button>
         </CardContent>
       </Card>
@@ -177,24 +204,24 @@ export function PlatformB2bPartnersMarketroomPanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <ShoppingBag className="h-4 w-4" />
-            <CardTitle className="text-base">Marketroom bridge</CardTitle>
+            <CardTitle className="text-base">Мост в маркетрум</CardTitle>
           </div>
-          <CardDescription>Showcase feed → discover collections → buy path.</CardDescription>
+          <CardDescription>Лента витрины → подбор коллекций → путь заказа.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.marketroomHref} data-testid="platform-partners-marketroom-link">
-              Marketroom showcase
+              Витрина маркетрума
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={session.platformMarketroomDiscoverHref}>
               <Compass className="mr-1 h-3 w-3" />
-              Discover tab
+              Вкладка подбора
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.buyPathHref}>Buy path tab</Link>
+            <Link href={session.buyPathHref}>Вкладка пути заказа</Link>
           </Button>
         </CardContent>
       </Card>

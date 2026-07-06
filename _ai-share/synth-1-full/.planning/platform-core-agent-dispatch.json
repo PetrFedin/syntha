@@ -1,9 +1,9 @@
 {
-  "taskId": "scan-7157zx-b2b-demo-logistics-blind",
-  "taskTitle": "[Бренд] ТТН/logistics strip скрыт для B2B-DEMO-SHOP1-SS27",
-  "priority": "P0",
+  "taskId": "stage-order_production",
+  "taskTitle": "Производство",
+  "priority": "P1",
   "by": "ui-agent",
-  "startedAt": "2026-06-17T17:49:28.192Z",
-  "prompt": "SYNTHA Platform Core — задача для Cursor SDK (local agent, cwd=Projects).\nID: scan-7157zx-b2b-demo-logistics-blind\nПриоритет: P0\nЗадача: [Бренд] ТТН/logistics strip скрыт для B2B-DEMO-SHOP1-SS27\nИсточник: agent\nМаршрут в продукте: /brand/b2b-orders/B2B-DEMO-SHOP1-SS27\nРепозиторий: монорепо Projects — фронт _ai-share/synth-1-full, бэкенд app/\nПосле реализации:\n1. Минимальный diff, канон путей, без параллельных стеков\n2. read_lints / smoke по затронутой зоне\n3. POST http://127.0.0.1:3001/api/dev/platform-core/planner/complete\n   body: {\"id\":\"scan-7157zx-b2b-demo-logistics-blind\",\"note\":\"кратко что сделано\",\"by\":\"cursor-agent\"}\n4. Следующая задача: GET /api/dev/platform-core/planner/next",
-  "sessionId": "sess-1781718568086-eq9q20"
+  "startedAt": "2026-06-21T08:46:02.207Z",
+  "prompt": "SYNTHA Platform Core — задача для Cursor SDK (local agent, cwd=Projects).\nID: stage-order_production\nПриоритет: P1\nЗадача: Производство\nИсточник: pillar-stage\nCursor subagent: Use Task tool with subagent_type matching «syntha-factory-production» (.cursor/agents/syntha-factory-production.md).\nРепозиторий: монорепо Projects — фронт _ai-share/synth-1-full, бэкенд app/\nПосле реализации:\n1. Минимальный diff, канон путей, без параллельных стеков\n2. read_lints / smoke по затронутой зоне\n3. POST http://127.0.0.1:3001/api/dev/platform-core/planner/complete\n   body: {\"id\":\"stage-order_production\",\"note\":\"кратко что сделано\",\"by\":\"cursor-agent\"}\n4. Следующая задача: GET /api/dev/platform-core/planner/next",
+  "sessionId": "sess-1782031562184-iyglkz"
 }

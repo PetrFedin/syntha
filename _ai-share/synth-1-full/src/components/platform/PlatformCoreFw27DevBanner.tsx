@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { ROUTES } from '@/lib/routes';
-import { isSynthaEmbedClient } from '@/lib/syntha-embed';
+import { ROUTES } from '@/lib/platform-core-routes';
+import { isSynthaEmbedClient } from '@/lib/platform-core-ports/legacy/syntha-embed';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 type Props = {
   collectionId: string;
@@ -29,7 +30,7 @@ export function PlatformCoreFw27DevBanner({ collectionId }: Props) {
         </Link>
         {' · '}
         <Link
-          href={`${ROUTES.shop.b2bMatrix}?collection=SS27`}
+          href={platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=SS27`)}
           className="text-accent-primary hover:underline"
           data-testid="platform-core-fw27-dev-banner-matrix-link"
         >

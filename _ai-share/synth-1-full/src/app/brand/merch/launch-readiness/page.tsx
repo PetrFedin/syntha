@@ -27,6 +27,9 @@ import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCap
 import { BrandReleaseSyndicationPanel } from '@/components/brand/merch/BrandReleaseSyndicationPanel';
 import { BrandReleaseShowroomPublishPanel } from '@/components/brand/merch/BrandReleaseShowroomPublishPanel';
 import { BrandReleaseTechPackGatePanel } from '@/components/brand/merch/BrandReleaseTechPackGatePanel';
+import { BrandReleaseChecklistAutoBlockersStrip } from '@/components/brand/merch/BrandReleaseChecklistAutoBlockersStrip';
+import { BrandScReleaseGateBlockStrip } from '@/components/brand/sample/BrandScReleaseGateBlockStrip';
+import { BrandScReleaseGateSchemaPassportPeerStrip } from '@/components/platform/BrandScReleaseGateSchemaPassportPeerStrip';
 import {
   BrandReleaseGoldenPathStrip,
   brandReleaseGoldenPathStepFromFeature,
@@ -91,9 +94,12 @@ function LaunchReadinessWorkspaceBody() {
           collectionId={collectionId}
           activeStep={brandReleaseGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandScReleaseGateSchemaPassportPeerStrip collectionId={collectionId} />
+        <BrandScReleaseGateBlockStrip collectionId={collectionId} />
       </div>
       {activeFeatureId === 'checklist' ? (
         <>
+          <BrandReleaseChecklistAutoBlockersStrip collectionId={collectionId} />
           <div className="mb-4 flex flex-wrap gap-2">
             <Button type="button" onClick={downloadCsv}>
               <FileSpreadsheet className="mr-2 h-4 w-4" />

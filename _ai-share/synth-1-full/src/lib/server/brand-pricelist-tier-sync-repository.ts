@@ -244,6 +244,42 @@ export async function listBrandPricelistTierSyncServer(input?: {
   };
 }
 
+export async function refreshBrandPricelistTierSyncFromVersionServer(input: {
+  collectionId: string;
+  tierId: PriceTierId;
+  priceListId: string;
+  priceListName: string;
+  multiplier: number;
+  organizationId?: string;
+}): Promise<BrandPricelistTierSyncRow> {
+  const org = input.organizationId ?? DEFAULT_ORG;
+  const collectionId = input.collectionId.trim();
+  const listed = await listBrandPricelistTierSyncServer({
+    collectionId,
+    organizationId: org,
+    seedIfEmpty: true,
+  });
+  const existing = listed.rows.find((row) => row.tierId === input.tierId);
+  const next: BrandPricelistTierSyncRow = {
+    tierId: input.tierId,
+    priceListId: input.priceListId,
+    priceListName: input.priceListName,
+    multiplier: input.multiplier,
+    shopSynced: existing?.shopSynced ?? false,
+    syncedAt: existing?.syncedAt,
+    collectionId,
+  };
+
+  if (listed.storageMode === 'pg') {
+    await upsertPg(org, next);
+  } else {
+    memoryByKey.set(rowKey(collectionId, next.tierId), next);
+    persistFile();
+  }
+
+  return next;
+}
+
 export async function pushBrandPricelistTierSyncToShopServer(input: {
   collectionId: string;
   tierId: PriceTierId;

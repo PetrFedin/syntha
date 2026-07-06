@@ -18,6 +18,7 @@ type NavLink = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   subsections?: { href: string; label: string; value: string }[];
+  testId?: string;
 };
 type NavGroup = {
   id: string;
@@ -231,6 +232,7 @@ export function HubSidebar({
                     key={link.value}
                     href={link.href}
                     onClick={onNavigate}
+                    data-testid={link.testId}
                     className={
                       isPlatformCoreCabinetNavLink(link.value)
                         ? platformCoreCabinetNavLinkClass(active, linkClass)

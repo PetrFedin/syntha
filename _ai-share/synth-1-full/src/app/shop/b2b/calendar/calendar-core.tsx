@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import StyleCalendar from '@/components/user/style-calendar';
@@ -8,10 +8,12 @@ import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListCh
 import { PlatformCoreCommsWorkspaceExtras } from '@/components/platform/PlatformCoreCommsWorkspaceExtras';
 import { PlatformCoreCalendarUserTasksStrip } from '@/components/platform/PlatformCoreCalendarUserTasksStrip';
 import { ShopCmCalendarContextPeerStrip } from '@/components/platform/ShopCmCalendarContextPeerStrip';
+import { ShopCmCalendarEventTrackingStrip } from '@/components/platform/ShopCmCalendarEventTrackingStrip';
 import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { usePlatformCoreCalendarEvents } from '@/hooks/use-platform-core-calendar-events';
 import { usePlatformCoreCalendarTaskCreateEnabled } from '@/hooks/use-platform-core-calendar-task-create-enabled';
+import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 
 export function ShopB2bCalendarCorePage() {
@@ -27,6 +29,7 @@ export function ShopB2bCalendarCorePage() {
   });
   const orderId =
     searchParams.get('orderId')?.trim() || searchParams.get('order')?.trim() || spineOrderId;
+  const focusTaskId = searchParams.get('pcTask')?.trim() || undefined;
   const { events, loading, error, refetch } = usePlatformCoreCalendarEvents({
     collectionId,
     orderId,
@@ -35,7 +38,16 @@ export function ShopB2bCalendarCorePage() {
   });
   const demo = getPlatformCoreDemo(collectionId);
   const calendarTaskCreateEnabled = usePlatformCoreCalendarTaskCreateEnabled(true);
-  const [taskReloadNonce, setTaskReloadNonce] = useState(0);
+  const resolvedOrderId = orderId?.trim() || '';
+  const { tick: chainTick } = usePlatformCoreChainStatusPoll(
+    Boolean(resolvedOrderId),
+    resolvedOrderId ? [resolvedOrderId] : []
+  );
+
+  useEffect(() => {
+    if (!chainTick) return;
+    refetch();
+  }, [chainTick, refetch]);
 
   return (
     <CabinetPageContent
@@ -44,13 +56,22 @@ export function ShopB2bCalendarCorePage() {
     >
       <PlatformCoreListChrome highlightRole="shop" pillarId="comms">
         <PlatformCoreCommsWorkspaceExtras variant="shop" />
-        <ShopCmCalendarContextPeerStrip collectionId={collectionId} orderId={orderId || undefined} />
+        <ShopCmCalendarContextPeerStrip
+          collectionId={collectionId}
+          orderId={orderId || undefined}
+        />
+        <ShopCmCalendarEventTrackingStrip
+          collectionId={collectionId}
+          orderId={resolvedOrderId || undefined}
+          reloadNonce={chainTick}
+        />
         <PlatformCoreCalendarUserTasksStrip
           collectionId={collectionId}
           orderId={orderId || undefined}
           ownerRole="shop"
           testIdPrefix="shop-cm-calendar-user-tasks"
-          reloadNonce={taskReloadNonce}
+          focusTaskId={focusTaskId}
+          onTaskCreated={() => refetch()}
         />
         {!loading && !error && events.length > 0 ? (
           <p
@@ -81,10 +102,7 @@ export function ShopB2bCalendarCorePage() {
             orderId: orderId || undefined,
             articleId: orderId ? undefined : demo.demoArticleId,
           }}
-          onPlatformCoreTaskCreated={() => {
-            setTaskReloadNonce((n) => n + 1);
-            refetch();
-          }}
+          onPlatformCoreTaskCreated={() => refetch()}
           platformCoreTaskCreateEnabled={calendarTaskCreateEnabled}
           calendarSearchTestId="shop-cm-calendar-search"
         />

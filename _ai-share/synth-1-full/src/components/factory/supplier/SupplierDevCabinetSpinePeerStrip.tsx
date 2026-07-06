@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
 import {
+  factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
@@ -22,6 +23,7 @@ type Props = {
 export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orderId }: Props) {
   const demo = { collectionId, demoArticleId: articleId, demoOrderId: orderId ?? '' };
   const materialsHref = factoryMaterialsHrefForDemo(demo);
+  const catalogHref = factoryMaterialsCatalogHrefForDemo(demo);
   const procurementHref = factoryMaterialsProcurementHrefForDemo(demo, { role: 'supplier' });
   const commsHref = factorySupplierMessagesWorkshop2ArticleContextHref(collectionId, articleId);
   const crmHref = brandCrmSegmentationFeatureHref('segments', collectionId);
@@ -31,6 +33,22 @@ export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orde
     <div className={hubGadget.goldenPath} data-testid="sup-dev-cabinet-spine-peer-strip">
       <Link href={materialsHref} data-testid="sup-dev-cabinet-materials-link" className={hubGadget.goldenLink}>
         BOM
+      </Link>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link href={catalogHref} data-testid="sup-dev-cabinet-catalog-link" className={hubGadget.goldenLink}>
+        Каталог
+      </Link>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={materialsHref}
+        data-testid="sup-dev-cabinet-alt-materials-link"
+        className={hubGadget.goldenLink}
+      >
+        Альтернативы
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -48,13 +66,13 @@ export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orde
         ·
       </span>
       <Link href={commsHref} data-testid="sup-dev-cabinet-comms-link" className={hubGadget.goldenLink}>
-        Comms
+        Чат
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={crmHref} data-testid="sup-dev-cabinet-crm-link" className={hubGadget.goldenLink}>
-        Brand CRM
+        CRM бренда
       </Link>
     </div>
   );

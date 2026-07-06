@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
-import { shopB2bTrackingOrderHref } from '@/lib/routes';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
+import { shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -50,7 +50,7 @@ export function ShopScMatrixEntryHonestStrip({ collectionId, articleId, orderId 
             className="text-[9px] font-semibold uppercase"
             data-testid={`shop-sc-matrix-entry-published-${published ? 'yes' : 'no'}`}
           >
-            {published ? 'Published' : 'Draft'}
+            {published ? 'Опубликовано' : 'Черновик'}
           </Badge>
         </>
       ) : null}
@@ -64,7 +64,7 @@ export function ShopScMatrixEntryHonestStrip({ collectionId, articleId, orderId 
             data-testid="shop-sc-matrix-entry-tracking-link"
             className={hubGadget.goldenLink}
           >
-            Tracking
+            Трекинг
           </Link>
         </>
       ) : null}

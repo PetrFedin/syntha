@@ -76,6 +76,7 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkAcknowledge(r
     skipped: result.skipped,
     errors: result.errors,
     erp: result.erp,
+    materialRequestAuto: result.materialRequestAuto,
     messageRu:
       result.acknowledged.length > 0
         ? `Принято серий: ${result.acknowledged.length}${result.skipped.length ? ` · уже принято: ${result.skipped.length}` : ''}${erpNote}.`

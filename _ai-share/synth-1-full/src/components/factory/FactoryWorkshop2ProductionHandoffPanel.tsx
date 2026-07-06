@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Factory, FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ import {
   factoryHandoffNeedsErpAttention,
   factoryHandoffPoStatusLabelRu,
 } from '@/lib/production/workshop2-factory-handoff-po-status';
+import { isPlatformCorePgB2bOrder } from '@/lib/platform-core-demo-order';
 import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { PlatformCoreErpRetryHint } from '@/components/platform/PlatformCoreErpRetryHint';
@@ -30,6 +31,12 @@ import {
   pickEarliestErpNextRetryAt,
   summarizeFactoryErpAttentionRu,
 } from '@/lib/production/workshop2-erp-retry-hint';
+import { MfrOpHandoffQueueCoSpinePeerStrip } from '@/components/factory/MfrOpHandoffQueueCoSpinePeerStrip';
+import { MfrOpHandoffQueueRegistrySoTStrip } from '@/components/factory/MfrOpHandoffQueueRegistrySoTStrip';
+import { MfrOpWipGanttSoTStrip } from '@/components/factory/manufacturer/MfrOpWipGanttSoTStrip';
+import { MfrOpWipFloorTabletSoTStrip } from '@/components/factory/manufacturer/MfrOpWipFloorTabletSoTStrip';
+import { MfrOpHandoffFailedPoFilterStrip } from '@/components/factory/manufacturer/MfrOpHandoffFailedPoFilterStrip';
+import { PlatformAiTaskStrip } from '@/components/platform/PlatformAiTaskStrip';
 
 type HandoffItem = {
   productionOrderId: string;
@@ -48,6 +55,8 @@ type HandoffItem = {
 
 type Props = {
   factoryId?: string;
+  collectionId?: string;
+  orderId?: string;
   className?: string;
 };
 
@@ -58,6 +67,8 @@ function isAcknowledgeable(status: string): boolean {
 /** Серии B2B → цех после подтверждения брендом (с досье W2). */
 export function FactoryWorkshop2ProductionHandoffPanel({
   factoryId = 'fact-1',
+  collectionId,
+  orderId,
   className,
 }: Props) {
   const [items, setItems] = useState<HandoffItem[]>([]);
@@ -68,6 +79,8 @@ export function FactoryWorkshop2ProductionHandoffPanel({
   const [erpRetryId, setErpRetryId] = useState<string | null>(null);
   const [bulkErpInFlight, setBulkErpInFlight] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const failedPoFilterActive = searchParams.get('failedPo') === '1';
 
   const orderIds = useMemo(
     () => items.map((i) => i.b2bOrderId).filter(Boolean),
@@ -84,6 +97,12 @@ export function FactoryWorkshop2ProductionHandoffPanel({
     () => items.filter((row) => factoryHandoffNeedsErpAttention(row.status, row.erpExternalId)),
     [items]
   );
+  const visibleItems = useMemo(
+    () => (failedPoFilterActive ? erpAttentionRows : items),
+    [failedPoFilterActive, erpAttentionRows, items]
+  );
+  const spineCollectionId = collectionId?.trim() || items[0]?.collectionId || '';
+  const spineOrderId = orderId?.trim() || items[0]?.b2bOrderId || undefined;
 
   const erpAttentionSummary = useMemo(() => {
     let errorCount = 0;
@@ -330,6 +349,27 @@ export function FactoryWorkshop2ProductionHandoffPanel({
           ) : null}
           </div>
         </div>
+        <MfrOpHandoffQueueRegistrySoTStrip registryHref={ROUTES.factory.productionOrders} />
+        <MfrOpWipGanttSoTStrip
+          variant="handoff-owner"
+          registryHref={ROUTES.factory.productionOrders}
+        />
+        <MfrOpWipFloorTabletSoTStrip
+          variant="handoff-owner"
+          registryHref={ROUTES.factory.productionOrders}
+        />
+        {spineCollectionId ? (
+          <MfrOpHandoffQueueCoSpinePeerStrip
+            factoryId={factoryId}
+            collectionId={spineCollectionId}
+            orderId={spineOrderId}
+          />
+        ) : null}
+        <MfrOpHandoffFailedPoFilterStrip
+          failedCount={erpAttentionRows.length}
+          totalCount={items.length}
+          active={failedPoFilterActive}
+        />
         {erpAttentionRows.length > 0 ? (
           <div
             className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200/80 bg-amber-50/80 px-2 py-1.5 text-[10px] text-amber-950"
@@ -378,24 +418,49 @@ export function FactoryWorkshop2ProductionHandoffPanel({
           </p>
         ) : null}
       </CardHeader>
+      {isPlatformCoreMode() ? (
+        <div className="px-6 pb-2">
+          <PlatformAiTaskStrip
+            sectionId="mfr-op-handoff-queue"
+            pillarId="order_production"
+            roleId="manufacturer"
+            task="factory-ack ERP sync delay and handoff queue anomalies"
+            collectionId={collectionId}
+            orderId={orderId}
+            orders={items.slice(0, 12).map((i) => ({
+              orderId: i.b2bOrderId,
+              productionOrderId: i.productionOrderId,
+              status: i.status,
+              collectionId: i.collectionId,
+              articleId: i.articleId,
+            }))}
+            testId="mfr-op-handoff-queue-ai-anomaly"
+            buttonLabel="Аномалии handoff (AI)"
+          />
+        </div>
+      ) : null}
       <CardContent className="space-y-2">
         {loading ? (
           <p className="text-text-muted text-xs">Загрузка…</p>
-        ) : items.length === 0 ? (
-          <p className="text-text-muted text-xs">Нет входящих серий.</p>
+        ) : visibleItems.length === 0 ? (
+          <p className="text-text-muted text-xs" data-testid="mfr-op-handoff-failed-po-filter-empty">
+            {failedPoFilterActive
+              ? 'Нет серий с ошибкой ERP — снимите фильтр.'
+              : 'Нет входящих серий.'}
+          </p>
         ) : (
-          items.map((item) => {
+          visibleItems.map((item) => {
             const chain = item.b2bOrderId ? chainSummaries[item.b2bOrderId] : undefined;
             const ackable = isAcknowledgeable(item.status);
             return (
               <div
                 key={item.productionOrderId}
                 className="border-border-subtle flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2"
-                data-testid={
-                  item.b2bOrderId.startsWith('B2B-DEMO-') || /^B2B-\d+$/.test(item.b2bOrderId)
-                    ? `factory-handoff-row-${item.b2bOrderId}`
-                    : undefined
-                }
+                  data-testid={
+                    item.b2bOrderId && isPlatformCorePgB2bOrder(item.b2bOrderId)
+                      ? `factory-handoff-row-${item.b2bOrderId}`
+                      : undefined
+                  }
               >
                 <div className="flex min-w-0 flex-1 items-start gap-2">
                   {ackable ? (
@@ -519,7 +584,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
                     <FileText className="h-3 w-3" aria-hidden />
                     Досье
                   </Link>
-                  {/^B2B-\d+$/.test(item.b2bOrderId) ? (
+                  {isPlatformCorePgB2bOrder(item.b2bOrderId) ? (
                     <a
                       href={`/api/workshop2/factory/dossier/${encodeURIComponent(item.articleId)}/shop-floor-bundle?collectionId=${encodeURIComponent(item.collectionId)}&orderId=${encodeURIComponent(item.b2bOrderId)}`}
                       download

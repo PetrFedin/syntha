@@ -98,7 +98,7 @@ export function Workshop2SignoffStagesSetupPanel({ defaultCollectionId = 'SS27' 
         ))}
       </ul>
       <p className="text-[10px] text-slate-500">
-        Handoff gate читает этапы из setup PG/file-store — не фиксированные 4 секции.
+        Гейт передачи читает этапы из setup PG/file-store — не фиксированные 4 секции.
       </p>
     </div>
   );

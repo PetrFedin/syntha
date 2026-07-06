@@ -3,22 +3,61 @@ import {
   EMPTY_SECTION_AUDIT,
   averageSectionScores,
   formatReadinessScore,
-  getExpectedSectionCount,
   getExpectedEmptySectionCount,
   getPlatformCoreReadinessMatrix,
   getReadinessCell,
   summarizePlatformCoreReadiness,
 } from '@/lib/platform-core-readiness-audit';
+import { PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST } from '@/lib/platform-core-two-role-sections';
 import {
   hasEmptyCellInsightPanel,
   PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_HUB_AUDIT,
   PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_UI,
 } from '@/lib/platform-core-empty-cell-registry';
 
+function expectedVisibleSectionCount(
+  roleId: import('@/lib/platform-core-hub-matrix').CoreChainRoleId,
+  pillarId: import('@/lib/platform-core-hub-matrix').CoreHubPillarId
+): number {
+  const templates = SECTION_AUDIT[roleId]?.[pillarId] ?? [];
+  return templates.filter(
+    (t) => !t.scoreAliasOf && !PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST.has(t.id)
+  ).length;
+}
+
 describe('platform-core-readiness-audit', () => {
-  it('returns 20 cells (4 roles × 5 pillars)', () => {
+  const prevCore = process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE;
+  const prevExt = process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES;
+
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
+    delete process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES;
+  });
+
+  afterAll(() => {
+    if (prevCore === undefined) delete process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE;
+    else process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = prevCore;
+    if (prevExt === undefined) delete process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES;
+    else process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES = prevExt;
+  });
+
+  it('returns baseline 10 cells (brand + shop × 5 pillars)', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27');
-    expect(cells).toHaveLength(20);
+    expect(cells).toHaveLength(10);
+    expect(cells.map((c) => c.roleId)).not.toContain('manufacturer');
+    expect(cells.map((c) => c.roleId)).not.toContain('supplier');
+  });
+
+  it('returns 20 cells when extended roles enabled', () => {
+    const prevExt = process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES;
+    process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES = '1';
+    try {
+      const cells = getPlatformCoreReadinessMatrix('SS27');
+      expect(cells).toHaveLength(20);
+    } finally {
+      if (prevExt === undefined) delete process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES;
+      else process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES = prevExt;
+    }
   });
 
   it('brand development is active with full section audit', () => {
@@ -26,20 +65,19 @@ describe('platform-core-readiness-audit', () => {
     const cell = getReadinessCell(cells, 'brand', 'development');
     expect(cell?.active).toBe(true);
     expect(cell?.staticScore).toBeGreaterThanOrEqual(7);
-    expect(cell?.subItems.length).toBe(getExpectedSectionCount('brand', 'development'));
+    expect(cell?.subItems.length).toBe(expectedVisibleSectionCount('brand', 'development'));
     expect(cell?.subItems.length).toBeGreaterThanOrEqual(4);
     expect(cell?.subItems[0]?.summary).toBeTruthy();
     expect(cell?.subItems[0]?.good.length).toBeGreaterThan(0);
-    expect(cell?.workspaceHref).toMatch(/w2col=SS27/);
+    expect(cell?.workspaceHref).toMatch(/collection=SS27/);
   });
 
   it('every active cell has SECTION_AUDIT coverage (3+ разделов)', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27');
     const active = cells.filter((c) => c.active);
-    expect(active.length).toBe(14);
+    expect(active.length).toBe(8);
     for (const cell of active) {
-      const templates = SECTION_AUDIT[cell.roleId]?.[cell.pillarId] ?? [];
-      const expected = templates.filter((t) => !t.scoreAliasOf).length;
+      const expected = expectedVisibleSectionCount(cell.roleId, cell.pillarId);
       expect(expected).toBeGreaterThanOrEqual(3);
       expect(cell.subItems).toHaveLength(expected);
       expect(cell.subItems.every((s) => s.summary && s.good.length > 0)).toBe(true);
@@ -82,13 +120,14 @@ describe('platform-core-readiness-audit', () => {
     expect(formatReadinessScore(null)).toBe('—');
   });
 
-  it('summary: only 14 active scored cells', () => {
+  it('summary: only 8 active scored cells (baseline)', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27', { liveChain: true });
     const summary = summarizePlatformCoreReadiness(cells, 'live');
-    expect(summary.activeScoredCount).toBe(14);
-    expect(summary.scoredCellCount).toBe(14);
-    expect(summary.allCellsAvg).toBeGreaterThanOrEqual(7.2);
-    expect(summary.activeCellsAvg).toBeGreaterThanOrEqual(7.2);
+    expect(summary.activeScoredCount).toBe(8);
+    expect(summary.scoredCellCount).toBe(8);
+    expect(summary.allCellsAvg).toBeGreaterThanOrEqual(7.0);
+    expect(summary.activeCellsAvg).toBeGreaterThanOrEqual(7.0);
+    expect(summary.activeCellsAvg).toBeLessThan(8.0);
   });
 
   it('section averages align roughly with cell scores (within 1.0)', () => {

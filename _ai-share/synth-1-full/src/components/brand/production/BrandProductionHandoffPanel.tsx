@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
 import { BrandOpHandoffInventoryPeerStrip } from '@/components/platform/BrandOpHandoffInventoryPeerStrip';
 import { BrandOpHandoffCoSpinePeerStrip } from '@/components/platform/BrandOpHandoffCoSpinePeerStrip';
+import { BrandOpOperationsHandoffPeerStrip } from '@/components/platform/BrandOpOperationsHandoffPeerStrip';
 import { buildBrandProductionHandoffSession } from '@/lib/brand-production/brand-production-handoff';
+import { brandProductionQcBlocksHandoffCount } from '@/lib/brand-production/qc-gate';
 import type { BrandProductionState } from '@/lib/brand-production';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
@@ -53,11 +56,18 @@ export function BrandProductionHandoffPanel({
     collectionId: selectedCollectionId,
     orderId: resolvedOrderId,
   });
+  const qcBlocksHandoff = useMemo(() => brandProductionQcBlocksHandoffCount(state), [state]);
 
   return (
     <div className="space-y-4" data-testid="brand-production-handoff-panel">
       {resolvedOrderId ? (
         <>
+          <BrandOpOperationsHandoffPeerStrip
+            orderId={resolvedOrderId}
+            collectionId={selectedCollectionId}
+            factoryId={factoryId}
+            activeFeature="handoff"
+          />
           <BrandOpHandoffInventoryPeerStrip
             orderId={resolvedOrderId}
             collectionId={selectedCollectionId}
@@ -70,13 +80,31 @@ export function BrandProductionHandoffPanel({
           />
         </>
       ) : null}
+      {qcBlocksHandoff > 0 ? (
+        <div
+          className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm"
+          data-testid="brand-op-qc-gate-blocks-handoff"
+        >
+          <p className="text-destructive font-medium">
+            Передача в цех заблокирована: {qcBlocksHandoff} инспекций QC не пройдены (fail/rework).
+          </p>
+          <p className="text-text-secondary mt-1 text-xs">
+            Закройте контроль качества перед handoff — API вернёт 409.
+          </p>
+          <Button size="sm" variant="outline" className="mt-2 h-7" asChild>
+            <Link href={session.qcGateTabHref} data-testid="brand-production-handoff-qc-tab-link">
+              Открыть контроль качества
+            </Link>
+          </Button>
+        </div>
+      ) : null}
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Factory className="h-4 w-4" />
-            <CardTitle className="text-base">Handoff → очередь цеха</CardTitle>
+            <CardTitle className="text-base">Передача → очередь цеха</CardTitle>
             <Badge variant="outline" className="text-[10px] uppercase">
-              {refsForCollection.length} B2B ref
+              {refsForCollection.length} B2B-ссылок
             </Badge>
             {resolvedOrderId ? (
               <PlatformCoreChainStatusRefreshBadge
@@ -86,9 +114,14 @@ export function BrandProductionHandoffPanel({
                 pollTestId="brand-production-handoff-chain-poll-badge"
               />
             ) : null}
+            {qcBlocksHandoff > 0 ? (
+              <Badge variant="destructive" className="text-[10px] uppercase" data-testid="brand-production-handoff-qc-block-badge">
+                QC блок: {qcBlocksHandoff}
+              </Badge>
+            ) : null}
           </div>
           <CardDescription>
-            W2/Apparel Magic: confirmed B2B → factory handoff queue → cut ticket → QC.
+            W2: подтверждённый B2B → очередь передачи цеха → техкарта раскроя → контроль качества.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -101,21 +134,21 @@ export function BrandProductionHandoffPanel({
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.cutTicketTabHref}>Cut ticket</Link>
+            <Link href={session.cutTicketTabHref}>Техкарта раскроя</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={session.qcGateTabHref} data-testid="brand-production-handoff-qc-tab-link">
-              QC gate
+              Контроль качества
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={manufacturerQcHref} data-testid="brand-production-handoff-manufacturer-qc-link">
-              Manufacturer QC
+              КК производства
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={manufacturerAckHref} data-testid="brand-production-handoff-factory-ack-link">
-              Factory-ack
+              Подтверждение ТЗ
             </Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
@@ -128,24 +161,24 @@ export function BrandProductionHandoffPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Truck className="h-4 w-4" />
-            <CardTitle className="text-base">Shop · downstream</CardTitle>
+            <CardTitle className="text-base">Магазин · трекинг и заказы</CardTitle>
           </div>
-          <CardDescription>Трекинг и working order после handoff.</CardDescription>
+          <CardDescription>Трекинг и рабочий заказ после передачи.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           {resolvedOrderId ? (
             <>
               <Button size="sm" variant="outline" asChild>
-                <Link href={session.shopTrackingHref}>Shop tracking</Link>
+                <Link href={session.shopTrackingHref}>Трекинг магазина</Link>
               </Button>
               <Button size="sm" variant="outline" asChild>
-                <Link href={session.shopWorkingOrderHref}>Working order</Link>
+                <Link href={session.shopWorkingOrderHref}>Рабочий заказ</Link>
               </Button>
               <Button size="sm" variant="outline" asChild>
-                <Link href={session.shopOrderCommsHref}>Order comms</Link>
+                <Link href={session.shopOrderCommsHref}>Чат по заказу</Link>
               </Button>
               <Button size="sm" variant="ghost" asChild>
-                <Link href={session.manufacturerOrderCommsHref}>Factory comms</Link>
+                <Link href={session.manufacturerOrderCommsHref}>Чат с производством</Link>
               </Button>
             </>
           ) : (

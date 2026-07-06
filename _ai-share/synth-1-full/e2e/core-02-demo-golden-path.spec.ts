@@ -1835,7 +1835,8 @@ test.describe('Platform Core golden path', () => {
         .or(page.getByTestId('brand-linesheets-core-list'))
     ).toBeVisible({ timeout: 30_000 });
     await page
-      .getByTestId('brand-sc-linesheets-shop-matrix-link')
+      .getByTestId('brand-sc-cross-matrix-open-shop-btn')
+      .or(page.getByTestId('brand-sc-linesheets-shop-matrix-link'))
       .or(page.getByTestId('brand-linesheet-to-shop-matrix'))
       .click();
     await expect(page).toHaveURL(/\/shop\/b2b\/matrix.*collection=SS27/, { timeout: 30_000 });

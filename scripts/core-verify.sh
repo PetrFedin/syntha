@@ -35,7 +35,7 @@ fi
 
 echo "→ warmup (cold compile messages/hub/legacy tails до Playwright)"
 curl -fsS --max-time 120 "http://127.0.0.1:3001/platform" >/dev/null || true
-curl -fsS --max-time 180 "http://127.0.0.1:3001/brand/production/workshop2?w2col=SS27" >/dev/null || true
+curl -fsS --max-time 180 "http://127.0.0.1:3001/brand/core?pillar=development&collection=SS27" >/dev/null || true
 for pillar in development sample_collection collection_order order_production comms; do
   curl -fsS --max-time 180 "http://127.0.0.1:3001/brand/core?pillar=${pillar}&collection=SS27" >/dev/null || true
 done
@@ -69,6 +69,9 @@ sleep 2
 
 echo "→ typecheck platform-core hot paths (w2 + order-subset)"
 npm run typecheck:platform-core --prefix _ai-share/synth-1-full
+
+echo "→ platform-core boundary"
+npm run validate:platform-core-boundary
 
 echo "→ e2e (Playwright, reuse dev:core на :3001 — без второго webServer)"
 npm run test:e2e:core:external --prefix _ai-share/synth-1-full

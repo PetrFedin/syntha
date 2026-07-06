@@ -13,6 +13,8 @@ const PLATFORM_CORE_UI_FORBIDDEN_DUPES = [
   'BrandSectionHeaderBlock / StageContextBar при platform core',
   'BrandMessagesRuWorkspaceBanner при platform core comms',
   'PlatformCorePillarHandoffStrip (удалён — дубль cross-role)',
+  'CardHeader коллекции/столпа на workspace при slim ListChrome',
+  'CommsNotificationCenterStrip + OrderCommsWorkspaceNotificationBar на одном экране',
 ] as const;
 
 const SRC_ROOT = path.join(__dirname, '..', '..');
@@ -141,9 +143,18 @@ describe('platform-core-ui-dedup-audit', () => {
     );
     expect(chrome).toContain('RolePillarCrossRoleLinks');
     expect(chrome).toContain('orderDetailRail');
-    expect(chrome).toContain('hidden lg:block');
+    expect(chrome).toContain('platform-core-order-detail-rail');
+    expect(chrome).toContain('orderDetailCrossRoleMobile');
     expect(chrome).toContain('platform-core-order-detail-cross-role-mobile');
     expect(chrome).not.toContain('shop-co-detail-cross-links');
+  });
+
+  it('brand order detail: cross-role только в chrome (без workspace footer)', () => {
+    const brandDetail = read(
+      path.join(SRC_ROOT, 'app/brand/b2b-orders/[orderId]/brand-order-detail-core.tsx')
+    );
+    expect(brandDetail).toContain('showCrossLinks={false}');
+    expect(brandDetail).toContain('PlatformCoreOrderDetailChrome');
   });
 
   it('order detail facts: один nav-блок (без footer cross-links)', () => {
@@ -175,23 +186,32 @@ describe('platform-core-ui-dedup-audit', () => {
     expect(hub).toContain('usePlatformCoreHubViews');
     expect(hub).toContain('hubViews.business');
     expect(hub).toContain('hubViews.audit');
-    expect(hub).toContain('hubViews.planner');
+    expect(hub).toContain('PlatformCoreHubAuditLauncher');
     expect(hub).not.toContain('platform-core-hub-business-hint');
     expect(hub).not.toContain('platform-core-hub-heading');
   });
 
-  it('RoleCoreCabinetHub: insight compact + без cross-role на active в core', () => {
+  it('RoleCoreCabinetHub: section list + pillar rail в core (без карусели столпов)', () => {
     const hub = read(path.join(SRC_ROOT, 'components/platform/RoleCoreCabinetHub.tsx'));
-    expect(hub).toContain('RoleCorePillarInsightCards');
+    expect(hub).toMatch(/RoleCorePillarInsightCards/);
     expect(hub).toMatch(/compact/);
     expect(hub).not.toMatch(/cell\.kind === 'active'[\s\S]{0,200}RolePillarCrossRoleLinks/);
     expect(hub).toContain('!isPlatformCoreMode()');
-    expect(hub).toContain('PlatformCoreCabinetPillarCards');
-    const pillarCards = read(
-      path.join(SRC_ROOT, 'components/platform/PlatformCoreCabinetPillarCards.tsx')
+    expect(hub).toContain('RoleCabinetPillarNavMobile');
+    expect(hub).toContain('PillarSectionList');
+    expect(hub).toContain('PillarCabinetHeader');
+    expect(hub).toContain('role-core-pillar-nav');
+    expect(hub).toContain('hubCabinet.pillarNav');
+    expect(hub).toMatch(/showEmbeddedWorkspace[\s\S]{0,120}'flex w-full min-w-0 flex-col gap-3'/);
+  });
+
+  it('Workshop2ArticleFlatHub: embedded hub — широкие карточки, 1 col / xl:2', () => {
+    const flat = read(
+      path.join(SRC_ROOT, 'components/brand/production/Workshop2ArticleFlatHub.tsx')
     );
-    expect(pillarCards).toMatch(/role-core-pillar-nav-horizontal/);
-    expect(hub).toMatch(/isPlatformCoreMode\(\)[\s\S]{0,80}'hidden'/);
+    expect(flat).toMatch(/embeddedHub[\s\S]{0,80}'grid-cols-1 xl:grid-cols-2'/);
+    expect(flat).toContain('workshop2-article-flat-hub-card');
+    expect(flat).not.toMatch(/ArticleCard[\s\S]{0,400}absolute/);
   });
 
   it('ListChrome: без strip столпов в core (назад — в context bar)', () => {
@@ -240,10 +260,10 @@ describe('platform-core-ui-dedup-audit', () => {
     expect(linesheets).toContain('brand-sc-linesheets-card-grid');
   });
 
-  it('order production cabinet compact: goldenPath CTA', () => {
+  it('order production cabinet compact: spine peer CTA', () => {
     const op = read(path.join(SRC_ROOT, 'components/platform/OrderProductionPillarCard.tsx'));
-    expect(op).toMatch(/compact && hasActiveOrder[\s\S]{0,200}hubGadget\.goldenPath/);
-    expect(op).toMatch(/inventory_reserved.*!compact/);
+    expect(op).toMatch(/hasActiveOrder[\s\S]{0,280}BrandOpCabinetSpinePeerStrip/);
+    expect(op).toMatch(/inventory_reserved[\s\S]{0,48}!compact/);
   });
 
   it('order detail: навигация в chain card, без отдельных context strips', () => {
@@ -311,6 +331,26 @@ describe('platform-core-ui-dedup-audit', () => {
     expect(tracking).toMatch(/!coreSlim \? \([\s\S]{0,200}shop-co-tracking-sse-live-badge/);
     expect(tracking).toMatch(/production_po.*&& !coreSlim/);
     expect(tracking).toContain('shop-co-tracking-calendar-link');
+    expect(tracking).toContain('shop-co-tracking-row-calendar-link-');
+  });
+
+  it('wave VH: operator RU labels (Live/stub/audit noise)', () => {
+    const sectionList = read(path.join(SRC_ROOT, 'components/platform/PillarSectionList.tsx'));
+    const chainBadge = read(
+      path.join(SRC_ROOT, 'components/platform/PlatformCoreChainStatusRefreshBadge.tsx')
+    );
+    const diffPanel = read(path.join(SRC_ROOT, 'components/platform/BrandDossierFactoryDiffPanel.tsx'));
+    const diagnostics = read(path.join(SRC_ROOT, 'components/platform/PillarCabinetDiagnostics.tsx'));
+    expect(sectionList).toContain('В эфире');
+    expect(sectionList).toContain('SSE в эфире');
+    expect(sectionList).not.toMatch(/\{liveConnected \? 'Live'/);
+    expect(chainBadge).toContain('В эфире');
+    expect(chainBadge).not.toMatch(/\? 'Live' :/);
+    expect(diffPanel).toContain('В эфире');
+    expect(diffPanel).toContain('заглушка');
+    expect(diffPanel).toContain("'файл'");
+    expect(diagnostics).toContain('аудит / SSE');
+    expect(diagnostics).not.toContain('audit / SSE');
   });
 
   it('chain card: peer mirror strip без второго inbox', () => {
@@ -345,6 +385,9 @@ describe('platform-core-ui-dedup-audit', () => {
       path.join(SRC_ROOT, 'components/factory/FactoryWorkshop2ProductionHandoffPanel.tsx')
     );
     const op = read(path.join(SRC_ROOT, 'components/platform/OrderProductionPillarCard.tsx'));
+    const mfrOpCabinetStrip = read(
+      path.join(SRC_ROOT, 'components/factory/MfrOpCabinetSpinePeerStrip.tsx')
+    );
     const dossier = read(path.join(SRC_ROOT, 'components/platform/FactoryDossierCoreChrome.tsx'));
     expect(materials).toMatch(
       /!isPlatformCoreMode\(\) \? \([\s\S]{0,600}materials-procurement-chat-link/
@@ -352,9 +395,8 @@ describe('platform-core-ui-dedup-audit', () => {
     expect(handoff).toMatch(
       /!isPlatformCoreMode\(\) \? \([\s\S]{0,500}mfr-op-handoff-queue-chat-link/
     );
-    expect(op).toMatch(/\{!coreSlim \? \([\s\S]{0,300}data-testid="mfr-op-cabinet-chat-link"/);
+    expect(mfrOpCabinetStrip).toMatch(/\{!coreSlim \? \([\s\S]{0,300}data-testid="mfr-op-cabinet-chat-link"/);
     expect(op).toMatch(/item\.b2bOrderId && !coreSlim \? \([\s\S]{0,450}mfr-op-queue-chat-/);
-    expect(dossier).toMatch(/isPlatformCoreMode\(\) \? \([\s\S]{0,200}hubGadget\.goldenPath/);
     expect(dossier).toContain('mfr-dev-dossier-context-strip');
     expect(dossier).toContain('hubGadget.goldenPath');
     expect(dossier).toContain('mfr-dev-dossier-actions-strip');
@@ -382,11 +424,15 @@ describe('platform-core-ui-dedup-audit', () => {
     const wms = read(path.join(SRC_ROOT, 'lib/platform-core-wms-reserve-copy.ts'));
     const strip = read(path.join(SRC_ROOT, 'components/platform/PlatformCoreWmsReserveStrip.tsx'));
     const checkout = read(path.join(SRC_ROOT, 'app/shop/b2b/checkout/checkout-core.tsx'));
+    const checkoutBadge = read(
+      path.join(SRC_ROOT, 'components/shop/b2b/ShopCoCheckoutInventoryReserveBadge.tsx')
+    );
     const op = read(path.join(SRC_ROOT, 'components/platform/OrderProductionPillarCard.tsx'));
     const sup = read(path.join(SRC_ROOT, 'components/platform/SupplierProcurementPillarCard.tsx'));
     const tracking = read(path.join(SRC_ROOT, 'lib/platform-core-tracking-reserve-label.ts'));
     expect(strip).toContain('PlatformCoreWmsReserveStrip');
-    expect(checkout).toContain('PlatformCoreWmsReserveStrip');
+    expect(checkout).toContain('ShopCoCheckoutInventoryReserveBadge');
+    expect(checkoutBadge).toContain('platform-core-wms-reserve-copy');
     expect(wms).toContain('PLATFORM_CORE_WMS_RESERVE_CHECKOUT_RU');
     expect(op).toContain('formatPlatformCoreWmsReserveBrandBadgeRu');
     expect(sup).toContain('formatPlatformCoreWmsReserveCabinetLongRu');
@@ -403,11 +449,27 @@ describe('platform-core-ui-dedup-audit', () => {
     const hub = read(path.join(SRC_ROOT, 'lib/server/platform-core-comms-inbox-hub.ts'));
     const stream = read(path.join(SRC_ROOT, 'app/api/platform-core/comms/inbox-stream/route.ts'));
     const strip = read(path.join(SRC_ROOT, 'components/platform/CommsPillarThreadStrip.tsx'));
+    const threadsHook = read(path.join(SRC_ROOT, 'hooks/use-comms-hub-merged-threads.ts'));
     const domainEvents = read(path.join(SRC_ROOT, 'lib/server/workshop2-domain-events.ts'));
     expect(hub).toContain('COMMS_INBOX_BUMP');
     expect(domainEvents).toContain('bumpPlatformCoreCommsInbox');
     expect(stream).toContain('subscribePlatformCoreCommsInbox');
-    expect(strip).toContain('usePlatformCoreCommsInboxPoll');
+    expect(strip).toContain('useCommsHubMergedThreads');
+    expect(threadsHook).toContain('usePlatformCoreCommsInboxPoll');
+  });
+
+  it('comms messages: universal inbox без OrderCommsWorkspaceNotificationBar', () => {
+    const mfrMessages = read(
+      path.join(SRC_ROOT, 'app/factory/production/messages/messages-core.tsx')
+    );
+    const shopMessages = read(path.join(SRC_ROOT, 'app/shop/messages/messages-core.tsx'));
+    const brandMessages = read(path.join(SRC_ROOT, 'app/brand/messages/messages-core.tsx'));
+    expect(mfrMessages).toContain('PlatformCoreCommsUniversalInboxStrip');
+    expect(mfrMessages).not.toContain('OrderCommsWorkspaceNotificationBar');
+    expect(shopMessages).toContain('PlatformCoreCommsUniversalInboxStrip');
+    expect(shopMessages).not.toContain('OrderCommsWorkspaceNotificationBar');
+    expect(brandMessages).toContain('PlatformCoreCommsUniversalInboxStrip');
+    expect(brandMessages).not.toContain('OrderCommsWorkspaceNotificationBar');
   });
 
   it('shop comms: notification prefs compact stub', () => {
@@ -417,9 +479,32 @@ describe('platform-core-ui-dedup-audit', () => {
     const center = read(
       path.join(SRC_ROOT, 'components/platform/CommsNotificationCenterStrip.tsx')
     );
-    expect(prefs).toContain('shop-cm-notification-prefs-compact');
-    expect(prefs).toContain('PG prefs API');
-    expect(center).toContain('PlatformCoreShopCommsNotificationPrefsStrip');
+    expect(prefs).toContain('${prefix}-notification-prefs-compact');
+    expect(prefs).toContain("return 'shop-cm'");
+    expect(prefs).toContain('loadPlatformCoreCommsNotificationPrefs');
+    expect(prefs).toContain('-notification-pref-chain-push');
+    expect(center).toContain('PlatformCoreCommsNotificationPrefsStrip');
+    expect(center).toContain('/api/platform-core/comms/unread-summary');
+  });
+
+  it('brand dossier wayfinding: minimal back link only (no peer strips)', () => {
+    const wf = read(
+      path.join(
+        SRC_ROOT,
+        'app/brand/production/workshop2/(w2-enterprise)/c/[collectionId]/a/[articleId]/workshop2-article-core-wayfinding.tsx'
+      )
+    );
+    expect(wf).toContain('brand-dev-dossier-panel');
+    expect(wf).toContain('platform-core-workspace-back');
+    expect(wf).not.toContain('brand-dev-dossier-context-strip');
+    expect(wf).not.toContain('BrandDossierFactoryDiffPanel');
+    const footer = read(
+      path.join(
+        SRC_ROOT,
+        'components/brand/production/workshop2-phase1-dossier-panel-footer-actions.tsx'
+      )
+    );
+    expect(footer).toContain('brand-dev-dossier-actions-strip');
   });
 
   it('dossier panel: decomposition manifest + rollback extract', () => {

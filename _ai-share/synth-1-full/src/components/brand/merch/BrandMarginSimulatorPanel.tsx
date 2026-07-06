@@ -103,7 +103,7 @@ export function BrandMarginSimulatorPanel({ collectionId, orderId }: Props) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cost">Production Cost (₽)</Label>
+                <Label htmlFor="cost">Себестоимость производства (₽)</Label>
                 <Input
                   id="cost"
                   inputMode="decimal"
@@ -161,7 +161,7 @@ export function BrandMarginSimulatorPanel({ collectionId, orderId }: Props) {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Production Cost</TableCell>
+                    <TableCell className="font-medium">Себестоимость</TableCell>
                     <TableCell className="text-right font-mono text-rose-600">
                       -{simulation.productionCost.toLocaleString()} ₽
                     </TableCell>

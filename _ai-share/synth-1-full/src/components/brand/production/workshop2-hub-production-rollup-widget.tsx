@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Factory } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
+import { usePlatformCoreSampleStatusPoll } from '@/hooks/use-platform-core-sample-status-poll';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { labelWorkshop2SampleOrderStatusRu } from '@/lib/production/workshop2-release-production-display';
 import type { Workshop2SampleOrderStatus } from '@/lib/production/workshop2-dossier-phase1.types';
@@ -29,12 +32,17 @@ type Props = {
 export function Workshop2HubProductionRollupWidget({ collectionId, articleScope }: Props) {
   const [rollup, setRollup] = useState<RollupResponse | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const platformCore = isPlatformCoreMode();
   const scopeKey = collectionId?.trim()
     ? `col:${collectionId.trim()}`
     : articleScope?.length
       ? articleScope.map((a) => `${a.collectionId}:${a.articleId}`).join(',')
       : '';
+  const { tick: samplePollTick, sseConnected } = usePlatformCoreSampleStatusPoll(
+    platformCore && Boolean(scopeKey),
+    collectionId?.trim() || undefined,
+    !collectionId?.trim() ? articleScope : undefined
+  );
 
   useEffect(() => {
     if (!scopeKey) return;
@@ -67,7 +75,7 @@ export function Workshop2HubProductionRollupWidget({ collectionId, articleScope 
     return () => {
       cancelled = true;
     };
-  }, [scopeKey, collectionId, articleScope]);
+  }, [scopeKey, collectionId, articleScope, samplePollTick]);
 
   if (!scopeKey) return null;
 
@@ -80,15 +88,26 @@ export function Workshop2HubProductionRollupWidget({ collectionId, articleScope 
       className="space-y-2 rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-2.5"
       data-testid="workshop2-hub-production-rollup"
     >
-      <p className="text-text-primary flex items-center gap-1.5 text-[11px] font-semibold">
-        <Factory className="h-3.5 w-3.5 text-indigo-600" />
-        Производство · образцы
-        {rollup?.scope === 'multi' ? (
-          <Badge variant="outline" className="text-[8px]">
-            все коллекции
-          </Badge>
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-text-primary flex items-center gap-1.5 text-[11px] font-semibold">
+          <Factory className="h-3.5 w-3.5 text-indigo-600" />
+          Производство · образцы
+          {rollup?.scope === 'multi' ? (
+            <Badge variant="outline" className="text-[8px]">
+              все коллекции
+            </Badge>
+          ) : null}
+        </p>
+        {platformCore && collectionId?.trim() ? (
+          <PlatformCoreChainStatusRefreshBadge
+            sseConnected={sseConnected}
+            enabled
+            variant="dot"
+            sseTestId="brand-w2-sample-status-sse-live"
+            pollTestId="brand-w2-sample-status-sse-poll"
+          />
         ) : null}
-      </p>
+      </div>
       {loading ? (
         <p className="text-text-muted text-[10px]">Загрузка rollup…</p>
       ) : rollup?.ok ? (

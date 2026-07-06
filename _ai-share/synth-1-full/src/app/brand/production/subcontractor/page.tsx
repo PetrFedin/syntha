@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,49 +27,30 @@ import type {
   Workshop2SewingContractorsPayload,
   SewingPlanPartnerRow,
 } from '@/lib/production/workshop2-sewing-plan-reference-types';
-
-const SUB_DEFAULT: { v: 1; orders: SubcontractOrder[] } = {
-  v: 1,
-  orders: [
-    {
-      id: 's1',
-      subcontractorId: 'sc1',
-      subcontractorName: 'Ателье «Стиль»',
-      orderId: 'PO-201',
-      workType: 'sewing',
-      workTypeLabel: 'Пошив',
-      quantity: 500,
-      unit: 'шт',
-      status: 'in_progress',
-      requestedAt: '2026-03-05T10:00:00Z',
-    },
-    {
-      id: 's2',
-      subcontractorId: 'sc2',
-      subcontractorName: 'Раскройный цех №2',
-      orderId: 'PO-202',
-      workType: 'cutting',
-      workTypeLabel: 'Раскрой',
-      quantity: 1200,
-      unit: 'шт',
-      status: 'completed',
-      requestedAt: '2026-03-01T08:00:00Z',
-      completedAt: '2026-03-08T17:00:00Z',
-      actNumber: 'АКТ-2026-014',
-    },
-  ],
-};
-
-const statusLabels: Record<SubcontractOrder['status'], string> = {
-  requested: 'Заявка',
-  in_progress: 'В работе',
-  completed: 'Выполнено',
-  cancelled: 'Отменено',
-};
+import {
+  WAVE_YC_BRAND_SUBCONTRACTOR_FLOOR_SCOPE,
+  WAVE_YC_BRAND_SUBCONTRACTOR_HUB_DESC_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_PAGE_TESTID,
+  WAVE_YC_BRAND_SUBCONTRACTOR_PG_BADGE_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_PG_UNAVAILABLE_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_SAVE_TITLE_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_SAVE_TOAST_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_SECTION_DESC_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_SECTION_TITLE_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU,
+  WAVE_YC_BRAND_SUBCONTRACTOR_STORAGE_PG_TESTID,
+  WAVE_YC_BRAND_SUBCONTRACTOR_STORAGE_UNAVAILABLE_TESTID,
+  resolveBrandSubcontractorFloorDefaultSeed,
+} from '@/lib/platform/wave-yc-brand-subcontractor-draft-pg';
 
 export default function SubcontractorPage() {
   const { toast } = useToast();
-  const { data, setData, save, hydrated } = useFloorTabDraftState('subcontractor', SUB_DEFAULT);
+  const defaultSeed = useMemo(() => resolveBrandSubcontractorFloorDefaultSeed(), []);
+  const { data, setData, save, hydrated, persistMode, pgUnavailable } = useFloorTabDraftState(
+    WAVE_YC_BRAND_SUBCONTRACTOR_FLOOR_SCOPE,
+    defaultSeed
+  );
   const [contractors, setContractors] = useState<SewingPlanPartnerRow[]>([]);
 
   useEffect(() => {
@@ -92,13 +73,17 @@ export default function SubcontractorPage() {
   };
 
   return (
-    <CabinetPageContent maxWidth="5xl" className="space-y-6 pb-16">
+    <CabinetPageContent
+      maxWidth="5xl"
+      className="space-y-6 pb-16"
+      data-testid={WAVE_YC_BRAND_SUBCONTRACTOR_PAGE_TESTID}
+    >
       <SectionInfoCard
-        title="Кабинет субподряда"
+        title={WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU}
         description={
           <>
-            Заказы на сторону — floor-tab: subcontractor. Контроль статусов по{' '}
-            <AcronymWithTooltip abbr="PO" /> и актам.
+            {WAVE_YC_BRAND_SUBCONTRACTOR_HUB_DESC_RU}{' '}
+            <AcronymWithTooltip abbr="PO" />.
           </>
         }
         icon={Building2}
@@ -113,15 +98,35 @@ export default function SubcontractorPage() {
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold uppercase">Кабинет субподряда</h1>
+          <h1 className="text-2xl font-bold uppercase">{WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU}</h1>
+          {persistMode === 'postgres' && !pgUnavailable ? (
+            <Badge
+              variant="outline"
+              className="text-[9px]"
+              data-testid={WAVE_YC_BRAND_SUBCONTRACTOR_STORAGE_PG_TESTID}
+            >
+              {WAVE_YC_BRAND_SUBCONTRACTOR_PG_BADGE_RU}
+            </Badge>
+          ) : persistMode === 'postgres' && pgUnavailable ? (
+            <Badge
+              variant="outline"
+              className="border-amber-500/50 text-[9px] text-amber-800"
+              data-testid={WAVE_YC_BRAND_SUBCONTRACTOR_STORAGE_UNAVAILABLE_TESTID}
+            >
+              {WAVE_YC_BRAND_SUBCONTRACTOR_PG_UNAVAILABLE_RU}
+            </Badge>
+          ) : null}
         </div>
         <Button
           size="sm"
           className="gap-1.5"
-          disabled={!hydrated}
+          disabled={!hydrated || pgUnavailable}
           onClick={async () => {
             await save();
-            toast({ title: 'Сохранено', description: 'Субподряд записан.' });
+            toast({
+              title: WAVE_YC_BRAND_SUBCONTRACTOR_SAVE_TITLE_RU,
+              description: WAVE_YC_BRAND_SUBCONTRACTOR_SAVE_TOAST_RU,
+            });
           }}
         >
           <Save className="h-3.5 w-3.5" /> Сохранить
@@ -131,11 +136,14 @@ export default function SubcontractorPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" /> Заказы на сторону
+            <Building2 className="h-5 w-5" /> {WAVE_YC_BRAND_SUBCONTRACTOR_SECTION_TITLE_RU}
           </CardTitle>
-          <CardDescription>Статусы до интеграции с актами</CardDescription>
+          <CardDescription>{WAVE_YC_BRAND_SUBCONTRACTOR_SECTION_DESC_RU}</CardDescription>
         </CardHeader>
         <CardContent>
+          {data.orders.length === 0 ? (
+            <p className="text-text-secondary text-sm">Нет заказов на сторону — добавьте после интеграции с PO.</p>
+          ) : null}
           <ul className="space-y-3">
             {data.orders.map((o, i) => {
               const contractor = contractors.find(
@@ -176,11 +184,13 @@ export default function SubcontractorPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(statusLabels) as SubcontractOrder['status'][]).map((s) => (
-                        <SelectItem key={s} value={s} className="text-xs">
-                          {statusLabels[s]}
-                        </SelectItem>
-                      ))}
+                      {(Object.keys(WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU) as SubcontractOrder['status'][]).map(
+                        (s) => (
+                          <SelectItem key={s} value={s} className="text-xs">
+                            {WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU[s]}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                 </li>

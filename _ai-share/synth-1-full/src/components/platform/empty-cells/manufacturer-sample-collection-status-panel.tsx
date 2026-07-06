@@ -14,15 +14,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
-import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
-import { ROUTES } from '@/lib/routes';
-import { MfrEmptyScPeerStrip } from '@/components/platform/empty-cells/MfrEmptyScPeerStrip';
+import {
+  brandLinesheetsHrefForDemo,
+  getPlatformCoreCollectionLabel,
+} from '@/lib/platform-core-hub-matrix';
+import { ROUTES, brandDevelopmentCabinetHref } from '@/lib/platform-core-routes';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
+import { MfrEmptyScPeerStrip } from '@/components/platform/empty-cells/MfrEmptyScPeerStrip';
+import { MfrEmptyPublishStatusBadge } from '@/components/platform/empty-cells/MfrEmptyPublishStatusBadge';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { platformCoreW2PrefetchHandlers } from '@/lib/platform-core-w2-prefetch';
-import { WORKSHOP2_COL_PARAM } from '@/lib/production/workshop2-url';
 import { PlatformCoreStepProgressStrip } from '@/components/platform/PlatformCoreStepProgressStrip';
 import { BRAND_COLLECTION_BRIDGE_LABEL } from '@/lib/platform-core-canonical-labels';
 import { PLATFORM_CORE_PG_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
+import { MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID } from '@/lib/platform-core-ports/platform/wave-yv-mfr-empty-pillars-final';
 
 type DevStep = { id: string; labelRu: string; done: boolean };
 
@@ -92,11 +97,9 @@ function ManufacturerSampleCtaLinks({
   testIdPrefix: string;
 }) {
   const brandW2Href =
-    status?.workshop2Href ??
-    `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(demo.collectionId)}`;
+    status?.workshop2Href ?? brandDevelopmentCabinetHref(demo.collectionId);
   const brandLinesheetHref =
-    status?.linesheetHref ??
-    `${ROUTES.brand.linesheet}?collection=${encodeURIComponent(demo.collectionId)}&article=${encodeURIComponent(demo.demoArticleId)}`;
+    status?.linesheetHref ?? brandLinesheetsHrefForDemo(demo);
   const brandCoreSampleHref = `${ROUTES.brand.coreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(demo.collectionId)}`;
 
   if (compact) {
@@ -181,7 +184,10 @@ export default function ManufacturerSampleCollectionStatus({
 
   if (compact) {
     return (
-      <section data-testid="manufacturer-sample-collection-workspace" className="space-y-1">
+      <section
+        data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID}
+        className="space-y-1"
+      >
         <Card data-testid="manufacturer-sample-collection-mini" className="border-violet-200/60">
           <CardContent className="space-y-1.5 p-3 text-xs">
             <p className="flex items-center gap-1.5 font-semibold">
@@ -194,16 +200,12 @@ export default function ManufacturerSampleCollectionStatus({
               <p className="text-text-muted">{PLATFORM_CORE_PG_UNAVAILABLE_RU}</p>
             ) : status ? (
               <>
-                <p className="text-text-secondary">
+                <p className="text-text-secondary flex flex-wrap items-center gap-1.5">
                   {getPlatformCoreCollectionLabel(collectionId)}
-                  {status.readyForBuyers ? (
-                    <>
-                      {' '}
-                      <Badge variant="secondary" className="text-[10px]">
-                        Готово для байеров
-                      </Badge>
-                    </>
-                  ) : null}
+                  <MfrEmptyPublishStatusBadge
+                    publishedCount={status.publishedCount}
+                    readyForBuyers={status.readyForBuyers}
+                  />
                 </p>
                 <ManufacturerSampleCollectionPgTable
                   status={status}
@@ -222,18 +224,25 @@ export default function ManufacturerSampleCollectionStatus({
               compact
               testIdPrefix="manufacturer-sample-collection-mini"
             />
+            {isPlatformCoreMode() ? <MfrEmptyScPeerStrip demo={demo} /> : null}
           </CardContent>
         </Card>
-        <MfrEmptyScPeerStrip demo={demo} />
         {embedCrossRole ? (
-          <RolePillarCrossRoleLinks roleId="manufacturer" pillarId="sample_collection" variant="compact" />
+          <RolePillarCrossRoleLinks
+            roleId="manufacturer"
+            pillarId="sample_collection"
+            variant="compact"
+          />
         ) : null}
       </section>
     );
   }
 
   return (
-    <section data-testid="manufacturer-sample-collection-workspace" className="space-y-2">
+    <section
+      data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID}
+      className="space-y-2"
+    >
       <Card data-testid="manufacturer-sample-collection" className="border-violet-200/60">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-bold">
@@ -241,30 +250,29 @@ export default function ManufacturerSampleCollectionStatus({
             Статус коллекции у бренда
           </CardTitle>
           {hideLead ? null : (
-          <CardDescription className="text-xs">
-            Лайншиты и витрину ведёт бренд; цех видит сводку из базы без редактора.
-          </CardDescription>
+            <CardDescription className="text-xs">
+              Лайншиты и витрину ведёт бренд; цех видит сводку из базы без редактора.
+            </CardDescription>
           )}
         </CardHeader>
         <CardContent className="space-y-3 text-xs">
-          {loadState === 'loading' ? <p className="text-text-muted">Загрузка статуса коллекции…</p> : null}
+          {loadState === 'loading' ? (
+            <p className="text-text-muted">Загрузка статуса коллекции…</p>
+          ) : null}
           {loadState === 'error' ? (
             <p className="text-text-muted">{PLATFORM_CORE_PG_UNAVAILABLE_RU}</p>
           ) : null}
           {loadState === 'ready' && status ? (
             <>
-              <p className="text-text-secondary">
+              <p className="text-text-secondary flex flex-wrap items-center gap-1.5">
                 <strong>{getPlatformCoreCollectionLabel(collectionId)}</strong>
-                {status.readyForBuyers ? (
-                  <>
-                    {' '}
-                    <Badge variant="secondary" className="text-[10px]">
-                      Готово для байеров
-                    </Badge>
-                  </>
-                ) : (
-                  <span className="text-text-muted ml-1">· ещё собирается</span>
-                )}
+                <MfrEmptyPublishStatusBadge
+                  publishedCount={status.publishedCount}
+                  readyForBuyers={status.readyForBuyers}
+                />
+                {!status.readyForBuyers && status.publishedCount <= 0 ? (
+                  <span className="text-text-muted">· ещё собирается</span>
+                ) : null}
               </p>
               <ManufacturerSampleCollectionPgTable status={status} />
               <PlatformCoreStepProgressStrip
@@ -277,15 +285,18 @@ export default function ManufacturerSampleCollectionStatus({
                 status={status}
                 testIdPrefix="manufacturer-sample-collection"
               />
+              {isPlatformCoreMode() ? <MfrEmptyScPeerStrip demo={demo} /> : null}
             </>
           ) : null}
         </CardContent>
       </Card>
-      <MfrEmptyScPeerStrip demo={demo} />
       {embedCrossRole ? (
-        <RolePillarCrossRoleLinks roleId="manufacturer" pillarId="sample_collection" variant="compact" />
+        <RolePillarCrossRoleLinks
+          roleId="manufacturer"
+          pillarId="sample_collection"
+          variant="compact"
+        />
       ) : null}
     </section>
   );
 }
-

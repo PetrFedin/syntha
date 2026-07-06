@@ -23,8 +23,15 @@ import {
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
-import { BrandOpChainDossierSoTStrip } from '@/components/platform/BrandOpChainDossierSoTStrip';
 import { BrandOpChainCoSpinePeerStrip } from '@/components/platform/BrandOpChainCoSpinePeerStrip';
+import { BrandOpChainDossierSoTStrip } from '@/components/platform/BrandOpChainDossierSoTStrip';
+import { BrandOpChainMaterialsSupplierStrip } from '@/components/platform/BrandOpChainMaterialsSupplierStrip';
+import {
+  BRAND_OP_CHAIN_MATERIALS_SSE_DEDUP_HINT_TESTID,
+  buildBrandOpChainMaterialsSupplierPatchHref,
+  brandOpChainMaterialsSseDedupHintRu,
+  brandOpChainMaterialsStepLinkTestId,
+} from '@/lib/fashion/brand-op-wave-xm';
 import { BrandChainSpineExportChip } from '@/components/integrations/BrandChainSpineExportChip';
 import {
   factoryHandoffQueueHrefForDemo,
@@ -32,14 +39,14 @@ import {
 } from '@/lib/platform-core-hub-matrix';
 import { isIntegrationImportedWholesaleOrderId } from '@/lib/integrations/spine/integration-ui-utils';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { isPlatformCorePgLogisticsWholesaleOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 import { B2bOrderChainPeerMirrorStrip } from '@/components/b2b/B2bOrderChainPeerMirrorStrip';
 import { BrandB2bPgLogisticsTrackingStrip } from '@/components/platform/BrandB2bPgLogisticsTrackingStrip';
 import { ShopOrderShipmentTrackingStrip } from '@/components/integrations/ShopOrderShipmentTrackingStrip';
 import { PlatformCoreErpRetryHint } from '@/components/platform/PlatformCoreErpRetryHint';
-import { buildBrandOrderCommsSession } from '@/lib/b2b/brand-order-comms';
-import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
 
 type ChainStep = { id: string; labelRu: string; done: boolean };
 
@@ -186,6 +193,9 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
   const handoffDone = Boolean(chain?.handedOff);
   const demo = getPlatformCoreDemoByOrderId(orderId);
   const brandConfirmedDone = chain?.steps?.find((s) => s.id === 'brand_confirmed')?.done === true;
+  const materialsSuppliedStep = chain?.steps?.find((s) => s.id === 'materials_supplied');
+  const materialsSuppliedDone = materialsSuppliedStep?.done === true;
+  const hasMaterialsStep = Boolean(materialsSuppliedStep);
   const visibleSteps = productionPillar
     ? (chain?.steps ?? [])
     : (chain?.steps ?? []).filter((s) => COLLECTION_ORDER_CHAIN_STEP_IDS.has(s.id));
@@ -193,16 +203,6 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
   const coreSlim = isPlatformCoreMode();
   const shopMatrixHref = collectionId
     ? `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
-    : null;
-  const brandCoSession =
-    variant === 'brand' && collectionId
-      ? buildBrandOrderCommsSession({ collectionId, orderId })
-      : null;
-  const brandCrmSegmentsHref = collectionId
-    ? brandCrmSegmentationFeatureHref('segments', collectionId)
-    : null;
-  const brandCrmPricelistHref = collectionId
-    ? brandCrmSegmentationFeatureHref('pricelist', collectionId)
     : null;
 
   return (
@@ -226,7 +226,7 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
         <CardTitle className="text-sm font-bold">Цепочка заказа</CardTitle>
         {!coreSlim ? (
           <CardDescription className="text-text-muted text-[10px]">
-            {variant === 'shop' ? 'Оптовый заказ' : 'Подтверждение · handoff'}
+            {variant === 'shop' ? 'Оптовый заказ' : 'Подтверждение · передача'}
           </CardDescription>
         ) : null}
       </CardHeader>
@@ -257,13 +257,29 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
         {variant === 'brand' && productionPillar && collectionId ? (
           <BrandOpChainCoSpinePeerStrip orderId={orderId} collectionId={collectionId} />
         ) : null}
+        {variant === 'brand' && productionPillar && hasMaterialsStep ? (
+          <>
+            <p
+              className={hubGadget.muted}
+              data-testid={BRAND_OP_CHAIN_MATERIALS_SSE_DEDUP_HINT_TESTID}
+            >
+              {brandOpChainMaterialsSseDedupHintRu()}
+            </p>
+            <BrandOpChainMaterialsSupplierStrip
+              orderId={orderId}
+              materialsDone={materialsSuppliedDone}
+              productionOrderId={chain?.productionOrderId}
+              collectionId={collectionId}
+            />
+          </>
+        ) : null}
         {variant === 'shop' && chain && !handoffDone ? (
           <p
             className={hubGadget.muted}
             data-testid="shop-co-chain-awaiting-handoff"
             data-audit-legacy="shop-op-order-status-awaiting-handoff"
           >
-            {!brandConfirmedDone ? 'Ожидает подтверждение бренда' : 'Ожидает handoff'}
+            {!brandConfirmedDone ? 'Ожидает подтверждение бренда' : 'Ожидает передачи в производство'}
           </p>
         ) : null}
         {coreSlim && !productionPillar && chain ? (
@@ -325,58 +341,6 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
             >
               Ритейлеры
             </Link>
-            {brandCoSession ? (
-              <>
-                <span className={hubGadget.goldenSep} aria-hidden>
-                  ·
-                </span>
-                <Link
-                  href={brandCoSession.shopMatrixHref}
-                  data-testid="brand-co-chain-shop-matrix-link"
-                  className={hubGadget.goldenLink}
-                >
-                  Shop matrix
-                </Link>
-                <span className={hubGadget.goldenSep} aria-hidden>
-                  ·
-                </span>
-                <Link
-                  href={brandCoSession.shopCheckoutHref}
-                  data-testid="brand-co-chain-shop-checkout-link"
-                  className={hubGadget.goldenLink}
-                >
-                  Checkout
-                </Link>
-              </>
-            ) : null}
-            {brandCrmSegmentsHref ? (
-              <>
-                <span className={hubGadget.goldenSep} aria-hidden>
-                  ·
-                </span>
-                <Link
-                  href={brandCrmSegmentsHref}
-                  data-testid="brand-co-chain-crm-segments-link"
-                  className={hubGadget.goldenLink}
-                >
-                  CRM segments
-                </Link>
-              </>
-            ) : null}
-            {brandCrmPricelistHref ? (
-              <>
-                <span className={hubGadget.goldenSep} aria-hidden>
-                  ·
-                </span>
-                <Link
-                  href={brandCrmPricelistHref}
-                  data-testid="brand-co-chain-crm-pricelist-link"
-                  className={hubGadget.goldenLink}
-                >
-                  Pricelist
-                </Link>
-              </>
-            ) : null}
           </div>
         ) : null}
         {variant === 'shop' && !productionPillar ? (
@@ -405,7 +369,14 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
           </div>
         ) : null}
         {variant === 'brand' && productionPillar ? (
-          <div className={hubGadget.goldenPath} data-testid="brand-order-handoff-context-strip">
+          <div
+            className={cn(
+              hubGadget.goldenPath,
+              hubCabinet.workspaceTableScroll,
+              'max-md:flex-nowrap'
+            )}
+            data-testid="brand-order-handoff-context-strip"
+          >
             {!handoffDone ? (
               <Link
                 href={brandB2bOrdersAwaitingHandoffRegistryHref()}
@@ -500,11 +471,34 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
               <span className={step.done ? 'text-text-primary' : 'text-text-muted'}>
                 {step.labelRu}
               </span>
+              {variant === 'brand' &&
+              productionPillar &&
+              step.id === 'materials_supplied' ? (
+                <Link
+                  href={buildBrandOpChainMaterialsSupplierPatchHref({
+                    orderId,
+                    productionOrderId: chain?.productionOrderId,
+                    collectionId,
+                  })}
+                  data-testid={brandOpChainMaterialsStepLinkTestId(step.done)}
+                  className="text-accent-primary text-[10px] font-medium hover:underline"
+                >
+                  {step.done ? 'Закупка' : 'Закупка →'}
+                </Link>
+              ) : null}
             </li>
           ))}
         </ul>
 
-        <div className="flex flex-wrap gap-2">
+        <div
+          className={cn(
+            'flex flex-wrap gap-2',
+            variant === 'brand' && productionPillar && coreSlim && hubCabinet.workspaceStickyActions
+          )}
+          data-testid={
+            variant === 'brand' && productionPillar ? 'brand-op-handoff-wizard-actions' : undefined
+          }
+        >
           {variant === 'brand' && !brandConfirmedDone && !handoffDone ? (
             <Button
               size="sm"
@@ -512,6 +506,7 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
               disabled={busy}
               onClick={() => void confirmOrder()}
               data-testid="brand-b2b-confirm-order"
+              className={productionPillar && coreSlim ? hubCabinet.workspacePrimaryBtn : undefined}
             >
               <CheckCircle2 className="mr-1 h-3.5 w-3.5" aria-hidden />
               Подтвердить заказ
@@ -524,6 +519,7 @@ export function B2bOrderChainStatusCard({ orderId, variant, productionPillar = f
               disabled={busy || handoffDone || !brandConfirmedDone}
               onClick={() => void handoff()}
               data-testid="brand-b2b-confirm-production-handoff"
+              className={productionPillar && coreSlim ? hubCabinet.workspacePrimaryBtn : undefined}
             >
               <Factory className="mr-1 h-3.5 w-3.5" aria-hidden />
               {handoffDone ? 'Передан в цех' : 'Передать в производство'}

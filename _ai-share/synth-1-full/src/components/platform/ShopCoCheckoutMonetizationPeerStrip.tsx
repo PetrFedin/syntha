@@ -1,31 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { buildShopCollaborativeOrderSession } from '@/lib/b2b/shop-collaborative-order';
-import { shopOrderCommsFeatureHref } from '@/lib/b2b/shop-order-comms';
-import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
-import { shopB2bOrdersCollectionRegistryHref } from '@/lib/routes';
+import { buildShopCollaborativeOrderSession } from '@/lib/platform-core-ports/b2b/shop-collaborative-order';
+import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
+import { shopOrderCommsFeatureHref } from '@/lib/platform-core-ports/b2b/shop-order-comms';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   collectionId: string;
   orderId?: string;
 };
 
-/** Checkout · greenfield buyer CRM + collaborative + order comms. */
+/** Оформление · CRM бренда + согласования + чат заказа (без дубля реестра/трекинга — golden path). */
 export function ShopCoCheckoutMonetizationPeerStrip({ collectionId, orderId }: Props) {
   const session = buildShopCollaborativeOrderSession({ collectionId, orderId });
   const crmSegmentsHref = brandCrmSegmentationFeatureHref('segments', collectionId);
+  const pricelistHref = brandCrmSegmentationFeatureHref('pricelist', collectionId);
   const orderCommsHref = shopOrderCommsFeatureHref(session.orderId, 'chat', collectionId);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="shop-co-checkout-monetization-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, 'mb-3', hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="shop-co-checkout-monetization-peer-strip"
+    >
       <Link
         href={crmSegmentsHref}
         data-testid="shop-co-checkout-brand-crm-link"
         className={hubGadget.goldenLink}
       >
-        Brand CRM
+        CRM бренда
+      </Link>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={pricelistHref}
+        data-testid="shop-co-checkout-brand-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
+        Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -35,29 +50,13 @@ export function ShopCoCheckoutMonetizationPeerStrip({ collectionId, orderId }: P
         data-testid="shop-co-checkout-collaborative-link"
         className={hubGadget.goldenLink}
       >
-        Approvals
+        Согласования
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={orderCommsHref} data-testid="shop-co-checkout-order-comms-link" className={hubGadget.goldenLink}>
-        Order comms
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link
-        href={shopB2bOrdersCollectionRegistryHref(session.orderId)}
-        data-testid="shop-co-checkout-registry-link"
-        className={hubGadget.goldenLink}
-      >
-        Registry
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link href={session.trackingHref} data-testid="shop-co-checkout-tracking-link" className={hubGadget.goldenLink}>
-        Tracking
+        Чат по заказу
       </Link>
     </div>
   );

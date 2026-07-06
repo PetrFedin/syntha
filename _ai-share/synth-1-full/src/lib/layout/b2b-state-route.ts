@@ -13,6 +13,8 @@ const B2B_LIGHT_CABINET_PREFIXES = [
 function isShopRetailWithoutB2b(pathname: string): boolean {
   if (!pathname.startsWith('/shop')) return false;
   if (pathname.startsWith('/shop/b2b')) return false;
+  /** Platform Core `/shop/core` — embedded matrix/checkout через useB2BState. */
+  if (pathname.startsWith('/shop/core')) return false;
   const normalized = pathname.replace(/\/$/, '') || '/';
   /** Hub `/shop` вызывает useUserContext → useB2BState. */
   if (normalized === '/shop') return false;

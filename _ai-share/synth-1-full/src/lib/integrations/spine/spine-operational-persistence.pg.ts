@@ -24,10 +24,7 @@ import type { VendorPoRecord } from './vendor-po-persistence.file';
 import type { CentricRfqRecord } from './centric-rfq-persistence.file';
 
 export function isSpineOperationalPgEnabled(): boolean {
-  if (
-    process.env.SPINE_OPERATIONAL_PG === '0' ||
-    process.env.SPINE_IMPORTED_ORDERS_PG === '0'
-  ) {
+  if (process.env.SPINE_OPERATIONAL_PG === '0' || process.env.SPINE_IMPORTED_ORDERS_PG === '0') {
     return false;
   }
   return isWorkshop2PostgresEnabled();
@@ -47,7 +44,9 @@ async function withPg<T>(fn: () => Promise<T>): Promise<T | void> {
   }
 }
 
-export async function mirrorIntegrationMetaSnapshotToPg(data: IntegrationMetaFileV1): Promise<void> {
+export async function mirrorIntegrationMetaSnapshotToPg(
+  data: IntegrationMetaFileV1
+): Promise<void> {
   await withPg(async () => {
     for (const [wholesaleOrderId, meta] of Object.entries(data.byWholesaleOrderId)) {
       await getWorkshop2PgPool().query(
@@ -69,10 +68,7 @@ export async function getIntegrationMetaFromPg(
     await ensureWorkshop2PgSchema();
     const res = await getWorkshop2PgPool().query<{
       meta_json: OperationalOrderIntegration;
-    }>(
-      `SELECT meta_json FROM spine_integration_meta WHERE wholesale_order_id = $1 LIMIT 1`,
-      [id]
-    );
+    }>(`SELECT meta_json FROM spine_integration_meta WHERE wholesale_order_id = $1 LIMIT 1`, [id]);
     return res.rows[0]?.meta_json;
   } catch (err) {
     if (isWorkshop2PgConnectionError(err)) return undefined;
@@ -206,7 +202,11 @@ export async function mirrorAllocationSnapshotToPg(input: {
            record_json = EXCLUDED.record_json,
            queue_position = EXCLUDED.queue_position,
            updated_at = NOW()`,
-        [record.wholesaleOrderId, JSON.stringify(record), positions.get(record.wholesaleOrderId) ?? 0]
+        [
+          record.wholesaleOrderId,
+          JSON.stringify(record),
+          positions.get(record.wholesaleOrderId) ?? 0,
+        ]
       );
     }
   });
@@ -338,6 +338,23 @@ export async function getProductionWipByB2bOrderIdFromPg(
     const res = await getWorkshop2PgPool().query<{
       record_json: ProductionWipFileV1['byProductionOrderId'][string];
     }>(`SELECT record_json FROM spine_production_wip WHERE b2b_order_id = $1 LIMIT 1`, [id]);
+    return res.rows[0]?.record_json;
+  } catch (err) {
+    if (isWorkshop2PgConnectionError(err)) return undefined;
+    throw err;
+  }
+}
+
+export async function getProductionWipByPoIdFromPg(
+  productionOrderId: string
+): Promise<ProductionWipFileV1['byProductionOrderId'][string] | undefined> {
+  const id = productionOrderId.trim();
+  if (!id || !isSpineOperationalPgEnabled()) return undefined;
+  try {
+    await ensureWorkshop2PgSchema();
+    const res = await getWorkshop2PgPool().query<{
+      record_json: ProductionWipFileV1['byProductionOrderId'][string];
+    }>(`SELECT record_json FROM spine_production_wip WHERE production_order_id = $1 LIMIT 1`, [id]);
     return res.rows[0]?.record_json;
   } catch (err) {
     if (isWorkshop2PgConnectionError(err)) return undefined;

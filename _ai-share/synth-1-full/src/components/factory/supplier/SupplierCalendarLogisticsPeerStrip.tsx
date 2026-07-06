@@ -3,8 +3,14 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SupCmLogisticsEtaMapOverlayStrip } from '@/components/factory/supplier/SupCmLogisticsEtaMapOverlayStrip';
 import { shopB2bTrackingOrderHref } from '@/lib/routes';
 import { buildSupplierOrderCommsSession } from '@/lib/b2b/supplier-order-comms';
+import {
+  SUP_CM_CALENDAR_LOGISTICS_PEER_STRIP_TESTID,
+  supCmLogisticsDeliveryCommsRu,
+  supCmLogisticsPeerBadgeRu,
+} from '@/lib/fashion/supplier-logistics-wave-vo';
 
 type Props = {
   collectionId: string;
@@ -12,31 +18,28 @@ type Props = {
   orderId: string;
 };
 
-/** Logistics peer без map overlay — shop tracking + delivery confirm entry. */
+/** Логистика peer — ETA/map overlay + трекинг магазина + чат по поставке. */
 export function SupplierCalendarLogisticsPeerStrip({ collectionId, articleId, orderId }: Props) {
   const session = buildSupplierOrderCommsSession({ collectionId, articleId, orderId });
 
   return (
-    <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
-      data-testid="sup-cm-calendar-logistics-peer-strip"
-    >
-      <Badge variant="outline" className="text-[9px] uppercase">
-        Logistics peer
-      </Badge>
-      <span className="text-text-secondary">
-        ETA/map overlay P2 — сейчас peer: shop tracking + delivery confirm в comms.
-      </span>
-      <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
-        <Link href={shopB2bTrackingOrderHref(orderId)} data-testid="sup-cm-calendar-shop-tracking-link">
-          Shop tracking
-        </Link>
-      </Button>
-      <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-        <Link href={session.messagesHref} data-testid="sup-cm-calendar-delivery-comms-link">
-          Delivery comms
-        </Link>
-      </Button>
+    <div className="space-y-2" data-testid={SUP_CM_CALENDAR_LOGISTICS_PEER_STRIP_TESTID}>
+      <SupCmLogisticsEtaMapOverlayStrip orderId={orderId} />
+      <div className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs">
+        <Badge variant="outline" className="text-[9px] uppercase">
+          {supCmLogisticsPeerBadgeRu()}
+        </Badge>
+        <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
+          <Link href={shopB2bTrackingOrderHref(orderId)} data-testid="sup-cm-calendar-shop-tracking-link">
+            Трекинг магазина
+          </Link>
+        </Button>
+        <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
+          <Link href={session.messagesHref} data-testid="sup-cm-calendar-delivery-comms-link">
+            {supCmLogisticsDeliveryCommsRu()}
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

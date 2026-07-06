@@ -8,8 +8,7 @@ import {
   PLATFORM_CORE_DEMO,
 } from '@/lib/platform-core-hub-matrix';
 import { PLATFORM_CORE_EMPTY_CHAIN_BANNER_RU } from '@/lib/platform-core-user-messages';
-import { ROUTES } from '@/lib/routes';
-import { WORKSHOP2_COL_PARAM, WORKSHOP2_CREATE_PARAM } from '@/lib/production/workshop2-url';
+import { ROUTES, brandDevelopmentCabinetHref } from '@/lib/platform-core-routes';
 
 type Props = {
   collectionId: string;
@@ -19,7 +18,7 @@ type Props = {
 export function PlatformCoreEmptyChainBanner({ collectionId }: Props) {
   if (!isPlatformCoreEmptyChainCollection(collectionId)) return null;
 
-  const createHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}&${WORKSHOP2_CREATE_PARAM}=1`;
+  const createHref = brandDevelopmentCabinetHref(collectionId, undefined, { create: true });
 
   return (
     <div

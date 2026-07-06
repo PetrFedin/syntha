@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { ROUTES, shopB2bCheckoutCollectionHref } from '@/lib/routes';
 
+import {
+  WAVE_WZ_BRAND_SC_GOLDEN_PATH_RELEASE_GATE_RU,
+} from '@/lib/platform/wave-wz-ru-noise-dedup-final';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 export type BrandScGoldenPathOmitStep = 'linesheets' | 'showroom';
@@ -12,12 +15,15 @@ export function BrandScCabinetGoldenPathStrip({
   collectionId,
   testIdVariant = 'cabinet',
   omitStep,
+  /** Wave YR/UE: plain «Матрица» скрыта — mini-matrix / open-shop prefill CTA primary. */
+  omitMatrixPrefillCta = false,
 }: {
   collectionId: string;
   /** legacy testids на странице лайншитов (e2e core-02/06). */
   testIdVariant?: 'cabinet' | 'linesheets';
   /** Скрыть шаг, на котором уже находится пользователь. */
   omitStep?: BrandScGoldenPathOmitStep;
+  omitMatrixPrefillCta?: boolean;
 }) {
   const linesheetHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
   const releaseGateHref = `${ROUTES.brand.launchReadiness}?collection=${encodeURIComponent(collectionId)}`;
@@ -47,7 +53,7 @@ export function BrandScCabinetGoldenPathStrip({
     {
       key: 'release-gate',
       href: releaseGateHref,
-      label: 'Release gate',
+      label: WAVE_WZ_BRAND_SC_GOLDEN_PATH_RELEASE_GATE_RU,
       testId: 'brand-sc-audit-path-release-gate',
     },
     {
@@ -56,20 +62,24 @@ export function BrandScCabinetGoldenPathStrip({
       label: 'Витрина магазина',
       testId: 'brand-sc-audit-path-shop-showroom',
     },
-    {
-      key: 'matrix',
-      href: shopMatrixHref,
-      label: 'Матрица',
-      testId:
-        testIdVariant === 'linesheets'
-          ? 'brand-sc-linesheets-shop-matrix-link'
-          : 'brand-sc-audit-path-shop-matrix',
-      legacy: 'brand-sc-cross-matrix-shop-matrix-link',
-    },
+    ...(omitMatrixPrefillCta
+      ? []
+      : [
+          {
+            key: 'matrix',
+            href: shopMatrixHref,
+            label: 'Матрица',
+            testId:
+              testIdVariant === 'linesheets'
+                ? 'brand-sc-linesheets-shop-matrix-link'
+                : 'brand-sc-audit-path-shop-matrix',
+            legacy: 'brand-sc-cross-matrix-shop-matrix-link',
+          },
+        ]),
     {
       key: 'checkout',
       href: shopB2bCheckoutCollectionHref(collectionId),
-      label: 'Checkout',
+      label: 'Оформление',
       testId:
         testIdVariant === 'linesheets'
           ? 'brand-sc-linesheets-shop-checkout-link'

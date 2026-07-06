@@ -104,7 +104,7 @@ export function RangePlannerTierPlanEdit({
         type="button"
         size="sm"
         variant="outline"
-        className="h-7 w-full text-[10px] font-bold uppercase"
+        className="min-h-11 w-full text-[10px] font-bold uppercase sm:h-7 sm:min-h-0"
         disabled={busy}
         data-testid={`range-planner-tier-plan-save-${tierId}`}
         onClick={() => void save()}

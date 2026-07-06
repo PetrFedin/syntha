@@ -4,11 +4,12 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import type { PillarCapabilityContext } from '@/lib/platform/pillar-capability-registry';
+import type { PillarCapabilityContext } from '@/lib/platform-core-ports/platform/pillar-capability-registry';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { getPillarWorkspaceCrossLinks } from '@/lib/platform/pillar-capability-workspace-nav';
-import { buildPillarWorkspaceContext } from '@/lib/platform/pillar-workspace-context';
+import { getPillarWorkspaceCrossLinks } from '@/lib/platform-core-ports/platform/pillar-capability-workspace-nav';
+import { buildPillarWorkspaceContext } from '@/lib/platform-core-ports/platform/pillar-workspace-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { usePlatformCoreEmbeddedWorkspace } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { platformCoreHeaderHubTabClass } from '@/lib/platform-core-header-controls';
 import { PillarCapabilityCrossLinksStrip } from '@/components/platform/PillarCapabilityCrossLinksStrip';
@@ -50,13 +51,20 @@ export function PillarCapabilityWorkspaceChrome({
   if (!workspace) return <>{children}</>;
 
   const coreMode = isPlatformCoreMode();
+  const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
+  /** В embedded hub родитель уже узкий — lg-sidebar grid схлопывает content-колонку в 0px. */
+  const coreSideNav = coreMode && !embeddedWorkspace;
+  const effectiveShowCrossLinks = showCrossLinks && !coreMode;
   const crossLinks = getPillarWorkspaceCrossLinks(workspaceId, effectiveCtx, crossLinksLimit);
   const missingOrderHintCount = effectiveCtx.orderId?.trim()
     ? 0
     : crossLinks.filter((link) => link.disabled).length;
 
   return (
-    <div className={cn('space-y-4', className)} data-testid={`pillar-workspace-${workspaceId}`}>
+    <div
+      className={cn('min-w-0 space-y-4', embeddedWorkspace && 'w-full', className)}
+      data-testid={`pillar-workspace-${workspaceId}`}
+    >
       {!coreMode ? (
         <header className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -82,55 +90,98 @@ export function PillarCapabilityWorkspaceChrome({
 
       {beforeTabs}
 
-      <nav
+      <div
         className={cn(
-          coreMode
-            ? cn(hubCabinet.workspacePillarStrip, 'border-b-0 pb-0')
-            : 'border-border-subtle flex flex-wrap gap-1 border-b pb-2'
+          coreSideNav && 'lg:grid lg:grid-cols-[11.5rem_minmax(0,1fr)] lg:items-start lg:gap-4',
+          embeddedWorkspace && coreMode && 'min-w-0 space-y-4'
         )}
-        aria-label="Функции workspace"
-        data-testid={`pillar-workspace-${workspaceId}-tabs`}
       >
-        <div className={cn(coreMode && hubCabinet.pillarNavPillRow, !coreMode && 'flex flex-wrap gap-1')}>
-        {workspace.features.map((feature) => {
-          const active = feature.id === activeFeatureId;
-          const disabled = feature.status === 'planned';
-          return (
-            <button
-              key={feature.id}
-              type="button"
-              disabled={disabled}
-              onClick={() => setActiveFeatureId(feature.id)}
-              className={cn(
-                coreMode
-                  ? cn(
-                      platformCoreHeaderHubTabClass(active),
-                      disabled && 'cursor-not-allowed opacity-40'
-                    )
-                  : cn(
-                      'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
-                      active
-                        ? 'bg-text-primary text-white'
-                        : 'text-text-secondary hover:bg-bg-surface2 hover:text-text-primary'
-                    ),
-                disabled && 'cursor-not-allowed opacity-40'
-              )}
-              data-testid={feature.testId}
-              title={feature.summaryRu}
-            >
-              {feature.labelRu}
-              {feature.status === 'stub' ? (
-                <span className="ml-1 opacity-70">·</span>
-              ) : null}
-            </button>
-          );
-        })}
+        <nav
+          className={cn(
+            coreSideNav
+              ? cn(
+                  hubCabinet.workspacePillarStrip,
+                  'max-lg:border-b max-lg:pb-2',
+                  'lg:flex lg:flex-col lg:gap-0.5 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:sticky lg:top-14'
+                )
+              : coreMode
+                ? cn(
+                    hubCabinet.workspacePillarStrip,
+                    'flex flex-nowrap overflow-x-auto overscroll-x-contain border-b pb-2'
+                  )
+                : 'border-border-subtle flex flex-wrap gap-1 border-b pb-2'
+          )}
+          aria-label="Функции workspace"
+          data-testid={`pillar-workspace-${workspaceId}-tabs`}
+        >
+          <div
+            className={cn(
+              coreSideNav && hubCabinet.pillarNavPillRow,
+              coreSideNav &&
+                'max-lg:flex max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:overscroll-x-contain',
+              coreSideNav && 'lg:flex lg:flex-col lg:gap-0.5 lg:overflow-visible',
+              coreMode &&
+                !coreSideNav &&
+                cn(hubCabinet.pillarNavPillRow, 'flex flex-nowrap gap-1'),
+              !coreMode && 'flex flex-wrap gap-1'
+            )}
+          >
+            {workspace.features.map((feature) => {
+              const active = feature.id === activeFeatureId;
+              const disabled = feature.status === 'planned';
+              return (
+                <button
+                  key={feature.id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => setActiveFeatureId(feature.id)}
+                  className={cn(
+                    coreSideNav
+                      ? cn(
+                          platformCoreHeaderHubTabClass(active),
+                          'max-lg:shrink-0 max-lg:snap-start',
+                          'lg:flex lg:w-full lg:flex-col lg:items-start lg:rounded-lg lg:border lg:px-2 lg:py-2 lg:text-left lg:text-[13px] lg:font-semibold lg:normal-case lg:tracking-normal',
+                          active
+                            ? 'lg:bg-accent-primary/10 lg:text-text-primary lg:border-accent-primary/20'
+                            : 'lg:text-text-secondary lg:border-transparent lg:hover:bg-bg-surface2',
+                          disabled && 'cursor-not-allowed opacity-40'
+                        )
+                      : coreMode
+                        ? cn(
+                            platformCoreHeaderHubTabClass(active),
+                            'shrink-0 snap-start'
+                          )
+                        : cn(
+                          'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
+                          active
+                            ? 'bg-text-primary text-white'
+                            : 'text-text-secondary hover:bg-bg-surface2 hover:text-text-primary',
+                          disabled && 'cursor-not-allowed opacity-40'
+                        ),
+                    disabled && 'cursor-not-allowed opacity-40'
+                  )}
+                  data-testid={feature.testId}
+                  title={feature.summaryRu}
+                >
+                  {feature.labelRu}
+                  {feature.status === 'stub' ? (
+                    <span className="ml-1 opacity-70">·</span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        <div
+          className={cn('min-w-0', embeddedWorkspace && 'w-full')}
+          data-testid={`pillar-workspace-${workspaceId}-panel`}
+        >
+          {children}
         </div>
-      </nav>
+      </div>
 
-      <div data-testid={`pillar-workspace-${workspaceId}-panel`}>{children}</div>
-
-      {showCrossLinks ? (
+      {effectiveShowCrossLinks ? (
         <PillarCapabilityCrossLinksStrip
           title={crossLinksTitle}
           links={crossLinks}

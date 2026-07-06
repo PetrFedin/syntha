@@ -22,7 +22,7 @@ export function ShopWorkingOrderNativeOrderHonestStrip({
       data-testid="shop-working-order-native-order-honest-strip"
     >
       <span className="text-text-secondary">
-        Native order — amend через матрицу; версии/bulk здесь, checkout отдельно.
+        Native-заказ — правки через матрицу; версии и пакетные операции здесь, оформление отдельно.
       </span>
       <Link
         href={session.matrixHref}
@@ -36,14 +36,14 @@ export function ShopWorkingOrderNativeOrderHonestStrip({
         data-testid="shop-working-order-native-tracking-link"
         className="text-accent-primary font-medium hover:underline"
       >
-        Tracking
+        Трекинг
       </Link>
       <Link
         href={session.checkoutHref}
         data-testid="shop-working-order-native-checkout-link"
         className="text-accent-primary font-medium hover:underline"
       >
-        Checkout
+        Оформление
       </Link>
     </div>
   );

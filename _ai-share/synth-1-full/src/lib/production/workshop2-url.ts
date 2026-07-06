@@ -1,4 +1,6 @@
 /** Параметры раздела разработки коллекции (workshop2): выбранная коллекция и артикул внутри неё. */
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+
 export const WORKSHOP2_COL_PARAM = 'w2col';
 export const WORKSHOP2_ART_PARAM = 'w2art';
 /** `1` — открыть диалог «Создать артикул» (Range Planner bridge). */
@@ -71,12 +73,24 @@ export function parseWorkshop2ArticlePaneParam(raw: string | null): string | nul
 export const W2_ARTICLE_SECTION_DOM = {
   supply: 'w2article-section-supply',
   planPo: 'w2article-section-plan-po',
+  planTa: 'w2article-section-plan-ta',
   planNest: 'w2article-section-plan-nest',
   release: 'w2article-section-release',
   qc: 'w2article-section-qc',
   fit: 'w2article-section-fit',
   stock: 'w2article-section-stock',
 } as const;
+
+/** Legacy `w2sec=time-and-action` → вкладка «План» и блок T&A (не секция ТЗ). */
+export function resolveWorkshop2W2SecOperationalDeepLink(
+  w2sec: string | null
+): { pane: 'plan'; scrollHash: (typeof W2_ARTICLE_SECTION_DOM)['planTa'] } | null {
+  if (!w2sec) return null;
+  if (w2sec === 'time-and-action' || w2sec === 'time_and_action') {
+    return { pane: 'plan', scrollHash: W2_ARTICLE_SECTION_DOM.planTa };
+  }
+  return null;
+}
 
 import { WORKSHOP2_RELEASE_SUB_PARAM } from '@/lib/production/workshop2-release-sub-param';
 import { isWorkshop2InternalArticleCodeValid } from '@/lib/production/local-collection-inventory';
@@ -97,6 +111,14 @@ export function workshop2ArticleUrlSegment(
 
 /** Отдельная страница артикула: досье, ТЗ и будущие вкладки. */
 export function workshop2ArticlePath(collectionId: string, articleId: string): string {
+  if (isPlatformCoreMode()) {
+    const sp = new URLSearchParams({
+      pillar: 'development',
+      collection: collectionId.trim(),
+      article: articleId.trim(),
+    });
+    return `/brand/core?${sp.toString()}`;
+  }
   return `${WORKSHOP2_BASE_PATH}/c/${encodeURIComponent(collectionId)}/a/${encodeURIComponent(articleId)}`;
 }
 

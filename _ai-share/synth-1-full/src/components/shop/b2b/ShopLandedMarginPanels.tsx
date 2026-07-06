@@ -26,6 +26,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
+import { ShopLandedMarginTierSyncHonestyStrip } from '@/components/shop/b2b/ShopLandedMarginTierSyncHonestyStrip';
+import { ShopPricelistTierReceiveBadge } from '@/components/shop/b2b/ShopPricelistTierReceiveBadge';
 
 export function ShopLandedMarginHubPanel() {
   const searchParams = useSearchParams();
@@ -33,6 +35,7 @@ export function ShopLandedMarginHubPanel() {
 
   return (
     <div className="space-y-4" data-testid="shop-landed-margin-hub-panel">
+      <ShopLandedMarginTierSyncHonestyStrip collectionId={collectionId} />
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-border-subtle">
           <CardHeader className="pb-2">
@@ -66,7 +69,7 @@ export function ShopLandedMarginHubPanel() {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <PieChart className="text-text-secondary h-4 w-4" />
-              Landed cost
+              Себестоимость поставки
             </CardTitle>
             <CardDescription>Полная себестоимость поставки</CardDescription>
           </CardHeader>
@@ -134,23 +137,24 @@ export function ShopLandedMarginRollupPanel() {
 
   return (
     <div className="space-y-4" data-testid="shop-landed-margin-rollup-panel">
+      <ShopLandedMarginTierSyncHonestyStrip collectionId={collectionId} orderId={activeOrderId} />
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">Lines: {summary.total}</Badge>
-        <Badge variant="outline">On target: {summary.onTarget}</Badge>
-        <Badge variant="outline">Avg margin: {summary.avgMarginPct}%</Badge>
+        <Badge variant="secondary">Строк: {summary.total}</Badge>
+        <Badge variant="outline">В цели: {summary.onTarget}</Badge>
+        <Badge variant="outline">Ср. маржа: {summary.avgMarginPct}%</Badge>
         {orderLinked ? (
           <Badge variant="outline" data-testid="shop-landed-margin-order-linked">
-            B2B order
+            B2B-заказ
           </Badge>
         ) : null}
         <Badge variant="outline" data-testid={`shop-landed-margin-feed-source-${storageMode}`}>
-          {storageMode === 'pg' ? 'PG margin feed' : `${storageMode} margin feed`}
+          {storageMode === 'pg' ? 'Лента маржи PG' : `Лента маржи · ${storageMode}`}
         </Badge>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.brandMarginSimulatorHref}>Brand simulator</Link>
+          <Link href={session.brandMarginSimulatorHref}>Симулятор бренда</Link>
         </Button>
         <Button variant="outline" size="sm" type="button" onClick={() => void reload()}>
-          Refresh
+          Обновить
         </Button>
         <Button
           variant="outline"
@@ -160,24 +164,24 @@ export function ShopLandedMarginRollupPanel() {
           onClick={() => void syncRollup()}
           data-testid="shop-landed-margin-rollup-sync"
         >
-          {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Sync order feed'}
+          {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Синхр. ленту заказа'}
         </Button>
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Landed margin roll-up</CardTitle>
+          <CardTitle className="text-base">Сводка маржи с доставкой</CardTitle>
           <CardDescription>
-            Wholesale vs landed для active B2B order · persisted PG/file feed.
+            Опт vs landed для активного B2B-заказа · лента PG/файл.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Line</TableHead>
-                <TableHead className="text-right">Wholesale</TableHead>
+                <TableHead>Строка</TableHead>
+                <TableHead className="text-right">Опт</TableHead>
                 <TableHead className="text-right">Landed</TableHead>
-                <TableHead className="text-right">Margin</TableHead>
+                <TableHead className="text-right">Маржа</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -227,26 +231,30 @@ export function ShopLandedMarginPricelistPanel() {
 
   return (
     <div className="space-y-4" data-testid="shop-landed-margin-pricelist-panel">
+      <ShopLandedMarginTierSyncHonestyStrip collectionId={collectionId} orderId={activeOrderId} />
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">Synced tiers: {syncSummary.synced}</Badge>
+        <ShopPricelistTierReceiveBadge collectionId={collectionId} />
+        <Badge variant="secondary">Синхр. тиров: {syncSummary.synced}</Badge>
         <Badge variant="outline" data-testid={`shop-pricelist-tier-sync-source-${storageMode}`}>
-          {storageMode === 'pg' ? 'PG tier sync' : `${storageMode} tier sync`}
+          {storageMode === 'pg' ? 'Синхр. тира PG' : `Синхр. тира · ${storageMode}`}
         </Badge>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.brandShopSyncHref}>Brand shop sync</Link>
+          <Link href={session.brandShopSyncHref}>Синхр. бренд ↔ магазин</Link>
         </Button>
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Synced multipliers</CardTitle>
-          <CardDescription>Brand pricelist tier → shop wholesale / landed margin.</CardDescription>
+          <CardTitle className="text-base">Синхронизированные множители</CardTitle>
+          <CardDescription>
+            Тир прайс-листа бренда → опт магазина / маржа с доставкой.
+          </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tier</TableHead>
-                <TableHead>List</TableHead>
+                <TableHead>Тир</TableHead>
+                <TableHead>Прайс-лист</TableHead>
                 <TableHead className="text-right">×</TableHead>
               </TableRow>
             </TableHeader>
@@ -254,7 +262,7 @@ export function ShopLandedMarginPricelistPanel() {
               {(syncRows ?? []).length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-text-muted text-xs">
-                    Нет synced tiers — push на brand · shop sync.
+                    Нет синхр. тиров — выполните push в синхр. бренд ↔ магазин.
                   </TableCell>
                 </TableRow>
               ) : (

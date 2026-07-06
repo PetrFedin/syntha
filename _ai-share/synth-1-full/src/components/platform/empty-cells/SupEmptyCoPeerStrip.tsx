@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { factoryMaterialsProcurementHrefForDemo } from '@/lib/platform-core-hub-matrix';
-import { buildSupplierProcurementSession } from '@/lib/fashion/supplier-procurement-workspace';
-import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
-import { shopB2bTrackingOrderHref } from '@/lib/routes';
+import { buildSupplierProcurementSession } from '@/lib/platform-core-ports/fashion/supplier-procurement-workspace';
+import { manufacturerHandoffFeatureHref } from '@/lib/platform-core-ports/manufacturer-handoff';
+import { shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   demo: PlatformCoreDemoContext;
@@ -33,21 +35,24 @@ export function SupEmptyCoPeerStrip({ demo, orderId }: Props) {
   );
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="sup-empty-co-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="sup-empty-co-peer-strip"
+    >
       <Link href={mfrHandoffHref} data-testid="sup-empty-co-mfr-handoff-link" className={hubGadget.goldenLink}>
-        Mfr handoff
+        Передача в цех
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={procurementHref} data-testid="sup-empty-co-procurement-link" className={hubGadget.goldenLink}>
-        Procurement
+        Закупки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.forecastHref} data-testid="sup-empty-co-forecast-link" className={hubGadget.goldenLink}>
-        Forecast
+        Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -57,7 +62,7 @@ export function SupEmptyCoPeerStrip({ demo, orderId }: Props) {
         data-testid="sup-empty-co-tracking-link"
         className={hubGadget.goldenLink}
       >
-        Tracking
+        Трекинг
       </Link>
     </div>
   );

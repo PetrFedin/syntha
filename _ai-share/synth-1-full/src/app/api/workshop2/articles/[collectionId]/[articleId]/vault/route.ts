@@ -4,6 +4,8 @@ import {
   buildWorkshop2VaultVirusScanMetadataPatch,
   runWorkshop2VaultVirusScanStub,
 } from '@/lib/production/workshop2-vault-virus-scan';
+import { bumpPlatformCoreDevelopmentStatus } from '@/lib/server/platform-core-development-status-hub';
+import { enqueueWorkshop2DomainEvent } from '@/lib/server/workshop2-domain-events';
 import {
   listWorkshop2VaultDocumentsFromPg,
   upsertWorkshop2VaultDocumentToPg,
@@ -120,6 +122,17 @@ async function putVault(req: NextRequest, ctx: RouteCtx) {
     storagePath: storagePath || undefined,
     metadata,
   });
+
+  if (storagePath) {
+    bumpPlatformCoreDevelopmentStatus([cid]);
+    void enqueueWorkshop2DomainEvent({
+      type: 'dossier.gate_passed',
+      collectionId: cid,
+      articleId: aid,
+      payload: { source: 'vault_upload', documentId },
+      dispatchNow: true,
+    }).catch(() => {});
+  }
 
   return NextResponse.json({ ok: true, document: record });
 }

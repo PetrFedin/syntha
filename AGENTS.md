@@ -39,6 +39,8 @@ npm run core:verify
 
 Статус: **`npm run core:status`**. Перезапуск core dev: **`npm run core:restart`**. Если `:5433` / `:3001` уже заняты — скрипты это распознают (не ошибка, если сервисы живы). Env: **`_ai-share/synth-1-full/env.core.example`**. Застрял порт — **`npm run stop:stale-dev`**.
 
+**Platform Core — экономия токенов:** **`_platform-core-split/platform-core/CURSOR-START-HERE.md`**, **`DEEP-AUDIT-PROGRESS.md`** (compact, не DEEP-AUDIT целиком), rule **`.cursor/rules/cursor-junior-dev.mdc`**, **`platform-core-scope.mdc`**, **`npm run validate:platform-core-boundary`**, очередь **`npm run planner:next`**. Канон UI: **`/platform`** — не Workshop2. После правки `.cursorignore` — **Reload Window** в Cursor.
+
 **Git на macOS:** если `git` пишет про Xcode license — **`sudo xcodebuild -license`**, затем **`bash scripts/commit-home-dev-optimization.sh`**. Застрял e2e dev / битый `.next`: **`npm run stop:stale-dev`** (убивает :3123) или **`SYNTHA_STOP_MAIN_DEV=1 npm run stop:stale-dev`**.
 
 ## Bootstrap после clone
@@ -50,3 +52,13 @@ bash scripts/bootstrap-monorepo-dev.sh
 Скрипт bootstrap вызывает **`scripts/normalize-gsd-cursor-paths.sh`** и **`scripts/cursor-mcp-sync.py`**. После **`npx get-shit-done-cc@latest --local --cursor`** при появлении абсолютных путей в ссылках запустите normalize снова. Контроль: **`bash scripts/check-gsd-cursor-paths.sh`** (в CI — job **GSD portable paths**).
 
 GSD и субмодуль **`tools/superpowers`** должны быть на месте; MCP — перегенерировать **`python3 scripts/cursor-mcp-sync.py`** и включить серверы в настройках Cursor.
+
+**P0 runtime (backend + PG + Ollama):**
+
+```bash
+bash scripts/bootstrap-monorepo-dev.sh   # npm + GSD + MCP
+npm run bootstrap:p0                   # Poetry .venv + ml + analytics + core PG + ollama pull
+npm run audit:rd-stack               # проверка пробелов
+```
+
+Без pull моделей (экономия времени/диска): **`npm run bootstrap:p0:fast`**. Backend: **`poetry run uvicorn app.main:app --reload --port 8000`**.

@@ -1,4 +1,4 @@
-import { Factory, FileText, Handshake, LayoutGrid, Package, Truck } from 'lucide-react';
+import { Factory, FileText, Handshake, Inbox, LayoutGrid, Package, Truck } from 'lucide-react';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   COMMS_GROUP_LABEL,
@@ -16,6 +16,7 @@ import {
 import { PLATFORM_CORE_CABINET_NAV_VALUE } from '@/lib/platform-core-cabinet-chrome';
 import {
   factoryHandoffQueueHrefForDemo,
+  factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
   PLATFORM_CORE_DEMO,
@@ -25,7 +26,14 @@ import {
   platformCoreShopLogisticsNavHiddenSet,
 } from '@/lib/platform-core-side-paths-registry';
 import { sortCommsNavLinksMessagesFirst } from '@/lib/platform-core-nav-comms-order';
-import { factoryProductionDossierContextHref, factoryProductionOrdersOrderContextHref, factorySupplierCalendarB2bOrderContextHref, ROUTES } from '@/lib/routes';
+import {
+  factoryProductionDossierContextHref,
+  factoryProductionOrdersOrderContextHref,
+  factorySupplierCalendarB2bOrderContextHref,
+  factorySupplierRfqInboxHref,
+  ROUTES,
+} from '@/lib/platform-core-routes';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 const coreShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${PLATFORM_CORE_DEMO.collectionId}`;
 const coreMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${PLATFORM_CORE_DEMO.collectionId}`;
@@ -43,12 +51,34 @@ type NavLinkLike = {
   icon: unknown;
   description?: string;
   subsections?: NavSubsectionLike[];
+  quickActions?: Array<{ label: string; href: string; icon: unknown }>;
+  testId?: string;
 };
 
 type NavGroupLike = {
   id: string;
   links?: NavLinkLike[];
 };
+
+/** Sidebar href → native core cabinet (STRICT-safe). */
+export function withPlatformCoreNavHrefs<T extends NavGroupLike>(groups: readonly T[]): T[] {
+  if (!isPlatformCoreMode()) return [...groups];
+  return groups.map((g) => ({
+    ...g,
+    links: g.links?.map((l) => ({
+      ...l,
+      href: platformCoreUiHref(l.href, PLATFORM_CORE_DEMO),
+      subsections: l.subsections?.map((s) => ({
+        ...s,
+        href: platformCoreUiHref(s.href, PLATFORM_CORE_DEMO),
+      })),
+      quickActions: l.quickActions?.map((qa) => ({
+        ...qa,
+        href: platformCoreUiHref(qa.href, PLATFORM_CORE_DEMO),
+      })),
+    })),
+  })) as T[];
+}
 
 const SHOP_B2B_SUBSECTION_HIDDEN_IN_CORE = platformCoreShopB2bNavHiddenSet();
 const SHOP_LOGISTICS_SUBSECTION_HIDDEN_IN_CORE = platformCoreShopLogisticsNavHiddenSet();
@@ -257,28 +287,43 @@ function filterSupplierNavForPlatformCore<T extends NavGroupLike>(groups: readon
     if (!g.links) return g;
 
     if (g.id === 'comms') {
+      const calendarLink = g.links.find((l) => l.value === 'calendar');
+      const messagesLink = g.links.find((l) => l.value === 'messages');
+      const links = [
+        ...(messagesLink
+          ? [
+              {
+                ...messagesLink,
+                href: ROUTES.factory.supplierMessages,
+                description: 'Сообщения и контекст по артикулу.',
+              },
+            ]
+          : []),
+        {
+          label: 'Запросы цен',
+          value: 'rfq-inbox-core',
+          href: factorySupplierRfqInboxHref({
+            collectionId: PLATFORM_CORE_DEMO.collectionId,
+            articleId: PLATFORM_CORE_DEMO.demoArticleId,
+          }),
+          icon: Inbox,
+          description: 'Входящие RFQ — отдельный маршрут, не alias сообщений.',
+          testId: 'supplier-sidebar-rfq-inbox-nav',
+        },
+        ...(calendarLink
+          ? [
+              {
+                ...calendarLink,
+                href: factorySupplierCalendarB2bOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId),
+                description: 'Поставки, заказы и логистика материалов.',
+              },
+            ]
+          : []),
+      ];
       return {
         ...g,
         label: COMMS_GROUP_LABEL,
-        links: sortCommsNavLinksMessagesFirst(
-          g.links.map((link) => {
-            if (link.value === 'calendar') {
-              return {
-                ...link,
-                href: factorySupplierCalendarB2bOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId),
-                description: 'Поставки, заказы и логистика материалов.',
-              };
-            }
-            if (link.value === 'messages') {
-              return {
-                ...link,
-                href: `${ROUTES.factory.messages}?role=supplier`,
-                description: 'Сообщения и контекст по артикулу.',
-              };
-            }
-            return link;
-          })
-        ),
+        links: sortCommsNavLinksMessagesFirst(links),
       } as T;
     }
 
@@ -297,9 +342,10 @@ function filterSupplierNavForPlatformCore<T extends NavGroupLike>(groups: readon
         {
           label: 'Каталог материалов',
           value: 'materials-catalog-core',
-          href: ROUTES.factory.supplierCircularHub,
+          href: factoryMaterialsCatalogHrefForDemo(PLATFORM_CORE_DEMO),
           icon: Package,
           description: 'Листинги и остатки материалов поставщика.',
+          testId: 'supplier-sidebar-materials-catalog-nav',
         },
         {
           label: 'Закупка под PO',
@@ -356,13 +402,15 @@ function prependCabinetLink<T extends NavGroupLike>(
 }
 
 export function augmentBrandNavForCoreCabinet<T extends NavGroupLike>(groups: readonly T[]): T[] {
-  return prependCabinetLink(groups, 'development', ROUTES.brand.coreCabinet);
+  return withPlatformCoreNavHrefs(
+    prependCabinetLink(groups, 'development', ROUTES.brand.coreCabinet)
+  );
 }
 
 export function augmentShopNavForCoreCabinet<T extends NavGroupLike>(groups: readonly T[]): T[] {
   let out = prependCabinetLink(groups, 'pim', ROUTES.shop.coreCabinet);
   if (!isPlatformCoreMode()) return out;
-  return filterShopNavForPlatformCore(out);
+  return withPlatformCoreNavHrefs(filterShopNavForPlatformCore(out));
 }
 
 export function augmentManufacturerNavForCoreCabinet<T extends NavGroupLike>(
@@ -370,13 +418,13 @@ export function augmentManufacturerNavForCoreCabinet<T extends NavGroupLike>(
 ): T[] {
   let out = prependCabinetLink(groups, 'production', ROUTES.factory.productionCoreCabinet);
   if (!isPlatformCoreMode()) return out;
-  return filterManufacturerNavForPlatformCore(out);
+  return withPlatformCoreNavHrefs(filterManufacturerNavForPlatformCore(out));
 }
 
 export function augmentSupplierNavForCoreCabinet<T extends NavGroupLike>(groups: readonly T[]): T[] {
   let out = prependCabinetLink(groups, 'pim', ROUTES.factory.supplierCoreCabinet);
   if (!isPlatformCoreMode()) return out;
-  return filterSupplierNavForPlatformCore(out);
+  return withPlatformCoreNavHrefs(filterSupplierNavForPlatformCore(out));
 }
 
 /** Дистрибутор: те же фильтры partners/b2b, что у shop в core. */
@@ -384,7 +432,7 @@ export function augmentDistributorNavForCoreCabinet<T extends NavGroupLike>(
   groups: readonly T[]
 ): T[] {
   if (!isPlatformCoreMode()) return [...groups];
-  return filterShopNavForPlatformCore(groups);
+  return withPlatformCoreNavHrefs(filterShopNavForPlatformCore(groups));
 }
 
 type ShopOverviewItem = { href: string; label: string; desc: string; testId?: string };

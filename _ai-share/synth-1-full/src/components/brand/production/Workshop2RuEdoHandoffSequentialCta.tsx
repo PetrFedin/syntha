@@ -114,7 +114,7 @@ export function Workshop2RuEdoHandoffSequentialCta({
       onScrollToHandoffChecklist();
       await onPersistHandoffMirror();
       toast({
-        title: 'Handoff',
+        title: 'Передача',
         description: 'Чеклист передачи обновлён — проверьте gate и отправку в цех.',
       });
     } catch {

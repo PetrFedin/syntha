@@ -35,6 +35,7 @@ import { WORKSHOP2_ARTICLE_CONTEXT_TYPE } from '@/lib/production/workshop2-domai
 import { listWorkshop2SampleOrders } from '@/lib/server/workshop2-sample-order-repository';
 import { getPlatformCoreDemoByOrderId } from '@/lib/platform-core-hub-matrix';
 import { areWorkshop2MaterialRequisitionsConfirmedForArticles, listWorkshop2MaterialRequisitions } from '@/lib/server/workshop2-material-requisition-repository';
+import { autoCreateMaterialRequestsOnFactoryPoAck } from '@/lib/server/workshop2-factory-po-ack-material-request';
 import type { Workshop2PurchaseOrderStatus } from '@/lib/server/workshop2-purchase-order-repository';
 import { isWorkshop2InternalWmsEnabled } from '@/lib/production/workshop2-internal-wms';
 import { persistWorkshop2InternalWmsToDossier } from '@/lib/production/workshop2-internal-wms';
@@ -42,6 +43,7 @@ import {
   getWorkshop2ServerDossierAtVersion,
   getWorkshop2ServerDossierRecord,
   putWorkshop2ServerDossierRecord,
+  appendWorkshop2ServerDossierEvent,
 } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { summarizeWorkshop2PersistDiff } from '@/lib/production/workshop2-dossier-activity-log';
 import {
@@ -50,6 +52,8 @@ import {
 } from '@/lib/production/workshop2-dossier-pg-mirror-utils';
 import { reserveWorkshop2WmsForSampleOrder } from '@/lib/server/workshop2-internal-wms-server';
 import { bumpPlatformCoreChainStatus } from '@/lib/server/platform-core-chain-status-hub';
+import { getOrCreateGlobalRuntime } from '@/lib/server/global-runtime-singleton';
+import { buildWorkshop2BulkHandoffIdempotencyKey } from '@/lib/production/workshop2-bulk-handoff-idempotency';
 
 export type Workshop2B2bInventoryReserveResult = {
   reserved: boolean;
@@ -96,9 +100,9 @@ export async function resolveWorkshop2FactoryIdForB2bHandoff(input: {
   return getPlatformCoreDemoByOrderId(input.orderId).factoryId || 'fact-1';
 }
 
-export function workshop2B2bProductionHandoffPoId(orderId: string): string {
-  return `PO-B2B-${orderId.trim()}`;
-}
+import { workshop2B2bProductionHandoffPoId } from '@/lib/production/workshop2-b2b-handoff-po-id';
+
+export { workshop2B2bProductionHandoffPoId };
 
 export type Workshop2B2bProductionHandoffResult =
   | {
@@ -165,6 +169,186 @@ export async function tryReserveB2bInventoryOnHandoff(input: {
     deficitLineCount: result.deficitLineCount,
     reason: result.reason,
     reservedAt: reserved ? new Date().toISOString() : undefined,
+  };
+}
+
+export type Workshop2B2bInventoryReservePatchResult =
+  | {
+      ok: true;
+      orderId: string;
+      inventoryReserve: Workshop2B2bInventoryReserveResult;
+      idempotent: boolean;
+      order: Workshop2B2bOrderRecord;
+      messageRu: string;
+    }
+  | { ok: false; code: string; messageRu: string };
+
+/** PATCH inventory/reserve — WMS резерв под B2B заказ + зеркало в PO payload (S3). */
+export async function patchWorkshop2B2bInventoryReserve(input: {
+  orderId: string;
+  organizationId?: string;
+  source?: 'brand_confirm' | 'supplier_materials' | 'manual_patch';
+}): Promise<Workshop2B2bInventoryReservePatchResult> {
+  const orderId = input.orderId.trim();
+  const org = input.organizationId?.trim() || 'org-brand-001';
+  const order = await getWorkshop2B2bOrder(orderId);
+  if (!order) {
+    return { ok: false, code: 'not_found', messageRu: 'B2B заказ не найден.' };
+  }
+
+  const collectionId = order.collectionId?.trim() || 'SS27';
+  const articleId =
+    order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
+  const productionOrderId = workshop2B2bProductionHandoffPoId(orderId);
+  const po = await getWorkshop2PurchaseOrderById(productionOrderId, org);
+
+  const prevInventory = po?.payload?.inventoryReserve as
+    | Workshop2B2bInventoryReserveResult
+    | undefined;
+  if (prevInventory?.reserved === true) {
+    bumpPlatformCoreChainStatus([orderId]);
+    return {
+      ok: true,
+      orderId,
+      inventoryReserve: prevInventory,
+      idempotent: true,
+      order,
+      messageRu: 'Резерв на складе уже оформлен (идемпотентно).',
+    };
+  }
+
+  const inventoryReserve = await tryReserveB2bInventoryOnHandoff({
+    orderId,
+    collectionId,
+    articleId,
+  });
+
+  let nextOrder = order;
+  if (inventoryReserve.reserved && order.status === 'confirmed') {
+    const allocated = await patchWorkshop2B2bOrderStatus({ orderId, status: 'allocated' });
+    if (allocated.ok) nextOrder = allocated.order;
+  }
+
+  if (po) {
+    await updateWorkshop2PurchaseOrderErpSync({
+      id: productionOrderId,
+      collectionId,
+      articleId,
+      status: po.status,
+      payloadPatch: {
+        inventoryReserve,
+        inventoryReserveSource: input.source ?? 'manual_patch',
+        inventoryReserveAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  bumpPlatformCoreChainStatus([orderId]);
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('b2b.inventory_reserve');
+
+  if (inventoryReserve.reserved) {
+    const { recordPlatformCoreChainNotificationEvents } =
+      await import('@/lib/server/platform-core-notification-events-repository');
+    void recordPlatformCoreChainNotificationEvents({
+      orderId,
+      collectionId,
+      kind: 'inventory_reserved',
+      titleRu: `Резерв на складе · ${orderId}`,
+      bodyRu: `Резерв: ${inventoryReserve.reservedQty ?? '—'} ед.`,
+    }).catch(() => {});
+  }
+
+  const messageRu = inventoryReserve.reserved
+    ? `Резерв на складе: ${inventoryReserve.reservedQty ?? '—'} ед.`
+    : inventoryReserve.reason === 'internal_wms_disabled'
+      ? 'WMS отключён — резерв не создан.'
+      : 'Резерв не оформлен (дефицит или досье не найдено).';
+
+  return {
+    ok: true,
+    orderId,
+    inventoryReserve,
+    idempotent: false,
+    order: nextOrder,
+    messageRu,
+  };
+}
+
+export type Workshop2B2bInventoryReserveGetResult =
+  | {
+      ok: true;
+      orderId: string;
+      collectionId: string;
+      articleId: string;
+      inventoryReserve: Workshop2B2bInventoryReserveResult;
+      reservedQty: number;
+      internalWmsEnabled: boolean;
+      wmsBalancesHref: string;
+    }
+  | { ok: false; code: string; messageRu: string };
+
+/** GET inventory/reserve — зеркало PO payload + WMS qty (S3 wave UX). */
+export async function getWorkshop2B2bInventoryReserve(input: {
+  orderId: string;
+  organizationId?: string;
+}): Promise<Workshop2B2bInventoryReserveGetResult> {
+  const orderId = input.orderId.trim();
+  const org = input.organizationId?.trim() || 'org-brand-001';
+  const order = await getWorkshop2B2bOrder(orderId);
+  if (!order) {
+    return { ok: false, code: 'not_found', messageRu: 'B2B заказ не найден.' };
+  }
+
+  const collectionId = order.collectionId?.trim() || 'SS27';
+  const articleId =
+    order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
+  const productionOrderId = workshop2B2bProductionHandoffPoId(orderId);
+  const po = await getWorkshop2PurchaseOrderById(productionOrderId, org);
+  const poInventory = po?.payload?.inventoryReserve as
+    | Workshop2B2bInventoryReserveResult
+    | undefined;
+
+  const dossierRecord = await getWorkshop2ServerDossierRecord(collectionId, articleId);
+  const wmsMirror = dossierRecord?.dossier.internalWmsMirror;
+  const dossierReservedQty = wmsMirror
+    ? workshop2PgMirrorNum(wmsMirror, 'reservedQty')
+    : 0;
+  const dossierInventoryReserved =
+    dossierReservedQty > 0 &&
+    (wmsMirror ? workshop2PgMirrorStr(wmsMirror, 'wmsSyncStatus') : '') === 'internal_pg';
+
+  const reserved =
+    order.status === 'allocated' ||
+    poInventory?.reserved === true ||
+    dossierInventoryReserved;
+  const reservedQty =
+    poInventory?.reservedQty ??
+    (dossierReservedQty > 0 ? dossierReservedQty : reserved && po?.qty ? po.qty : 0);
+
+  const inventoryReserve: Workshop2B2bInventoryReserveResult = poInventory
+    ? { ...poInventory }
+    : {
+        reserved,
+        reservedQty: reserved ? reservedQty : undefined,
+        reason: reserved ? undefined : 'pending_handoff',
+      };
+
+  if (!inventoryReserve.reserved && reserved) {
+    inventoryReserve.reserved = true;
+    inventoryReserve.reservedQty = reservedQty;
+  }
+
+  return {
+    ok: true,
+    orderId,
+    collectionId,
+    articleId,
+    inventoryReserve,
+    reservedQty: reservedQty > 0 ? reservedQty : 0,
+    internalWmsEnabled: isWorkshop2InternalWmsEnabled(),
+    wmsBalancesHref: `/api/workshop2/articles/${encodeURIComponent(collectionId)}/${encodeURIComponent(articleId)}/wms/balances`,
   };
 }
 
@@ -487,6 +671,13 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
     return { ok: false, code: 'materials_pending', messageRu: materialsGate.messageRu };
   }
 
+  const { assertWorkshop2QcGateAllowsProductionHandoff } =
+    await import('@/lib/server/workshop2-qc-gate-repository');
+  const qcGate = await assertWorkshop2QcGateAllowsProductionHandoff(orderId);
+  if (!qcGate.ok) {
+    return { ok: false, code: qcGate.code, messageRu: qcGate.messageRu };
+  }
+
   const inventoryReserve = await tryReserveB2bInventoryOnHandoff({
     orderId,
     collectionId,
@@ -572,9 +763,26 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
       productionOrderId,
       factoryId,
       dossierRefs,
+      dossierVersionAtHandoff,
     },
   }).catch(() => {
     /* best-effort */
+  });
+
+  void appendWorkshop2ServerDossierEvent({
+    collectionId,
+    articleId,
+    eventType: 'b2b_tz_handoff_linked',
+    createdBy: 'b2b-production-handoff',
+    eventPayload: {
+      orderId,
+      productionOrderId,
+      factoryId,
+      dossierVersionAtHandoff,
+      source: WORKSHOP2_B2B_PRODUCTION_HANDOFF_SOURCE,
+    },
+  }).catch(() => {
+    /* best-effort journal */
   });
 
   const reserveNote = inventoryReserve.reserved
@@ -584,6 +792,21 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
       : '';
 
   bumpPlatformCoreChainStatus([orderId]);
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('b2b.production_handoff');
+
+  if (!priorPo) {
+    const { notifyManufacturerHandoffQueuePoInbox } =
+      await import('@/lib/server/platform-core-handoff-inbox-notification');
+    void notifyManufacturerHandoffQueuePoInbox({
+      b2bOrderId: orderId,
+      productionOrderId,
+      collectionId,
+      factoryId,
+      articleId,
+    }).catch(() => {});
+  }
 
   return {
     ok: true,
@@ -604,14 +827,57 @@ export type Workshop2B2bProductionHandoffBulkResult = {
   skipped: string[];
   errors: Array<{ orderId: string; messageRu: string }>;
   messageRu: string;
+  idempotent?: boolean;
 };
+
+const BULK_HANDOFF_IDEM_KEY = Symbol.for('syntha.workshop2.b2b.bulk-handoff.idempotency');
+
+type BulkHandoffIdempotencyRecord = {
+  response: Workshop2B2bProductionHandoffBulkResult;
+  createdAt: string;
+};
+
+function bulkHandoffIdempotencyStore(): Map<string, BulkHandoffIdempotencyRecord> {
+  return getOrCreateGlobalRuntime(BULK_HANDOFF_IDEM_KEY, () => new Map());
+}
+
+export { buildWorkshop2BulkHandoffIdempotencyKey } from '@/lib/production/workshop2-bulk-handoff-idempotency';
+
+export function peekWorkshop2BulkHandoffIdempotency(
+  key: string
+): Workshop2B2bProductionHandoffBulkResult | undefined {
+  return bulkHandoffIdempotencyStore().get(key.trim())?.response;
+}
+
+export function rememberWorkshop2BulkHandoffIdempotency(
+  key: string,
+  response: Workshop2B2bProductionHandoffBulkResult
+): void {
+  bulkHandoffIdempotencyStore().set(key.trim(), {
+    response,
+    createdAt: new Date().toISOString(),
+  });
+}
+
+export function resetWorkshop2BulkHandoffIdempotencyForTests(): void {
+  bulkHandoffIdempotencyStore().clear();
+}
 
 /** Бренд: пакетная передача подтверждённых B2B заказов в производство. */
 export async function bulkConfirmWorkshop2B2bProductionHandoff(input: {
   orderIds: string[];
   factoryId?: string;
   organizationId?: string;
+  idempotencyKey?: string;
 }): Promise<Workshop2B2bProductionHandoffBulkResult> {
+  const idemKey = input.idempotencyKey?.trim();
+  if (idemKey) {
+    const cached = peekWorkshop2BulkHandoffIdempotency(idemKey);
+    if (cached) {
+      return { ...cached, idempotent: true };
+    }
+  }
+
   const handedOff: string[] = [];
   const skipped: string[] = [];
   const errors: Array<{ orderId: string; messageRu: string }> = [];
@@ -646,6 +912,7 @@ export async function bulkConfirmWorkshop2B2bProductionHandoff(input: {
     bumpPlatformCoreChainStatus(handedOff);
     await runWorkshop2FactoryHandoffErpAutoRetries({
       factoryId: input.factoryId?.trim() || 'fact-1',
+      burst: true,
     });
   }
 
@@ -654,13 +921,30 @@ export async function bulkConfirmWorkshop2B2bProductionHandoff(input: {
     ? `Передано в производство: ${handedOff.length} из ${unique.length} заказ(ов).`
     : errors[0]?.messageRu ?? 'Не удалось передать заказы в производство.';
 
-  return { ok, handedOff, skipped, errors, messageRu };
+  const result: Workshop2B2bProductionHandoffBulkResult = {
+    ok,
+    handedOff,
+    skipped,
+    errors,
+    messageRu,
+  };
+  if (idemKey && ok) {
+    rememberWorkshop2BulkHandoffIdempotency(idemKey, result);
+  }
+  return result;
 }
 
 export type Workshop2FactoryHandoffBulkAckItem = {
   productionOrderId: string;
   collectionId: string;
   articleId: string;
+};
+
+export type Workshop2FactoryHandoffBulkAckMaterialRequestAuto = {
+  productionOrderId: string;
+  created: number;
+  skipped: number;
+  requisitionIds: string[];
 };
 
 export type Workshop2FactoryHandoffBulkAckResult = {
@@ -673,6 +957,7 @@ export type Workshop2FactoryHandoffBulkAckResult = {
     liveSynced: number;
     liveFailed: number;
   };
+  materialRequestAuto?: Workshop2FactoryHandoffBulkAckMaterialRequestAuto[];
 };
 
 /** Цех принимает серии: factory ack + опциональный POST в ERP при WORKSHOP2_FACTORY_ERP_BASE_URL. */
@@ -686,6 +971,7 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
   const acknowledged: string[] = [];
   const skipped: string[] = [];
   const errors: Array<{ productionOrderId: string; messageRu: string }> = [];
+  const materialRequestAuto: Workshop2FactoryHandoffBulkAckMaterialRequestAuto[] = [];
   const erp = { journalOnly: 0, liveSynced: 0, liveFailed: 0 };
 
   for (const raw of input.items) {
@@ -813,6 +1099,28 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
 
     acknowledged.push(productionOrderId);
     const b2bOrderId = String(po.payload?.b2bOrderId ?? '').trim();
+
+    try {
+      const autoMat = await autoCreateMaterialRequestsOnFactoryPoAck({
+        productionOrderId,
+        collectionId,
+        articleId,
+        organizationId: input.organizationId,
+        actor,
+        b2bOrderId: b2bOrderId || undefined,
+      });
+      if (autoMat.created > 0 || autoMat.skipped > 0 || autoMat.requisitionIds.length > 0) {
+        materialRequestAuto.push({
+          productionOrderId,
+          created: autoMat.created,
+          skipped: autoMat.skipped,
+          requisitionIds: autoMat.requisitionIds,
+        });
+      }
+    } catch {
+      /* PO ack succeeds even if material-request auto-create fails */
+    }
+
     if (b2bOrderId) {
       void appendWorkshop2ContextualSystemMessage({
         contextType: WORKSHOP2_B2B_ORDER_CONTEXT_TYPE,
@@ -844,7 +1152,7 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
     const { bumpPlatformCoreHandoffQueue } =
       await import('@/lib/server/platform-core-handoff-queue-hub');
     bumpPlatformCoreHandoffQueue(factoryId);
-    await runWorkshop2FactoryHandoffErpAutoRetries({ factoryId });
+    await runWorkshop2FactoryHandoffErpAutoRetries({ factoryId, burst: true });
   }
 
   return {
@@ -856,6 +1164,7 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
       erp.journalOnly + erp.liveSynced + erp.liveFailed > 0
         ? erp
         : undefined,
+    materialRequestAuto: materialRequestAuto.length > 0 ? materialRequestAuto : undefined,
   };
 }
 
@@ -1087,9 +1396,11 @@ function canRetryFactoryHandoffErpFromPo(status: string, erpExternalId?: string 
   return status === 'synced' && ext.startsWith('FACTORY-ACK-');
 }
 
-/** Lazy auto-retry ERP для PO в error с erpNextRetryAt ≤ now (backoff). */
+/** Lazy auto-retry ERP для PO в error; burst — до 3× сразу после handoff/ack failure. */
 export async function runWorkshop2FactoryHandoffErpAutoRetries(input: {
   factoryId?: string;
+  /** Игнорировать erpNextRetryAt и повторять до MAX подряд (после ошибки handoff/ack). */
+  burst?: boolean;
 }): Promise<{ attempted: number; succeeded: number }> {
   const factoryId = input.factoryId?.trim() || 'fact-1';
   const pos = await listWorkshop2PurchaseOrdersByPayloadSource({
@@ -1102,56 +1413,65 @@ export async function runWorkshop2FactoryHandoffErpAutoRetries(input: {
 
   for (const po of pos) {
     if (po.status !== 'error') continue;
-    const count = Number(po.payload?.erpAutoRetryCount ?? 0);
+    let count = Number(po.payload?.erpAutoRetryCount ?? 0);
     if (count >= WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX) continue;
-    const nextRaw = po.payload?.erpNextRetryAt;
-    if (nextRaw && Date.parse(String(nextRaw)) > now) continue;
 
-    attempted += 1;
-    const result = await retryWorkshop2FactoryHandoffErpSync({
-      productionOrderId: po.id,
-      collectionId: po.collectionId,
-      articleId: po.articleId,
-      factoryId,
-      actor: 'factory_erp_auto_retry',
-    });
+    if (!input.burst) {
+      const nextRaw = po.payload?.erpNextRetryAt;
+      if (nextRaw && Date.parse(String(nextRaw)) > now) continue;
+    }
 
-    if (result.ok) {
-      succeeded += 1;
-      const nextStatus =
-        result.mode === 'live_post' && result.erpExternalId ? 'synced' : po.status;
+    const maxAttemptsThisRun = input.burst
+      ? WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX - count
+      : 1;
+
+    for (let i = 0; i < maxAttemptsThisRun && count < WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX; i += 1) {
+      attempted += 1;
+      const result = await retryWorkshop2FactoryHandoffErpSync({
+        productionOrderId: po.id,
+        collectionId: po.collectionId,
+        articleId: po.articleId,
+        factoryId,
+        actor: 'factory_erp_auto_retry',
+      });
+
+      if (result.ok) {
+        succeeded += 1;
+        const nextStatus =
+          result.mode === 'live_post' && result.erpExternalId ? 'synced' : po.status;
+        await updateWorkshop2PurchaseOrderErpSync({
+          id: po.id,
+          collectionId: po.collectionId,
+          articleId: po.articleId,
+          status: nextStatus,
+          erpExternalId: result.erpExternalId ?? po.erpExternalId,
+          payloadPatch: {
+            erpAutoRetryCount: undefined,
+            erpNextRetryAt: undefined,
+            erpAutoRetryLastError: undefined,
+            erpSyncStatus: result.mode === 'live_post' ? 'synced' : 'not_configured',
+          },
+        });
+        break;
+      }
+
+      count += 1;
       await updateWorkshop2PurchaseOrderErpSync({
         id: po.id,
         collectionId: po.collectionId,
         articleId: po.articleId,
-        status: nextStatus,
-        erpExternalId: result.erpExternalId ?? po.erpExternalId,
+        status: 'error',
+        lastError: result.messageRu,
         payloadPatch: {
-          erpAutoRetryCount: undefined,
-          erpNextRetryAt: undefined,
-          erpAutoRetryLastError: undefined,
-          erpSyncStatus: result.mode === 'live_post' ? 'synced' : 'not_configured',
+          erpAutoRetryCount: count,
+          erpNextRetryAt:
+            count >= WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX
+              ? undefined
+              : new Date(now + erpAutoRetryDelayMs(count)).toISOString(),
+          erpAutoRetryLastError: result.messageRu,
         },
       });
-      continue;
     }
-
-    const nextCount = count + 1;
-    await updateWorkshop2PurchaseOrderErpSync({
-      id: po.id,
-      collectionId: po.collectionId,
-      articleId: po.articleId,
-      status: 'error',
-      lastError: result.messageRu,
-      payloadPatch: {
-        erpAutoRetryCount: nextCount,
-        erpNextRetryAt:
-          nextCount >= WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX
-            ? undefined
-            : new Date(now + erpAutoRetryDelayMs(nextCount)).toISOString(),
-        erpAutoRetryLastError: result.messageRu,
-      },
-    });
   }
 
   return { attempted, succeeded };
@@ -1258,6 +1578,7 @@ export async function listWorkshop2FactoryProductionHandoffQueue(input: {
       qty: po.qty,
       status: po.status,
       mesReleaseStage: po.mesReleaseStage,
+      wipStatus: po.wipStatus,
       erpExternalId: po.erpExternalId,
       erpNextRetryAt:
         po.payload?.erpNextRetryAt != null ? String(po.payload.erpNextRetryAt) : undefined,

@@ -22,7 +22,7 @@ function formatAgentStatusLabel(status: string, running: boolean): string {
   }
   if (status === 'done') return 'Готово';
   if (status === 'error') return 'Ошибка';
-  if (status === 'offline') return 'Offline';
+  if (status === 'offline') return 'Офлайн';
   if (status === 'connecting') return 'Подключение…';
   return status;
 }

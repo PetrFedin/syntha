@@ -21,6 +21,7 @@ import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 import { tid } from '@/lib/ui/test-ids';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
+import { PlatformAiTaskStrip } from '@/components/platform/PlatformAiTaskStrip';
 import { useWorkshop2B2bChainSummaries } from '@/hooks/use-workshop2-b2b-chain-summaries';
 import { B2bChainPhaseBadge } from '@/components/b2b/B2bChainPhaseBadge';
 import { PLATFORM_CORE_ORDERS_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
@@ -43,6 +44,12 @@ import { mergeRegistryRowsWithSpineOverlay } from '@/lib/integrations/spine/regi
 import { useB2bRegistryIntegrationOverlay } from '@/hooks/use-b2b-registry-integration-overlay';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 import { ShopCoRegistryBuyerCrmOnboardingStrip } from '@/components/shop/b2b/ShopCoRegistryBuyerCrmOnboardingStrip';
+import { ShopCoRegistryEmptyGreenfieldMonetizationStrip } from '@/components/shop/b2b/ShopCoRegistryEmptyGreenfieldMonetizationStrip';
+import { ShopCoRegistryGreenfieldFocusStrip } from '@/components/shop/b2b/ShopCoRegistryGreenfieldFocusStrip';
+import { ShopOpRegistrySpinePeerStrip } from '@/components/platform/ShopOpRegistrySpinePeerStrip';
+import { ShopOpOrderStatusSpinePeerStrip } from '@/components/platform/ShopOpOrderStatusSpinePeerStrip';
+import { ShopCoGoldenPathStrip } from '@/components/shop/b2b/ShopCoGoldenPathStrip';
+import { SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE } from '@/lib/platform/wave-yk-shop-co-golden-path';
 
 export function ShopB2bOrdersCorePage() {
   const router = useRouter();
@@ -173,6 +180,20 @@ export function ShopB2bOrdersCorePage() {
     <div data-testid={tid.page('shop-b2b-orders')}>
       <PlatformCoreListChrome highlightRole="shop" pillarId={pillarId}>
         <div data-testid={registryPanelTestId}>
+          <div className="mb-3">
+            <ShopOpRegistrySpinePeerStrip
+              collectionId={goldenCollectionId}
+              orderId={contextOrderId || undefined}
+            />
+          </div>
+          {productionPillar && contextOrderId ? (
+            <div className="mb-3">
+              <ShopOpOrderStatusSpinePeerStrip
+                collectionId={goldenCollectionId}
+                orderId={contextOrderId}
+              />
+            </div>
+          ) : null}
           <div
             className={cn(
               'mb-3 flex flex-wrap items-center justify-between gap-2',
@@ -180,42 +201,38 @@ export function ShopB2bOrdersCorePage() {
             )}
           >
             {!productionPillar ? (
-              <div
-                className={hubGadget.goldenPath + ' mb-3'}
-                data-testid="shop-co-registry-context-strip"
-              >
-                <Link
-                  href={matrixHref}
-                  data-testid="shop-co-registry-matrix-link"
-                  className={hubGadget.goldenLink}
-                >
-                  Матрица
-                </Link>
-                {contextOrderId ? (
-                  <>
-                    <span className={hubGadget.goldenSep} aria-hidden>
-                      ·
-                    </span>
-                    <Link
-                      href={shopB2bOrderHref(contextOrderId)}
-                      data-testid="shop-co-registry-active-order-link"
-                      className={hubGadget.goldenLink}
-                    >
-                      Заказ
-                    </Link>
-                  </>
+              <>
+                <ShopCoGoldenPathStrip
+                  collectionId={goldenCollectionId}
+                  orderId={contextOrderId || undefined}
+                  activeStep="registry"
+                  omitStep="registry"
+                  stripTestId={SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.registry.strip}
+                  className="mb-3"
+                  legacyLinkTestIds={{
+                    matrix: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.registry.matrix,
+                    tracking: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.registry.tracking,
+                  }}
+                />
+                {coreMode ? (
+                  <PlatformAiTaskStrip
+                    sectionId="shop-co-registry"
+                    pillarId="collection_order"
+                    roleId="shop"
+                    task="Detect registry order anomalies: MOQ violations and duplicate lines"
+                    collectionId={goldenCollectionId}
+                    orderId={contextOrderId || undefined}
+                    orders={visibleOrders.slice(0, 12).map((o) => ({
+                      orderId: o.orderId,
+                      status: o.status,
+                      amount: o.amount,
+                      collectionId: o.collectionId,
+                    }))}
+                    testId="shop-co-registry-ai-anomaly"
+                    buttonLabel="Аномалии реестра (AI)"
+                  />
                 ) : null}
-                <span className={hubGadget.goldenSep} aria-hidden>
-                  ·
-                </span>
-                <Link
-                  href={ROUTES.shop.b2bTracking}
-                  data-testid="shop-co-registry-tracking-link"
-                  className={hubGadget.goldenLink}
-                >
-                  Трекинг
-                </Link>
-              </div>
+              </>
             ) : (
               <div
                 className={hubGadget.goldenPath + ' mb-3'}
@@ -293,6 +310,13 @@ export function ShopB2bOrdersCorePage() {
           </div>
           <Card>
             <CardContent className="pt-6">
+              {focusOrderId && !productionPillar && coreMode ? (
+                <ShopCoRegistryGreenfieldFocusStrip
+                  orderId={focusOrderId}
+                  collectionId={goldenCollectionId}
+                  buyerId={buyerId}
+                />
+              ) : null}
               {w2LoadState === 'ready' && visibleOrders.length > 0 ? (
                 <p className="text-text-muted mb-4 text-xs">{visibleOrders.length} заказ(ов)</p>
               ) : null}
@@ -366,12 +390,21 @@ export function ShopB2bOrdersCorePage() {
                       ? 'После checkout заказы появятся здесь.'
                       : `${buyerLabelRu}: реестр заполняется после checkout — без ручного seed.`}
                   </p>
-                  <ShopCoRegistryBuyerCrmOnboardingStrip
-                    buyerId={buyerId}
-                    collectionId={goldenCollectionId}
-                    showroomHref={showroomHref}
-                    matrixHref={matrixHref}
-                  />
+                  {coreMode ? (
+                    <ShopCoRegistryEmptyGreenfieldMonetizationStrip
+                      buyerId={buyerId}
+                      collectionId={goldenCollectionId}
+                      showroomHref={showroomHref}
+                      matrixHref={matrixHref}
+                    />
+                  ) : (
+                    <ShopCoRegistryBuyerCrmOnboardingStrip
+                      buyerId={buyerId}
+                      collectionId={goldenCollectionId}
+                      showroomHref={showroomHref}
+                      matrixHref={matrixHref}
+                    />
+                  )}
                 </div>
               ) : null}
               {w2LoadState === 'ready' ? (
@@ -383,164 +416,170 @@ export function ShopB2bOrdersCorePage() {
                     )}
                     data-testid="shop-co-registry-table-scroll"
                   >
-                  {visibleOrders.length > 0 ? (
-                  <table className="w-full min-w-[40rem] text-sm">
-                    <thead className={isPlatformCoreMode() ? hubCabinet.workspaceStickyHead : undefined}>
-                      <tr className="border-border-default border-b">
-                        <th
-                          className={cn(
-                            'py-2 text-left font-medium',
-                            isPlatformCoreMode() && hubCabinet.workspaceStickyCol
-                          )}
+                    {visibleOrders.length > 0 ? (
+                      <table className="w-full min-w-[40rem] text-sm">
+                        <thead
+                          className={
+                            isPlatformCoreMode() ? hubCabinet.workspaceStickyHead : undefined
+                          }
                         >
-                          Номер
-                        </th>
-                        <th className="py-2 text-left font-medium">Бренд</th>
-                        <th className="py-2 text-left font-medium">Статус</th>
-                        <th className="py-2 text-left font-medium">ПЗ</th>
-                        <th className="py-2 text-left font-medium">Цепочка</th>
-                        <th className="py-2 text-right font-medium">Сумма</th>
-                        <th className="whitespace-nowrap py-2 text-right font-medium">Действия</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleOrders.map((o) => {
-                        const chain = chainSummaries[o.orderId];
-                        const handedOff = chain?.handedOff === true;
-                        const poId = chain?.productionOrderId;
-                        const rowFocused = focusOrderId != null && o.orderId === focusOrderId;
-
-                        return (
-                          <tr
-                            key={o.orderId}
-                            ref={rowFocused ? focusRowRef : undefined}
-                            data-order={o.orderId}
-                            data-testid={
-                              rowFocused
-                                ? registryFocusRowTestId
-                                : o.orderId.startsWith('B2B-DEMO-')
-                                  ? `shop-b2b-order-row-${o.orderId}`
-                                  : undefined
-                            }
-                            data-audit-legacy={
-                              o.orderId.startsWith('B2B-DEMO-')
-                                ? `shop-b2b-order-row-${o.orderId}`
-                                : undefined
-                            }
-                            className={cn(
-                              'border-border-subtle border-b',
-                              rowFocused && 'bg-amber-50/60 ring-1 ring-amber-200/80'
-                            )}
-                          >
-                            <td
+                          <tr className="border-border-default border-b">
+                            <th
                               className={cn(
-                                'py-2 font-mono',
+                                'py-2 text-left font-medium',
                                 isPlatformCoreMode() && hubCabinet.workspaceStickyCol
                               )}
                             >
-                              <Link
-                                className="text-accent-primary hover:underline"
-                                href={orderDetailHref(o.orderId, handedOff)}
+                              Номер
+                            </th>
+                            <th className="py-2 text-left font-medium">Бренд</th>
+                            <th className="py-2 text-left font-medium">Статус</th>
+                            <th className="py-2 text-left font-medium">ПЗ</th>
+                            <th className="py-2 text-left font-medium">Цепочка</th>
+                            <th className="py-2 text-right font-medium">Сумма</th>
+                            <th className="whitespace-nowrap py-2 text-right font-medium">
+                              Действия
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {visibleOrders.map((o) => {
+                            const chain = chainSummaries[o.orderId];
+                            const handedOff = chain?.handedOff === true;
+                            const poId = chain?.productionOrderId;
+                            const rowFocused = focusOrderId != null && o.orderId === focusOrderId;
+
+                            return (
+                              <tr
+                                key={o.orderId}
+                                ref={rowFocused ? focusRowRef : undefined}
+                                data-order={o.orderId}
                                 data-testid={
+                                  rowFocused
+                                    ? registryFocusRowTestId
+                                    : o.orderId.startsWith('B2B-DEMO-')
+                                      ? `shop-b2b-order-row-${o.orderId}`
+                                      : undefined
+                                }
+                                data-audit-legacy={
                                   o.orderId.startsWith('B2B-DEMO-')
-                                    ? `shop-b2b-order-detail-${o.orderId}`
+                                    ? `shop-b2b-order-row-${o.orderId}`
                                     : undefined
                                 }
+                                className={cn(
+                                  'border-border-subtle border-b',
+                                  rowFocused && 'bg-amber-50/60 ring-1 ring-amber-200/80'
+                                )}
                               >
-                                {formatWholesaleOrderDisplayId(o.orderId)}
-                              </Link>
-                              <B2bOrderIntegrationBadge
-                                wholesaleOrderId={o.orderId}
-                                integration={o.integration}
-                              />
-                              {o.collectionId ? (
-                                <span className="text-text-muted ml-2 text-[10px] font-bold uppercase">
-                                  {o.collectionId}
-                                </span>
-                              ) : null}
-                            </td>
-                            <td className="py-2">{o.brand}</td>
-                            <td className="py-2">
-                              <Badge variant="secondary" className="text-[9px]">
-                                {o.status}
-                              </Badge>
-                            </td>
-                            <td
-                              className="py-2 text-[11px] tabular-nums"
-                              data-testid={`shop-b2b-order-po-${o.orderId}`}
-                            >
-                              {poId ? (
-                                <Link
-                                  href={shopB2bTrackingOrderHref(o.orderId)}
-                                  className="text-accent-primary font-medium hover:underline"
-                                  data-testid={`shop-b2b-order-po-link-${o.orderId}`}
+                                <td
+                                  className={cn(
+                                    'py-2 font-mono',
+                                    isPlatformCoreMode() && hubCabinet.workspaceStickyCol
+                                  )}
                                 >
-                                  {poId}
-                                </Link>
-                              ) : handedOff ? (
-                                <Link
-                                  href={shopB2bTrackingOrderHref(o.orderId)}
-                                  className="text-emerald-700 hover:underline"
-                                  data-testid={`shop-b2b-order-po-link-${o.orderId}`}
-                                >
-                                  Передан
-                                </Link>
-                              ) : (
-                                <span className="text-text-muted">—</span>
-                              )}
-                            </td>
-                            <td className="py-2">
-                              <B2bChainPhaseBadge orderStatusLabel={o.status} chain={chain} />
-                            </td>
-                            <td className="py-2 text-right font-medium">{o.amount}</td>
-                            <td className="py-2 text-right">
-                              <div className="flex flex-col items-end gap-0.5">
-                                <div className="flex flex-wrap justify-end gap-x-2 text-[10px] font-semibold uppercase">
                                   <Link
                                     className="text-accent-primary hover:underline"
-                                    href={shopB2bTrackingOrderHref(o.orderId)}
-                                    data-testid={`shop-b2b-order-tracking-${o.orderId}`}
+                                    href={orderDetailHref(o.orderId, handedOff)}
+                                    data-testid={
+                                      o.orderId.startsWith('B2B-DEMO-')
+                                        ? `shop-b2b-order-detail-${o.orderId}`
+                                        : undefined
+                                    }
                                   >
-                                    Трекинг
+                                    {formatWholesaleOrderDisplayId(o.orderId)}
                                   </Link>
-                                  {!coreMode && handedOff ? (
-                                    <Link
-                                      className="text-accent-primary hover:underline"
-                                      href={shopB2bOrderProductionContextHref(o.orderId)}
-                                      data-testid={`shop-b2b-order-production-${o.orderId}`}
-                                    >
-                                      Выпуск
-                                    </Link>
-                                  ) : null}
-                                  {!coreMode ? (
-                                    <Link
-                                      className="text-accent-primary hover:underline"
-                                      href={shopMessagesB2bOrderContextHref(o.orderId)}
-                                      data-testid={`shop-b2b-order-chat-${o.orderId}`}
-                                    >
-                                      Чат
-                                    </Link>
-                                  ) : null}
-                                </div>
-                                {!coreMode ? (
-                                  <B2bOrderThreadPreviewHint
-                                    orderId={o.orderId}
-                                    role="shop"
-                                    preview={threadPreviews[o.orderId]}
+                                  <B2bOrderIntegrationBadge
+                                    wholesaleOrderId={o.orderId}
+                                    integration={o.integration}
                                   />
-                                ) : null}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                  ) : (
-                    <p className="text-text-muted py-4 text-center text-sm md:hidden lg:block">
-                      Нет заказов по выбранному фильтру.
-                    </p>
-                  )}
+                                  {o.collectionId ? (
+                                    <span className="text-text-muted ml-2 text-[10px] font-bold uppercase">
+                                      {o.collectionId}
+                                    </span>
+                                  ) : null}
+                                </td>
+                                <td className="py-2">{o.brand}</td>
+                                <td className="py-2">
+                                  <Badge variant="secondary" className="text-[9px]">
+                                    {o.status}
+                                  </Badge>
+                                </td>
+                                <td
+                                  className="py-2 text-[11px] tabular-nums"
+                                  data-testid={`shop-b2b-order-po-${o.orderId}`}
+                                >
+                                  {poId ? (
+                                    <Link
+                                      href={shopB2bTrackingOrderHref(o.orderId)}
+                                      className="text-accent-primary font-medium hover:underline"
+                                      data-testid={`shop-b2b-order-po-link-${o.orderId}`}
+                                    >
+                                      {poId}
+                                    </Link>
+                                  ) : handedOff ? (
+                                    <Link
+                                      href={shopB2bTrackingOrderHref(o.orderId)}
+                                      className="text-emerald-700 hover:underline"
+                                      data-testid={`shop-b2b-order-po-link-${o.orderId}`}
+                                    >
+                                      Передан
+                                    </Link>
+                                  ) : (
+                                    <span className="text-text-muted">—</span>
+                                  )}
+                                </td>
+                                <td className="py-2">
+                                  <B2bChainPhaseBadge orderStatusLabel={o.status} chain={chain} />
+                                </td>
+                                <td className="py-2 text-right font-medium">{o.amount}</td>
+                                <td className="py-2 text-right">
+                                  <div className="flex flex-col items-end gap-0.5">
+                                    <div className="flex flex-wrap justify-end gap-x-2 text-[10px] font-semibold uppercase">
+                                      <Link
+                                        className="text-accent-primary hover:underline"
+                                        href={shopB2bTrackingOrderHref(o.orderId)}
+                                        data-testid={`shop-b2b-order-tracking-${o.orderId}`}
+                                      >
+                                        Трекинг
+                                      </Link>
+                                      {!coreMode && handedOff ? (
+                                        <Link
+                                          className="text-accent-primary hover:underline"
+                                          href={shopB2bOrderProductionContextHref(o.orderId)}
+                                          data-testid={`shop-b2b-order-production-${o.orderId}`}
+                                        >
+                                          Выпуск
+                                        </Link>
+                                      ) : null}
+                                      {!coreMode ? (
+                                        <Link
+                                          className="text-accent-primary hover:underline"
+                                          href={shopMessagesB2bOrderContextHref(o.orderId)}
+                                          data-testid={`shop-b2b-order-chat-${o.orderId}`}
+                                        >
+                                          Чат
+                                        </Link>
+                                      ) : null}
+                                    </div>
+                                    {!coreMode ? (
+                                      <B2bOrderThreadPreviewHint
+                                        orderId={o.orderId}
+                                        role="shop"
+                                        preview={threadPreviews[o.orderId]}
+                                      />
+                                    ) : null}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p className="text-text-muted py-4 text-center text-sm md:hidden lg:block">
+                        Нет заказов по выбранному фильтру.
+                      </p>
+                    )}
                   </div>
                   {coreMode ? (
                     <div

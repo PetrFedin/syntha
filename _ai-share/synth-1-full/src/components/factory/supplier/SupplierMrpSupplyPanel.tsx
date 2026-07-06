@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { buildSupplierMrpSupplySession } from '@/lib/fashion/supplier-mrp-supply';
 import { supplierOrderCommsFeatureHref } from '@/lib/b2b/supplier-order-comms';
 import { SupplierProcurementBrandNotifyStrip } from '@/components/factory/supplier/SupplierProcurementBrandNotifyStrip';
-import { PlatformCoreWmsReserveStrip } from '@/components/platform/PlatformCoreWmsReserveStrip';
+import { SupplierWmsReserveActionStrip } from '@/components/factory/supplier/SupplierWmsReserveActionStrip';
 import { buildSupplierOrderCommsSession } from '@/lib/b2b/supplier-order-comms';
 import { Boxes, Factory, ShoppingCart } from 'lucide-react';
 
@@ -26,10 +26,13 @@ export function SupplierMrpSupplyPanel({
 
   return (
     <div className="space-y-4" data-testid="supplier-mrp-supply-panel">
-      <PlatformCoreWmsReserveStrip
-        variant="supplier"
+      <SupplierWmsReserveActionStrip
+        collectionId={session.collectionId}
+        articleId={session.articleId}
+        b2bOrderId={orderId}
         brandHandoffHref={orderComms.brandOrderHandoffHref}
         shopTrackingHref={orderComms.shopTrackingHref}
+        testId="sup-op-procurement-wms-reserve-strip"
       />
       {orderId ? (
         <SupplierProcurementBrandNotifyStrip
@@ -42,23 +45,23 @@ export function SupplierMrpSupplyPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Boxes className="h-4 w-4" />
-            <CardTitle className="text-base">MRP · shortage → PO</CardTitle>
+            <CardTitle className="text-base">MRP · дефицит → PO</CardTitle>
           </div>
           <CardDescription>
-            Onfinity MRP: BOM × order qty → materials dossier → brand BOM → replenishment.
+            Onfinity MRP: BOM × кол-во заказа → досье материалов → BOM бренда → пополнение.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.materialsHref} data-testid="supplier-mrp-materials-link">
-              Materials dossier
+              Досье материалов
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.w2SupplyHref}>W2 supply</Link>
+            <Link href={session.w2SupplyHref}>Поставка W2</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.brandBomHref}>Brand BOM</Link>
+            <Link href={session.brandBomHref}>BOM бренда</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
             <Link href={session.centricRfqHref}>Centric RFQ</Link>
@@ -70,38 +73,38 @@ export function SupplierMrpSupplyPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Factory className="h-4 w-4" />
-            <CardTitle className="text-base">Chain bridges</CardTitle>
+            <CardTitle className="text-base">Связи цепочки</CardTitle>
           </div>
-          <CardDescription>Столп 4 ↔ shop replenishment ↔ brand production.</CardDescription>
+          <CardDescription>Столп 4 ↔ пополнение магазина ↔ производство бренда.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.brandProductionHref}>Brand production ops</Link>
+            <Link href={session.brandProductionHref}>Операции производства бренда</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={session.replenishmentHref}>
               <ShoppingCart className="mr-1 h-3 w-3" />
-              Shop replenishment
+              Пополнение магазина
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shopMatrixHref}>Shop matrix</Link>
+            <Link href={session.shopMatrixHref}>Матрица магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopOrderCommsHref}>Shop order comms</Link>
+            <Link href={session.shopOrderCommsHref}>Чат заказа магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopLandedMarginHref}>Shop margin</Link>
+            <Link href={session.shopLandedMarginHref}>Маржа магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.manufacturerOrderCommsHref}>Factory order comms</Link>
+            <Link href={session.manufacturerOrderCommsHref}>Чат заказа производства</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.supplyTabHref}>Supply tab</Link>
+            <Link href={session.supplyTabHref}>Вкладка поставки</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
             <Link href={supplierOrderCommsFeatureHref(session.orderId, session.collectionId, session.articleId)}>
-              Order comms
+              Чат по заказу
             </Link>
           </Button>
         </CardContent>

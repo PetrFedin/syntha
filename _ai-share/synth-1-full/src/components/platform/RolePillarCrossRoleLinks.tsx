@@ -9,6 +9,7 @@ import {
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { prefetchPlatformCoreW2FromHref } from '@/lib/platform-core-w2-prefetch';
 import { prefetchPillarSnapshot } from '@/lib/platform-core-pillar-prefetch';
+import { waveYxCrossRoleLinkTitleRu } from '@/lib/platform-core-ports/platform/wave-yx-hub-dead-end-fix';
 
 type Props = {
   roleId: CoreChainRoleId;
@@ -64,7 +65,8 @@ export function RolePillarCrossRoleLinks({ roleId, pillarId, variant = 'compact'
             href={peer.cabinetHref}
             data-testid={`cross-role-cabinet-${peer.roleId}-${pillarId}`}
             className="text-accent-primary text-[11px] font-medium hover:underline"
-            title={peer.title}
+            title={waveYxCrossRoleLinkTitleRu(peer.label, peer.title)}
+            aria-label={waveYxCrossRoleLinkTitleRu(peer.label, peer.title)}
             onMouseEnter={() => warmPeerLink(peer.cabinetHref, peer.roleId)}
             onFocus={() => warmPeerLink(peer.cabinetHref, peer.roleId)}
           >

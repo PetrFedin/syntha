@@ -53,21 +53,31 @@ async function resolveSegmentByKey(segmentKey: string) {
   return segments.find((s) => s.segmentKey === segmentKey) ?? segments[0] ?? null;
 }
 
-async function upsertPgProfile(buyerId: string, segmentKey: string): Promise<ShopBuyerCrmProfile | null> {
+async function upsertPgProfile(
+  buyerId: string,
+  segmentKey: string,
+  onboardingNoteRu?: string
+): Promise<ShopBuyerCrmProfile | null> {
   const segment = await resolveSegmentByKey(segmentKey);
   if (!segment) return null;
 
   await ensureWorkshop2PgSchema();
   const assignedAt = new Date();
+  const note =
+    onboardingNoteRu ??
+    (buyerId === 'shop2'
+      ? 'Greenfield buyer: сегмент и прайс-лист назначены брендом — первый заказ через витрину.'
+      : null);
   await getWorkshop2PgPool().query(
     `INSERT INTO shop_buyer_crm_profiles
-       (buyer_id, segment_key, assigned_price_tier, net_term_days, first_order_discount_pct, assigned_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $6)
+       (buyer_id, segment_key, assigned_price_tier, net_term_days, first_order_discount_pct, onboarding_note_ru, assigned_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
      ON CONFLICT (buyer_id) DO UPDATE SET
        segment_key = EXCLUDED.segment_key,
        assigned_price_tier = EXCLUDED.assigned_price_tier,
        net_term_days = EXCLUDED.net_term_days,
        first_order_discount_pct = EXCLUDED.first_order_discount_pct,
+       onboarding_note_ru = COALESCE(EXCLUDED.onboarding_note_ru, shop_buyer_crm_profiles.onboarding_note_ru),
        updated_at = EXCLUDED.updated_at`,
     [
       buyerId,
@@ -75,6 +85,7 @@ async function upsertPgProfile(buyerId: string, segmentKey: string): Promise<Sho
       segment.defaultPriceTier,
       segment.defaultNetTermDays,
       segment.firstOrderDiscountPct ?? null,
+      note,
       assignedAt,
     ]
   );
@@ -82,10 +93,7 @@ async function upsertPgProfile(buyerId: string, segmentKey: string): Promise<Sho
   return buildShopBuyerCrmProfile({
     buyerId,
     segment,
-    onboardingNoteRu:
-      buyerId === 'shop2'
-        ? 'Greenfield buyer: сегмент и прайс-лист назначены брендом — первый заказ через витрину.'
-        : undefined,
+    onboardingNoteRu: note ?? undefined,
     assignedAt: assignedAt.toISOString(),
   });
 }
@@ -162,4 +170,45 @@ export async function getShopBuyerCrmProfileServer(input?: {
   const profile = await ensureMemoryProfile(buyerId);
   const storageMode = canUseDiskPersistence() && fs.existsSync(STORE_FILE) ? 'file' : 'memory';
   return { profile, storageMode: profile ? storageMode : 'demo' };
+}
+
+/** Brand-side explicit segment assign → shop buyer CRM profile (PG or file/memory). */
+export async function assignShopBuyerCrmProfileServer(input: {
+  buyerId?: string;
+  segmentKey: string;
+  onboardingNoteRu?: string;
+}): Promise<{ profile: ShopBuyerCrmProfile | null; storageMode: 'pg' | 'file' | 'memory' | 'demo' }> {
+  const buyerId = normalizeShopCoreBuyerId(input.buyerId);
+  const segmentKey = input.segmentKey.trim();
+  if (!segmentKey) return { profile: null, storageMode: 'demo' };
+
+  const defaultNote =
+    input.onboardingNoteRu ??
+    (buyerId === 'shop2'
+      ? 'Greenfield buyer: сегмент и прайс-лист назначены брендом — первый заказ через витрину.'
+      : undefined);
+
+  if (isWorkshop2PostgresEnabled()) {
+    try {
+      const profile = await upsertPgProfile(buyerId, segmentKey, defaultNote);
+      if (profile) return { profile, storageMode: 'pg' };
+    } catch {
+      /* fall through */
+    }
+  }
+
+  const segment = await resolveSegmentByKey(segmentKey);
+  if (!segment) return { profile: null, storageMode: 'demo' };
+
+  hydrateFileIfNeeded();
+  const profile = buildShopBuyerCrmProfile({
+    buyerId,
+    segment,
+    onboardingNoteRu: defaultNote,
+    assignedAt: new Date().toISOString(),
+  });
+  memory.set(buyerId, profile);
+  persistFile();
+  const storageMode = canUseDiskPersistence() && fs.existsSync(STORE_FILE) ? 'file' : 'memory';
+  return { profile, storageMode };
 }

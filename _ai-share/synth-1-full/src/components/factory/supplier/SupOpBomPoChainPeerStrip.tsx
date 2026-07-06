@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { buildSupplierProcurementSession } from '@/lib/fashion/supplier-procurement-workspace';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   collectionId: string;
@@ -22,27 +24,30 @@ export function SupOpBomPoChainPeerStrip({ collectionId, articleId, orderId, fac
   });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="sup-op-bom-po-chain-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="sup-op-bom-po-chain-peer-strip"
+    >
       <Link href={mfrQueueHref} data-testid="sup-op-bom-po-mfr-queue-link" className={hubGadget.goldenLink}>
-        Mfr queue
+        Очередь производства
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.forecastHref} data-testid="sup-op-bom-po-forecast-link" className={hubGadget.goldenLink}>
-        Forecast
+        Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopTrackingHref} data-testid="sup-op-bom-po-tracking-link" className={hubGadget.goldenLink}>
-        Tracking
+        Трекинг
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.handoffHref} data-testid="sup-op-bom-po-handoff-link" className={hubGadget.goldenLink}>
-        Handoff read
+        Чтение передачи
       </Link>
     </div>
   );

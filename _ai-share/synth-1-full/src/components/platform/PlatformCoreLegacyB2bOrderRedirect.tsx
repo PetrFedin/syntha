@@ -3,7 +3,8 @@
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { PlatformCoreLegacyPathRedirect } from '@/components/platform/PlatformCoreLegacyPathRedirect';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES } from '@/lib/platform-core-routes';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import type { CoreChainRoleId } from '@/lib/platform-core-hub-matrix';
 
 type Props = {
@@ -13,7 +14,12 @@ type Props = {
 
 /** Core: JOOR snapshot id (B2B-00xx) и прочие не-PG заказы → реестр оптовых заказов. */
 export function PlatformCoreLegacyB2bOrderRedirect({ roleId, orderId }: Props) {
-  const targetHref = roleId === 'brand' ? ROUTES.brand.b2bOrders : ROUTES.shop.b2bOrders;
+  const coreCabinet = roleId === 'brand' ? ROUTES.brand.coreCabinet : ROUTES.shop.coreCabinet;
+  const targetHref = isPlatformCoreMode()
+    ? `${coreCabinet}?pillar=collection_order`
+    : roleId === 'brand'
+      ? ROUTES.brand.b2bOrders
+      : ROUTES.shop.b2bOrders;
   const testId =
     roleId === 'brand'
       ? 'platform-core-brand-b2b-legacy-order-redirect'

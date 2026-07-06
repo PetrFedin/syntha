@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { buildPlatformB2bHubSession } from '@/lib/b2b/platform-b2b-hub';
-import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
-import { ROUTES } from '@/lib/routes';
+import { buildPlatformB2bHubSession } from '@/lib/platform-core-ports/b2b/platform-b2b-hub';
+import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -19,19 +18,19 @@ export function PlatformB2bHubCoSpinePeerStrip({ collectionId, orderId }: Props)
   return (
     <div className={hubGadget.goldenPath} data-testid="platform-b2b-hub-co-spine-peer-strip">
       <Link href={session.buyPathHref} data-testid="platform-b2b-hub-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopMatrixHref} data-testid="platform-b2b-hub-matrix-link" className={hubGadget.goldenLink}>
-        Matrix
+        Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.collaborativeHref} data-testid="platform-b2b-hub-collaborative-link" className={hubGadget.goldenLink}>
-        Collaborative
+        Совместный заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -43,13 +42,19 @@ export function PlatformB2bHubCoSpinePeerStrip({ collectionId, orderId }: Props)
         ·
       </span>
       <Link href={crmHref} data-testid="platform-b2b-hub-brand-pricelist-link" className={hubGadget.goldenLink}>
-        Brand pricelist
+        Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={ROUTES.shop.b2bOrders} data-testid="platform-b2b-hub-registry-link" className={hubGadget.goldenLink}>
-        Registry
+      <Link href={session.shopRegistryGreenfieldHref} data-testid="platform-b2b-hub-greenfield-registry-link" className={hubGadget.goldenLink}>
+        Shop2 registry
+      </Link>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link href={session.brandCrmBuyerAssignHref} data-testid="platform-b2b-hub-greenfield-crm-link" className={hubGadget.goldenLink}>
+        CRM assign
       </Link>
     </div>
   );

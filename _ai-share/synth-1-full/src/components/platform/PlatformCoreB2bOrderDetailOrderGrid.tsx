@@ -12,9 +12,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { Workshop2B2bOrderDetailView } from '@/hooks/use-workshop2-b2b-order-detail';
-import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
-import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { cn } from '@/lib/utils';
 
 type Props = {
   orderId: string;
@@ -29,8 +26,6 @@ export function PlatformCoreB2bOrderDetailOrderGrid({
   articleId,
   articleHref,
 }: Props) {
-  const coreMode = isPlatformCoreMode();
-
   return (
     <>
       <Card>
@@ -77,80 +72,39 @@ export function PlatformCoreB2bOrderDetailOrderGrid({
         </CardContent>
       </Card>
 
-      <Card data-testid="platform-core-order-lines-card">
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Строки заказа</CardTitle>
         </CardHeader>
-        <CardContent
-          className={cn(coreMode && 'max-md:overflow-x-clip md:px-4 lg:px-6')}
-        >
-          <div
-            className={cn(
-              coreMode && 'md:hidden lg:block',
-              coreMode && hubCabinet.workspaceTableScroll
-            )}
-            data-testid="platform-core-order-lines-table-wrap"
-          >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Артикул</TableHead>
-                  <TableHead>Цвет</TableHead>
-                  <TableHead>Размер</TableHead>
-                  <TableHead className="text-right">Qty</TableHead>
-                  <TableHead className="text-right">Опт, ₽</TableHead>
-                  <TableHead className="text-right">Сумма</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {order.lines.map((line, idx) => (
-                  <TableRow
-                    key={`${line.articleId}-${line.size}-${idx}`}
-                    data-testid={`platform-core-order-line-${idx}`}
-                  >
-                    <TableCell className="font-medium">{line.articleId}</TableCell>
-                    <TableCell>{line.colorCode}</TableCell>
-                    <TableCell>{line.size}</TableCell>
-                    <TableCell className="text-right tabular-nums">{line.qty}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {line.wholesalePriceRub.toLocaleString('ru-RU')}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {(line.qty * line.wholesalePriceRub).toLocaleString('ru-RU')}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {coreMode ? (
-            <div
-              className={cn('hidden md:grid lg:hidden', hubCabinet.workspaceCardGrid)}
-              data-testid="platform-core-order-lines-card-grid"
-            >
+        <CardContent className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Артикул</TableHead>
+                <TableHead>Цвет</TableHead>
+                <TableHead>Размер</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
+                <TableHead className="text-right">Опт, ₽</TableHead>
+                <TableHead className="text-right">Сумма</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {order.lines.map((line, idx) => (
-                <Card
-                  key={`card-${line.articleId}-${line.size}-${idx}`}
-                  className="border-border-subtle"
-                  data-testid={`platform-core-order-line-card-${idx}`}
-                >
-                  <CardContent className="space-y-1 p-3 text-xs">
-                    <p className="font-bold">{line.articleId}</p>
-                    <p className="text-text-secondary">
-                      {line.colorCode} · {line.size}
-                    </p>
-                    <p className="tabular-nums">
-                      {line.qty} × {line.wholesalePriceRub.toLocaleString('ru-RU')} ₽ ={' '}
-                      <span className="font-semibold">
-                        {(line.qty * line.wholesalePriceRub).toLocaleString('ru-RU')} ₽
-                      </span>
-                    </p>
-                  </CardContent>
-                </Card>
+                <TableRow key={`${line.articleId}-${line.size}-${idx}`}>
+                  <TableCell className="font-medium">{line.articleId}</TableCell>
+                  <TableCell>{line.colorCode}</TableCell>
+                  <TableCell>{line.size}</TableCell>
+                  <TableCell className="text-right tabular-nums">{line.qty}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {line.wholesalePriceRub.toLocaleString('ru-RU')}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {(line.qty * line.wholesalePriceRub).toLocaleString('ru-RU')}
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          ) : null}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </>

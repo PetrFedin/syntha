@@ -28,8 +28,8 @@ const STEPS: { id: BrandWssiGoldenPathStepId; label: string }[] = [
   { id: 'mix', label: 'Mix' },
   { id: 'capacity', label: 'Capacity' },
   { id: 'shop-matrix', label: 'Shop matrix' },
-  { id: 'shop-showroom', label: 'Shop showroom' },
-  { id: 'checkout', label: 'Checkout' },
+  { id: 'shop-showroom', label: 'Шоурум магазина' },
+  { id: 'checkout', label: 'Оформление' },
 ];
 
 export function BrandWssiGoldenPathStrip({ collectionId, activeStep }: Props) {

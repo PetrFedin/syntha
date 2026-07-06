@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { brandScSyndicationWdAuditEventLabelRu } from '@/lib/production/brand-sc-syndication-wd';
 import type { Workshop2DomainEventEnvelope } from '@/lib/production/workshop2-domain-event-types';
 
 type Props = {
@@ -13,9 +14,14 @@ type Props = {
 function formatPublishEventRu(event: Workshop2DomainEventEnvelope): string {
   const campaign = String(event.payload.campaignName ?? '').trim();
   const source = String(event.payload.source ?? '').trim();
+  const eventLabel = brandScSyndicationWdAuditEventLabelRu(String(event.type ?? 'showroom.published'));
   const parts = [`${event.articleId}`];
+  if (eventLabel !== 'publish') parts.push(eventLabel);
   if (campaign) parts.push(campaign);
   if (source === 'bulk_showroom_publish') parts.push('batch');
+  if (source === 'linesheet_syndicate' || source === 'release_syndication') parts.push('syndication');
+  if (source === 'batch_unpublish') parts.push('unpublish');
+  if (source === 'batch_unpublish_rollback') parts.push('rollback');
   return parts.join(' · ');
 }
 
@@ -34,6 +40,7 @@ function formatWhen(iso: string): string {
 export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props) {
   const cid = collectionId.trim();
   const [events, setEvents] = useState<Workshop2DomainEventEnvelope[]>([]);
+  const [storageMode, setStorageMode] = useState<string>('memory');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +57,7 @@ export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props)
         ok?: boolean;
         events?: Workshop2DomainEventEnvelope[];
         messageRu?: string;
+        storageMode?: string;
       };
       if (!res.ok || !json.ok) {
         setError(json.messageRu ?? 'Не удалось загрузить журнал');
@@ -57,6 +65,7 @@ export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props)
         return;
       }
       setEvents(json.events ?? []);
+      setStorageMode(json.storageMode ?? 'memory');
     } catch {
       setError('Ошибка сети');
       setEvents([]);
@@ -78,7 +87,15 @@ export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props)
     >
       <div className="flex items-center justify-between gap-2">
         <p className="text-text-muted text-[10px] font-bold uppercase">Журнал публикаций</p>
-        {loading ? <Loader2 className="text-text-muted h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
+        <span className="flex items-center gap-2">
+          <span
+            className="text-text-muted text-[9px] uppercase"
+            data-testid={`brand-sc-publish-audit-storage-${storageMode === 'postgres' ? 'pg' : 'local'}`}
+          >
+            {storageMode === 'postgres' ? 'PG' : 'local'}
+          </span>
+          {loading ? <Loader2 className="text-text-muted h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
+        </span>
       </div>
       {error ? (
         <p className="text-destructive text-[10px]" role="alert">

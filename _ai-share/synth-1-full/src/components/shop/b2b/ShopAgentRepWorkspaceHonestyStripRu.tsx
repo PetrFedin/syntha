@@ -1,0 +1,107 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { fetchShopRepCommissionLedger } from '@/lib/shop/shop-rep-commission-ledger-store';
+import { fetchShopRepOfflineDrafts } from '@/lib/shop/shop-rep-offline-drafts-store';
+
+type Props = {
+  repId: string;
+};
+
+/** Workspace-level PG honesty: commission ledger + offline sync queue (Wave VB). */
+export function ShopAgentRepWorkspaceHonestyStripRu({ repId }: Props) {
+  const [ledgerMode, setLedgerMode] = useState<string>('…');
+  const [ledgerTotalRub, setLedgerTotalRub] = useState(0);
+  const [ledgerMessageRu, setLedgerMessageRu] = useState<string | null>(null);
+  const [draftCount, setDraftCount] = useState(0);
+  const [draftMode, setDraftMode] = useState<string | null>(null);
+  const [draftMessageRu, setDraftMessageRu] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const ledger = await fetchShopRepCommissionLedger(repId);
+      setLedgerMode(ledger.storageMode);
+      setLedgerTotalRub(ledger.totalCommissionRub);
+      setLedgerMessageRu(ledger.messageRu || null);
+
+      const drafts = await fetchShopRepOfflineDrafts(repId);
+      setDraftCount(drafts.config.drafts.length);
+      setDraftMode(drafts.storageMode ?? null);
+      setDraftMessageRu(
+        drafts.storageMode === 'postgres'
+          ? `Очередь в PG · ${drafts.config.drafts.length} черновик(ов).`
+          : drafts.storageMode === 'unavailable'
+            ? 'Очередь недоступна — нужен PostgreSQL (core fail-closed).'
+            : drafts.storageMode
+              ? `Очередь · ${drafts.storageMode} · ${drafts.config.drafts.length}.`
+              : null
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [repId]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  return (
+    <div
+      className={hubGadget.goldenPath}
+      data-testid="shop-agent-rep-workspace-honesty-strip-ru"
+    >
+      <Badge variant="outline" className="text-[9px] uppercase">
+        Rep · PG честность
+      </Badge>
+      {loading ? (
+        <span className="text-text-muted text-[10px]">Загрузка статуса…</span>
+      ) : (
+        <>
+          <Badge
+            variant={ledgerMode === 'postgres' ? 'secondary' : 'outline'}
+            data-testid={
+              ledgerMode === 'postgres'
+                ? 'shop-agent-rep-workspace-ledger-storage-pg'
+                : `shop-agent-rep-workspace-ledger-storage-${ledgerMode}`
+            }
+          >
+            Ledger: {ledgerMode === 'postgres' ? 'PG' : ledgerMode} ·{' '}
+            {ledgerTotalRub.toLocaleString('ru-RU')} ₽
+          </Badge>
+          {draftMode ? (
+            <Badge
+              variant={draftMode === 'postgres' ? 'secondary' : 'outline'}
+              data-testid={
+                draftMode === 'postgres'
+                  ? 'shop-agent-rep-workspace-drafts-storage-pg'
+                  : 'shop-agent-rep-offline-drafts-sync-queue-badge'
+              }
+            >
+              Очередь: {draftCount} · {draftMode === 'postgres' ? 'PG' : draftMode}
+            </Badge>
+          ) : null}
+          {ledgerMessageRu ? (
+            <span
+              className="text-text-muted text-[10px]"
+              data-testid="shop-agent-rep-workspace-ledger-message-ru"
+            >
+              {ledgerMessageRu}
+            </span>
+          ) : null}
+          {draftMessageRu ? (
+            <span
+              className="text-text-muted text-[10px]"
+              data-testid="shop-agent-rep-workspace-drafts-message-ru"
+            >
+              {draftMessageRu}
+            </span>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}

@@ -1,172 +1,176 @@
 import 'server-only';
 
-import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
-import {
-  type BrandProductionOpsSnapshot,
-  workshop2PoToBrandProductionOpsRow,
-  workshop2RequisitionToBrandProductionOpsBomRow,
-} from '@/lib/production/brand-production-ops-spine';
-import { listWorkshop2MaterialRequisitionsByCollection, createWorkshop2MaterialRequisition, upsertWorkshop2MaterialRequisition } from '@/lib/server/workshop2-material-requisition-repository';
+import type { BrandProductionState } from '@/lib/brand-production/types';
+import { createSeedState } from '@/lib/brand-production/seed';
+import type { BrandProductionOpsLocalSyncPayload } from '@/lib/production/brand-production-ops-local-sync';
 import {
   mapBrandBomPurchaseStatusToRequisitionStatus,
   mapBrandPoStatusToWorkshop2,
 } from '@/lib/production/brand-production-ops-local-sync';
 import {
+  type BrandProductionOpsSnapshot,
+  workshop2PoToBrandProductionOpsRow,
+  workshop2RequisitionToBrandProductionOpsBomRow,
+} from '@/lib/production/brand-production-ops-spine';
+import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
+import {
+  listWorkshop2MaterialRequisitionsByCollection,
+  upsertWorkshop2MaterialRequisition,
+} from '@/lib/server/workshop2-material-requisition-repository';
+import {
   listWorkshop2PurchaseOrdersByCollection,
   upsertWorkshop2PurchaseOrder,
 } from '@/lib/server/workshop2-purchase-order-repository';
-import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
+import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
+import { isWorkshop2PgOnlyMode } from '@/lib/production/workshop2-hub-pg-only-policy';
 
-async function seedSs27BrandProductionOps(collectionId: string): Promise<void> {
-  const orderId = PLATFORM_CORE_DEMO.demoOrderId;
-  const articles = [PLATFORM_CORE_DEMO.demoArticleId, 'demo-ss27-02'];
+const BRAND_PRODUCTION_OPS_SYNC_SOURCE = 'brand-production-ops-local-sync';
 
-  await upsertWorkshop2PurchaseOrder({
-    id: 'po-ss27-ops-101',
-    collectionId,
-    articleId: articles[0]!,
-    qty: 480,
-    status: 'synced',
-    supplierId: 'fab-north',
-    lineRef: 'PO-SS27-101',
-    payload: {
-      poCode: 'PO-SS27-101',
-      sku: articles[0],
-      factoryName: 'Factory «North»',
-      b2bOrderId: orderId,
-      source: 'brand_ops_seed',
-    },
-  });
-  await upsertWorkshop2PurchaseOrder({
-    id: 'po-ss27-ops-102',
-    collectionId,
-    articleId: articles[1]!,
-    qty: 220,
-    status: 'pending_erp',
-    supplierId: 'sup-fabric-tr',
-    lineRef: 'PO-SS27-102',
-    payload: {
-      poCode: 'PO-SS27-102',
-      sku: articles[1],
-      supplierName: 'Fabric TR',
-      b2bOrderId: orderId,
-      source: 'brand_ops_seed',
-    },
-  });
+const DEFAULT_ORG = 'org-brand-001';
+let memory: BrandProductionState | null = null;
 
-  await createWorkshop2MaterialRequisition({
-    collectionId,
-    articleId: articles[0]!,
-    bomLineRef: 'shell:main-fabric',
-    materialLabel: 'Shell · main fabric',
-    quantity: 480,
-    unit: 'm',
-    payload: { source: 'brand_ops_seed', purchaseStatus: 'ordered' },
-  });
-  await createWorkshop2MaterialRequisition({
-    collectionId,
-    articleId: articles[0]!,
-    bomLineRef: 'trim:zip-ykk',
-    materialLabel: 'Trim · YKK zip',
-    quantity: 480,
-    unit: 'pcs',
-    payload: { source: 'brand_ops_seed', purchaseStatus: 'in_transit' },
-  });
+export async function getBrandProductionOpsStateServer(
+  organizationId = DEFAULT_ORG
+): Promise<{ state: BrandProductionState; storageMode: 'postgres' | 'memory' | 'local_only' }> {
+  const org = organizationId.trim() || DEFAULT_ORG;
+
+  if (isWorkshop2PostgresEnabled()) {
+    await ensureWorkshop2PgSchema();
+    const res = await getWorkshop2PgPool().query<{ state_json: BrandProductionState }>(
+      `SELECT state_json FROM brand_production_ops_state WHERE organization_id = $1`,
+      [org]
+    );
+    const row = res.rows[0]?.state_json;
+    if (row && typeof row === 'object') {
+      memory = row;
+      return { state: row, storageMode: 'postgres' };
+    }
+    const seed = createSeedState();
+    await putBrandProductionOpsStateServer({ organizationId: org, state: seed });
+    return { state: seed, storageMode: 'postgres' };
+  }
+
+  if (isWorkshop2PgOnlyMode()) {
+    return { state: createSeedState(), storageMode: 'local_only' };
+  }
+
+  if (!memory) memory = createSeedState();
+  return { state: memory, storageMode: 'memory' };
+}
+
+export async function putBrandProductionOpsStateServer(input: {
+  organizationId?: string;
+  state: BrandProductionState;
+}): Promise<{ ok: boolean; storageMode: 'postgres' | 'memory' | 'pg_only_blocked' }> {
+  const org = input.organizationId?.trim() || DEFAULT_ORG;
+
+  if (isWorkshop2PostgresEnabled()) {
+    await ensureWorkshop2PgSchema();
+    await getWorkshop2PgPool().query(
+      `INSERT INTO brand_production_ops_state (organization_id, state_json, updated_at)
+       VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (organization_id) DO UPDATE SET
+         state_json = EXCLUDED.state_json,
+         updated_at = NOW()`,
+      [org, JSON.stringify(input.state)]
+    );
+    memory = input.state;
+    return { ok: true, storageMode: 'postgres' };
+  }
+
+  if (isWorkshop2PgOnlyMode()) return { ok: false, storageMode: 'pg_only_blocked' };
+  memory = input.state;
+  return { ok: true, storageMode: 'memory' };
+}
+
+export function brandProductionOpsStorageMode(): 'postgres' | 'memory' {
+  return isWorkshop2PostgresEnabled() ? 'postgres' : 'memory';
+}
+
+function resolveBrandProductionOpsSnapshotStorageMode(
+  poCount: number,
+  bomCount: number
+): BrandProductionOpsSnapshot['storageMode'] {
+  if (poCount || bomCount) {
+    return isWorkshop2PostgresEnabled() ? 'pg' : 'file';
+  }
+  return 'empty';
 }
 
 export async function getBrandProductionOpsSnapshot(input: {
   collectionId: string;
   orderId?: string;
-  organizationId?: string;
 }): Promise<BrandProductionOpsSnapshot> {
   const collectionId = input.collectionId.trim();
   const orderId = input.orderId?.trim();
 
-  let pos = await listWorkshop2PurchaseOrdersByCollection({
-    collectionId,
-    organizationId: input.organizationId,
-  });
-  let reqs = await listWorkshop2MaterialRequisitionsByCollection({
-    collectionId,
-    organizationId: input.organizationId,
-  });
+  const pos = await listWorkshop2PurchaseOrdersByCollection({ collectionId });
+  const reqs = await listWorkshop2MaterialRequisitionsByCollection({ collectionId });
 
-  if (pos.length === 0 && reqs.length === 0 && collectionId.toUpperCase() === 'SS27') {
-    await seedSs27BrandProductionOps(collectionId);
-    pos = await listWorkshop2PurchaseOrdersByCollection({
-      collectionId,
-      organizationId: input.organizationId,
-    });
-    reqs = await listWorkshop2MaterialRequisitionsByCollection({
-      collectionId,
-      organizationId: input.organizationId,
-    });
-  }
+  const filteredPos = orderId
+    ? pos.filter((po) => {
+        const poOrder = String(po.payload?.b2bOrderId ?? '').trim();
+        return !poOrder || poOrder === orderId;
+      })
+    : pos;
 
-  let poRows = pos.map(workshop2PoToBrandProductionOpsRow);
-  let bomRows = reqs.map(workshop2RequisitionToBrandProductionOpsBomRow);
+  const poRows = filteredPos.map(workshop2PoToBrandProductionOpsRow);
+  const bomRows = reqs.map(workshop2RequisitionToBrandProductionOpsBomRow);
 
-  if (orderId) {
-    poRows = poRows.filter((r) => !r.b2bOrderId || r.b2bOrderId === orderId);
-  }
-
-  const storageMode: BrandProductionOpsSnapshot['storageMode'] =
-    poRows.length || bomRows.length
-      ? isWorkshop2PostgresEnabled()
-        ? 'pg'
-        : 'file'
-      : 'empty';
-
-  return { poRows, bomRows, storageMode };
+  return {
+    poRows,
+    bomRows,
+    storageMode: resolveBrandProductionOpsSnapshotStorageMode(poRows.length, bomRows.length),
+  };
 }
 
 export async function syncBrandProductionOpsFromLocal(input: {
-  payload: import('@/lib/production/brand-production-ops-local-sync').BrandProductionOpsLocalSyncPayload;
-  organizationId?: string;
-}): Promise<{ poSynced: number; bomSynced: number; snapshot: BrandProductionOpsSnapshot }> {
-  const { payload } = input;
-  const org = input.organizationId ?? 'org-brand-001';
+  payload: BrandProductionOpsLocalSyncPayload;
+}): Promise<{
+  poSynced: number;
+  bomSynced: number;
+  snapshot: BrandProductionOpsSnapshot;
+}> {
+  const payload = input.payload;
   let poSynced = 0;
   let bomSynced = 0;
 
-  for (const line of payload.poLines) {
+  for (const poLine of payload.poLines) {
     await upsertWorkshop2PurchaseOrder({
-      id: line.id,
-      collectionId: line.collectionId,
-      articleId: line.articleId,
-      supplierId: line.factoryId,
-      lineRef: line.poCode,
-      qty: line.qty,
-      status: mapBrandPoStatusToWorkshop2(line.brandPoStatus) as import('@/lib/server/workshop2-purchase-order-repository').Workshop2PurchaseOrderStatus,
+      id: poLine.id,
+      collectionId: poLine.collectionId,
+      articleId: poLine.articleId,
+      qty: poLine.qty,
+      status: mapBrandPoStatusToWorkshop2(poLine.brandPoStatus),
+      lineRef: poLine.poCode,
+      supplierId: poLine.factoryId,
       payload: {
-        poCode: line.poCode,
-        sku: line.sku,
-        factoryName: line.factoryName,
-        b2bOrderId: line.b2bOrderId ?? payload.orderId,
-        brandPoStatus: line.brandPoStatus,
-        source: 'brand_ops_local_sync',
+        source: BRAND_PRODUCTION_OPS_SYNC_SOURCE,
+        poCode: poLine.poCode,
+        sku: poLine.sku,
+        factoryName: poLine.factoryName,
+        factoryId: poLine.factoryId,
+        b2bOrderId: poLine.b2bOrderId ?? payload.orderId,
       },
     });
     poSynced += 1;
   }
 
-  for (const line of payload.bomLines) {
+  for (const bomLine of payload.bomLines) {
     await upsertWorkshop2MaterialRequisition({
-      id: line.id,
-      collectionId: line.collectionId,
-      articleId: line.articleId,
-      bomLineRef: `${line.materialCode}:${line.materialName}`.slice(0, 120),
-      materialLabel: `${line.materialCode} ${line.materialName}`.trim(),
-      quantity: line.qtyPerUnit,
-      unit: line.unit,
-      status: mapBrandBomPurchaseStatusToRequisitionStatus(line.purchaseStatus),
-      organizationId: org,
+      id: bomLine.id,
+      collectionId: bomLine.collectionId,
+      articleId: bomLine.articleId,
+      bomLineRef: `${bomLine.sku}:${bomLine.materialCode}`,
+      materialLabel: bomLine.materialName,
+      quantity: bomLine.qtyPerUnit,
+      unit: bomLine.unit,
+      status: mapBrandBomPurchaseStatusToRequisitionStatus(bomLine.purchaseStatus),
       payload: {
-        sku: line.sku,
-        supplierId: line.supplierId,
-        supplierName: line.supplierName,
-        purchaseStatus: line.purchaseStatus,
-        source: 'brand_ops_local_sync',
+        source: BRAND_PRODUCTION_OPS_SYNC_SOURCE,
+        supplierId: bomLine.supplierId,
+        supplierName: bomLine.supplierName,
+        sku: bomLine.sku,
       },
     });
     bomSynced += 1;
@@ -175,7 +179,6 @@ export async function syncBrandProductionOpsFromLocal(input: {
   const snapshot = await getBrandProductionOpsSnapshot({
     collectionId: payload.targetCollectionId,
     orderId: payload.orderId,
-    organizationId: org,
   });
 
   return { poSynced, bomSynced, snapshot };

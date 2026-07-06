@@ -45,7 +45,7 @@ export const distributorNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.shop.calendar,
+        href: ROUTES.shop.b2bCalendar,
         value: 'calendar',
         label: 'Календарь',
         icon: Calendar,
@@ -78,7 +78,7 @@ export const distributorNavGroups = [
           { href: ROUTES.shop.b2bPartnersDiscover, label: 'Поиск брендов', value: 'discover' },
           { href: ROUTES.shop.b2bContracts, label: 'Контракты', value: 'contracts' },
           { href: ROUTES.shop.b2bDocuments, label: 'Документы', value: 'documents' },
-          { href: ROUTES.shop.b2bPartnersDiscover, label: 'Discover брендов', value: 'marketplace' },
+          { href: ROUTES.shop.b2bPartnersDiscover, label: 'Подбор брендов', value: 'marketplace' },
           {
             href: ROUTES.shop.b2bTradeShows,
             label: 'Выставки и события',
@@ -113,11 +113,11 @@ export const distributorNavGroups = [
             label: 'Подтверждённые',
             value: 'confirmed',
           },
-          { href: ROUTES.shop.b2bOrderMode, label: 'Режим заказа', value: 'order-mode' },
+          { href: ROUTES.shop.b2bMatrix, label: 'Режим заказа', value: 'order-mode' },
           { href: ROUTES.shop.b2bCreateOrder, label: 'Создать заказ', value: 'create-order' },
           { href: ROUTES.shop.b2bQuickOrder, label: 'Быстрый заказ', value: 'quick-order' },
           { href: ROUTES.shop.b2bReorder, label: 'Повтор заказа', value: 'reorder' },
-          { href: ROUTES.shop.b2bOrderDrafts, label: 'Черновики (личные)', value: 'order-drafts' },
+          { href: ROUTES.shop.b2bOrders, label: 'Черновики (личные)', value: 'order-drafts' },
         ],
       },
     ],

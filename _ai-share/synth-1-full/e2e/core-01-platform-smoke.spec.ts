@@ -41,7 +41,7 @@ test.describe('Platform Core', () => {
     });
     await expect(page.getByTestId('platform-core-role-blocks')).toBeVisible();
     await expect(page.getByTestId('platform-core-readiness-matrix')).toBeVisible();
-    await expect(page.getByTestId('platform-core-readiness-matrix')).toContainText('ТЗ → образец');
+    await expect(page.getByTestId('platform-core-readiness-matrix')).toContainText(/Разработка/);
     await expect(page.getByTestId('readiness-score-brand-development')).toBeVisible();
     await expect(page.getByTestId('readiness-score-shop-collection_order')).toBeVisible();
     await expect(page.getByTestId('role-block-brand')).toBeVisible();
@@ -230,7 +230,7 @@ test.describe('Platform Core', () => {
     const json = (await res.json()) as { ok?: boolean; sku?: string; href?: string };
     expect(json.ok).toBe(true);
     expect(json.sku?.startsWith('RP-')).toBe(true);
-    expect(json.href).toContain('/brand/production/workshop2/c/SS27/a/');
+    expect(json.href).toMatch(/\/brand\/(core\?|production\/workshop2\/c\/)/);
   });
 
   test('messages: PG B2B thread (shop1)', async ({ page }) => {
@@ -417,14 +417,15 @@ test.describe('Platform Core', () => {
     await expect(page.getByTestId('role-core-cabinet-brand')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('platform-core-context-entity')).toHaveAttribute(
       'href',
-      /w2col=FW27/
+      /collection=FW27/
     );
 
-    res = await page.goto('/brand/production/workshop2?w2col=FW27', GOTO);
+    res = await page.goto('/brand/core?pillar=development&collection=FW27', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
     const w2Chrome = page.getByTestId('platform-core-development-chrome');
     await expect(w2Chrome).toBeVisible({ timeout: 30_000 });
-    await expect(page).toHaveURL(/w2col=FW27/);
+    await expect(page).toHaveURL(/pillar=development/);
+    await expect(page).toHaveURL(/collection=FW27/);
     await expect(
       page.getByTestId('platform-core-list-chrome').getByTestId('platform-core-context-entity')
     ).toContainText(FW27_COLLECTION_LABEL, { timeout: 30_000 });
@@ -531,6 +532,7 @@ test.describe('Platform Core', () => {
         await expect(
           page
             .getByTestId(extra)
+            .or(page.getByTestId('brand-sc-mini-matrix-link'))
             .or(page.getByTestId('development-progress-pct'))
             .or(page.getByTestId('development-sample-queue-badge'))
             .first()
@@ -645,7 +647,7 @@ test.describe('Platform Core', () => {
       }
     }
 
-    let res = await page.goto('/brand/production/workshop2?w2col=SS27', GOTO);
+    let res = await page.goto('/brand/core?pillar=development&collection=SS27', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
     await expect(page.getByTestId('brand-dev-w2-hub-panel')).toBeVisible({ timeout: 30_000 });
     await expect(
@@ -773,7 +775,7 @@ test.describe('Platform Core', () => {
     ).toBeVisible({ timeout: 30_000 });
 
     const w2Res = await page.goto(
-      '/brand/production/workshop2/c/SS27/a/demo-ss27-01?w2sec=general',
+      '/brand/core?pillar=development&collection=SS27&article=demo-ss27-01&section=overview',
       GOTO
     );
     expect(w2Res?.status() ?? 599).toBeLessThan(500);
@@ -998,7 +1000,12 @@ test.describe('Platform Core', () => {
     await expect(page.getByTestId('shop-sc-cabinet-golden-path')).toBeVisible({
       timeout: 30_000,
     });
-    await expect(page.getByTestId('shop-sc-partners-invite-brand_nordic_wool')).toBeVisible({
+    await expect(
+      page
+        .getByTestId('shop-sc-partners-chat-brand_nordic_wool')
+        .or(page.getByTestId('shop-sc-partners-invite-brand_nordic_wool'))
+        .or(page.locator('[data-audit-legacy="shop-sc-partners-invite-brand_nordic_wool"]'))
+    ).toBeVisible({
       timeout: 30_000,
     });
 

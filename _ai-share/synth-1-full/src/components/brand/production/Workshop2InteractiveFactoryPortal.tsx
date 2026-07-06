@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { MessageSquarePlus, CheckCircle2, XCircle } from 'lucide-react';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
+import { findLatestWorkshop2FactoryTechPackHandoffForReview } from '@/lib/production/workshop2-factory-tech-pack-review';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 
@@ -20,30 +23,101 @@ export type FactoryPin = {
   at: string;
 };
 
+type ReviewStatus = 'pending' | 'rejected' | 'accepted';
+
+function mapHandoffToReviewStatus(
+  dossier: Workshop2DossierPhase1 | null
+): ReviewStatus {
+  const handoff = dossier ? findLatestWorkshop2FactoryTechPackHandoffForReview(dossier) : null;
+  if (!handoff) return 'pending';
+  if (handoff.status === 'accepted') return 'accepted';
+  if (handoff.status === 'rejected' || handoff.status === 'amendment_requested') {
+    return 'rejected';
+  }
+  return 'pending';
+}
+
+function mapFitCommentsToPins(dossier: Workshop2DossierPhase1 | null): FactoryPin[] {
+  return (dossier?.fitComments ?? [])
+    .filter((c) => c.pin && c.text?.trim())
+    .map((c, i) => ({
+      id: c.commentId || `pin-${i}`,
+      x: c.pin!.xPct,
+      y: c.pin!.yPct,
+      text: c.text,
+      status: c.resolved ? 'resolved' : 'open',
+      by: c.author,
+      at: c.at,
+    }));
+}
+
 export function Workshop2InteractiveFactoryPortal({
   htmlContent,
   factoryPackHtml,
   articleId,
+  collectionId,
 }: {
   htmlContent: string;
   factoryPackHtml?: string;
   articleId: string;
+  collectionId: string;
 }) {
   const { toast } = useToast();
   const [docView, setDocView] = useState<'final-tz' | 'factory-pack'>('factory-pack');
   const [isPinMode, setIsPinMode] = useState(false);
   const [pins, setPins] = useState<FactoryPin[]>([]);
-  const [status, setStatus] = useState<'pending' | 'rejected' | 'accepted'>('pending');
+  const [status, setStatus] = useState<ReviewStatus>('pending');
+  const [busy, setBusy] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Временный черновик пина
   const [draftPin, setDraftPin] = useState<{ x: number; y: number } | null>(null);
   const [draftText, setDraftText] = useState('');
 
+  const coreMode = isPlatformCoreMode();
+
+  const loadFromDossier = useCallback(async () => {
+    if (!coreMode || !collectionId.trim()) return;
+    try {
+      const res = await fetch(
+        `/api/workshop2/articles/${encodeURIComponent(collectionId)}/${encodeURIComponent(articleId)}/dossier`,
+        { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
+      );
+      if (!res.ok) return;
+      const json = (await res.json()) as { dossier?: Workshop2DossierPhase1 };
+      const dossier = json.dossier ?? null;
+      setPins(mapFitCommentsToPins(dossier));
+      setStatus(mapHandoffToReviewStatus(dossier));
+    } catch {
+      /* best-effort */
+    }
+  }, [articleId, collectionId, coreMode]);
+
+  useEffect(() => {
+    void loadFromDossier();
+  }, [loadFromDossier]);
+
+  const postReview = async (body: Record<string, unknown>) => {
+    if (!coreMode) return false;
+    setBusy(true);
+    try {
+      const res = await fetch('/api/workshop2/factory/tech-pack-review', {
+        method: 'POST',
+        headers: {
+          ...buildWorkshop2ApiRequestHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ collectionId, articleId, ...body }),
+      });
+      if (!res.ok) return false;
+      await loadFromDossier();
+      return true;
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isPinMode || !containerRef.current) return;
-
-    // Если мы кликаем внутри уже открытого диалога черновика, игнорируем
     if ((e.target as HTMLElement).closest('.pin-draft-dialog')) return;
 
     const rect = containerRef.current.getBoundingClientRect();
@@ -54,35 +128,54 @@ export function Workshop2InteractiveFactoryPortal({
     setDraftText('');
   };
 
-  const savePin = () => {
+  const savePin = async () => {
     if (!draftPin || !draftText.trim()) return;
 
-    const newPin: FactoryPin = {
-      id: Math.random().toString(36).slice(2, 10),
-      x: draftPin.x,
-      y: draftPin.y,
-      text: draftText.trim(),
-      status: 'open',
-      by: 'Фабрика (Менеджер)',
-      at: new Date().toISOString(),
-    };
+    if (coreMode) {
+      const ok = await postReview({
+        action: 'pin',
+        text: draftText.trim(),
+        xPct: draftPin.x,
+        yPct: draftPin.y,
+      });
+      if (!ok) {
+        toast({ title: 'Не удалось сохранить pin', variant: 'destructive' });
+        return;
+      }
+    } else {
+      const newPin: FactoryPin = {
+        id: Math.random().toString(36).slice(2, 10),
+        x: draftPin.x,
+        y: draftPin.y,
+        text: draftText.trim(),
+        status: 'open',
+        by: 'Фабрика (Менеджер)',
+        at: new Date().toISOString(),
+      };
+      setPins([...pins, newPin]);
+      window.dispatchEvent(
+        new CustomEvent('factory-pin-added', { detail: { message: newPin.text } })
+      );
+    }
 
-    setPins([...pins, newPin]);
     setDraftPin(null);
     setIsPinMode(false);
-
-    window.dispatchEvent(
-      new CustomEvent('factory-pin-added', { detail: { message: newPin.text } })
-    );
-
     toast({
       title: 'Комментарий добавлен',
-      description: 'Бренд получит уведомление о новом комментарии.',
+      description: coreMode ? 'Pin сохранён в досье PG.' : 'Бренд получит уведомление.',
     });
   };
 
-  const acceptTz = () => {
-    setStatus('accepted');
+  const acceptTz = async () => {
+    if (coreMode) {
+      const ok = await postReview({ action: 'accept' });
+      if (!ok) {
+        toast({ title: 'Не удалось принять ТЗ', variant: 'destructive' });
+        return;
+      }
+    } else {
+      setStatus('accepted');
+    }
     toast({
       title: 'ТЗ принято',
       description: 'Статус изменен на «Принято в работу».',
@@ -90,8 +183,16 @@ export function Workshop2InteractiveFactoryPortal({
     });
   };
 
-  const rejectTz = () => {
-    setStatus('rejected');
+  const rejectTz = async () => {
+    if (coreMode) {
+      const ok = await postReview({ action: 'reject' });
+      if (!ok) {
+        toast({ title: 'Не удалось отклонить ТЗ', variant: 'destructive' });
+        return;
+      }
+    } else {
+      setStatus('rejected');
+    }
     toast({
       title: 'Отклонено',
       description: 'ТЗ возвращено на доработку бренду.',
@@ -101,7 +202,6 @@ export function Workshop2InteractiveFactoryPortal({
 
   const displayHtml =
     docView === 'factory-pack' && factoryPackHtml ? factoryPackHtml : htmlContent;
-  const coreMode = isPlatformCoreMode();
 
   return (
     <div
@@ -122,94 +222,99 @@ export function Workshop2InteractiveFactoryPortal({
                 data-testid="factory-portal-status"
               >
                 Артикул: {articleId} · {pins.length} комментариев ·{' '}
-                {docView === 'factory-pack' ? 'Factory pack · 6 листов' : 'Итоговое ТЗ'}
+                {docView === 'factory-pack' ? 'Фабричный пакет · 6 листов' : 'Итоговое ТЗ'}
               </p>
             ) : (
               <>
                 <h1 className="text-xl font-bold tracking-tight">Interactive Tech Pack</h1>
                 <p className="text-text-secondary mt-1 text-sm">
                   Артикул: {articleId} · {pins.length} комментариев ·{' '}
-                  {docView === 'factory-pack' ? 'Factory pack · 6 листов' : 'Итоговое ТЗ'}
+                  {docView === 'factory-pack' ? 'Фабричный пакет · 6 листов' : 'Итоговое ТЗ'}
                 </p>
               </>
             )}
           </div>
           <div className="flex max-md:-mx-1 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:pb-1 max-md:[-webkit-overflow-scrolling:touch] min-w-0 flex-wrap items-center gap-2 md:gap-3 max-md:flex-nowrap">
-          {factoryPackHtml ? (
-            <>
-              <Button
-                type="button"
-                size="sm"
-                variant={docView === 'factory-pack' ? 'default' : 'outline'}
-                className="min-h-11 shrink-0 text-xs max-md:min-h-11"
-                data-testid="factory-portal-view-factory-pack"
-                onClick={() => setDocView('factory-pack')}
-              >
-                Factory pack
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={docView === 'final-tz' ? 'default' : 'outline'}
-                className="min-h-11 shrink-0 text-xs max-md:min-h-11"
-                data-testid="factory-portal-view-final-tz"
-                onClick={() => setDocView('final-tz')}
-              >
-                Full TZ
-              </Button>
-              <div className="bg-border-default mx-1 hidden h-6 w-px shrink-0 sm:block" />
-            </>
-          ) : null}
-          {status === 'pending' && (
-            <Badge className="border-amber-200 bg-amber-100 text-amber-800">
-              Ожидает согласования
-            </Badge>
-          )}
-          {status === 'accepted' && (
-            <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800">
-              <CheckCircle2 className="mr-1 h-3 w-3" /> Принято в работу
-            </Badge>
-          )}
-          {status === 'rejected' && (
-            <Badge className="border-rose-200 bg-rose-100 text-rose-800">
-              <XCircle className="mr-1 h-3 w-3" /> Возвращено на доработку
-            </Badge>
-          )}
-
-          <div className="bg-border-default mx-1 hidden h-6 w-px shrink-0 md:block" />
-
-          <Button
-            variant={isPinMode ? 'default' : 'outline'}
-            onClick={() => {
-              setIsPinMode(!isPinMode);
-              setDraftPin(null);
-            }}
-            className={cn(
-              'min-h-11 shrink-0 max-md:min-h-11',
-              isPinMode ? 'bg-blue-600 hover:bg-blue-700' : ''
+            {factoryPackHtml ? (
+              <>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={docView === 'factory-pack' ? 'default' : 'outline'}
+                  className="min-h-11 shrink-0 text-xs max-md:min-h-11"
+                  data-testid="factory-portal-view-factory-pack"
+                  onClick={() => setDocView('factory-pack')}
+                >
+                  Фабричный пакет
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={docView === 'final-tz' ? 'default' : 'outline'}
+                  className="min-h-11 shrink-0 text-xs max-md:min-h-11"
+                  data-testid="factory-portal-view-final-tz"
+                  onClick={() => setDocView('final-tz')}
+                >
+                  Full TZ
+                </Button>
+                <div className="bg-border-default mx-1 hidden h-6 w-px shrink-0 sm:block" />
+              </>
+            ) : null}
+            {status === 'pending' && (
+              <Badge className="border-amber-200 bg-amber-100 text-amber-800">
+                Ожидает согласования
+              </Badge>
             )}
-          >
-            <MessageSquarePlus className="mr-2 h-4 w-4 shrink-0" />
-            {isPinMode ? 'Отменить Pin' : 'Добавить Pin'}
-          </Button>
+            {status === 'accepted' && (
+              <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800">
+                <CheckCircle2 className="mr-1 h-3 w-3" /> Принято в работу
+              </Badge>
+            )}
+            {status === 'rejected' && (
+              <Badge className="border-rose-200 bg-rose-100 text-rose-800">
+                <XCircle className="mr-1 h-3 w-3" /> Возвращено на доработку
+              </Badge>
+            )}
 
-          {status === 'pending' && (
-            <>
-              <Button
-                variant="outline"
-                className="min-h-11 shrink-0 border-rose-200 text-rose-700 hover:bg-rose-50 max-md:min-h-11"
-                onClick={rejectTz}
-              >
-                Нужны правки
-              </Button>
-              <Button
-                className="min-h-11 shrink-0 bg-emerald-600 text-white hover:bg-emerald-700 max-md:min-h-11"
-                onClick={acceptTz}
-              >
-                ТЗ принято
-              </Button>
-            </>
-          )}
+            <div className="bg-border-default mx-1 hidden h-6 w-px shrink-0 md:block" />
+
+            <Button
+              variant={isPinMode ? 'default' : 'outline'}
+              onClick={() => {
+                setIsPinMode(!isPinMode);
+                setDraftPin(null);
+              }}
+              disabled={busy}
+              className={cn(
+                'min-h-11 shrink-0 max-md:min-h-11',
+                isPinMode ? 'bg-blue-600 hover:bg-blue-700' : ''
+              )}
+            >
+              <MessageSquarePlus className="mr-2 h-4 w-4 shrink-0" />
+              {isPinMode ? 'Отменить Pin' : 'Добавить Pin'}
+            </Button>
+
+            {status === 'pending' && (
+              <>
+                <Button
+                  variant="outline"
+                  className="min-h-11 shrink-0 border-rose-200 text-rose-700 hover:bg-rose-50 max-md:min-h-11"
+                  onClick={() => void rejectTz()}
+                  disabled={busy}
+                  data-testid="factory-portal-reject-tz"
+                >
+                  Нужны правки
+                </Button>
+                <Button
+                  className="min-h-11 shrink-0 bg-emerald-600 text-white hover:bg-emerald-700 max-md:min-h-11"
+                  onClick={() => void acceptTz()}
+                  disabled={busy}
+                  data-testid="factory-portal-accept-tz"
+                >
+                  ТЗ принято
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -230,7 +335,6 @@ export function Workshop2InteractiveFactoryPortal({
           <div dangerouslySetInnerHTML={{ __html: displayHtml }} />
         </div>
 
-        {/* Отрисовка сохраненных пинов */}
         {pins.map((pin, i) => (
           <div
             key={pin.id}
@@ -240,7 +344,6 @@ export function Workshop2InteractiveFactoryPortal({
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white shadow-md ring-2 ring-white">
               {i + 1}
             </div>
-            {/* Всплывающая подсказка с комментарием при наведении */}
             <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-lg border bg-white p-3 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
               <p className="text-text-primary mb-1 text-xs font-medium">{pin.by}</p>
               <p className="text-text-secondary text-xs leading-snug">{pin.text}</p>
@@ -251,7 +354,6 @@ export function Workshop2InteractiveFactoryPortal({
           </div>
         ))}
 
-        {/* Диалог добавления нового пина */}
         {draftPin && (
           <div
             className="pin-draft-dialog absolute z-30 w-64 rounded-lg border bg-white p-3 shadow-xl"
@@ -283,8 +385,8 @@ export function Workshop2InteractiveFactoryPortal({
                 <Button
                   size="sm"
                   className="h-7 bg-blue-600 text-xs"
-                  disabled={!draftText.trim()}
-                  onClick={savePin}
+                  disabled={!draftText.trim() || busy}
+                  onClick={() => void savePin()}
                 >
                   Сохранить
                 </Button>

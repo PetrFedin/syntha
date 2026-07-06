@@ -6,6 +6,11 @@ describe('shouldMountB2BStateProvider', () => {
     expect(shouldMountB2BStateProvider('/catalog')).toBe(true);
   });
 
+  it('mounts on shop/brand Platform Core cabinets', () => {
+    expect(shouldMountB2BStateProvider('/shop/core')).toBe(true);
+    expect(shouldMountB2BStateProvider('/brand/core')).toBe(true);
+  });
+
   it('mounts on brand and shop hub / B2B cabinets', () => {
     expect(shouldMountB2BStateProvider('/brand/production')).toBe(true);
     expect(shouldMountB2BStateProvider('/shop')).toBe(true);

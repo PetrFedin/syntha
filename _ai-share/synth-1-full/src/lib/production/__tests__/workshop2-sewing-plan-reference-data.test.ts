@@ -9,7 +9,7 @@ import {
 describe('workshop2-sewing-plan-reference-data', () => {
   it('returns contractors payload with partners and source', () => {
     const payload = resolveWorkshop2SewingContractorsPayload();
-    expect(payload.source.partners).toMatch(/b2b_json|catalog_and_demo/);
+    expect(payload.source.partners).toMatch(/b2b_json|catalog_and_demo|enterprise_and_b2b/);
     expect(Array.isArray(payload.partners)).toBe(true);
     expect(payload.partners.length).toBeGreaterThan(0);
   });

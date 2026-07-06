@@ -52,7 +52,7 @@ export function ManufacturerProductionWipPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Workflow className="h-4 w-4" />
-            <CardTitle className="text-base">WIP · shop floor</CardTitle>
+            <CardTitle className="text-base">Незавершёнка · цех</CardTitle>
           </div>
           <CardDescription>Apparel Magic/WFX: MES release · ERP · floor routing.</CardDescription>
         </CardHeader>
@@ -67,7 +67,7 @@ export function ManufacturerProductionWipPanel({
               </Link>
             </Button>
             <Button size="sm" variant="outline" asChild>
-              <Link href={session.materialsHref}>Materials</Link>
+              <Link href={session.materialsHref}>Материалы</Link>
             </Button>
           </div>
         </CardContent>
@@ -111,7 +111,7 @@ export function ManufacturerProductionCutTicketPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Scissors className="h-4 w-4" />
-            <CardTitle className="text-base">Cut ticket · WIP</CardTitle>
+            <CardTitle className="text-base">Техкарта раскроя · WIP</CardTitle>
             <Badge variant="outline" data-testid={`manufacturer-cut-ticket-source-${storageMode}`}>
               {rows.length ? `Brand PG · ${storageMode}` : 'Links only'}
             </Badge>
@@ -156,11 +156,11 @@ export function ManufacturerProductionCutTicketPanel({
           <div className="flex flex-wrap gap-2">
             <Button size="sm" asChild>
               <Link href={session.brandCutTicketHref} data-testid="manufacturer-cut-ticket-brand-link">
-                Brand cut ticket
+                Техкарта раскроя бренда
               </Link>
             </Button>
             <Button size="sm" variant="outline" asChild>
-              <Link href={session.dossierHref}>Production dossier</Link>
+              <Link href={session.dossierHref}>Досье производства</Link>
             </Button>
           </div>
         </CardContent>

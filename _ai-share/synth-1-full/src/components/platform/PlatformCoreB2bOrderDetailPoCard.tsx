@@ -8,7 +8,7 @@ import {
   factoryProductionHandoffQueueHref,
   factoryProductionOrdersOrderContextHref,
   shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import {
   PRODUCTION_HANDOFF_DONE_RU,
   PRODUCTION_HANDOFF_PENDING_RU,
@@ -40,7 +40,7 @@ export function PlatformCoreB2bOrderDetailPoCard({
 
   return (
     <Card
-      id={variant === 'shop' ? 'order-production-po' : undefined}
+      id={variant === 'shop' ? 'shop-co-buyer-tracking' : undefined}
       data-testid="platform-core-order-po-card"
       className={poHandedOff ? 'border-emerald-200/80 bg-emerald-50/30' : 'border-amber-200/60'}
     >

@@ -9,7 +9,8 @@ import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentatio
 import { fetchShopBuyerCrmProfile } from '@/lib/b2b/shop-buyer-crm-profile-store';
 import type { ShopBuyerCrmProfile } from '@/lib/b2b/shop-buyer-crm-profile';
 import { shopB2bCheckoutCollectionHref } from '@/lib/routes';
-import { Percent, Tag } from 'lucide-react';
+import { ShopBuyerPricelistTierSyncBadge } from '@/components/shop/b2b/ShopBuyerPricelistTierSyncBadge';
+import { Percent, RefreshCw, Tag } from 'lucide-react';
 
 type Props = {
   buyerId: string;
@@ -27,6 +28,7 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
   const [profile, setProfile] = useState<ShopBuyerCrmProfile | null>(null);
   const [storageMode, setStorageMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,7 +42,7 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
     return () => {
       cancelled = true;
     };
-  }, [buyerId]);
+  }, [buyerId, refreshNonce]);
 
   const partners = buildShopB2bPartnersSession({ collectionId });
 
@@ -56,6 +58,17 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
             {storageMode}
           </Badge>
         ) : null}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 text-[10px]"
+          data-testid="shop-co-registry-buyer-crm-refresh"
+          onClick={() => setRefreshNonce((n) => n + 1)}
+        >
+          <RefreshCw className="mr-1 h-3 w-3" aria-hidden />
+          Обновить
+        </Button>
       </div>
 
       {loading ? (
@@ -78,6 +91,12 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
                 <Percent className="mr-1 h-3 w-3" aria-hidden />−{profile.firstOrderDiscountPct}%
               </Badge>
             ) : null}
+            <ShopBuyerPricelistTierSyncBadge
+              collectionId={collectionId}
+              priceTier={profile.priceTier}
+              testIdPrefix="shop-co-registry-buyer-crm"
+              reloadNonce={refreshNonce}
+            />
           </div>
           {profile.onboardingNoteRu ? (
             <p className="text-text-secondary text-xs leading-relaxed">{profile.onboardingNoteRu}</p>
@@ -87,6 +106,9 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
               net terms применятся при checkout.
             </p>
           )}
+          <p className="text-text-muted text-[10px]" data-testid="shop-co-registry-buyer-crm-assigned-at">
+            Назначено: {new Date(profile.assignedAt).toLocaleString('ru-RU')}
+          </p>
         </div>
       ) : (
         <p className="text-text-secondary text-xs">CRM-сегмент временно недоступен — откройте витрину или партнёров.</p>
@@ -113,12 +135,12 @@ export function ShopCoRegistryBuyerCrmOnboardingStrip({
             href={brandCrmSegmentationFeatureHref('pricelist', collectionId)}
             data-testid="shop-co-registry-onboarding-brand-pricelist"
           >
-            Brand pricelist
+            Прайс-лист бренда
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase">
           <Link href={shopB2bCheckoutCollectionHref(collectionId)} data-testid="shop-co-registry-onboarding-checkout">
-            Checkout
+            Оформление
           </Link>
         </Button>
         <Button asChild variant="ghost" size="sm" className="h-8 text-[10px] font-bold uppercase">

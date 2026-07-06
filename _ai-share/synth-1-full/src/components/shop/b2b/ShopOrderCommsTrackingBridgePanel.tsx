@@ -1,17 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { CommsContextualThreadLink } from '@/components/platform/CommsContextualThreadLink';
 import { useMemo } from 'react';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { buildBrandOrderCommsSession } from '@/lib/b2b/brand-order-comms';
 import { buildShopOrderCommsSession } from '@/lib/b2b/shop-order-comms';
+import {
+  WAVE_YN_BRAND_CHAT_RU,
+  WAVE_YN_SHOP_CHAT_RU,
+} from '@/lib/platform/wave-yn-comms-contextual-thread';
 
 type Props = {
   orderId?: string;
   collectionId?: string;
 };
 
-/** Cross-role strip: brand comms ↔ shop workspace tabs (above tracking list). */
+/** Связка бренд ↔ магазин над списком трекинга. */
 export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Props) {
   const shop = useMemo(
     () => (orderId?.trim() ? buildShopOrderCommsSession({ orderId, collectionId }) : null),
@@ -31,30 +36,33 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
       className={hubGadget.goldenPath}
       data-testid="shop-order-comms-tracking-bridge-strip"
     >
-      <span className="text-text-muted shrink-0">Brand ↔ shop</span>
+      <span className="text-text-muted shrink-0">Бренд ↔ магазин</span>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
         href={brand.detailHref}
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-brand-detail-link"
       >
-        Brand order
+        Заказ бренда
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
-      <Link
+      <CommsContextualThreadLink
         href={brand.chatHref}
+        orderId={orderId}
+        collectionId={collectionId}
+        contextualSource="tracking"
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-brand-chat-link"
       >
-        Brand chat
-      </Link>
+        {WAVE_YN_BRAND_CHAT_RU}
+      </CommsContextualThreadLink>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
         href={brand.handoffHref}
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-brand-handoff-link"
       >
-        Brand handoff
+        Передача бренда
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -62,23 +70,26 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-brand-margin-link"
       >
-        Brand margin
+        Маржа бренда
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
-      <Link
+      <CommsContextualThreadLink
         href={shop.chatHref}
+        orderId={orderId}
+        collectionId={collectionId}
+        contextualSource="tracking"
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-shop-chat-link"
       >
-        Shop chat
-      </Link>
+        {WAVE_YN_SHOP_CHAT_RU}
+      </CommsContextualThreadLink>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
         href={shop.replenishmentAtpHref}
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-replenishment-link"
       >
-        Replenishment ATP
+        Пополнение
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -86,7 +97,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-collaborative-link"
       >
-        Collaborative
+        Согласования
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -94,7 +105,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-shop-margin-link"
       >
-        Shop margin
+        Маржа магазина
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -102,7 +113,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-matrix-link"
       >
-        Matrix
+        Матрица
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -110,7 +121,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-inventory-link"
       >
-        Inventory
+        Остатки
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -118,7 +129,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-platform-marketroom-link"
       >
-        Platform marketroom
+        Маркетрум
       </Link>
       <span className={hubGadget.goldenSep}>·</span>
       <Link
@@ -126,7 +137,7 @@ export function ShopOrderCommsTrackingBridgePanel({ orderId, collectionId }: Pro
         className={hubGadget.goldenLink}
         data-testid="shop-tracking-bridge-working-order-link"
       >
-        Working order
+        Рабочий заказ
       </Link>
     </div>
   );

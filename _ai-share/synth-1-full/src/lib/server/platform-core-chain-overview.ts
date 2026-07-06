@@ -4,10 +4,10 @@ import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-m
 import {
   getPlatformCoreDemo,
   getPlatformCoreCollectionLabel,
+  getPlatformCoreHubRowsForUi,
   getPrimaryPillarHrefForDemo,
   isPlatformCoreEmptyChainCollection,
   PLATFORM_CORE_DEMO,
-  PLATFORM_CORE_HUB_ROWS,
   PLATFORM_CORE_PILLARS,
 } from '@/lib/platform-core-hub-matrix';
 import { resolveB2bChainStatusUnified } from '@/lib/integrations/spine/operational-import-handoff.service';
@@ -33,6 +33,7 @@ import {
   schedulePlatformCoreChainOverviewRefresh,
   setCachedPlatformCoreChainOverview,
 } from '@/lib/server/platform-core-chain-overview-cache';
+import { isWorkshop2PgConnectionError } from '@/lib/server/workshop2-pg-pool';
 
 export type PlatformCorePillarSnapshot = {
   id: CoreHubPillarId;
@@ -137,7 +138,7 @@ function buildEmptyChainOverview(
     detailRu: emptyDetail,
     primaryHref: getPrimaryPillarHrefForDemo(p.id, demo),
   }));
-  const roles: PlatformCoreRoleSnapshot[] = PLATFORM_CORE_HUB_ROWS.map((row) => {
+  const roles: PlatformCoreRoleSnapshot[] = getPlatformCoreHubRowsForUi().map((row) => {
     const participatesIn = PLATFORM_CORE_PILLARS.filter(
       (p) => row.pillars[p.id].kind === 'active'
     ).map((p) => p.id);
@@ -168,13 +169,63 @@ export async function getPlatformCoreChainOverview(
     return cached;
   }
   if (cached) {
-    schedulePlatformCoreChainOverviewRefresh(cid, () => buildPlatformCoreChainOverview(cid));
+    schedulePlatformCoreChainOverviewRefresh(cid, () => buildPlatformCoreChainOverviewSafe(cid));
     return cached;
   }
 
-  const overview = await buildPlatformCoreChainOverview(cid);
+  const overview = await buildPlatformCoreChainOverviewSafe(cid);
   setCachedPlatformCoreChainOverview(cid, overview);
   return overview;
+}
+
+function buildDegradedChainOverview(
+  cid: string,
+  demo: ReturnType<typeof getPlatformCoreDemo>
+): PlatformCoreChainOverview {
+  const { demoOrderId, demoArticleId, demoBuyerId } = demo;
+  const detail = 'PG недоступен — demo pin до bootstrap';
+  const demoWithOrder = { ...demo, demoOrderId, demoBuyerId };
+  const pillars: PlatformCorePillarSnapshot[] = PLATFORM_CORE_PILLARS.map((p) => ({
+    id: p.id,
+    title: p.title,
+    done: false,
+    detailRu: detail,
+    primaryHref: getPrimaryPillarHrefForDemo(p.id, demoWithOrder),
+  }));
+  const roles: PlatformCoreRoleSnapshot[] = getPlatformCoreHubRowsForUi().map((row) => {
+    const participatesIn = PLATFORM_CORE_PILLARS.filter(
+      (p) => row.pillars[p.id].kind === 'active'
+    ).map((p) => p.id);
+    return {
+      id: row.id,
+      label: row.label,
+      landingHref: row.landingHref,
+      activePillarCount: participatesIn.length,
+      participatesIn,
+    };
+  });
+  return {
+    collectionId: cid,
+    demoOrderId,
+    demoArticleId,
+    demoBuyerId,
+    pillars,
+    roles,
+    commsThreadCount: 0,
+  };
+}
+
+async function buildPlatformCoreChainOverviewSafe(
+  cid: string
+): Promise<PlatformCoreChainOverview> {
+  try {
+    return await buildPlatformCoreChainOverview(cid);
+  } catch (err) {
+    if (isWorkshop2PgConnectionError(err)) {
+      return buildDegradedChainOverview(cid, getPlatformCoreDemo(cid));
+    }
+    throw err;
+  }
 }
 
 async function buildPlatformCoreChainOverview(
@@ -262,7 +313,7 @@ async function buildPlatformCoreChainOverview(
     primaryHref: getPrimaryPillarHrefForDemo(p.id, demoWithOrder),
   }));
 
-  const roles: PlatformCoreRoleSnapshot[] = PLATFORM_CORE_HUB_ROWS.map((row) => {
+  const roles: PlatformCoreRoleSnapshot[] = getPlatformCoreHubRowsForUi().map((row) => {
     const participatesIn = PLATFORM_CORE_PILLARS.filter(
       (p) => row.pillars[p.id].kind === 'active'
     ).map((p) => p.id);

@@ -20,10 +20,10 @@ export function ShopShowroomLinesheetPanel({ collectionId, orderId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <FileText className="h-4 w-4" />
-            <CardTitle className="text-base">Linesheet · assortment</CardTitle>
+            <CardTitle className="text-base">Лайншит · ассортимент</CardTitle>
           </div>
           <CardDescription>
-            JOOR/NuOrder: опубликованная коллекция → матрица размеров и pre-order без дубля витрины.
+            Опубликованная коллекция → матрица размеров и предзаказ без дубля витрины.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -33,10 +33,10 @@ export function ShopShowroomLinesheetPanel({ collectionId, orderId }: Props) {
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.prepackHref}>Pre-pack</Link>
+            <Link href={session.prepackHref}>Препак</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.showroomHref}>Витрина browse</Link>
+            <Link href={session.showroomHref}>Обзор витрины</Link>
           </Button>
         </CardContent>
       </Card>
@@ -53,23 +53,23 @@ export function ShopShowroomBuyPathPanel({ collectionId, orderId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <ShoppingBag className="h-4 w-4" />
-            <CardTitle className="text-base">Buy path</CardTitle>
+            <CardTitle className="text-base">Путь заказа</CardTitle>
           </div>
           <CardDescription>
-            Checkout · working order · replenishment — следующий шаг после витрины.
+            Оформление · рабочий заказ · пополнение — следующий шаг после витрины.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.checkoutHref} data-testid="shop-showroom-buy-checkout-link">
-              Checkout
+              Оформление
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.workingOrderHref}>Working order</Link>
+            <Link href={session.workingOrderHref}>Рабочий заказ</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.replenishmentAtpHref}>Replenishment · ATP</Link>
+            <Link href={session.replenishmentAtpHref}>Пополнение · ATP</Link>
           </Button>
         </CardContent>
       </Card>

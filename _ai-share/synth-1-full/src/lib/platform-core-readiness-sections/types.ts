@@ -5,6 +5,8 @@ export type SectionAuditTemplate = Omit<ReadinessSubItem, 'href'> & {
   resolveHref: (demo: PlatformCoreDemoContext) => string;
   /** Тот же экран — не входит в среднее ячейки (детальный audit-id). */
   scoreAliasOf?: string;
+  /** Осознанные ограничения read-only — ADR backlog, не audit bad. */
+  adrBacklog?: readonly string[];
 };
 
 export type SectionAuditMap = Partial<

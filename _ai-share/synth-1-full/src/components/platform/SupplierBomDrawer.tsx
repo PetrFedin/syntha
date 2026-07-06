@@ -10,11 +10,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { fetchDossierMaterialPreviews } from '@/lib/platform/supplier-dossier-material-cache';
+import { fetchDossierMaterialPreviews } from '@/lib/platform-core-ports/platform/supplier-dossier-material-cache';
 import {
   formatDossierMaterialPreviewLine,
   type Workshop2DossierMaterialPreview,
-} from '@/lib/production/workshop2-dossier-material-preview';
+} from '@/lib/platform-core-ports/dossier-material-preview';
 import {
   estimateSupplierMaterialNeed,
   formatSupplierMaterialNeedRu,

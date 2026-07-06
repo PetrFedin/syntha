@@ -15,6 +15,20 @@ import {
   resolvePlatformCoreCollectionId,
 } from '@/lib/platform-core-hub-matrix';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2SupplierBulkConfirmIdempotencyKey } from '@/lib/production/workshop2-supplier-bulk-confirm-idempotency';
+import { WAVE_WI_SUP_BULK_CONFIRM_DEDUP_HINT_RU } from '@/lib/platform/wave-wi-supplier-partial-ship';
+import {
+  WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_RU,
+  WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_TESTID,
+  WAVE_WP_SUP_BOM_PO_PROGRESS_TESTID,
+  shouldShowSupOpBomPoBulkConfirmDedupHint,
+  shouldShowSupOpBrandInventoryLedgerPeer,
+} from '@/lib/platform/wave-wp-sup-bom-po-progress';
+import {
+  buildSupOpCommsTailHref,
+  buildSupOpProcurementHonestChainSteps,
+  buildSupOpTrackingTailHref,
+} from '@/lib/platform/wave-yj-sup-op-procurement-chain';
 import {
   ROUTES,
   brandB2bOrderHandoffContextHref,
@@ -37,15 +51,33 @@ import { isIntegrationImportedWholesaleOrderId } from '@/lib/integrations/spine/
 import { fetchSpineOperationalOrderDetail } from '@/lib/integrations/spine/spine-production-forecast-lines';
 import { uniqueArticleScopesFromB2bOrder } from '@/lib/production/workshop2-b2b-order-lifecycle';
 import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
-import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { B2bChainPhaseBadge } from '@/components/b2b/B2bChainPhaseBadge';
+import { SupplierAltMaterialsApprovalPanel } from '@/components/factory/supplier/SupplierAltMaterialsApprovalPanel';
+import {
+  buildBrandDevBomAltMaterialApprovalHref,
+  buildMaterialsAltMaterialsCatalogHref,
+  buildSupplierDevBomCabinetAltMaterialHref,
+  WAVE_XW_ALT_MATERIALS_NOTE_RU,
+} from '@/lib/platform/wave-xw-sup-alt-material-approval';
 import { SupplierMaterialsPriceJournalHonestStrip } from '@/components/factory/supplier/SupplierMaterialsPriceJournalHonestStrip';
+import { SupplierPriceDeltaAlertStrip } from '@/components/factory/supplier/SupplierPriceDeltaAlertStrip';
+import { SupDevCompareSuppliersP2Strip } from '@/components/factory/supplier/SupDevCompareSuppliersP2Strip';
+import { SupDevMaterialsCoPeerStrip } from '@/components/factory/supplier/SupDevMaterialsCoPeerStrip';
 import { SupOpBomPoChainPeerStrip } from '@/components/factory/supplier/SupOpBomPoChainPeerStrip';
 import { SupOpChainWorkspacePeerStrip } from '@/components/factory/supplier/SupOpChainWorkspacePeerStrip';
+import { SupOpProcurementBrandInventoryLedgerPeerStrip } from '@/components/factory/supplier/SupOpProcurementBrandInventoryLedgerPeerStrip';
+import { SupOpProcurementCoPeerStrip } from '@/components/factory/supplier/SupOpProcurementCoPeerStrip';
+import { SupOpProcurementChainStepsStrip } from '@/components/factory/supplier/SupOpProcurementChainStepsStrip';
+import { SupplierBulkConfirmProgressStrip } from '@/components/factory/supplier/SupplierBulkConfirmProgressStrip';
+import { SupplierProcurementBrandNotifyStrip } from '@/components/factory/supplier/SupplierProcurementBrandNotifyStrip';
+import { SupplierPartialShipConfirmStrip } from '@/components/factory/supplier/SupplierPartialShipConfirmStrip';
+import { SupplierBackorderBadge } from '@/components/factory/supplier/SupplierBackorderBadge';
 import { ManufacturerMaterialsBomPoPeerStrip } from '@/components/factory/ManufacturerMaterialsBomPoPeerStrip';
+import { MfrOpMaterialsCoSpinePeerStrip } from '@/components/factory/MfrOpMaterialsCoSpinePeerStrip';
+import { MfrOpMaterialsSupplierPatchStrip } from '@/components/factory/MfrOpMaterialsSupplierPatchStrip';
 import { workshop2B2bOrderStatusLabelRu } from '@/lib/production/workshop2-b2b-order-lifecycle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -125,6 +157,14 @@ export function FactoryMaterialsCorePage() {
   const [handoffReloadNonce, setHandoffReloadNonce] = useState(0);
   const [confirmState, setConfirmState] = useState<'idle' | 'loading' | 'done'>('idle');
   const [supplyAlreadyConfirmed, setSupplyAlreadyConfirmed] = useState(false);
+  const [bulkConfirmProgress, setBulkConfirmProgress] = useState<{
+    confirmed: number;
+    total: number;
+  } | null>(null);
+  const [partialShipMeta, setPartialShipMeta] = useState<{
+    qty?: number;
+    backorder?: boolean;
+  } | null>(null);
   const [priceJournal, setPriceJournal] = useState<SupplierMaterialPriceJournalEntry[]>([]);
   const [priceJournalState, setPriceJournalState] = useState<
     'idle' | 'loading' | 'ready' | 'error'
@@ -421,9 +461,6 @@ export function FactoryMaterialsCorePage() {
     demoCtx,
     activeRole === 'supplier' ? { role: 'supplier' } : undefined
   );
-  const supplierProcurementHref = factoryMaterialsProcurementHrefForDemo(demoCtx, {
-    role: 'supplier',
-  });
   const cabinetBackHref =
     activeRole === 'supplier'
       ? view === 'procurement'
@@ -439,15 +476,53 @@ export function FactoryMaterialsCorePage() {
         ? 'Кабинет · выпуск'
         : 'Кабинет · производство';
   const chainMeta = chainSummaries[orderId];
-  const supplierChainSteps = useMemo(
-    () =>
-      procurementChainSteps.filter((s) => ['production_po', 'materials_supplied'].includes(s.id)),
-    [procurementChainSteps]
-  );
   const materialsSuppliedDone =
     procurementChainSteps.find((s) => s.id === 'materials_supplied')?.done === true;
   const inventoryReservedDone =
     procurementChainSteps.find((s) => s.id === 'inventory_reserved')?.done === true;
+  const supplierMaterialsConfirmed =
+    materialsSuppliedDone || confirmState === 'done' || supplyAlreadyConfirmed;
+  const showSupplierPartialShipStrip =
+    isPlatformCoreMode() &&
+    activeRole === 'supplier' &&
+    handoffState === 'ready' &&
+    Boolean(handoff) &&
+    !supplierMaterialsConfirmed &&
+    poQty > 0;
+  const supplierChainSteps = useMemo(
+    () =>
+      buildSupOpProcurementHonestChainSteps({
+        apiSteps: procurementChainSteps,
+        inventoryReservedDone,
+        materialsSuppliedDone,
+        showPartialShipPath: showSupplierPartialShipStrip,
+        partialShipDone: confirmState === 'done' || supplyAlreadyConfirmed || Boolean(partialShipMeta),
+        bulkConfirmDone: confirmState === 'done' || supplyAlreadyConfirmed || materialsSuppliedDone,
+      }),
+    [
+      procurementChainSteps,
+      inventoryReservedDone,
+      materialsSuppliedDone,
+      showSupplierPartialShipStrip,
+      confirmState,
+      supplyAlreadyConfirmed,
+      partialShipMeta,
+    ]
+  );
+  const showSupOpBomPoBulkConfirmDedupHint = shouldShowSupOpBomPoBulkConfirmDedupHint({
+    platformCoreMode: isPlatformCoreMode(),
+    role: activeRole,
+    showPartialShipStrip: showSupplierPartialShipStrip,
+    materialsConfirmed: supplierMaterialsConfirmed,
+    poQty,
+    handoffReady: handoffState === 'ready' && Boolean(handoff),
+  });
+  const showSupOpBrandInventoryLedgerPeer = shouldShowSupOpBrandInventoryLedgerPeer({
+    platformCoreMode: isPlatformCoreMode(),
+    role: activeRole,
+    view,
+    materialsConfirmed: supplierMaterialsConfirmed,
+  });
 
   function procurementHrefForArticle(scopeArticleId: string, scopeCollectionId?: string) {
     const params = new URLSearchParams();
@@ -465,9 +540,18 @@ export function FactoryMaterialsCorePage() {
     if (confirmState === 'loading') return;
     if (!multiArticleOrder && (!collectionId || !articleId)) return;
     setConfirmState('loading');
+    setBulkConfirmProgress({ confirmed: 0, total: Math.max(bomTotalCount, 1) });
+    const idempotencyKey = buildWorkshop2SupplierBulkConfirmIdempotencyKey({
+      b2bOrderId: orderId,
+      collectionId: multiArticleOrder ? undefined : collectionId,
+      articleId: multiArticleOrder ? undefined : articleId,
+      productionOrderId: poId,
+      confirmAllArticles: multiArticleOrder,
+    });
     const headers = {
       ...buildWorkshop2ApiRequestHeaders(),
       'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey,
     };
 
     try {
@@ -480,6 +564,7 @@ export function FactoryMaterialsCorePage() {
                 b2bOrderId: orderId,
                 productionOrderId: poId,
                 confirmAllArticles: true,
+                idempotencyKey,
                 updatedBy: 'supplier-procurement',
               }
             : {
@@ -487,6 +572,7 @@ export function FactoryMaterialsCorePage() {
                 articleId,
                 b2bOrderId: orderId,
                 productionOrderId: poId,
+                idempotencyKey,
                 updatedBy: 'supplier-procurement',
               }
         ),
@@ -502,6 +588,10 @@ export function FactoryMaterialsCorePage() {
       }
 
       const allIdempotent = (json.confirmed ?? 0) === 0 && (json.idempotent ?? 0) > 0;
+      setBulkConfirmProgress({
+        confirmed: (json.confirmed ?? 0) + (json.idempotent ?? 0),
+        total: Math.max(bomTotalCount, 1),
+      });
       setConfirmState('done');
       setSupplyAlreadyConfirmed(true);
       refreshChainStatus();
@@ -525,7 +615,7 @@ export function FactoryMaterialsCorePage() {
 
   return (
     <div
-      className={cn(hubCabinet.listChrome, 'pb-safe p-3 md:p-4')}
+      className={cn(hubCabinet.listChrome, 'overflow-x-clip pb-safe p-3 md:p-4')}
       data-testid={view === 'procurement' ? 'materials-procurement-view' : 'factory-materials-core'}
       data-view={view}
     >
@@ -572,7 +662,11 @@ export function FactoryMaterialsCorePage() {
 
         {view === 'development' && isPlatformCoreMode() ? (
           <div
-            className={hubGadget.goldenPath}
+            className={cn(
+              hubGadget.goldenPath,
+              hubCabinet.workspaceTableScroll,
+              'max-md:flex-nowrap'
+            )}
             data-testid={
               activeRole === 'supplier'
                 ? 'sup-dev-materials-context-strip'
@@ -623,6 +717,16 @@ export function FactoryMaterialsCorePage() {
           </div>
         ) : null}
 
+        {view === 'development' && activeRole === 'supplier' && isPlatformCoreMode() && collectionId && articleId ? (
+          <div className="mb-2">
+            <SupDevMaterialsCoPeerStrip
+              collectionId={collectionId}
+              articleId={articleId}
+              orderId={orderId || undefined}
+            />
+          </div>
+        ) : null}
+
         {view === 'development' &&
         activeRole === 'supplier' &&
         priceJournalState === 'ready' &&
@@ -637,6 +741,36 @@ export function FactoryMaterialsCorePage() {
           />
         ) : null}
 
+        {view === 'development' && activeRole === 'supplier' && isPlatformCoreMode() && collectionId && articleId ? (
+          <div className="mb-2 space-y-2">
+            <SupplierPriceDeltaAlertStrip collectionId={collectionId} articleId={articleId} />
+            <SupDevCompareSuppliersP2Strip collectionId={collectionId} articleId={articleId} />
+          </div>
+        ) : null}
+
+        {view === 'procurement' &&
+        activeRole === 'supplier' &&
+        supplierChainSteps.length > 0 &&
+        isPlatformCoreMode() ? (
+          <div className="mb-2 space-y-2">
+            <SupOpProcurementChainStepsStrip
+              steps={supplierChainSteps}
+              orderId={orderId}
+              collectionId={collectionId}
+              articleId={articleId}
+              productionOrderId={poId}
+              sseConnected={chainSseConnected}
+              pollEnabled={Boolean(orderId)}
+            />
+            <SupOpChainWorkspacePeerStrip
+              collectionId={collectionId}
+              articleId={articleId}
+              orderId={orderId || undefined}
+              productionOrderId={poId}
+            />
+          </div>
+        ) : null}
+
         {view === 'procurement' &&
         activeRole === 'supplier' &&
         supplierChainSteps.length > 0 &&
@@ -649,6 +783,11 @@ export function FactoryMaterialsCorePage() {
                 sseTestId="sup-op-chain-sse-live-badge"
                 pollTestId="sup-op-chain-poll-badge"
                 sseLegacyTestId="sup-op-chain-workspace-sse-badge"
+              />
+              <SupOpChainWorkspacePeerStrip
+                collectionId={collectionId}
+                articleId={articleId}
+                orderId={orderId || undefined}
               />
               <ul className="space-y-1.5" data-testid="sup-op-chain-workspace-steps">
                 {supplierChainSteps.map((step) => (
@@ -670,21 +809,22 @@ export function FactoryMaterialsCorePage() {
                     {step.id === 'materials_supplied' && step.done ? (
                       <>
                         <Link
-                          href={shopB2bTrackingOrderHref(orderId)}
+                          href={buildSupOpTrackingTailHref({ orderId, productionOrderId: poId })}
                           data-testid="sup-op-procurement-materials-tracking-link"
+                          data-comms-tail-po={poId}
                           className="text-accent-primary text-[10px] font-medium hover:underline"
                         >
                           Трекинг
                         </Link>
                         <Link
-                          href={buildOrderSectionCommsMessagesHref({
-                            roleId: 'supplier',
+                          href={buildSupOpCommsTailHref({
                             orderId,
                             collectionId,
                             sectionId: 'sup-op-chain',
-                            pillarId: 'order_production',
+                            productionOrderId: poId,
                           })}
                           data-testid="sup-op-chain-workspace-brand-chat-link"
+                          data-comms-tail-po={poId}
                           className="text-accent-primary text-[10px] font-medium hover:underline"
                         >
                           Чат бренду
@@ -698,11 +838,28 @@ export function FactoryMaterialsCorePage() {
           </Card>
         ) : null}
 
+        {view === 'procurement' && activeRole === 'supplier' && isPlatformCoreMode() && orderId ? (
+          <div className="mb-2 space-y-2">
+            <SupOpProcurementCoPeerStrip
+              collectionId={collectionId}
+              articleId={articleId}
+              orderId={orderId}
+              factoryId={factoryId}
+            />
+            <SupOpProcurementBrandInventoryLedgerPeerStrip
+              collectionId={collectionId}
+              articleId={articleId}
+              orderId={orderId}
+              productionOrderId={poId}
+            />
+          </div>
+        ) : null}
+
         {view === 'procurement' && activeRole === 'supplier' ? (
           <div
             className={cn(
               isPlatformCoreMode()
-                ? hubGadget.goldenPath
+                ? cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')
                 : 'flex flex-wrap items-center gap-x-4 gap-y-1 text-xs'
             )}
             data-testid="sup-op-procurement-context-strip"
@@ -750,7 +907,7 @@ export function FactoryMaterialsCorePage() {
                       : 'text-accent-primary font-medium hover:underline'
                   }
                 >
-                  {isPlatformCoreMode() ? 'BOM' : 'Досье · BOM'}
+                  {isPlatformCoreMode() ? 'Спецификация' : 'Досье · BOM'}
                 </Link>
               </>
             ) : null}
@@ -764,14 +921,14 @@ export function FactoryMaterialsCorePage() {
                   Чат · артикул
                 </Link>
                 <Link
-                  href={buildOrderSectionCommsMessagesHref({
-                    roleId: 'supplier',
+                  href={buildSupOpCommsTailHref({
                     orderId,
                     collectionId,
                     sectionId: 'sup-op-procurement',
-                    pillarId: 'order_production',
+                    productionOrderId: poId,
                   })}
                   data-testid="sup-op-procurement-brand-chat-link"
+                  data-comms-tail-po={poId}
                   className="text-accent-primary font-medium hover:underline"
                 >
                   Чат бренду
@@ -784,8 +941,9 @@ export function FactoryMaterialsCorePage() {
               </span>
             ) : null}
             <Link
-              href={shopB2bTrackingOrderHref(orderId)}
+              href={buildSupOpTrackingTailHref({ orderId, productionOrderId: poId })}
               data-testid="sup-op-procurement-tracking-link"
+              data-comms-tail-po={poId}
               className={
                 isPlatformCoreMode()
                   ? hubGadget.goldenLink
@@ -795,19 +953,6 @@ export function FactoryMaterialsCorePage() {
               Трекинг
             </Link>
           </div>
-        ) : null}
-
-        {view === 'procurement' &&
-        activeRole === 'supplier' &&
-        isPlatformCoreMode() &&
-        supplierChainSteps.length > 0 &&
-        collectionId &&
-        articleId ? (
-          <SupOpChainWorkspacePeerStrip
-            collectionId={collectionId}
-            articleId={articleId}
-            orderId={orderId || undefined}
-          />
         ) : null}
 
         {view === 'procurement' && activeRole === 'manufacturer' && orderId ? (
@@ -822,11 +967,20 @@ export function FactoryMaterialsCorePage() {
           />
         ) : null}
 
-        {view === 'procurement' && activeRole === 'manufacturer' ? (
+        {view === 'procurement' && activeRole === 'manufacturer' && orderId && isPlatformCoreMode() ? (
+          <MfrOpMaterialsCoSpinePeerStrip
+            factoryId={factoryId}
+            collectionId={collectionId}
+            orderId={orderId}
+            articleId={articleId}
+          />
+        ) : null}
+
+        {view === 'procurement' && activeRole === 'manufacturer' && !isPlatformCoreMode() ? (
           <div
             className={cn(
               isPlatformCoreMode()
-                ? hubGadget.goldenPath
+                ? cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')
                 : 'flex flex-wrap items-center gap-x-4 gap-y-1 text-xs'
             )}
             data-testid="mfr-op-materials-context-strip"
@@ -912,7 +1066,8 @@ export function FactoryMaterialsCorePage() {
             className={cn(
               hubCabinet.workspacePillarStrip,
               hubCabinet.pillarNavPillRow,
-              'border-border-default w-full min-w-0 border p-1'
+              hubCabinet.workspaceTableScroll,
+              'border-border-default w-full min-w-0 border p-1 max-md:flex-nowrap'
             )}
             data-testid={
               activeRole === 'supplier'
@@ -979,12 +1134,30 @@ export function FactoryMaterialsCorePage() {
                     shopTrackingHref={shopB2bTrackingOrderHref(orderId)}
                   />
                 ) : null}
+                {activeRole === 'supplier' && isPlatformCoreMode() && orderId ? (
+                  <SupplierProcurementBrandNotifyStrip
+                    collectionId={collectionId}
+                    articleId={articleId}
+                    orderId={orderId}
+                    productionOrderId={poId}
+                    materialsConfirmed={supplierMaterialsConfirmed}
+                  />
+                ) : null}
                 {activeRole === 'manufacturer' && isPlatformCoreMode() ? (
                   <PlatformCoreWmsReserveStrip
                     variant="workspace"
                     checkoutHref={shopB2bCheckoutCollectionHref(collectionId)}
                     trackingHref={shopB2bTrackingOrderHref(orderId)}
                     testId="mfr-op-materials-wms-reserve-strip"
+                  />
+                ) : null}
+                {activeRole === 'manufacturer' && isPlatformCoreMode() && orderId ? (
+                  <MfrOpMaterialsSupplierPatchStrip
+                    orderId={orderId}
+                    collectionId={collectionId}
+                    articleId={articleId}
+                    productionOrderId={poId}
+                    materialsDone={materialsSuppliedDone}
                   />
                 ) : null}
                 {chainSummaries[orderId] ? (
@@ -1011,7 +1184,8 @@ export function FactoryMaterialsCorePage() {
                     Чат · заказ
                   </Link>
                 ) : null}
-                {procurementChainSteps.some((s) => s.id === 'materials_supplied') ? (
+                {procurementChainSteps.some((s) => s.id === 'materials_supplied') &&
+                (materialsSuppliedDone || activeRole === 'supplier') ? (
                   <Badge
                     variant="outline"
                     data-testid={
@@ -1106,6 +1280,32 @@ export function FactoryMaterialsCorePage() {
               ) : null}
               {activeRole === 'supplier' ? (
                 <>
+                  {partialShipMeta?.backorder ? (
+                    <SupplierBackorderBadge
+                      active
+                      partialShipQty={partialShipMeta.qty}
+                      requestedQty={poQty}
+                    />
+                  ) : null}
+                  {showSupplierPartialShipStrip ? (
+                    <div className="mt-3" data-testid="sup-op-procurement-partial-ship-host">
+                      <SupplierPartialShipConfirmStrip
+                        collectionId={collectionId}
+                        articleId={articleId}
+                        orderId={orderId}
+                        productionOrderId={poId}
+                        defaultQty={poQty}
+                        onConfirmed={(meta) => {
+                          setConfirmState('done');
+                          setSupplyAlreadyConfirmed(true);
+                          if (meta?.backorder) {
+                            setPartialShipMeta({ qty: meta.qty, backorder: meta.backorder });
+                          }
+                          refreshChainStatus();
+                        }}
+                      />
+                    </div>
+                  ) : null}
                   {supplyAlreadyConfirmed ? (
                     <Badge
                       variant="outline"
@@ -1122,8 +1322,9 @@ export function FactoryMaterialsCorePage() {
                       data-testid="sup-op-procurement-success-strip"
                     >
                       <Link
-                        href={shopB2bTrackingOrderHref(orderId)}
+                        href={buildSupOpTrackingTailHref({ orderId, productionOrderId: poId })}
                         data-testid="sup-op-procurement-success-tracking-link"
+                        data-comms-tail-po={poId}
                         className="text-accent-primary hover:underline"
                       >
                         {isPlatformCoreMode() ? 'Трекинг' : 'Трекинг магазина'}
@@ -1140,51 +1341,54 @@ export function FactoryMaterialsCorePage() {
                     </div>
                   ) : null}
                   <div className={hubCabinet.workspaceStickyActions}>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className={cn(hubCabinet.workspacePrimaryBtn, 'text-xs')}
-                      data-testid={
-                        multiArticleOrder
-                          ? 'sup-op-procurement-confirm-all'
-                          : 'sup-op-procurement-bulk-confirm'
-                      }
-                      data-audit-legacy="materials-procurement-bulk-confirm"
-                      disabled={
-                        confirmState === 'loading' ||
-                        confirmState === 'done' ||
-                        handoffState !== 'ready' ||
-                        !handoff ||
-                        poQty <= 0
-                      }
-                      onClick={() => void confirmMaterialSupply()}
-                    >
-                      {confirmState === 'loading'
-                        ? 'Сохранение…'
-                        : confirmState === 'done'
-                          ? 'Поставка подтверждена'
-                          : multiArticleOrder
-                            ? `Подтвердить поставку · все артикулы (${orderArticleScopes.length})`
-                            : 'Подтвердить поставку'}
-                    </Button>
+                    {!showSupplierPartialShipStrip ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className={cn(hubCabinet.workspacePrimaryBtn, 'text-xs')}
+                        data-testid={
+                          multiArticleOrder
+                            ? 'sup-op-procurement-confirm-all'
+                            : 'sup-op-procurement-bulk-confirm'
+                        }
+                        data-audit-legacy="materials-procurement-bulk-confirm"
+                        disabled={
+                          confirmState === 'loading' ||
+                          confirmState === 'done' ||
+                          handoffState !== 'ready' ||
+                          !handoff ||
+                          poQty <= 0
+                        }
+                        onClick={() => void confirmMaterialSupply()}
+                      >
+                        {confirmState === 'loading'
+                          ? 'Сохранение…'
+                          : confirmState === 'done'
+                            ? 'Поставка подтверждена'
+                            : multiArticleOrder
+                              ? `Подтвердить поставку · все артикулы (${orderArticleScopes.length})`
+                              : 'Подтвердить поставку'}
+                      </Button>
+                    ) : (
+                      <p
+                        className="text-[10px] text-muted-foreground"
+                        data-testid="sup-op-procurement-bulk-confirm-dedup-hint"
+                      >
+                        {WAVE_WI_SUP_BULK_CONFIRM_DEDUP_HINT_RU}
+                      </p>
+                    )}
                   </div>
                 </>
-              ) : (
-                <p
-                  className="mt-3 text-muted-foreground"
-                  data-testid="mfr-op-materials-supplier-hint"
-                >
-                  Подтверждение поставки — у поставщика.{' '}
-                  <Link
-                    href={supplierProcurementHref}
-                    className="text-accent-primary font-semibold hover:underline"
-                    data-testid="mfr-op-materials-supplier-link"
-                  >
-                    Открыть закупку поставщика →
-                  </Link>
-                </p>
-              )}
+              ) : activeRole === 'manufacturer' && !isPlatformCoreMode() ? (
+                <MfrOpMaterialsSupplierPatchStrip
+                  orderId={orderId}
+                  collectionId={collectionId}
+                  articleId={articleId}
+                  productionOrderId={poId}
+                  materialsDone={materialsSuppliedDone}
+                />
+              ) : null}
             </CardContent>
           </Card>
         ) : null}
@@ -1194,7 +1398,7 @@ export function FactoryMaterialsCorePage() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold">Справочник BOM · PG</CardTitle>
               <CardDescription className="text-xs">
-                Fill-rate, цены из ТЗ и альтернативы — только данные досье, без mock-истории.
+                Полнота норм и цены из ТЗ — только данные досье (замены — блок ниже).
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-xs">
@@ -1206,7 +1410,7 @@ export function FactoryMaterialsCorePage() {
                 </span>
               </p>
               <p data-testid="materials-bom-weighted-fill-rate" className="text-muted-foreground">
-                Взвешенная полнота (main/lining выше label):{' '}
+                Взвешенная полнота (основа/подкладка выше этикетки):{' '}
                 <strong className="text-foreground">{bomWeightedFillRate}%</strong>
               </p>
               {priceJournalActive ? (
@@ -1270,28 +1474,63 @@ export function FactoryMaterialsCorePage() {
                   В BOM нет unitCostNet — укажите цену в ТЗ бренда.
                 </p>
               )}
-              {altMaterials.length > 0 ? (
-                <ul className="space-y-1" data-testid="materials-alt-materials">
-                  {altMaterials.map((row) => (
-                    <li key={row.primary}>
-                      <span className="font-medium">{row.primary}</span>
-                      <span className="text-muted-foreground"> → </span>
-                      {row.alternatives.join(', ')}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground" data-testid="materials-alt-materials-empty">
-                  Альтернативы не заданы в substitutes BOM.
-                </p>
-              )}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {view === 'development' && bomState === 'ready' ? (
+          <Card data-testid="materials-alt-materials-panel" className="border-violet-200/60">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold">Альтернативы материалов · PG</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-xs">
+              <div
+                className={`${hubGadget.goldenPath} flex flex-wrap items-center gap-2`}
+                data-testid="materials-alt-materials-nav"
+              >
+                <Link
+                  href={buildMaterialsAltMaterialsCatalogHref({ collectionId, articleId })}
+                  className={hubGadget.goldenLink}
+                  data-testid="materials-alt-materials-catalog-link"
+                >
+                  Каталог →
+                </Link>
+                <span className={hubGadget.goldenSep} aria-hidden>
+                  ·
+                </span>
+                <Link
+                  href={buildSupplierDevBomCabinetAltMaterialHref({ collectionId, articleId })}
+                  className={hubGadget.goldenLink}
+                  data-testid="materials-alt-materials-cabinet-link"
+                >
+                  BOM кабинет →
+                </Link>
+                <span className={hubGadget.goldenSep} aria-hidden>
+                  ·
+                </span>
+                <Link
+                  href={buildBrandDevBomAltMaterialApprovalHref({ collectionId, articleId })}
+                  className={hubGadget.goldenLink}
+                  data-testid="materials-alt-materials-brand-bom-link"
+                >
+                  Согласование у бренда →
+                </Link>
+              </div>
+              <p className="text-muted-foreground" data-testid="materials-alt-materials-note">
+                {WAVE_XW_ALT_MATERIALS_NOTE_RU}
+              </p>
+              <SupplierAltMaterialsApprovalPanel
+                collectionId={collectionId}
+                articleId={articleId}
+                rows={altMaterials}
+              />
             </CardContent>
           </Card>
         ) : null}
 
         {view === 'procurement' && activeRole === 'supplier' && bomTotalCount > 0 ? (
           <Card
-            data-testid="sup-op-bom-po-progress"
+            data-testid={WAVE_WP_SUP_BOM_PO_PROGRESS_TESTID}
             data-bom-filled={bomFilledCount}
             data-bom-total={bomTotalCount}
             data-po-qty={poQty}
@@ -1313,6 +1552,25 @@ export function FactoryMaterialsCorePage() {
                 </span>
               </div>
               <Progress value={bomWeightedFillRate} className="h-2 bg-slate-100" />
+              {!showSupplierPartialShipStrip &&
+              (confirmState === 'loading' || confirmState === 'done' || bulkConfirmProgress) ? (
+                <SupplierBulkConfirmProgressStrip
+                  confirmed={
+                    bulkConfirmProgress?.confirmed ??
+                    (confirmState === 'done' ? bomTotalCount : 0)
+                  }
+                  total={bulkConfirmProgress?.total ?? bomTotalCount}
+                  busy={confirmState === 'loading'}
+                />
+              ) : null}
+              {showSupplierPartialShipStrip ? (
+                <p
+                  className="text-[11px] text-muted-foreground"
+                  data-testid={WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_TESTID}
+                >
+                  {WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_RU}
+                </p>
+              ) : null}
               <p className="text-[11px] text-muted-foreground">
                 {poQty > 0 && bomFilledCount === bomTotalCount
                   ? 'BOM готов к расчёту потребности под серию'
@@ -1341,11 +1599,27 @@ export function FactoryMaterialsCorePage() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      PDF bundle
+                      PDF-комплект
                     </a>
                   </>
                 ) : null}
               </p>
+              {showSupOpBomPoBulkConfirmDedupHint ? (
+                <p
+                  className="text-[10px] text-muted-foreground"
+                  data-testid={WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_TESTID}
+                >
+                  {WAVE_WP_SUP_BOM_PO_BULK_CONFIRM_DEDUP_HINT_RU}
+                </p>
+              ) : null}
+              {showSupOpBrandInventoryLedgerPeer && orderId ? (
+                <SupOpProcurementBrandInventoryLedgerPeerStrip
+                  collectionId={collectionId}
+                  articleId={articleId}
+                  orderId={orderId}
+                  productionOrderId={poId}
+                />
+              ) : null}
             </CardContent>
           </Card>
         ) : null}

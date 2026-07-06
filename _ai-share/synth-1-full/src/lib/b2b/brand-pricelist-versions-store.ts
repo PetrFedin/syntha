@@ -1,4 +1,5 @@
 import type { BrandPricelistVersionRow } from '@/lib/b2b/brand-pricelist-versions-feed';
+import type { BrandPricelistPublishResult } from '@/lib/b2b/brand-pricelist-publish';
 
 export type BrandPricelistVersionsResponse = {
   ok: boolean;
@@ -58,5 +59,28 @@ export async function refreshBrandPricelistVersions(
   });
   const json = (await res.json()) as BrandPricelistVersionsResponse;
   if (!res.ok || !json.ok) return { ok: false };
+  return json;
+}
+
+export async function publishBrandPricelist(input: {
+  collectionId: string;
+  id: string;
+  syncTierToShop?: boolean;
+}): Promise<BrandPricelistPublishResult & { pricelist?: BrandPricelistVersionRow }> {
+  const res = await fetch('/api/brand/b2b/pricelist/publish', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  const json = (await res.json()) as BrandPricelistPublishResult & {
+    pricelist?: BrandPricelistVersionRow;
+    error?: { messageRu?: string };
+  };
+  if (!res.ok || !json.ok) {
+    return {
+      ok: false,
+      messageRu: json.error?.messageRu ?? json.messageRu,
+    };
+  }
   return json;
 }

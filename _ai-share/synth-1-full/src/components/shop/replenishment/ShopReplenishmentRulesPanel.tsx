@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
 import { buildShopReplenishmentSession } from '@/lib/b2b/shop-replenishment-workspace';
+import { ShopReplenishmentRulesForecastSyncStrip } from '@/components/shop/replenishment/ShopReplenishmentRulesForecastSyncStrip';
 import {
   REPLENISHMENT_RULE_PRESETS,
   type ReplenishmentRulePreset,
@@ -119,6 +120,12 @@ export function ShopReplenishmentRulesPanel({ collectionId, orderId }: Props) {
 
   return (
     <div className="space-y-4" data-testid="shop-replenishment-feature-rules">
+      <ShopReplenishmentRulesForecastSyncStrip
+        buyerId={buyerId}
+        collectionId={session.collectionId}
+        orderId={session.orderId}
+        activePresetId={activePresetId}
+      />
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-text-secondary text-sm">
           Onfinity preset · сохранение через API

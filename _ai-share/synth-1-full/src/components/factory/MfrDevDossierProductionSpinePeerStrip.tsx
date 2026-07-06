@@ -5,6 +5,8 @@ import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-ha
 import { factoryMessagesWorkshop2ArticleContextHref } from '@/lib/routes';
 import { ROUTES } from '@/lib/routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   factoryId: string;
@@ -27,33 +29,36 @@ export function MfrDevDossierProductionSpinePeerStrip({ factoryId, collectionId,
   });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="mfr-dev-dossier-production-spine-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="mfr-dev-dossier-production-spine-peer-strip"
+    >
       <Link href={sampleQueueHref} data-testid="mfr-dev-dossier-sample-queue-link" className={hubGadget.goldenLink}>
-        Sample queue
+        Очередь образцов
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={techpackHref} data-testid="mfr-dev-dossier-techpack-ack-link" className={hubGadget.goldenLink}>
-        Techpack ack
+        Подтверждение техпака
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={qcHref} data-testid="mfr-dev-dossier-qc-gate-link" className={hubGadget.goldenLink}>
-        QC gate
+        Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={handoffHref} data-testid="mfr-dev-dossier-handoff-link" className={hubGadget.goldenLink}>
-        Handoff
+        Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={articleChatHref} data-testid="mfr-dev-dossier-article-chat-link" className={hubGadget.goldenLink}>
-        Article chat
+        Чат по артикулу
       </Link>
     </div>
   );

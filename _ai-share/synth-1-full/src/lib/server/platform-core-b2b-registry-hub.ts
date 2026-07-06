@@ -10,13 +10,15 @@ import type { Workshop2RealtimeEvent } from '@/lib/server/workshop2-realtime-hub
 const REDIS_ROOM = 'platform-core:b2b-registry';
 
 /** In-process + optional Redis сигнал для SSE refetch реестра B2B (brand/shop). */
-const listeners = new Set<() => void>();
+const listeners = new Set<(reason?: string) => void>();
 let redisBridgeReady = false;
+let lastBumpReason: string | undefined;
 
-function notifyLocalListeners(): void {
+function notifyLocalListeners(reason?: string): void {
+  lastBumpReason = reason?.trim() || lastBumpReason;
   for (const listener of listeners) {
     try {
-      listener();
+      listener(reason);
     } catch {
       /* ignore */
     }
@@ -37,7 +39,7 @@ export function isPlatformCoreB2bRegistryRedisEnabled(): boolean {
 }
 
 export function bumpPlatformCoreB2bRegistry(reason?: string): void {
-  notifyLocalListeners();
+  notifyLocalListeners(reason);
   if (!isWorkshop2RedisConfigured()) return;
   void publishWorkshop2RedisEvent(REDIS_ROOM, {
     type: 'B2B_REGISTRY_BUMP',
@@ -48,8 +50,12 @@ export function bumpPlatformCoreB2bRegistry(reason?: string): void {
   });
 }
 
-export function subscribePlatformCoreB2bRegistry(listener: () => void): () => void {
+export function subscribePlatformCoreB2bRegistry(listener: (reason?: string) => void): () => void {
   ensureRedisBridge();
   listeners.add(listener);
   return () => listeners.delete(listener);
+}
+
+export function peekPlatformCoreB2bRegistryLastReason(): string | undefined {
+  return lastBumpReason;
 }

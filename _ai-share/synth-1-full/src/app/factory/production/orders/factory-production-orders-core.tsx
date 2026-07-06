@@ -27,6 +27,7 @@ import {
 import { cn } from '@/lib/utils';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { MfrOpOrdersBulkAckSoTStrip } from '@/components/factory/MfrOpOrdersBulkAckSoTStrip';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   PLATFORM_CORE_DEMO,
@@ -44,6 +45,9 @@ import {
 } from '@/lib/production/workshop2-factory-handoff-po-status';
 import { useToast } from '@/hooks/use-toast';
 import { FactoryMesReleaseStageStrip } from '@/components/factory/FactoryMesReleaseStageStrip';
+import { MfrOpWipGanttStrip } from '@/components/factory/manufacturer/MfrOpWipGanttStrip';
+import { MfrOpWipFloorTabletStrip } from '@/components/factory/manufacturer/MfrOpWipFloorTabletStrip';
+import { MfrOpPoTzPdfPeerStrip } from '@/components/factory/MfrOpPoTzPdfPeerStrip';
 import { IntegrationProductionWipStrip } from '@/components/integrations/IntegrationProductionWipStrip';
 import { PlatformCoreErpRetryHint } from '@/components/platform/PlatformCoreErpRetryHint';
 import {
@@ -59,6 +63,7 @@ type HandoffRow = {
   qty: number;
   status: string;
   mesReleaseStage?: string;
+  wipStatus?: string;
   erpExternalId?: string;
   erpNextRetryAt?: string;
   erpAutoRetryCount?: number;
@@ -397,6 +402,10 @@ export function FactoryProductionOrdersCorePage() {
       })
     : factoryHandoffQueueHrefForDemo({ ...PLATFORM_CORE_DEMO, collectionId: pageCollectionId });
   const productionHubHref = factoryCoreOrderProductionCabinetHref(pageCollectionId);
+  const focusedRow =
+    focusOrderId != null
+      ? scopedItems.find((row) => row.b2bOrderId === focusOrderId)
+      : undefined;
 
   return (
     <Card data-testid="factory-production-orders-core">
@@ -405,7 +414,7 @@ export function FactoryProductionOrdersCorePage() {
           <div
             className={cn(
               isPlatformCoreMode()
-                ? hubGadget.goldenPath
+                ? cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')
                 : 'flex flex-wrap items-center gap-x-4 gap-y-1 text-xs'
             )}
             data-testid="factory-production-orders-order-context-strip"
@@ -457,17 +466,52 @@ export function FactoryProductionOrdersCorePage() {
               {isPlatformCoreMode() ? 'Кабинет' : 'Кабинет · производство'}
             </Link>
           </div>
+          {isPlatformCoreMode() && focusedRow ? (
+            <MfrOpWipFloorTabletStrip
+              productionOrderId={focusedRow.productionOrderId}
+              collectionId={focusedRow.collectionId}
+              articleId={focusedRow.articleId}
+              factoryId={factoryId}
+              b2bOrderId={focusedRow.b2bOrderId}
+              wipStatus={focusedRow.wipStatus ?? focusedRow.mesReleaseStage ?? 'queued'}
+              poStatus={focusedRow.status}
+              compact
+              ganttHref="#mfr-op-wip-gantt-strip"
+              hideHandoffPeer
+            />
+          ) : null}
+          {isPlatformCoreMode() && focusedRow ? (
+            <div className="mt-2">
+              <MfrOpPoTzPdfPeerStrip
+                orderId={focusedRow.b2bOrderId}
+                collectionId={focusedRow.collectionId}
+                articleId={focusedRow.articleId}
+                productionOrderId={focusedRow.productionOrderId}
+                factoryId={factoryId}
+              />
+            </div>
+          ) : null}
         </div>
       ) : null}
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
+          <div className="min-w-0 flex-1 space-y-2">
             <CardTitle className="text-sm font-bold">Производственные серии</CardTitle>
             <CardDescription className="text-xs">
               {isPlatformCoreMode()
                 ? factoryId
                 : `Полный реестр: MES, ERP, bulk-приёмка · на /production — быстрый ack очереди · ${factoryId}`}
             </CardDescription>
+            {isPlatformCoreMode() ? (
+              <MfrOpWipGanttStrip
+                factoryId={factoryId}
+                orderId={focusOrderId ?? undefined}
+                maxRows={6}
+                handoffQueueHref={handoffQueueHref}
+                showSoTStrip
+                showFloorSoTStrip
+              />
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
@@ -488,7 +532,7 @@ export function FactoryProductionOrdersCorePage() {
             >
               Обновить
             </Button>
-            {pendingItems.length > 0 ? (
+            {pendingItems.length > 0 && !coreMode ? (
               <div
                 className="flex flex-wrap items-center gap-2"
                 data-testid="factory-production-orders-bulk-toolbar"
@@ -512,6 +556,14 @@ export function FactoryProductionOrdersCorePage() {
           </div>
         </div>
       </CardHeader>
+      {coreMode && pendingItems.length > 0 ? (
+        <div className="px-4 pb-2">
+          <MfrOpOrdersBulkAckSoTStrip
+            handoffQueueHref={handoffQueueHref}
+            pendingCount={pendingItems.length}
+          />
+        </div>
+      ) : null}
       <CardContent>
         {loadState === 'ready' && erpAttentionRows.length > 0 ? (
           <div
@@ -600,7 +652,7 @@ export function FactoryProductionOrdersCorePage() {
           >
             <p className="text-text-muted">Нет производственных серий в очереди цеха.</p>
             <p className="text-text-muted text-xs">
-              Серии появятся после handoff от бренда — проверьте очередь передачи или hub выпуска.
+              Серии появятся после передачи от бренда — проверьте очередь передачи или кабинет выпуска.
             </p>
             <div className="flex flex-wrap justify-center gap-3 text-[10px] font-semibold uppercase">
               <Link
@@ -615,7 +667,7 @@ export function FactoryProductionOrdersCorePage() {
                 className="text-accent-primary hover:underline"
                 data-testid="factory-production-orders-empty-hub-link"
               >
-                Выпуск · hub
+                Выпуск · кабинет
               </Link>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +17,12 @@ import {
 import { fetchShopMatrixArticleInspectorView } from '@/lib/b2b/shop-matrix-article-inspector';
 import type { ShopMatrixArticleInspectorView } from '@/lib/b2b/shop-matrix-article-inspector.types';
 import { buildShopWholesaleMatrixSession } from '@/lib/b2b/shop-wholesale-matrix-workspace';
+import { ShopCoMatrixInspectorPrepackPeerStrip } from '@/components/platform/ShopCoMatrixInspectorPrepackPeerStrip';
+import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import {
+  isShopCoMatrixEmbeddedCabinetContext,
+  shopCoMatrixEmbeddedTabHref,
+} from '@/lib/platform-core-cabinet-workspace';
 
 type Props = {
   collectionId: string;
@@ -30,6 +37,9 @@ export function ShopMatrixArticleInspectorPanel({
   orderId,
   onPickFromMatrix,
 }: Props) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const embeddedMatrix = isShopCoMatrixEmbeddedCabinetContext(pathname, searchParams.get('section'));
   const [view, setView] = useState<ShopMatrixArticleInspectorView | null>(null);
   const [messageRu, setMessageRu] = useState<string | null>(null);
   const [gateBlocked, setGateBlocked] = useState<
@@ -48,14 +58,20 @@ export function ShopMatrixArticleInspectorPanel({
     () => buildShopWholesaleMatrixSession({ collectionId, orderId, articleId }),
     [collectionId, orderId, articleId]
   );
-  const matrixHref = session.matrixHref;
+  const matrixNavInput = { collectionId, orderId, articleId };
+  const matrixHref = embeddedMatrix
+    ? shopCoMatrixEmbeddedTabHref('matrix', matrixNavInput)
+    : session.matrixHref;
+  const prepackHref = embeddedMatrix
+    ? shopCoMatrixEmbeddedTabHref('prepack', matrixNavInput)
+    : session.prepackHref;
 
   useEffect(() => {
     const aid = articleId?.trim();
     if (!collectionId.trim() || !aid) {
       setView(null);
       setGateBlocked(null);
-      setMessageRu('Выберите артикул в матрице — supplier model read-only в контексте коллекции.');
+      setMessageRu('Выберите артикул в матрице — модель поставщика только для просмотра в контексте коллекции.');
       return;
     }
 
@@ -88,9 +104,9 @@ export function ShopMatrixArticleInspectorPanel({
     return (
       <Card data-testid="shop-matrix-inspector-empty">
         <CardHeader>
-          <CardTitle className="text-base">Артикул · inspector</CardTitle>
+          <CardTitle className="text-base">Артикул · инспектор</CardTitle>
           <CardDescription>
-            Read-only: supplier model, fabric, MOQ — после release gate бренда (столп 2 → 3).
+            Только просмотр: модель поставщика, ткань, MOQ — после релиз-гейта бренда (столп 2 → 3).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
@@ -106,7 +122,7 @@ export function ShopMatrixArticleInspectorPanel({
   if (loading) {
     return (
       <p className="text-text-secondary text-sm" data-testid="shop-matrix-inspector-loading">
-        Загрузка inspector…
+        Загрузка инспектора…
       </p>
     );
   }
@@ -120,12 +136,12 @@ export function ShopMatrixArticleInspectorPanel({
       >
         <CardHeader>
           <CardTitle className="text-base">
-            {gateBlocked ? 'Inspector · factory pack gate' : 'Inspector · ошибка'}
+            {gateBlocked ? 'Инспектор · гейт фабричного пакета' : 'Инспектор · ошибка'}
           </CardTitle>
           <CardDescription className="text-xs leading-snug">
             {gateBlocked
-              ? `Release gate: ${gateBlocked.sheetsReady}/${gateBlocked.sheetsTotal} листов. Shop read-only до pass бренда (столп 1 → 3).`
-              : 'Не удалось загрузить supplier model.'}
+              ? `Релиз-гейт: ${gateBlocked.sheetsReady}/${gateBlocked.sheetsTotal} листов. Магазин только для просмотра до прохождения брендом (столп 1 → 3).`
+              : 'Не удалось загрузить модель поставщика.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
@@ -133,10 +149,10 @@ export function ShopMatrixArticleInspectorPanel({
           {gateBlocked ? (
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href={gateBlocked.brandReleaseGateHref}>Brand · release gate</Link>
+                <Link href={gateBlocked.brandReleaseGateHref}>Бренд · релиз-гейт</Link>
               </Button>
               <Button variant="ghost" size="sm" asChild>
-                <Link href={gateBlocked.brandFactoryPackHref}>W2 · factory pack</Link>
+                <Link href={gateBlocked.brandFactoryPackHref}>W2 · фабричный пакет</Link>
               </Button>
             </div>
           ) : null}
@@ -154,10 +170,18 @@ export function ShopMatrixArticleInspectorPanel({
     );
   }
 
-  const reorderHref = session.matrixHref;
+  const reorderHref = matrixHref;
 
   return (
     <div className="space-y-4" data-testid="shop-matrix-inspector-panel">
+      {!embeddedMatrix ? (
+      <ShopCoMatrixInspectorPrepackPeerStrip
+        collectionId={collectionId}
+        orderId={orderId}
+        articleId={articleId}
+        activeTab="inspector"
+      />
+      ) : null}
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-2">
           <div>
@@ -169,7 +193,7 @@ export function ShopMatrixArticleInspectorPanel({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="text-[10px] uppercase">
-              read-only
+              только просмотр
             </Badge>
             {view.lifecycleLabel ? (
               <Badge variant="secondary" className="text-[10px]">
@@ -208,7 +232,7 @@ export function ShopMatrixArticleInspectorPanel({
             ) : null}
             {view.supplierModelNote ? (
               <div className="sm:col-span-2">
-                <dt className="text-text-muted text-[10px] uppercase">Supplier model</dt>
+                <dt className="text-text-muted text-[10px] uppercase">Модель поставщика</dt>
                 <dd>{view.supplierModelNote}</dd>
               </div>
             ) : null}
@@ -220,7 +244,7 @@ export function ShopMatrixArticleInspectorPanel({
             ) : null}
             {view.sizeSchemaNote ? (
               <div className="sm:col-span-2">
-                <dt className="text-text-muted text-[10px] uppercase">Size schema</dt>
+                <dt className="text-text-muted text-[10px] uppercase">Размерная сетка</dt>
                 <dd>{view.sizeSchemaNote}</dd>
               </div>
             ) : null}
@@ -231,7 +255,7 @@ export function ShopMatrixArticleInspectorPanel({
       {view.fabricLines.length > 0 ? (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Fabric · BOM (read-only)</CardTitle>
+            <CardTitle className="text-base">Ткань · BOM (только просмотр)</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -265,25 +289,25 @@ export function ShopMatrixArticleInspectorPanel({
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.prepackHref}>Pre-pack</Link>
+          <Link href={prepackHref}>Препак</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.replenishmentHref}>Replenishment · ATP</Link>
+          <Link href={session.replenishmentHref}>Пополнение · ATP</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.brandOrderChatHref}>Brand order chat</Link>
+          <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.platformMarketroomHref}>Platform marketroom</Link>
+          <Link href={session.platformMarketroomHref}>Маркетрум платформы</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.inventoryOverviewHref}>Inventory overview</Link>
+          <Link href={session.inventoryOverviewHref}>Обзор остатков</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
           <Link

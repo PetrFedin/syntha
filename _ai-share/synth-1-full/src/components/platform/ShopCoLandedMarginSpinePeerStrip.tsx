@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { buildShopLandedMarginSession } from '@/lib/b2b/shop-landed-margin';
-import { shopB2bCheckoutCollectionHref } from '@/lib/routes';
+import { buildShopLandedMarginSession } from '@/lib/platform-core-ports/b2b/shop-landed-margin';
+import { shopB2bCheckoutCollectionHref } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -18,13 +18,13 @@ export function ShopCoLandedMarginSpinePeerStrip({ collectionId, orderId }: Prop
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-co-landed-margin-spine-peer-strip">
       <Link href={session.matrixHref} data-testid="shop-co-landed-margin-matrix-link" className={hubGadget.goldenLink}>
-        Matrix
+        Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={checkoutHref} data-testid="shop-co-landed-margin-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
+        Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -36,19 +36,19 @@ export function ShopCoLandedMarginSpinePeerStrip({ collectionId, orderId }: Prop
         ·
       </span>
       <Link href={session.orderCommsHref} data-testid="shop-co-landed-margin-order-comms-link" className={hubGadget.goldenLink}>
-        Order comms
+        Чат по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.brandPricelistHref} data-testid="shop-co-landed-margin-brand-pricelist-link" className={hubGadget.goldenLink}>
-        Brand pricelist
+        Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.collaborativeApprovalsHref} data-testid="shop-co-landed-margin-collaborative-link" className={hubGadget.goldenLink}>
-        Approvals
+        Согласования
       </Link>
     </div>
   );

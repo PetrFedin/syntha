@@ -1,15 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { brandProductionOpsFeatureHref } from '@/lib/brand-production/brand-production-handoff';
+import { brandProductionOpsFeatureHref } from '@/lib/platform-core-ports/brand-production-handoff';
 import {
   brandB2bOrderHandoffContextHref,
   brandB2bOrderHref,
   shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import { factoryHandoffQueueHrefForDemo } from '@/lib/platform-core-hub-matrix';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   demo: PlatformCoreDemoContext;
@@ -23,7 +25,11 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
 
   return (
     <div
-      className={hubGadget.goldenPath + ' mb-3'}
+      className={cn(
+        hubGadget.goldenPath,
+        hubCabinet.workspaceTableScroll,
+        'mb-3 max-md:flex-nowrap'
+      )}
       data-testid="brand-op-registry-production-peer-strip"
     >
       {orderId ? (
@@ -43,7 +49,7 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
             data-testid="brand-op-registry-handoff-link"
             className={hubGadget.goldenLink}
           >
-            Handoff
+            Передача
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
@@ -53,7 +59,7 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
             data-testid="brand-op-registry-qc-gate-link"
             className={hubGadget.goldenLink}
           >
-            QC gate
+            Гейт КК
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
@@ -63,7 +69,7 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
             data-testid="brand-op-registry-cut-ticket-link"
             className={hubGadget.goldenLink}
           >
-            Cut ticket
+        Техкарта раскроя
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
@@ -73,7 +79,7 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
             data-testid="brand-op-registry-shop-tracking-link"
             className={hubGadget.goldenLink}
           >
-            Shop tracking
+            Трекинг магазина
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·

@@ -512,7 +512,7 @@ export default function StyleCalendar({
       className={cn(
         'flex flex-col overflow-hidden border bg-white',
         slimCore
-          ? 'rounded-lg border-border-subtle shadow-sm'
+          ? 'overflow-x-clip rounded-lg border-border-subtle shadow-sm'
           : 'rounded-3xl border-slate-100 shadow-xl',
         variant === 'full' ? 'h-full' : 'h-[600px]'
       )}

@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePlatformCoreChainOverview } from '@/components/platform/usePlatformCoreChainOverview';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
@@ -13,481 +11,61 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import {
-  PLATFORM_CORE_HUB_ROWS,
+  getPlatformCoreHubRowsForUi,
   PLATFORM_CORE_PILLARS,
   isPlatformCoreEmptyChainCollection,
+  type CoreHubPillarId,
 } from '@/lib/platform-core-hub-matrix';
 import {
   ROLE_LABELS,
   formatReadinessScore,
   getPlatformCoreReadinessMatrix,
-  readinessScoreTone,
   summarizePlatformCoreReadiness,
   type ReadinessCell,
-  type ReadinessSubItem,
 } from '@/lib/platform-core-readiness-audit';
 import { PlatformCoreReadinessMatrixSkeleton } from '@/components/platform/PlatformCoreReadinessMatrixSkeleton';
-import { stackHubMatrixLabelLines } from '@/lib/platform-core-matrix-label-lines';
 import { hubSectionLabelClassName, platformCoreHubLayout } from '@/lib/platform-core-hub-layout';
 import { cn } from '@/lib/utils';
+import { buildPlatformCoreReadinessImprovements } from '@/lib/platform-core-readiness-improvements';
+import type { ReadinessImprovementItem } from '@/lib/platform-core-readiness-improvements';
 import {
-  buildPlatformCoreReadinessImprovements,
-  type ReadinessImprovementItem,
-} from '@/lib/platform-core-readiness-improvements';
-import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
+  readinessMatrixCellKey,
+  READINESS_ROLE_COL,
+  READINESS_ROLE_COL_STICKY,
+  READINESS_PILLAR_COL,
+  READINESS_MATRIX_HEAD_H,
+  READINESS_MATRIX_BODY_H,
+  READINESS_PILLAR_HEAD,
+  READINESS_SCORE_BOX,
+  READINESS_ROW_LABEL,
+  READINESS_CELL_CORE,
+} from '@/lib/platform-core-readiness-matrix-layout';
+import {
+  MatrixColumnLabel,
+  ReadinessScoreTrigger,
+  ScoreTooltipBody,
+  ReadinessCellSectionsPanel,
+  ReadinessImprovementsPanel,
+} from '@/components/platform/PlatformCoreReadinessMatrixParts';
 
 type Props = {
   collectionId?: string;
+  /** Hub audit: заголовок «Оценка готовности» уже в PlatformCoreHubAuditLauncher. */
+  hideSectionHeader?: boolean;
+  /** Показать строку live/static режима при скрытом заголовке (блок аудита). */
+  showModeLead?: boolean;
 };
 
-function cellKey(roleId: string, pillarId: string) {
-  return `${roleId}__${pillarId}`;
-}
-
-/** Колонка «Роль» — фиксированная ширина. */
-const READINESS_ROLE_COL =
-  'w-[5.35rem] min-w-[5.35rem] max-w-[5.35rem] shrink-0 bg-white align-middle';
-
-/** Sticky только в общей таблице (desktop / широкий экран). */
-const READINESS_ROLE_COL_STICKY = cn(
-  READINESS_ROLE_COL,
-  'sticky left-0 z-30 border-border-subtle border-r bg-white'
-);
-
-const READINESS_PILLAR_COL =
-  'relative z-0 w-[4.65rem] min-w-[4.65rem] max-w-[4.65rem] px-0.5 text-center align-middle';
-
-const READINESS_MATRIX_HEAD_H = platformCoreHubLayout.matrixHeadRow;
-
-const READINESS_MATRIX_BODY_H = platformCoreHubLayout.matrixBodyRow;
-
-const READINESS_MATRIX_FOOT_H = platformCoreHubLayout.matrixFootRow;
-
-const READINESS_PILLAR_HEAD = cn(READINESS_PILLAR_COL, READINESS_MATRIX_HEAD_H);
-
-const READINESS_SCORE_BOX =
-  'inline-flex h-6 w-8 shrink-0 items-center justify-center rounded-md border font-mono text-[10px] font-bold tabular-nums transition-colors';
-
-const READINESS_ROW_LABEL = 'flex h-full items-center py-0';
-
-const READINESS_CELL_CORE =
-  'flex h-full items-center justify-center gap-0.5 px-0.5';
-
-const MATRIX_COL_LABEL =
-  'text-text-primary block max-w-full text-[8px] font-semibold leading-[1.18] sm:text-[9px]';
-
-/** Заголовок столбца / подпись роли — до 2 строк, служебные слова не отрываем. */
-function MatrixColumnLabel({
-  text,
-  align = 'center',
-}: {
-  text: string;
-  align?: 'center' | 'start';
-}) {
-  const lines = stackHubMatrixLabelLines(text);
-  if (lines.length === 1) {
-    return (
-      <span className={cn(MATRIX_COL_LABEL, align === 'start' ? 'text-left' : 'text-center')}>
-        {lines[0]}
-      </span>
-    );
-  }
-  return (
-    <span
-      className={cn(
-        'flex max-w-full flex-col gap-px',
-        align === 'start' ? 'items-start text-left' : 'items-center text-center'
-      )}
-    >
-      {lines.map((line, i) => (
-        <span key={`${line}-${i}`} className={MATRIX_COL_LABEL}>
-          {line}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-/** Сильная ячейка по ручному аудиту; 9+ не используем — нет телеметрии «идеала». */
-function isReadinessStrong(score: number | null): boolean {
-  return score != null && score >= 8.5;
-}
-
-function truncateReadinessSummary(text: string, maxLen = 36): string {
-  const t = text.trim();
-  if (t.length <= maxLen) return t;
-  const cut = t.slice(0, maxLen);
-  const space = cut.lastIndexOf(' ');
-  return `${(space > 40 ? cut.slice(0, space) : cut).trim()}…`;
-}
-
-function ScoreTooltipBody({ cell, live }: { cell: ReadinessCell; live: boolean }) {
-  const score = live ? cell.liveScore : cell.staticScore;
-  const pillarTitle =
-    PLATFORM_CORE_PILLARS.find((p) => p.id === cell.pillarId)?.title ?? cell.pillarId;
-
-  if (!cell.active) {
-    return (
-      <div className="max-w-sm space-y-1.5 text-left text-[11px] leading-snug">
-        <p className="font-semibold">
-          {ROLE_LABELS[cell.roleId]} · {pillarTitle}
-        </p>
-        <p className="text-text-muted italic">
-          {cell.emptyReason ?? 'Роль не участвует в этом столпе'}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="max-w-sm space-y-2 text-left text-[11px] leading-snug">
-      <p className="font-semibold">
-        {ROLE_LABELS[cell.roleId]} · {pillarTitle}
-        {' — '}
-        {formatReadinessScore(score)}/10
-      </p>
-      <p className="text-text-secondary">{truncateReadinessSummary(cell.summary)}</p>
-      {cell.subItems.length > 0 ? (
-        <p className="text-text-muted text-[10px]">Нажмите на оценку — развернуть разделы ниже.</p>
-      ) : null}
-      {cell.workspaceHref ? (
-        <p className="text-text-muted border-border-subtle border-t pt-2 text-[10px]">
-          <Link
-            href={cell.workspaceHref}
-            className="text-accent-primary font-semibold hover:underline"
-          >
-            Открыть рабочий экран →
-          </Link>
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function ReadinessScoreTrigger({
-  cell,
-  live,
-  isOpen,
-  onToggleSections,
-}: {
-  cell: ReadinessCell;
-  live: boolean;
-  isOpen?: boolean;
-  onToggleSections?: () => void;
-}) {
-  const score = live ? cell.liveScore : cell.staticScore;
-  const href = cell.active ? cell.workspaceHref : cell.cabinetHref;
-  const tone = readinessScoreTone(score, live);
-  const done = isReadinessStrong(score);
-  const hasSections = cell.active && cell.subItems.length > 0;
-  const boxClassName = cn(
-    READINESS_SCORE_BOX,
-    'hover:border-accent-primary/50 hover:bg-accent-primary/5',
-    tone,
-    done && 'border-emerald-200/80 bg-emerald-50/40',
-    hasSections && isOpen && 'border-accent-primary/60 bg-accent-primary/5'
-  );
-  const label = `${ROLE_LABELS[cell.roleId]} ${cell.pillarId}: ${formatReadinessScore(score)}`;
-  const scoreContent = (
-    <>
-      {done ? (
-        <CheckCircle2
-          className={cn(
-            'h-3 w-3 shrink-0 text-emerald-600',
-            live && 'motion-safe:duration-300 motion-safe:animate-in motion-safe:zoom-in-50'
-          )}
-          aria-hidden
-        />
-      ) : null}
-      {formatReadinessScore(score)}
-    </>
-  );
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        {hasSections ? (
-          <button
-            type="button"
-            data-testid={`readiness-score-${cell.roleId}-${cell.pillarId}`}
-            onClick={onToggleSections}
-            className={boxClassName}
-            aria-expanded={isOpen}
-            aria-label={label}
-          >
-            {scoreContent}
-          </button>
-        ) : (
-          <Link
-            href={href}
-            data-testid={`readiness-score-${cell.roleId}-${cell.pillarId}`}
-            className={boxClassName}
-            aria-label={label}
-          >
-            {scoreContent}
-          </Link>
-        )}
-      </TooltipTrigger>
-      <TooltipContent side="bottom" className="max-w-sm p-3">
-        <ScoreTooltipBody cell={cell} live={live} />
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function SectionSubItemTooltipBody({ sub, live }: { sub: ReadinessSubItem; live: boolean }) {
-  const score = live ? sub.liveScore : sub.staticScore;
-  return (
-    <div className="max-w-sm space-y-2 text-left text-[11px] leading-snug">
-      <p className="font-semibold">
-        {sub.label} — {formatReadinessScore(score)}/10
-      </p>
-      <p className="text-text-secondary">{truncateReadinessSummary(sub.summary)}</p>
-    </div>
-  );
-}
-
-function ReadinessSectionLink({
-  sub,
-  live,
-  testId,
-  summaryLines = 1,
-}: {
-  sub: ReadinessSubItem;
-  live: boolean;
-  testId: string;
-  summaryLines?: 1 | 'full';
-}) {
-  const score = live ? sub.liveScore : sub.staticScore;
-  const body = (
-    <Link
-      href={sub.href}
-      data-testid={testId}
-      className="hover:text-accent-primary group flex items-start justify-between gap-2"
-    >
-      <span className="text-text-secondary group-hover:text-accent-primary min-w-0 flex-1">
-        <span className="text-text-muted font-mono">{sub.order}.</span> {sub.label}
-        {summaryLines === 'full' ? (
-          <span className="text-text-muted mt-1 block text-[11px] font-normal leading-snug">
-            {sub.summary}
-          </span>
-        ) : null}
-      </span>
-      <span
-        className={cn(
-          'shrink-0 font-mono text-[10px] font-semibold',
-          readinessScoreTone(score, live)
-        )}
-      >
-        {formatReadinessScore(score)}
-      </span>
-    </Link>
-  );
-
-  if (summaryLines === 'full') return body;
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{body}</TooltipTrigger>
-      <TooltipContent side="left" className="max-w-sm p-3">
-        <SectionSubItemTooltipBody sub={sub} live={live} />
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function ReadinessCellSectionsPanel({
-  cell,
-  live,
-  testIdPrefix,
-  variant,
-}: {
-  cell: ReadinessCell;
-  live: boolean;
-  testIdPrefix: string;
-  variant: 'inline' | 'sheet';
-}) {
-  const score = live ? cell.liveScore : cell.staticScore;
-
-  if (variant === 'sheet') {
-    return (
-      <div data-testid="readiness-sections-sheet" className="space-y-5 pb-2">
-        <div className="border-border-subtle bg-bg-surface2/40 rounded-xl border p-4">
-          <p className="text-text-muted text-[10px] font-black uppercase tracking-widest">
-            Общая оценка
-          </p>
-          <p
-            className={cn(
-              'mt-1 font-mono text-3xl font-bold tabular-nums',
-              readinessScoreTone(score, live)
-            )}
-          >
-            {formatReadinessScore(score)}
-            <span className="text-text-muted text-base font-semibold">/10</span>
-          </p>
-          <p className="text-text-secondary mt-2 text-xs leading-relaxed">{cell.summary}</p>
-        </div>
-
-        {cell.subItems.length > 0 ? (
-          <div>
-            <p className="text-text-muted mb-2 text-[10px] font-black uppercase tracking-widest">
-              Разделы
-            </p>
-            <ol className="space-y-2">
-              {cell.subItems.map((sub) => (
-                <li
-                  key={sub.id}
-                  className="border-border-subtle rounded-xl border bg-white p-3 shadow-sm"
-                >
-                  <ReadinessSectionLink
-                    sub={sub}
-                    live={live}
-                    testId={`${testIdPrefix}-${sub.order - 1}`}
-                    summaryLines="full"
-                  />
-                </li>
-              ))}
-            </ol>
-          </div>
-        ) : null}
-
-        {cell.workspaceHref ? (
-          <Link
-            href={cell.workspaceHref}
-            className="text-accent-primary inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-          >
-            Открыть рабочий экран
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-          </Link>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (cell.subItems.length > 0) {
-    return (
-      <>
-        <ol className="border-border-subtle mt-2 space-y-1 border-t pt-2 text-left">
-          {cell.subItems.map((sub) => (
-            <li key={sub.id}>
-              <ReadinessSectionLink
-                sub={sub}
-                live={live}
-                testId={`${testIdPrefix}-${sub.order - 1}`}
-              />
-            </li>
-          ))}
-        </ol>
-        {cell.workspaceHref ? (
-          <p className="text-text-muted mt-2 text-[10px]">
-            <Link
-              href={cell.workspaceHref}
-              data-testid={`readiness-workspace-${cell.roleId}-${cell.pillarId}`}
-              className="text-accent-primary inline-flex items-center gap-0.5 hover:underline"
-            >
-              Открыть столп
-              <ExternalLink className="h-3 w-3" />
-            </Link>
-          </p>
-        ) : null}
-      </>
-    );
-  }
-
-  if (cell.workspaceHref) {
-    return (
-      <p className="text-text-muted mt-2 text-[10px]">
-        <Link
-          href={cell.workspaceHref}
-          data-testid={`readiness-workspace-${cell.roleId}-${cell.pillarId}`}
-          className="text-accent-primary inline-flex items-center gap-0.5 hover:underline"
-        >
-          Открыть столп
-          <ExternalLink className="h-3 w-3" />
-        </Link>
-      </p>
-    );
-  }
-
-  return null;
-}
-
-function ReadinessImprovementLink({ item }: { item: ReadinessImprovementItem }) {
-  return (
-    <Link
-      href={item.href}
-      data-testid={`readiness-improvement-${item.id}`}
-      className="hover:border-accent-primary/40 group block rounded-xl border bg-white p-3 shadow-sm transition-colors"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-text-primary text-xs font-semibold leading-snug">
-            <span className="text-text-muted font-mono text-[10px]">
-              {item.priority.toFixed(0)}
-            </span>{' '}
-            {item.kind === 'fix' ? '→' : '·'} {item.title}
-          </p>
-          <p className="text-text-muted mt-1 text-[10px] leading-snug">
-            {ROLE_LABELS[item.roleId]} · {PLATFORM_CORE_PILLARS.find((p) => p.id === item.pillarId)?.title}
-            {item.sectionLabel ? ` · ${item.sectionLabel}` : ''}
-          </p>
-          <p className="text-text-secondary mt-2 text-[11px] leading-relaxed">{item.linkageRu}</p>
-        </div>
-        <ExternalLink className="text-text-muted group-hover:text-accent-primary mt-0.5 h-3.5 w-3.5 shrink-0 opacity-60" />
-      </div>
-    </Link>
-  );
-}
-
-function ReadinessImprovementsPanel({
-  items,
-  filterPillarId,
-  variant,
-}: {
-  items: ReadinessImprovementItem[];
-  filterPillarId?: CoreHubPillarId;
-  variant: 'inline' | 'sheet';
-}) {
-  const pillarTitle = filterPillarId
-    ? PLATFORM_CORE_PILLARS.find((p) => p.id === filterPillarId)?.title
-    : null;
-
-  if (items.length === 0) {
-    return (
-      <p className="text-text-muted py-2 text-xs italic">
-        {filterPillarId
-          ? `По столпу «${pillarTitle}» открытых доработок в аудите нет.`
-          : 'Открытых доработок в аудите нет.'}
-      </p>
-    );
-  }
-
-  return (
-    <div
-      data-testid="readiness-improvements-panel"
-      className={cn('space-y-2', variant === 'sheet' ? 'pb-2' : 'pt-2')}
-    >
-      <p className="text-text-muted text-[10px] leading-snug">
-        {filterPillarId
-          ? `Доработки столпа «${pillarTitle}» и сквозные связи · ${items.length} · по убыванию важности.`
-          : `Все доработки матрицы · ${items.length} · упорядочены от наиболее важных.`}
-      </p>
-      <ol className="space-y-2">
-        {items.map((item) => (
-          <li key={item.id}>
-            <ReadinessImprovementLink item={item} />
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-/** Интерактивная матрица 5×4: оценка, разворот разделов, переход по клику. */
-export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Props) {
+/** Интерактивная матрица 5×N: оценка, разворот разделов, переход по клику (N = baseline 2 или extended 4). */
+export function PlatformCorePillarRoleScoreMatrix({
+  collectionId = 'SS27',
+  hideSectionHeader = false,
+  showModeLead = false,
+}: Props) {
   const isMobile = useIsMobile();
+  const hubRowsForUi = useMemo(() => getPlatformCoreHubRowsForUi(), []);
   const { overview, overviewStatus } = usePlatformCoreChainOverview(collectionId);
   const emptyChain = isPlatformCoreEmptyChainCollection(collectionId);
   const [pgReachable, setPgReachable] = useState<boolean | null>(null);
@@ -567,15 +145,6 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
     toggleExpand(key);
   };
 
-  const openImprovements = (scope: CoreHubPillarId | 'all') => {
-    if (isMobile) {
-      setImprovementsScope(scope);
-      setImprovementsSheetOpen(true);
-      return;
-    }
-    setImprovementsScope((prev) => (prev === scope ? null : scope));
-  };
-
   const displayedImprovements =
     improvementsScope === 'all'
       ? allImprovements
@@ -600,26 +169,16 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
   const roleRowClass = cn(
     READINESS_ROLE_COL_STICKY,
     READINESS_MATRIX_BODY_H,
-    'text-text-primary border-border-subtle/60 border-t pl-1.5 pr-1 text-left'
+    'text-text-primary border-border-subtle/60 border-t pl-1.5 pr-1 text-left align-top'
   );
   const roleRowFixedClass = cn(
     READINESS_ROLE_COL,
     READINESS_MATRIX_BODY_H,
-    'text-text-primary border-border-subtle/60 border-r border-t bg-white pl-1.5 pr-1 text-left'
-  );
-  const roleFootClass = cn(
-    READINESS_ROLE_COL_STICKY,
-    READINESS_MATRIX_FOOT_H,
-    'text-text-primary border-border-subtle border-t pl-1.5 pr-1 text-left'
-  );
-  const roleFootFixedClass = cn(
-    READINESS_ROLE_COL,
-    READINESS_MATRIX_FOOT_H,
-    'text-text-primary border-border-subtle border-r border-t bg-white pl-1.5 pr-1 text-left'
+    'text-text-primary border-border-subtle/60 border-r border-t bg-white pl-1.5 pr-1 text-left align-top'
   );
 
   const renderPillarCell = (
-    row: (typeof PLATFORM_CORE_HUB_ROWS)[number],
+    row: (typeof hubRowsForUi)[number],
     pillar: (typeof PLATFORM_CORE_PILLARS)[number]
   ) => {
     const cell = cells.find((c) => c.roleId === row.id && c.pillarId === pillar.id);
@@ -635,7 +194,7 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
         />
       );
     }
-    const key = cellKey(row.id, pillar.id);
+    const key = readinessMatrixCellKey(row.id, pillar.id);
     const isOpen = expanded.has(key);
     const hubCell = row.pillars[pillar.id];
     const participates = hubCell.kind === 'active';
@@ -646,7 +205,7 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
         data-testid={`readiness-cell-${row.id}-${pillar.id}`}
         className={cn(
           READINESS_PILLAR_COL,
-          isOpen ? 'min-h-[2.5rem] align-middle' : READINESS_MATRIX_BODY_H,
+          isOpen ? 'min-h-[2.5rem] align-top py-1' : READINESS_MATRIX_BODY_H,
           'border-border-subtle/60 border-t'
         )}
       >
@@ -690,44 +249,6 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
       </td>
     );
   };
-
-  const pillarFooterCells = PLATFORM_CORE_PILLARS.map((pillar) => {
-    const pillarCells = cells.filter((c) => c.pillarId === pillar.id && c.active);
-    if (pillarCells.length === 0) {
-      return (
-        <td
-          key={pillar.id}
-          className={cn(
-            READINESS_PILLAR_COL,
-            READINESS_MATRIX_FOOT_H,
-            'text-text-muted border-border-subtle border-t font-mono tabular-nums'
-          )}
-        >
-          <span className="inline-flex w-full justify-center">—</span>
-        </td>
-      );
-    }
-    const avg = liveChain
-      ? pillarCells.reduce((s, c) => s + (c.liveScore ?? 0), 0) / pillarCells.length
-      : pillarCells.reduce((s, c) => s + (c.staticScore ?? 0), 0) / pillarCells.length;
-    return (
-      <td
-        key={pillar.id}
-        className={cn(
-          READINESS_PILLAR_COL,
-          READINESS_MATRIX_FOOT_H,
-          'border-border-subtle border-t font-mono text-sm font-bold tabular-nums',
-          readinessScoreTone(avg, liveChain)
-        )}
-      >
-        <div className={READINESS_CELL_CORE}>
-          <span className="font-mono text-[11px] font-bold tabular-nums md:text-xs">
-            {formatReadinessScore(avg)}
-          </span>
-        </div>
-      </td>
-    );
-  });
 
   const improvementsPanelRow =
     !isMobile && improvementsScope ? (
@@ -806,18 +327,22 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
         </SheetContent>
       </Sheet>
       <div data-testid="platform-core-readiness-matrix" className={platformCoreHubLayout.sectionStack}>
-        <p className={hubSectionLabelClassName()}>Оценка готовности</p>
-        <p
-          data-testid="platform-core-readiness-mode"
-          data-mode={readinessMode}
-          className={cn(platformCoreHubLayout.readinessModeLead, 'text-text-secondary')}
-        >
-          {liveChain
-            ? `Цепочка активна · средняя готовность ${formatReadinessScore(overallActiveLive)}/10.`
-            : pgReachable === false
-              ? `База недоступна · оценки ориентировочные · среднее ${formatReadinessScore(overallActiveStatic)}/10.`
-              : `Загрузите данные коллекции · оценки ориентировочные · среднее ${formatReadinessScore(overallActiveStatic)}/10.`}
-        </p>
+        {hideSectionHeader ? null : (
+          <p className={hubSectionLabelClassName()}>Оценка готовности</p>
+        )}
+        {hideSectionHeader && !showModeLead ? null : (
+          <p
+            data-testid="platform-core-readiness-mode"
+            data-mode={readinessMode}
+            className={cn(platformCoreHubLayout.readinessModeLead, 'text-text-secondary')}
+          >
+            {liveChain
+              ? `Live · средняя готовность ${formatReadinessScore(overallActiveLive)}/10 по ролям и разделам.`
+              : pgReachable === false
+                ? `PostgreSQL недоступен · статическая база аудита · среднее ${formatReadinessScore(overallActiveStatic)}/10.`
+                : `Ожидание данных цепочки · ориентировочные оценки · среднее ${formatReadinessScore(overallActiveStatic)}/10.`}
+          </p>
+        )}
         {overviewStatus === 'loading' && pgReachable === null ? (
           <PlatformCoreReadinessMatrixSkeleton />
         ) : (
@@ -833,7 +358,7 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
                   </tr>
                 </thead>
                 <tbody>
-                  {PLATFORM_CORE_HUB_ROWS.map((row) => (
+                  {hubRowsForUi.map((row) => (
                     <tr key={row.id}>
                       <th scope="row" className={roleRowFixedClass}>
                         <div className={READINESS_ROW_LABEL}>
@@ -842,13 +367,6 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
                       </th>
                     </tr>
                   ))}
-                  <tr>
-                    <th scope="row" className={roleFootFixedClass}>
-                      <div className={READINESS_ROW_LABEL}>
-                        <MatrixColumnLabel text="Средняя по столпу" align="start" />
-                      </div>
-                    </th>
-                  </tr>
                 </tbody>
               </table>
               <div className="min-w-0 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -867,12 +385,11 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
                     </tr>
                   </thead>
                   <tbody>
-                    {PLATFORM_CORE_HUB_ROWS.map((row) => (
+                    {hubRowsForUi.map((row) => (
                       <tr key={row.id}>
                         {PLATFORM_CORE_PILLARS.map((pillar) => renderPillarCell(row, pillar))}
                       </tr>
                     ))}
-                    <tr>{pillarFooterCells}</tr>
                     {improvementsPanelRow}
                   </tbody>
                 </table>
@@ -898,7 +415,7 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
                   </tr>
                 </thead>
                 <tbody>
-                  {PLATFORM_CORE_HUB_ROWS.map((row) => (
+                  {hubRowsForUi.map((row) => (
                     <tr key={row.id}>
                       <th scope="row" className={roleRowClass}>
                         <div className={READINESS_ROW_LABEL}>
@@ -908,14 +425,6 @@ export function PlatformCorePillarRoleScoreMatrix({ collectionId = 'SS27' }: Pro
                       {PLATFORM_CORE_PILLARS.map((pillar) => renderPillarCell(row, pillar))}
                     </tr>
                   ))}
-                  <tr>
-                    <th scope="row" className={roleFootClass}>
-                      <div className={READINESS_ROW_LABEL}>
-                        <MatrixColumnLabel text="Средняя по столпу" align="start" />
-                      </div>
-                    </th>
-                    {pillarFooterCells}
-                  </tr>
                   {improvementsPanelRow}
                 </tbody>
               </table>

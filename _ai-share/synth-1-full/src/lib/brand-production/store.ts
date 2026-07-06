@@ -2,6 +2,10 @@
  * Хранилище без API: localStorage. Те же сущности ожидаются от REST/GraphQL.
  */
 
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 import type {
   ArticleEntity,
   BrandProductionState,
@@ -28,6 +32,7 @@ function generateId(prefix: string): string {
 
 export function loadBrandProductionState(): BrandProductionState {
   if (typeof window === 'undefined') return createSeedState();
+  if (!shouldUseLocalStorageClientFallbackInCore()) return createSeedState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
@@ -43,6 +48,7 @@ export function loadBrandProductionState(): BrandProductionState {
 
 export function saveBrandProductionState(state: BrandProductionState): void {
   if (typeof window === 'undefined') return;
+  if (!shouldMirrorPgClientStoreToLocalStorage()) return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 

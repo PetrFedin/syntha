@@ -19,6 +19,7 @@ import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 import { fmtMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { cabinetSurface } from '@/lib/ui/cabinet-surface';
+import { BrandCoRegistryRetailOnboardingStrip } from '@/components/platform/BrandCoRegistryRetailOnboardingStrip';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { BrandShopProductionVisibilitySettings } from '@/components/brand/b2b/BrandShopProductionVisibilitySettings';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
@@ -111,6 +112,12 @@ export function BrandRetailersCorePage() {
     <CabinetPageContent maxWidth="full" className="w-full space-y-4 pb-20">
       <PlatformCoreListChrome highlightRole="brand" pillarId="collection_order">
         <div data-testid="brand-co-retailers-panel">
+          <div className="mb-3">
+            <BrandCoRegistryRetailOnboardingStrip
+              collectionId={pageCollectionId || PLATFORM_CORE_DEMO.collectionId}
+              orderId={spineOrderId || undefined}
+            />
+          </div>
           <div
             className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
             data-testid="brand-co-retailers-context-strip"

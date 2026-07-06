@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import StyleCalendar from '@/components/user/style-calendar';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
@@ -9,6 +10,14 @@ import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-cor
 import { usePlatformCoreCalendarEvents } from '@/hooks/use-platform-core-calendar-events';
 import { usePlatformCoreCalendarTaskCreateEnabled } from '@/hooks/use-platform-core-calendar-task-create-enabled';
 import { ManufacturerCalendarGanttBridgeStrip } from '@/components/factory/manufacturer/ManufacturerCalendarGanttBridgeStrip';
+import { ManufacturerCalendarGanttBridgeWipStrip } from '@/components/factory/manufacturer/ManufacturerCalendarGanttBridgeWipStrip';
+import { MfrCmCalendarAttachTzBwPeerStrip } from '@/components/factory/MfrCmCalendarAttachTzBwPeerStrip';
+import { MfrCmCalendarContextPeerStrip } from '@/components/platform/MfrCmCalendarContextPeerStrip';
+import { PlatformCoreCalendarUserTasksStrip } from '@/components/platform/PlatformCoreCalendarUserTasksStrip';
+import { PlatformCoreCmCalendarEventTrackingStrip } from '@/components/platform/PlatformCoreCmCalendarEventTrackingStrip';
+import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
+import { PlatformCorePcTaskAutoEnsure } from '@/components/platform/PlatformCorePcTaskAutoEnsure';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 
 export function FactoryProductionCalendarCorePage() {
   const searchParams = useSearchParams();
@@ -20,6 +29,7 @@ export function FactoryProductionCalendarCorePage() {
   });
   const orderId =
     searchParams.get('orderId')?.trim() || searchParams.get('order')?.trim() || undefined;
+  const focusTaskId = searchParams.get('pcTask')?.trim() || undefined;
   const { events, loading, error, refetch } = usePlatformCoreCalendarEvents({
     collectionId,
     orderId,
@@ -28,6 +38,16 @@ export function FactoryProductionCalendarCorePage() {
   });
   const demo = getPlatformCoreDemo(collectionId);
   const calendarTaskCreateEnabled = usePlatformCoreCalendarTaskCreateEnabled(true);
+  const resolvedOrderId = orderId?.trim() || '';
+  const { tick: chainTick } = usePlatformCoreChainStatusPoll(
+    Boolean(resolvedOrderId),
+    resolvedOrderId ? [resolvedOrderId] : []
+  );
+
+  useEffect(() => {
+    if (!chainTick) return;
+    refetch();
+  }, [chainTick, refetch]);
 
   return (
     <div className="space-y-4 p-4">
@@ -35,6 +55,13 @@ export function FactoryProductionCalendarCorePage() {
         <PlatformCoreCommsWorkspaceExtras variant={highlightRole} />
         {orderId ? (
           <PlatformCoreFactoryCalendarOrderContextStrip orderId={orderId} role="manufacturer" />
+        ) : null}
+        {isPlatformCoreMode() ? (
+          <MfrCmCalendarContextPeerStrip
+            collectionId={collectionId}
+            factoryId={demo.factoryId}
+            orderId={orderId}
+          />
         ) : null}
         {!loading && !error && events.length > 0 ? (
           <p
@@ -45,7 +72,40 @@ export function FactoryProductionCalendarCorePage() {
             B2B-события: {events.length}
           </p>
         ) : null}
-        <ManufacturerCalendarGanttBridgeStrip collectionId={collectionId} orderId={orderId} />
+        <ManufacturerCalendarGanttBridgeStrip
+          collectionId={collectionId}
+          orderId={orderId}
+          factoryId={demo.factoryId}
+          articleId={demo.demoArticleId}
+        />
+        <ManufacturerCalendarGanttBridgeWipStrip
+          factoryId={demo.factoryId}
+          collectionId={collectionId}
+          orderId={orderId}
+          focusTaskId={focusTaskId}
+        />
+        {isPlatformCoreMode() ? (
+          <MfrCmCalendarAttachTzBwPeerStrip
+            collectionId={collectionId}
+            articleId={demo.demoArticleId}
+            orderId={orderId}
+            factoryId={demo.factoryId}
+          />
+        ) : null}
+        <PlatformCoreCmCalendarEventTrackingStrip
+          ownerRole="manufacturer"
+          collectionId={collectionId}
+          orderId={resolvedOrderId || undefined}
+          reloadNonce={chainTick}
+        />
+        <PlatformCorePcTaskAutoEnsure
+          collectionId={collectionId}
+          orderId={orderId}
+          ownerRole="manufacturer"
+          focusTaskId={focusTaskId}
+          events={events}
+          onEnsured={() => refetch()}
+        />
         {loading ? <p className="text-text-secondary text-sm">Загрузка событий календаря…</p> : null}
         {error ? <p className="text-sm text-amber-800">{error}</p> : null}
         {!calendarTaskCreateEnabled ? (
@@ -56,6 +116,14 @@ export function FactoryProductionCalendarCorePage() {
             Слоты задач — после core:bootstrap
           </p>
         ) : null}
+        <PlatformCoreCalendarUserTasksStrip
+          collectionId={collectionId}
+          orderId={orderId}
+          ownerRole="manufacturer"
+          testIdPrefix="mfr-cm-calendar-user-tasks"
+          focusTaskId={focusTaskId}
+          onTaskCreated={() => refetch()}
+        />
         <StyleCalendar
           initialRole={activeRole}
           externalEvents={events}

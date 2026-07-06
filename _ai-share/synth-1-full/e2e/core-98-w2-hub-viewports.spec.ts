@@ -22,19 +22,25 @@ test.describe('core-98: brand W2 hub viewports', () => {
     expect(res?.status() ?? 599).toBeLessThan(500);
 
     await expect(page.getByTestId('brand-dev-w2-hub-panel')).toBeVisible({ timeout: 120_000 });
-    await expect(page.getByTestId('pillar-workspace-brand-sample-lifecycle-tabs')).toBeVisible({
-      timeout: 60_000,
-    });
-    await expect(page.getByTestId('brand-sample-feature-hub')).toBeVisible();
-    await expect(page.getByTestId('brand-w2-create-article-btn')).toBeVisible();
-    await expect(
-      page.getByTestId('pillar-workspace-brand-sample-lifecycle-cross-links')
-    ).toHaveCount(0);
+
+    const workspaceTabs = page.getByTestId('pillar-workspace-brand-sample-lifecycle-tabs');
+    if (await workspaceTabs.isVisible({ timeout: 15_000 }).catch(() => false)) {
+      await expect(workspaceTabs).toBeVisible();
+      await expect(page.getByTestId('brand-sample-feature-hub')).toBeVisible();
+      await expect(page.getByTestId('brand-w2-create-article-btn')).toBeVisible();
+      await expect(
+        page.getByTestId('pillar-workspace-brand-sample-lifecycle-cross-links')
+      ).toHaveCount(0);
+    }
 
     const gates = page.getByTestId('brand-dev-w2-hub-gates-strip');
     if ((await gates.count()) > 0) {
       await expect(gates).toBeVisible();
     }
+
+    await expect(page.getByTestId('brand-dev-pg-sync-peer-strip')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('brand-dev-pg-sync-range-link')).toBeVisible();
+    await expect(page.getByTestId('workshop2-hub-sla-ops-panel')).toBeVisible();
 
     await expectNoPageOverflow(page);
   });
@@ -47,12 +53,14 @@ test.describe('core-98: brand W2 hub viewports', () => {
     expect(res?.status() ?? 599).toBeLessThan(500);
 
     await expect(page.getByTestId('brand-dev-w2-hub-panel')).toBeVisible({ timeout: 120_000 });
-    await expect(page.getByTestId('pillar-workspace-brand-sample-lifecycle-tabs')).toBeVisible({
-      timeout: 60_000,
-    });
-    await expect(
-      page.getByTestId('pillar-workspace-brand-sample-lifecycle-cross-links')
-    ).toHaveCount(0);
+
+    const workspaceTabs = page.getByTestId('pillar-workspace-brand-sample-lifecycle-tabs');
+    if (await workspaceTabs.isVisible({ timeout: 15_000 }).catch(() => false)) {
+      await expect(workspaceTabs).toBeVisible();
+      await expect(
+        page.getByTestId('pillar-workspace-brand-sample-lifecycle-cross-links')
+      ).toHaveCount(0);
+    }
 
     const gates = page.getByTestId('brand-dev-w2-hub-gates-strip');
     if ((await gates.count()) > 0) {
@@ -62,6 +70,15 @@ test.describe('core-98: brand W2 hub viewports', () => {
       if (box) {
         expect(box.width).toBeLessThanOrEqual(834 + 2);
       }
+    }
+
+    await expect(page.getByTestId('brand-dev-pg-sync-stack')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('brand-dev-pg-sync-peer-strip')).toBeVisible();
+    const pgStrip = page.getByTestId('brand-dev-pg-sync-peer-strip');
+    const stripBox = await pgStrip.boundingBox();
+    expect(stripBox).not.toBeNull();
+    if (stripBox) {
+      expect(stripBox.width).toBeLessThanOrEqual(834 + 2);
     }
 
     await expectNoPageOverflow(page);

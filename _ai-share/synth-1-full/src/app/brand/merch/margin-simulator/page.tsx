@@ -10,6 +10,7 @@ import {
   BrandLandedMarginGoldenPathStrip,
   brandLandedMarginGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandLandedMarginGoldenPathStrip';
+import { BrandCoLandedMarginCoPeerStrip } from '@/components/platform/BrandCoLandedMarginCoPeerStrip';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
@@ -27,12 +28,13 @@ function BrandLandedMarginWorkspaceContent() {
       ctx={ctx}
       crossLinksTitle="Pricelist · shop rollup · collaborative"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandLandedMarginGoldenPathStrip
           collectionId={collectionId}
           orderId={orderId}
           activeStep={brandLandedMarginGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoLandedMarginCoPeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'simulator' ? (
         <BrandMarginSimulatorPanel collectionId={collectionId} orderId={orderId} />

@@ -1,7 +1,7 @@
 /**
  * Demo href builders для hub-матрицы (коллекция / заказ / артикул).
  */
-import { ROUTES, factoryProductionHandoffQueueHref } from '@/lib/routes';
+import { ROUTES, factoryProductionHandoffQueueHref } from '@/lib/platform-core-routes';
 import {
   PLATFORM_CORE_DEMO,
   type PlatformCoreDemoContext,
@@ -18,6 +18,14 @@ export function factoryMaterialsHrefForDemo(
     view: 'development',
   });
   return `${ROUTES.factory.productionMaterials}?${params.toString()}`;
+}
+
+/** Каталог материалов поставщика (CRUD listing). */
+export function factoryMaterialsCatalogHrefForDemo(
+  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
+): string {
+  const params = new URLSearchParams({ collection: demo.collectionId });
+  return `${ROUTES.factory.productionCatalog}?${params.toString()}`;
 }
 
 /** Linesheets бренда с контекстом demo-коллекции. */

@@ -6,6 +6,7 @@ import {
   evaluateWorkshop2BulkShowroomPublishForArticle,
   summarizeWorkshop2BulkShowroomPublish,
 } from '@/lib/production/workshop2-bulk-showroom-publish';
+import { evaluateBrandMaterialPassportReleaseGateForCollection } from '@/lib/server/brand-material-passport-release-gate-server';
 import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { enqueueWorkshop2DomainEvent } from '@/lib/server/workshop2-domain-events';
 
@@ -33,6 +34,15 @@ async function postBulkShowroomPublish(req: NextRequest, ctx: RouteParams) {
   if (!articleIds.length) {
     return jsonWorkshop2ErrorRu(400, 'invalid_request', {
       messageRu: 'Передайте articleIds[] в теле запроса.',
+    });
+  }
+
+  const releaseGate = await evaluateBrandMaterialPassportReleaseGateForCollection({ collectionId });
+  if (releaseGate.blocked) {
+    return jsonWorkshop2ErrorRu(409, 'material_passport_release_gate', {
+      messageRu: releaseGate.messageRu,
+      summary: releaseGate.summary,
+      storageMode: releaseGate.storageMode,
     });
   }
 

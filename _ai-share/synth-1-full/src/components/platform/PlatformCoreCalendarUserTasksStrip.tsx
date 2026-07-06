@@ -1,19 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  brandCalendarB2bOrderContextHref,
   brandMessagesB2bOrderContextHref,
-  factoryCalendarB2bOrderContextHref,
   factoryMessagesB2bOrderContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
   factorySupplierMessagesB2bOrderContextHref,
-  shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
+import { platformCoreCalendarPcTaskHref } from '@/lib/platform-core-ports/platform/platform-core-comms-pctask-deeplinks';
 
 type CalendarUserTaskRow = {
   id: string;
@@ -29,6 +26,8 @@ type Props = {
   ownerRole: 'brand' | 'shop' | 'manufacturer' | 'supplier';
   testIdPrefix: string;
   reloadNonce?: number;
+  focusTaskId?: string;
+  onTaskCreated?: () => void;
 };
 
 function orderChatHref(role: Props['ownerRole'], orderId: string): string {
@@ -44,25 +43,7 @@ function calendarTaskHref(
   orderId: string | null | undefined,
   taskId: string
 ): string {
-  const task = encodeURIComponent(taskId);
-  if (orderId?.trim()) {
-    if (role === 'brand') {
-      return `${brandCalendarB2bOrderContextHref(orderId)}&pcTask=${task}`;
-    }
-    if (role === 'shop') {
-      return `${shopCalendarB2bOrderContextHref(orderId)}&pcTask=${task}`;
-    }
-    if (role === 'supplier') {
-      return `${factorySupplierCalendarB2bOrderContextHref(orderId)}&pcTask=${task}`;
-    }
-    return `${factoryCalendarB2bOrderContextHref(orderId)}&pcTask=${task}`;
-  }
-  if (role === 'shop') {
-    return `/shop/b2b/calendar?collection=${encodeURIComponent(collectionId)}&pcTask=${task}`;
-  }
-  return role === 'brand'
-    ? `/brand/calendar?collection=${encodeURIComponent(collectionId)}&pcTask=${task}`
-    : `/factory/calendar?role=${role}&collection=${encodeURIComponent(collectionId)}&pcTask=${task}`;
+  return platformCoreCalendarPcTaskHref({ role, collectionId, orderId, taskId });
 }
 
 /** PG user-task list + deep links to order calendar / chat. */
@@ -72,17 +53,21 @@ export function PlatformCoreCalendarUserTasksStrip({
   ownerRole,
   testIdPrefix,
   reloadNonce = 0,
+  focusTaskId,
+  onTaskCreated,
 }: Props) {
   const [tasks, setTasks] = useState<CalendarUserTaskRow[]>([]);
   const [storageMode, setStorageMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [createMessage, setCreateMessage] = useState<string | null>(null);
+  const [listReloadNonce, setListReloadNonce] = useState(0);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadTasks = useCallback(() => {
     const qs = new URLSearchParams({ collectionId, limit: '5' });
     if (orderId) qs.set('orderId', orderId);
     setLoading(true);
-    void fetch(`/api/workshop2/platform-core/calendar-events/user-task?${qs.toString()}`, {
+    return fetch(`/api/workshop2/platform-core/calendar-events/user-task?${qs.toString()}`, {
       cache: 'no-store',
     })
       .then((r) => r.json())
@@ -92,21 +77,70 @@ export function PlatformCoreCalendarUserTasksStrip({
           tasks?: CalendarUserTaskRow[];
           storageMode?: string;
         }) => {
-          if (cancelled || json.ok !== true) return;
+          if (json.ok !== true) {
+            setTasks([]);
+            return;
+          }
           setTasks(Array.isArray(json.tasks) ? json.tasks : []);
           setStorageMode(json.storageMode ?? null);
         }
       )
       .catch(() => {
-        if (!cancelled) setTasks([]);
+        setTasks([]);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       });
+  }, [collectionId, orderId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadTasks().then(() => {
+      if (cancelled) return;
+    });
     return () => {
       cancelled = true;
     };
-  }, [collectionId, orderId, reloadNonce]);
+  }, [loadTasks, reloadNonce, listReloadNonce]);
+
+  useEffect(() => {
+    if (!focusTaskId?.trim()) return;
+    const el = document.querySelector(
+      `[data-testid="${testIdPrefix}-task-${CSS.escape(focusTaskId.trim())}"]`
+    );
+    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusTaskId, tasks, testIdPrefix]);
+
+  const handleQuickCreate = async () => {
+    if (creating) return;
+    setCreating(true);
+    setCreateMessage(null);
+    try {
+      const res = await fetch('/api/workshop2/platform-core/calendar-events/user-task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          collectionId,
+          ownerRole,
+          orderId: orderId?.trim() || undefined,
+          title: orderId?.trim() ? `Дозвон · ${orderId.trim()}` : 'Задача платформы',
+          description: 'Быстрая задача из полосы календаря',
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; messageRu?: string; event?: { id?: string } };
+      if (!res.ok || !json.ok) {
+        setCreateMessage(json.messageRu ?? 'Не удалось создать задачу.');
+        return;
+      }
+      setCreateMessage(json.messageRu ?? 'Задача создана.');
+      setListReloadNonce((n) => n + 1);
+      onTaskCreated?.();
+    } catch {
+      setCreateMessage('Ошибка сети при создании задачи.');
+    } finally {
+      setCreating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -122,38 +156,75 @@ export function PlatformCoreCalendarUserTasksStrip({
       data-testid={`${testIdPrefix}-strip`}
     >
       <Badge variant="outline" className="text-[9px] uppercase">
-        User tasks
+        Задачи заказа
       </Badge>
-      {storageMode === 'pg' ? (
+      {storageMode ? (
         <Badge variant="secondary" className="text-[9px]">
-          PG
+          {storageMode === 'pg' ? 'PG' : storageMode}
         </Badge>
+      ) : null}
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        className="h-7 text-[10px]"
+        data-testid={`${testIdPrefix}-refresh`}
+        onClick={() => void loadTasks()}
+      >
+        Обновить
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-7 text-[10px]"
+        disabled={creating}
+        data-testid={`${testIdPrefix}-quick-create`}
+        onClick={() => void handleQuickCreate()}
+      >
+        {creating ? 'Создание…' : '+ Быстрая задача'}
+      </Button>
+      {createMessage ? (
+        <span className="text-text-muted text-[10px]" data-testid={`${testIdPrefix}-create-message`}>
+          {createMessage}
+        </span>
       ) : null}
       {tasks.length === 0 ? (
         <span className="text-text-muted">Нет сохранённых задач — создайте слот в календаре.</span>
       ) : (
-        tasks.map((task) => (
-          <span key={task.id} className="inline-flex flex-wrap items-center gap-1">
-            <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
-              <Link
-                href={calendarTaskHref(ownerRole, collectionId, task.orderId, task.id)}
-                data-testid={`${testIdPrefix}-task-${task.id}`}
+        tasks.map((task) => {
+          const focused = focusTaskId?.trim() === task.id;
+          return (
+            <span key={task.id} className="inline-flex flex-wrap items-center gap-1">
+              <Button
+                size="sm"
+                variant={focused ? 'default' : 'outline'}
+                className={
+                  focused ? 'h-7 text-[10px] ring-2 ring-accent-primary/40' : 'h-7 text-[10px]'
+                }
+                asChild
               >
-                {task.title}
-              </Link>
-            </Button>
-            {task.orderId ? (
-              <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
                 <Link
-                  href={orderChatHref(ownerRole, task.orderId)}
-                  data-testid={`${testIdPrefix}-chat-${task.id}`}
+                  href={calendarTaskHref(ownerRole, collectionId, task.orderId, task.id)}
+                  data-testid={`${testIdPrefix}-task-${task.id}`}
+                  data-pc-task-focused={focused ? '1' : undefined}
                 >
-                  Чат
+                  {task.title}
                 </Link>
               </Button>
-            ) : null}
-          </span>
-        ))
+              {task.orderId ? (
+                <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
+                  <Link
+                    href={orderChatHref(ownerRole, task.orderId)}
+                    data-testid={`${testIdPrefix}-chat-${task.id}`}
+                  >
+                    Чат
+                  </Link>
+                </Button>
+              ) : null}
+            </span>
+          );
+        })
       )}
     </div>
   );

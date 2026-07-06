@@ -25,6 +25,7 @@ import {
   refreshBrandPackRules,
 } from '@/lib/fashion/brand-pack-rules-store';
 import { buildBrandPackRulesSession } from '@/lib/fashion/brand-pack-rules-workspace';
+import { BrandPackRulesPrepackMatrixHonestyStrip } from '@/components/brand/merch/BrandPackRulesPrepackMatrixHonestyStrip';
 import { Loader2 } from 'lucide-react';
 import type { BrandPackRulesFeedRow } from '@/lib/fashion/brand-pack-rules-feed';
 
@@ -127,7 +128,7 @@ export function BrandPackRulesTablePanel({ collectionId = 'SS27', orderId }: Pro
           CSV
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.shopMatrixPrepackHref}>Shop pre-pack</Link>
+          <Link href={session.shopMatrixPrepackHref}>Прекпак магазина</Link>
         </Button>
         <Button variant="outline" size="sm" type="button" onClick={() => void reload()}>
           Refresh
@@ -239,9 +240,10 @@ export function BrandPackRulesShopPrepackPanel({ collectionId, orderId }: Props)
 
   return (
     <div className="space-y-4" data-testid="brand-pack-rules-shop-prepack-panel">
+      <BrandPackRulesPrepackMatrixHonestyStrip collectionId={collectionId} orderId={orderId} />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Shop pre-pack</CardTitle>
+          <CardTitle className="text-base">Прекпак магазина</CardTitle>
           <CardDescription>Brand curve → shop matrix tab prepack · batch cart apply.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">

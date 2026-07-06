@@ -5,7 +5,7 @@ import {
   parseRangePlannerTier,
   type RangePlannerTier,
 } from '@/lib/production/workshop2-range-planner-bridge';
-import { workshop2ArticlePath } from '@/lib/production/workshop2-url';
+import { brandDevelopmentArticleHref } from '@/lib/platform-core-routes';
 import { resolveWorkshop2ActorFromRequest } from '@/lib/server/workshop2-actor-from-request';
 import { putWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { guardWorkshop2Route, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
@@ -125,6 +125,6 @@ export async function POST(req: NextRequest) {
     committed,
     ...(prefill ? { prefill } : {}),
     preview: built.assembly.preview.oneLineRu,
-    href: workshop2ArticlePath(collectionId, built.articleId),
+    href: brandDevelopmentArticleHref(collectionId, built.articleId),
   });
 }

@@ -16,11 +16,16 @@ import {
   brandMaterialPassportGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandMaterialPassportGoldenPathStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
+import { resolvePageCollectionId, getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { BrandDevMerchCoSpinePeerStrip } from '@/components/platform/BrandDevMerchCoSpinePeerStrip';
+import { BrandDevSchemaPassportPeerStrip } from '@/components/platform/BrandDevSchemaPassportPeerStrip';
+import { BrandDevPassportReleaseGatePeerStrip } from '@/components/platform/BrandDevPassportReleaseGatePeerStrip';
 
 function FabricPassportWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
+  const demo = getPlatformCoreDemo(collectionId);
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-material-passport');
 
   return (
@@ -45,6 +50,17 @@ function FabricPassportWorkspaceBody() {
           activeStep={brandMaterialPassportGoldenPathStepFromFeature(activeFeatureId)}
         />
       </div>
+      {isPlatformCoreMode() ? (
+        <div className="mb-4 space-y-2">
+          <BrandDevSchemaPassportPeerStrip collectionId={collectionId} activeSide="passport" />
+          <BrandDevPassportReleaseGatePeerStrip collectionId={collectionId} />
+          <BrandDevMerchCoSpinePeerStrip
+            variant="material-passport"
+            collectionId={collectionId}
+            orderId={demo.demoOrderId}
+          />
+        </div>
+      ) : null}
       {activeFeatureId === 'rollup' ? (
         <BrandMaterialPassportRollupPanel collectionId={collectionId} />
       ) : null}

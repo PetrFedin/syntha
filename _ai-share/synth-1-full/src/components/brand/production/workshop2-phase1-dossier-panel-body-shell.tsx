@@ -88,12 +88,12 @@ export function Workshop2Phase1DossierPanelBodyShell({
 }: Workshop2Phase1DossierPanelBodyShellProps) {
   return (
     <>
-      <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-slate-900">Техническое задание</h2>
-              <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+      <div className="mb-4 min-w-0 rounded-xl border border-slate-200 bg-slate-50/50 p-3 md:p-4">
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center md:gap-4">
+          <div className="min-w-0 space-y-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <h2 className="text-base font-semibold text-slate-900 md:text-lg">Техническое задание</h2>
+              <span className="hidden rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 md:inline">
                 Ответственный: Конструктор / Технолог
               </span>
             </div>

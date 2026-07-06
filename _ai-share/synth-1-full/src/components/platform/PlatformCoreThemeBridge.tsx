@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { isSynthaEmbedClient } from '@/lib/syntha-embed';
+import { isSynthaEmbedClient } from '@/lib/platform-core-ports/legacy/syntha-embed';
 
 /** Platform Core (:3001): `data-platform-core` + `prefers-color-scheme` → класс `.dark` на `<html>`. */
 export function PlatformCoreThemeBridge() {

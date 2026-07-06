@@ -8,10 +8,14 @@ import {
   parseDevelopmentStatusRangePlanner,
   parseRangePlannerCollectionMetadata,
   rangePlannerPgDisclaimerRu,
+  sortRangePlannerTierArticles,
 } from '@/lib/production/workshop2-range-planner-pg';
 import {
+  getRangePlannerOverlayForCollection,
+  isRangePlannerOverlayAuthoritative,
   overlayDocFromPgSnapshot,
   syncRangePlannerOverlayFromPgSnapshot,
+  detectRangePlannerOverlayConflict,
   workshop2RangePlannerOverlayKey,
 } from '@/lib/production/workshop2-range-planner-overlay';
 
@@ -89,6 +93,37 @@ describe('workshop2-range-planner-pg', () => {
     expect(counts.core).toBe(1);
     expect(counts.trend).toBe(1);
     expect(unassigned).toBe(1);
+  });
+
+  it('sortRangePlannerTierArticles respects tierArticleOrder with remainder alpha', () => {
+    const articles = [
+      { articleId: 'c', sku: 'c' },
+      { articleId: 'a', sku: 'a' },
+      { articleId: 'b', sku: 'b' },
+    ];
+    expect(sortRangePlannerTierArticles(articles, ['b', 'a']).map((r) => r.articleId)).toEqual([
+      'b',
+      'a',
+      'c',
+    ]);
+  });
+
+  it('buildRangePlannerPgSnapshot applies tierArticleOrder from collection meta', () => {
+    const snap = buildRangePlannerPgSnapshot({
+      collectionId: 'SS27',
+      articleCount: 3,
+      pgEnabled: true,
+      tierHints: [
+        { articleId: 'demo-ss27-03', sku: 'RP-SS27-NOVELTY-03' },
+        { articleId: 'demo-ss27-01', sku: 'RP-SS27-CORE-01' },
+        { articleId: 'demo-ss27-02', sku: 'RP-SS27-TREND-02' },
+      ],
+      collectionMeta: {
+        tiers: [{ id: 'core', budget: 1_200_000, targetMargin: 42 }],
+        tierArticleOrder: { core: ['demo-ss27-01'] },
+      },
+    });
+    expect(snap.tierArticles.core.map((r) => r.articleId)).toEqual(['demo-ss27-01']);
   });
 
   it('FW27 golden metadata resolves to full pg snapshot without PG row', () => {
@@ -228,5 +263,40 @@ describe('workshop2-range-planner-overlay', () => {
     expect(parsed.collectionId).toBe('FW27');
     expect(parsed.tiers[0]?.budget).toBe(1_500_000);
     expect(parsed.syncedFromPgAt).toBeTruthy();
+  });
+
+  it('rejects stale overlay when collectionId mismatches', () => {
+    const snap = buildRangePlannerPgSnapshot({
+      collectionId: 'SS27',
+      articleCount: 1,
+      pgEnabled: true,
+      tierHints: [],
+    });
+    syncRangePlannerOverlayFromPgSnapshot(snap);
+    expect(
+      getRangePlannerOverlayForCollection('FW27', { authoritativeOnly: true })
+    ).toBeUndefined();
+    expect(isRangePlannerOverlayAuthoritative(getRangePlannerOverlayForCollection('SS27'), 'SS27')).toBe(
+      true
+    );
+  });
+
+  it('detectRangePlannerOverlayConflict compares tier sku counts', () => {
+    const snap = buildRangePlannerPgSnapshot({
+      collectionId: 'SS27',
+      articleCount: 2,
+      pgEnabled: true,
+      tierHints: [],
+      collectionMeta: {
+        tiers: [
+          { id: 'core', budget: 1_200_000, targetMargin: 42, planSkuCount: 20 },
+          { id: 'trend', budget: 800_000, targetMargin: 38, planSkuCount: 12 },
+          { id: 'novelty', budget: 400_000, targetMargin: 35, planSkuCount: 6 },
+        ],
+      },
+    });
+    const overlay = overlayDocFromPgSnapshot(snap);
+    overlay.tiers[0] = { ...overlay.tiers[0]!, planSkuCount: 99 };
+    expect(detectRangePlannerOverlayConflict(snap, overlay).hasConflict).toBe(true);
   });
 });

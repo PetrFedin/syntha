@@ -6,11 +6,13 @@ import { CheckCircle2, Circle, Download, FileText, ShoppingBag, Sparkles } from 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
+import { SHOP_CORE_BUYER_PRESETS } from '@/lib/platform-core-ports/legacy/order/shop-core-buyer-context';
+import { shopB2bMatrixReorderHref } from '@/lib/platform-core-routes';
 
 type Step = { id: string; labelRu: string; done: boolean };
 
@@ -127,6 +129,23 @@ export function SampleCollectionPillarCard({ collectionId: collectionIdProp, var
                   Витрина
                 </Link>
               </Button>
+              {status?.readyForBuyers ? (
+                <div
+                  className="flex flex-wrap items-center gap-1.5 text-[10px]"
+                  data-testid="sample-collection-cross-role-matrix"
+                >
+                  {SHOP_CORE_BUYER_PRESETS.map((preset) => (
+                    <Link
+                      key={preset.id}
+                      href={shopB2bMatrixReorderHref(collectionId, undefined, { buyerId: preset.id })}
+                      className="text-accent-primary font-medium hover:underline"
+                      data-testid={`sample-collection-matrix-buyer-${preset.id}`}
+                    >
+                      Матрица · {preset.labelRu}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
             </>
           ) : (
             <>

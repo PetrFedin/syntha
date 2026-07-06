@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { buildBrandInventoryOpsSession } from '@/lib/b2b/brand-inventory-ops';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 
 export type BrandInventoryOpsGoldenPathStepId =
@@ -19,11 +20,11 @@ type Props = {
 };
 
 const STEPS: { id: BrandInventoryOpsGoldenPathStepId; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'balance', label: 'Balance' },
-  { id: 'count', label: 'Count' },
-  { id: 'shop-reconcile', label: 'Shop reconcile' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
+  { id: 'overview', label: 'Обзор' },
+  { id: 'balance', label: 'Баланс' },
+  { id: 'count', label: 'Пересчёт' },
+  { id: 'shop-reconcile', label: 'Сверка магазина' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
 export function BrandInventoryOpsGoldenPathStrip({
@@ -42,7 +43,10 @@ export function BrandInventoryOpsGoldenPathStrip({
   };
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="brand-inventory-ops-golden-path-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="brand-inventory-ops-golden-path-strip"
+    >
       {STEPS.map((step, index) => (
         <span key={step.id} className="contents">
           {index > 0 ? (

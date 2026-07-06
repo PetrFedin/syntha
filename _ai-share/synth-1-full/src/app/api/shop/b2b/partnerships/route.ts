@@ -9,6 +9,7 @@ import {
 } from '@/lib/server/shop-b2b-partnerships';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
 import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
+import { isWorkshop2PgOnlyMode } from '@/lib/production/workshop2-hub-pg-only-policy';
 
 /** GET /api/shop/b2b/partnerships — подключённые бренды магазина из W2 PG (orders + showroom + onboarding rows). */
 export async function GET(req: NextRequest) {
@@ -20,24 +21,29 @@ export async function GET(req: NextRequest) {
   const collectionId = req.nextUrl.searchParams.get('collectionId')?.trim() || 'SS27';
 
   const partnerships = await listShopB2bPartnerships(buyerId);
+  const failClosed = isWorkshop2PostgresEnabled() || isWorkshop2PgOnlyMode();
   const usePgSource =
     partnerships.length > 0 &&
     (partnerships.some((p) => p.source === 'pg') || isWorkshop2PostgresEnabled());
-  const source = usePgSource ? ('pg' as const) : ('fallback' as const);
+  const source = usePgSource ? ('pg' as const) : failClosed ? ('pg' as const) : ('fallback' as const);
   const items = partnerships.length
     ? partnerships
-    : buildShopB2bPartnershipsFallback(collectionId);
+    : failClosed
+      ? []
+      : buildShopB2bPartnershipsFallback(collectionId);
 
   return NextResponse.json({
     ok: true,
     buyerId,
-    source: partnerships.length ? source : ('fallback' as const),
+    source: partnerships.length ? source : failClosed ? ('pg' as const) : ('fallback' as const),
     partnerships: items,
     messageRu: items.length
       ? source === 'pg'
         ? `W2: ${items.length} бренд(ов) для ${buyerId} (PG onboarding).`
         : `Статичный fallback: ${items.length} бренд(ов) (PG пуст или недоступен).`
-      : 'Партнёры не найдены.',
+      : failClosed
+        ? 'Партнёры не найдены в PG (fail-closed).'
+        : 'Партнёры не найдены.',
   });
 }
 

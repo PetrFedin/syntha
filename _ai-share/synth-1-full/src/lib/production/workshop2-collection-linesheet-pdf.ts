@@ -76,6 +76,11 @@ export async function buildWorkshop2CollectionLinesheetPdfBytes(input: {
   };
 
   line(`Linesheet · ${input.collectionId}`, 14);
+  if (input.articles.length === 0) {
+    line('Нет опубликованных артикулов — PDF пуст.', 11);
+    line('Опубликуйте витрину в W2 или откройте коллекцию SS27.', 9);
+    return doc.output('arraybuffer') as ArrayBuffer;
+  }
   line(`Коллекция · ${input.articles.length} артикул(ов) · ${at.slice(0, 10)} · ₽`, 9);
   y += 2;
 

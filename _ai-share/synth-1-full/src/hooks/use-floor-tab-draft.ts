@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FloorTabScope } from '@/lib/production-data/port';
 import { getProductionDataPort } from '@/lib/production-data';
+import type { FloorTabDraftPersistMode } from '@/lib/production-data/floor-tab-draft-client';
+import { loadFloorTabDraftWithMode } from '@/lib/production-data/floor-tab-draft-client';
 
 /**
- * Черновик вкладки цеха: загрузка из ProductionDataPort при монтировании, merge с default, save().
+ * Черновик вкладки цеха: PG API в core mode, иначе localStorage через ProductionDataPort.
  */
 export function useFloorTabDraftState<T extends Record<string, unknown>>(
   scope: FloorTabScope,
@@ -16,13 +18,18 @@ export function useFloorTabDraftState<T extends Record<string, unknown>>(
 
   const [data, setData] = useState<T>(() => ({ ...defaultData }));
   const [hydrated, setHydrated] = useState(false);
+  const [persistMode, setPersistMode] = useState<FloorTabDraftPersistMode>('local');
+  const [pgUnavailable, setPgUnavailable] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const raw = await getProductionDataPort().getFloorTabDraft(scope);
+        const loaded = await loadFloorTabDraftWithMode(scope);
         if (cancelled) return;
+        setPersistMode(loaded.persistMode);
+        setPgUnavailable(loaded.pgUnavailable);
+        const raw = loaded.draft ?? (await getProductionDataPort().getFloorTabDraft(scope));
         if (raw && typeof raw === 'object' && (raw as { v?: number }).v === 1) {
           setData({ ...(defaultRef.current as object), ...(raw as object) } as T);
         }
@@ -42,7 +49,10 @@ export function useFloorTabDraftState<T extends Record<string, unknown>>(
       updatedAt: new Date().toISOString(),
     };
     await getProductionDataPort().saveFloorTabDraft(scope, payload);
+    const refreshed = await loadFloorTabDraftWithMode(scope);
+    setPersistMode(refreshed.persistMode);
+    setPgUnavailable(refreshed.pgUnavailable);
   }, [scope, data]);
 
-  return { data, setData, save, hydrated };
+  return { data, setData, save, hydrated, persistMode, pgUnavailable };
 }

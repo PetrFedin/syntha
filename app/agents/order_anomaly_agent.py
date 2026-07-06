@@ -17,12 +17,17 @@ class OrderAnomalyAgent(BaseAgent):
         )
 
     def _build_prompt(self, task: str, context: Optional[dict]) -> str:
+        from app.agents.platform_context import platform_context_summary
+
         order_summary = ""
         if context:
             orders = context.get("orders", [])
             if orders:
                 order_summary = f"Orders sample: {orders[:5]}"
-            else:
+            platform = platform_context_summary(context)
+            if platform:
+                order_summary = f"{order_summary} Platform: {platform}".strip()
+            elif not order_summary:
                 order_summary = str(context)
         return f"Analyze orders for anomalies. {task}. {order_summary}"
 

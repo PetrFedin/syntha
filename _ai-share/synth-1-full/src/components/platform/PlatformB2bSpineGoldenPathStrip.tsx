@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { buildPlatformB2bHubSession } from '@/lib/b2b/platform-b2b-hub';
+import { buildPlatformB2bHubSession } from '@/lib/platform-core-ports/b2b/platform-b2b-hub';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
 
@@ -22,13 +22,13 @@ type Props = {
 };
 
 const STEPS: { id: PlatformB2bSpineStepId; label: string }[] = [
-  { id: 'hub', label: 'Hub' },
-  { id: 'marketroom', label: 'Marketroom' },
-  { id: 'partners', label: 'Partners' },
-  { id: 'shop-showroom', label: 'Showroom' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'checkout', label: 'Checkout' },
-  { id: 'publish', label: 'Publish' },
+  { id: 'hub', label: 'Хаб' },
+  { id: 'marketroom', label: 'Маркетрум' },
+  { id: 'partners', label: 'Партнёры' },
+  { id: 'shop-showroom', label: 'Витрина' },
+  { id: 'matrix', label: 'Матрица' },
+  { id: 'checkout', label: 'Оформление' },
+  { id: 'publish', label: 'Публикация' },
 ];
 
 export function PlatformB2bSpineGoldenPathStrip({

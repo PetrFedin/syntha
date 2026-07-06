@@ -19,11 +19,11 @@ type Props = {
 };
 
 const STEPS: { id: ShopInventoryOpsGoldenPathStepId; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'reconcile', label: 'Reconcile' },
-  { id: 'replenishment-atp', label: 'Replenishment · ATP' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'tracking', label: 'Tracking' },
+  { id: 'overview', label: 'Обзор' },
+  { id: 'reconcile', label: 'Сверка' },
+  { id: 'replenishment-atp', label: 'Пополнение · ATP' },
+  { id: 'matrix', label: 'Матрица' },
+  { id: 'tracking', label: 'Трекинг' },
 ];
 
 export function ShopInventoryOpsGoldenPathStrip({

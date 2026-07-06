@@ -17,7 +17,7 @@ type Props = {
 /** Аббревиатура с подсказкой EN + RU (Platform Core). */
 export function PlatformCoreTerm({ term, children }: Props) {
   const tip = PLATFORM_CORE_TERM_TIPS[term];
-  const label = children ?? term;
+  const label = children ?? tip?.labelRu ?? term;
 
   if (!tip) {
     return <>{label}</>;

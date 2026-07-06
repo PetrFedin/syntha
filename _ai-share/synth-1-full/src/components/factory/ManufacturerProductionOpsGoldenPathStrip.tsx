@@ -21,11 +21,11 @@ type Props = {
 };
 
 const STEPS: { id: ManufacturerProductionOpsGoldenPathStepId; label: string }[] = [
-  { id: 'orders', label: 'Orders' },
-  { id: 'wip', label: 'WIP' },
-  { id: 'cut-ticket', label: 'Cut ticket' },
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
+  { id: 'orders', label: 'Заказы' },
+  { id: 'wip', label: 'Незавершёнка' },
+  { id: 'cut-ticket', label: 'Техкарта раскроя' },
+  { id: 'handoff', label: 'Передача' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
 export function ManufacturerProductionOpsGoldenPathStrip({

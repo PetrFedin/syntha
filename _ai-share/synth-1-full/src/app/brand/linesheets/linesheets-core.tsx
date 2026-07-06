@@ -12,7 +12,7 @@ import { ROUTES } from '@/lib/routes';
 import { workshop2CollectionLinesheetPdfHref } from '@/lib/production/workshop2-collection-linesheet-pdf-href';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
-import { PLATFORM_CORE_LINESETS_UNAVAILABLE_RU, platformCoreLinesheetEmptyMessageRu, platformCoreLinesheetPdfDisabledMessageRu } from '@/lib/platform-core-user-messages';
+import { PLATFORM_CORE_LINESETS_UNAVAILABLE_RU, platformCoreLinesheetEmptyMessageRu } from '@/lib/platform-core-user-messages';
 import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -27,12 +27,28 @@ import { BrandCentricMediaImportPanel } from '@/components/integrations/BrandCen
 import { BrandLinesheetGenPanel } from '@/components/integrations/BrandLinesheetGenPanel';
 import { Workshop2HubShowroomPublishButton } from '@/components/brand/production/Workshop2HubShowroomPublishButton';
 import { BrandScPublishAuditLog } from '@/components/brand/sample/BrandScPublishAuditLog';
+import { BrandScReleaseGateBlockStrip } from '@/components/brand/sample/BrandScReleaseGateBlockStrip';
 import { BrandScCabinetGoldenPathStrip } from '@/components/brand/sample/BrandScCabinetGoldenPathStrip';
 import { BrandScLinesheetsRetailPeerStrip } from '@/components/platform/BrandScLinesheetsRetailPeerStrip';
+import { BrandScCrossMatrixOpenShopStrip } from '@/components/platform/BrandScCrossMatrixOpenShopStrip';
+import { PlatformCorePublishedArticlesReadPathBadge } from '@/components/platform/PlatformCorePublishedArticlesReadPathBadge';
+import {
+  BRAND_SC_LINESET_PDF_EMPTY_API_TESTID,
+  BRAND_SC_LINESET_PDF_EMPTY_DISABLED_TESTID,
+  BRAND_SC_LINESET_PDF_EMPTY_HINT_TESTID,
+  brandScLinesheetPdfEmptyUiHintRu,
+} from '@/lib/b2b/brand-sc-linesheet-readpath';
+import {
+  BRAND_SC_SYNDICATION_WD_AUDIT_BADGE_TESTID,
+} from '@/lib/production/brand-sc-syndication-wd';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 import { COLLECTION_DEV_HUB_TITLE_RU } from '@/lib/production/collection-development-labels';
+import {
+  BRAND_LINESHEET_BATCH_UNPUBLISH_ROLLBACK_API_PATH,
+} from '@/lib/production/brand-linesheet-syndication';
+import { BrandScLinesheetSyndicationPanel } from '@/components/platform/BrandScLinesheetSyndicationPanel';
 
 function LinesheetUnpublishButton({
   collectionId,
@@ -74,12 +90,14 @@ function LinesheetUnpublishButton({
   }
 
   return (
-    <div className="flex flex-col items-end gap-0.5">
+    <div className="flex flex-col items-end gap-0.5 max-md:w-full max-md:items-stretch">
       <Button
         type="button"
         variant="outline"
         size="sm"
-        className="h-7 text-[9px] font-bold uppercase"
+        className={cn(
+          'h-7 text-[9px] font-bold uppercase max-md:min-h-11 max-md:w-full max-md:text-[10px]'
+        )}
         disabled={busy}
         data-testid={`brand-sc-linesheets-unpublish-${articleId}`}
         data-audit-legacy={`brand-linesheet-unpublish-${articleId}`}
@@ -265,7 +283,7 @@ function LinesheetsPublishedArticlesList({
       <Card
         data-testid="brand-sc-linesheets-list"
         data-audit-legacy="brand-linesheets-core-list"
-        className={cn(coreMode && 'md:hidden lg:block')}
+        className={cn(coreMode && 'hidden lg:block')}
       >
         <CardContent className={cn('p-0', coreMode && hubCabinet.workspaceTableScroll)}>
           <table className="w-full border-collapse text-left text-sm">
@@ -383,7 +401,7 @@ function LinesheetsPublishedArticlesList({
     </Card>
       {coreMode ? (
         <div
-          className={cn('hidden md:grid lg:hidden', hubCabinet.workspaceCardGrid)}
+          className={cn('grid lg:hidden', hubCabinet.workspaceCardGrid)}
           data-testid="brand-sc-linesheets-card-grid"
         >
           {articles.map((article) => (
@@ -449,6 +467,79 @@ function LinesheetsPublishedArticlesList({
   );
 }
 
+function LinesheetsBatchUnpublishRollbackPanel({
+  collectionId,
+  publishedArticleIds,
+  onDone,
+}: {
+  collectionId: string;
+  publishedArticleIds: string[];
+  onDone?: () => void;
+}) {
+  const [busy, setBusy] = useState<'idle' | 'unpublish' | 'rollback'>('idle');
+  const [notice, setNotice] = useState<string | null>(null);
+
+  async function runAction(action: 'unpublish' | 'rollback') {
+    setBusy(action);
+    setNotice(null);
+    try {
+      const res = await fetch(BRAND_LINESHEET_BATCH_UNPUBLISH_ROLLBACK_API_PATH, {
+        method: 'POST',
+        headers: {
+          ...buildWorkshop2ApiRequestHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action,
+          collectionId,
+          articleIds: publishedArticleIds,
+          shopBuyerId: 'shop1',
+        }),
+      });
+      const json = (await res.json()) as { messageRu?: string };
+      setNotice(json.messageRu ?? (res.ok ? 'Готово.' : 'Операция не выполнена.'));
+      if (res.ok) onDone?.();
+    } catch {
+      setNotice('Batch unpublish rollback недоступен (offline).');
+    } finally {
+      setBusy('idle');
+    }
+  }
+
+  if (publishedArticleIds.length === 0) return null;
+
+  return (
+    <div
+      className="border-border-subtle bg-bg-surface2/40 flex flex-wrap items-center gap-2 rounded-lg border px-4 py-3"
+      data-testid="brand-sc-linesheets-batch-unpublish-rollback"
+    >
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-8 text-[10px] font-bold uppercase"
+        disabled={busy !== 'idle'}
+        data-testid="brand-sc-linesheets-batch-unpublish-btn"
+        onClick={() => void runAction('unpublish')}
+      >
+        {busy === 'unpublish' ? '…' : 'Batch unpublish'}
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        className="h-8 text-[10px] font-bold uppercase"
+        disabled={busy !== 'idle'}
+        data-testid="brand-sc-linesheets-batch-rollback-btn"
+        onClick={() => void runAction('rollback')}
+      >
+        {busy === 'rollback' ? '…' : 'Rollback'}
+      </Button>
+      {notice ? <span className="text-text-secondary text-[10px]">{notice}</span> : null}
+    </div>
+  );
+}
+
 function LinesheetsBatchPublishPanel({
   collectionId,
   onDataChange,
@@ -491,6 +582,7 @@ function LinesheetsBatchPublishPanel({
       <p className="text-text-muted text-[10px] font-bold uppercase tracking-wide">
         Batch publish · витрина
       </p>
+      <BrandScReleaseGateBlockStrip collectionId={collectionId} compact />
       {loadState === 'loading' ? (
         <p className="text-text-muted text-[10px]">Загрузка артикулов W2…</p>
       ) : articleIds.length === 0 ? (
@@ -519,6 +611,7 @@ export function BrandLineSheetsCorePage() {
   const bumpScReload = useCallback(() => setScReloadNonce((n) => n + 1), []);
   const [pgArticleCount, setPgArticleCount] = useState<number | null>(null);
   const [w2ArticleCount, setW2ArticleCount] = useState<number | null>(null);
+  const [publishedArticleIds, setPublishedArticleIds] = useState<string[]>([]);
   const [pgLoadState, setPgLoadState] = useState<'loading' | 'ready'>('loading');
 
   useEffect(() => {
@@ -530,9 +623,14 @@ export function BrandLineSheetsCorePage() {
           `/api/workshop2/collections/${encodeURIComponent(collectionId)}/published-articles`,
           { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
         );
-        const json = (await res.json()) as { ok?: boolean; articles?: unknown[] };
+        const json = (await res.json()) as { ok?: boolean; articles?: Array<{ articleId?: string }> };
         if (cancelled) return;
         setPgArticleCount(json.ok ? (json.articles?.length ?? 0) : 0);
+        setPublishedArticleIds(
+          json.ok
+            ? (json.articles ?? []).map((a) => String(a.articleId ?? '').trim()).filter(Boolean)
+            : []
+        );
       } catch {
         if (!cancelled) setPgArticleCount(null);
       } finally {
@@ -577,7 +675,7 @@ export function BrandLineSheetsCorePage() {
     !emptyChain && pgLoadState === 'ready' && pgArticleCount != null && pgArticleCount > 0;
 
   return (
-    <CabinetPageContent maxWidth="full" className="w-full space-y-6 pb-16">
+    <CabinetPageContent maxWidth="full" className="w-full space-y-6 pb-safe">
       <PlatformCoreListChrome
         highlightRole="brand"
         pillarId="sample_collection"
@@ -592,6 +690,7 @@ export function BrandLineSheetsCorePage() {
               collectionId={collectionId}
               testIdVariant="linesheets"
               omitStep="linesheets"
+              omitMatrixPrefillCta={publishedArticleIds.length > 0}
             />
             {pdfReady ? (
               <a
@@ -606,19 +705,29 @@ export function BrandLineSheetsCorePage() {
             ) : (
               <span
                 className="text-text-muted inline-flex items-center gap-1 text-[10px]"
-                data-testid="brand-sc-linesheets-pdf-disabled"
+                data-testid={BRAND_SC_LINESET_PDF_EMPTY_DISABLED_TESTID}
+                data-audit-legacy="brand-sc-linesheets-pdf-disabled"
               >
                 <Download className="h-3 w-3" aria-hidden />
                 {downloadLabel}
               </span>
             )}
             {!pdfReady && coreMode ? (
-              <span
-                className="text-text-muted text-[10px] leading-snug"
-                data-testid="brand-sc-linesheets-empty-pdf-hint"
-              >
-                {platformCoreLinesheetPdfDisabledMessageRu(collectionId)}
-              </span>
+              <>
+                <span
+                  className="text-text-muted text-[10px] leading-snug"
+                  data-testid={BRAND_SC_LINESET_PDF_EMPTY_HINT_TESTID}
+                  data-audit-legacy="brand-sc-linesheets-empty-pdf-hint"
+                >
+                  {brandScLinesheetPdfEmptyUiHintRu(collectionId)}
+                </span>
+                <span className="sr-only" data-testid={BRAND_SC_LINESET_PDF_EMPTY_API_TESTID}>
+                  {brandScLinesheetPdfEmptyUiHintRu(collectionId)}
+                </span>
+              </>
+            ) : null}
+            {coreMode ? (
+              <PlatformCorePublishedArticlesReadPathBadge collectionId={collectionId} />
             ) : null}
             {pgLoadState === 'ready' && pgArticleCount != null && w2ArticleCount != null ? (
               <Badge
@@ -634,7 +743,37 @@ export function BrandLineSheetsCorePage() {
               </Badge>
             ) : null}
           </div>
-          {coreMode ? <BrandScLinesheetsRetailPeerStrip collectionId={collectionId} /> : null}
+          {coreMode ? (
+            <BrandScLinesheetsRetailPeerStrip
+              collectionId={collectionId}
+              omitMatrixPrefillCta={publishedArticleIds.length > 0}
+            />
+          ) : null}
+          {coreMode && publishedArticleIds.length > 0 ? (
+            <BrandScCrossMatrixOpenShopStrip
+              collectionId={collectionId}
+              articleIds={publishedArticleIds}
+              variant="strip"
+            />
+          ) : null}
+          {coreMode ? (
+            <>
+              <LinesheetsBatchPublishPanel collectionId={collectionId} onDataChange={bumpScReload} />
+              <BrandScLinesheetSyndicationPanel
+                collectionId={collectionId}
+                articleIds={publishedArticleIds}
+                onDone={bumpScReload}
+              />
+              <LinesheetsBatchUnpublishRollbackPanel
+                collectionId={collectionId}
+                publishedArticleIds={publishedArticleIds}
+                onDone={bumpScReload}
+              />
+              <div data-testid={BRAND_SC_SYNDICATION_WD_AUDIT_BADGE_TESTID}>
+                <BrandScPublishAuditLog collectionId={collectionId} reloadNonce={scReloadNonce} />
+              </div>
+            </>
+          ) : null}
           {!coreMode ? (
             <>
               <BrandCentricMediaImportPanel

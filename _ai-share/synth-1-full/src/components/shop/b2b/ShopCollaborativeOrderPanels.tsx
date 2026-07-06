@@ -7,10 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   buildShopCollaborativeOrderSession,
+  shopCollaborativeParticipantStatusRu,
   summarizeShopCollaborativeOrder,
 } from '@/lib/b2b/shop-collaborative-order';
 import {
   shopCollaborativeApprovalCanAdvance,
+  shopCollaborativeApprovalStorageModeLabelRu,
+  shopCollaborativeApprovalWaitingBrandMargin,
   type ShopCollaborativeApprovalState,
   type ShopCollaborativeApprovalStepId,
 } from '@/lib/shop/shop-collaborative-approval-feed';
@@ -20,9 +23,12 @@ import {
 } from '@/lib/shop/shop-collaborative-approval-store';
 import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
+import { useShopCollaborativeSessionLive } from '@/hooks/use-shop-collaborative-session-live';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { ShopCollaborativeSessionLiveBadges } from '@/components/shop/b2b/ShopCollaborativeSessionLiveBadges';
+import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 function useShopCollaborativeApprovalState(orderId: string) {
   const { buyerId } = useShopCoreBuyerId();
@@ -72,7 +78,13 @@ export function ShopCollaborativeOrderSessionPanel() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
   const { activeOrderId } = useSpineActiveWholesaleOrderId({ resolveFrom: ['allocation', 'operational'] });
-  const { buyerId, state, loading } = useShopCollaborativeApprovalState(activeOrderId);
+  const { buyerId, state, loading, reload } = useShopCollaborativeApprovalState(activeOrderId);
+  const live = useShopCollaborativeSessionLive({
+    orderId: activeOrderId,
+    collectionId,
+    buyerId,
+    enabled: Boolean(activeOrderId.trim()),
+  });
   const session = useMemo(
     () =>
       buildShopCollaborativeOrderSession({
@@ -85,27 +97,70 @@ export function ShopCollaborativeOrderSessionPanel() {
   );
   const summary = useMemo(() => summarizeShopCollaborativeOrder(session), [session]);
 
+  useEffect(() => {
+    if (!live.sessionPollTs) return;
+    void reload();
+  }, [live.sessionPollTs, reload]);
+
   return (
     <div className="space-y-4" data-testid="shop-collaborative-order-session-panel">
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">Order: {session.orderId}</Badge>
-        <Badge variant="outline">Editing: {summary.editing}</Badge>
+        <Badge variant="secondary">Заказ: {session.orderId}</Badge>
+        <Badge variant="outline">Редактирование: {summary.editing}</Badge>
         {loading ? (
           <Badge variant="outline" className="text-[10px]">
-            loading…
+            загрузка…
+          </Badge>
+        ) : null}
+        <ShopCollaborativeSessionLiveBadges
+          orderId={activeOrderId}
+          collectionId={collectionId}
+          buyerId={buyerId}
+        />
+        {state && shopCollaborativeApprovalWaitingBrandMargin(state) ? (
+          <Badge variant="outline" className="text-[10px]" data-testid="shop-collaborative-brand-margin-pending">
+            Ожидает бренда
           </Badge>
         ) : null}
         <Button size="sm" asChild>
-          <Link href={session.matrixHref}>Co-edit matrix</Link>
+          <Link href={session.approvalsHref}>Согласования</Link>
         </Button>
-        <Button size="sm" variant="outline" asChild>
-          <Link href={session.approvalsHref}>Approvals</Link>
-        </Button>
+      </div>
+      <div className={hubGadget.goldenPath} data-testid="shop-collaborative-session-cross-links">
+        <Link
+          href={session.matrixHref}
+          className={hubGadget.goldenLink}
+          data-testid="shop-collaborative-matrix-link"
+        >
+          Матрица
+        </Link>
+        <span className={hubGadget.goldenSep} aria-hidden>
+          ·
+        </span>
+        <Link
+          href={session.workingOrderHref}
+          className={hubGadget.goldenLink}
+          data-testid="shop-collaborative-working-order-versions-link"
+        >
+          Версии рабочего заказа
+        </Link>
+        <span className={hubGadget.goldenSep} aria-hidden>
+          ·
+        </span>
+        <Link
+          href={session.brandCoApprovePortalHref}
+          className={hubGadget.goldenLink}
+          data-testid="shop-collaborative-brand-portal-link"
+        >
+          Согласование бренда
+        </Link>
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Collaborative session</CardTitle>
-          <CardDescription>NuOrder-style co-edit — участники на одной матрице заказа.</CardDescription>
+          <CardTitle className="text-base">Сессия совместного заказа</CardTitle>
+          <CardDescription>
+            Совместное редактирование — участники на одной матрице заказа.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {session.participants.map((p) => (
@@ -115,8 +170,8 @@ export function ShopCollaborativeOrderSessionPanel() {
               data-testid={`shop-collaborative-participant-${p.id}`}
             >
               <span>{p.name}</span>
-              <Badge variant="outline" className="text-[10px] uppercase">
-                {p.status}
+              <Badge variant="outline" className="text-[10px]">
+                {shopCollaborativeParticipantStatusRu(p.status)}
               </Badge>
             </div>
           ))}
@@ -131,8 +186,22 @@ export function ShopCollaborativeOrderApprovalsPanel() {
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
   const { activeOrderId } = useSpineActiveWholesaleOrderId({ resolveFrom: ['allocation', 'operational'] });
   const { toast } = useToast();
-  const { buyerId, state, storageMode, loading, busyStep, advanceStep } =
+  const { buyerId, state, storageMode, loading, busyStep, advanceStep, reload } =
     useShopCollaborativeApprovalState(activeOrderId);
+  const live = useShopCollaborativeSessionLive({
+    orderId: activeOrderId,
+    collectionId,
+    buyerId,
+    enabled: Boolean(activeOrderId.trim()),
+  });
+  const storageLabelRu = shopCollaborativeApprovalStorageModeLabelRu(storageMode);
+  const storagePgTestId =
+    storageMode === 'pg' ? 'shop-collaborative-session-storage-pg' : undefined;
+
+  useEffect(() => {
+    if (!live.sessionPollTs) return;
+    void reload();
+  }, [live.sessionPollTs, reload]);
   const session = useMemo(
     () =>
       buildShopCollaborativeOrderSession({
@@ -178,37 +247,46 @@ export function ShopCollaborativeOrderApprovalsPanel() {
     <div className="space-y-4" data-testid="shop-collaborative-order-approvals-panel">
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary">
-          Done {summary.approvalsDone}/{summary.approvalsTotal}
+          Готово {summary.approvalsDone}/{summary.approvalsTotal}
         </Badge>
-        {storageMode ? (
-          <Badge variant="outline" className="text-[10px] uppercase" data-testid="shop-collaborative-approval-storage-mode">
-            {storageMode}
+        {storageLabelRu ? (
+          <Badge
+            variant="outline"
+            className="text-[10px]"
+            data-testid={storagePgTestId ?? 'shop-collaborative-approval-storage-mode'}
+          >
+            {storageLabelRu}
           </Badge>
         ) : null}
         {loading ? (
           <Badge variant="outline" className="text-[10px]">
-            loading…
+            загрузка…
           </Badge>
         ) : null}
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button size="sm" asChild>
-          <Link href={session.matrixHref}>Review matrix</Link>
+          <Link href={session.matrixHref}>Проверить матрицу</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.brandOrderChatHref}>Brand order chat</Link>
+          <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
         </Button>
       </div>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Approval chain</CardTitle>
-          <CardDescription>Matrix lock → margin → submit to brand. Сохранение в PG / file.</CardDescription>
+          <CardTitle className="text-base">Цепочка согласований</CardTitle>
+          <CardDescription>
+            Блокировка матрицы → маржа → отправка бренду. Сохранение в PG / файл.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {session.approvals.map((step) => {
             const stepId = step.id as ShopCollaborativeApprovalStepId;
-            const canAdvance = shopCollaborativeApprovalCanAdvance(effectiveState, stepId);
+            const canAdvance = shopCollaborativeApprovalCanAdvance(effectiveState, stepId, 'shop');
+            const waitingBrand =
+              stepId === 'margin' &&
+              shopCollaborativeApprovalWaitingBrandMargin(effectiveState);
             return (
               <div
                 key={step.id}
@@ -218,7 +296,7 @@ export function ShopCollaborativeOrderApprovalsPanel() {
                 <span>{step.labelRu}</span>
                 <div className="flex items-center gap-2">
                   <Badge variant={step.done ? 'secondary' : 'outline'}>
-                    {step.done ? 'done' : 'pending'}
+                    {step.done ? 'готово' : 'ожидание'}
                   </Badge>
                   {!step.done && canAdvance ? (
                     <Button
@@ -231,6 +309,11 @@ export function ShopCollaborativeOrderApprovalsPanel() {
                     >
                       {busyStep === stepId ? '…' : 'Подтвердить'}
                     </Button>
+                  ) : null}
+                  {waitingBrand ? (
+                    <Badge variant="outline" className="text-[10px]" data-testid="shop-collaborative-approval-brand-only-margin">
+                      только бренд
+                    </Badge>
                   ) : null}
                 </div>
               </div>
@@ -255,21 +338,21 @@ export function ShopCollaborativeOrderCommsPanel() {
     <div className="space-y-4" data-testid="shop-collaborative-order-comms-panel">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Order comms</CardTitle>
-          <CardDescription>Столп 5: чат и календарь в контексте B2B заказа.</CardDescription>
+          <CardTitle className="text-base">Чат по заказу</CardTitle>
+          <CardDescription>Столп 5: чат и календарь в контексте B2B-заказа.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.messagesHref}>Order chat</Link>
+            <Link href={session.messagesHref}>Чат заказа</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.calendarHref}>Order calendar</Link>
+            <Link href={session.calendarHref}>Календарь заказа</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.trackingHref}>Shop tracking</Link>
+            <Link href={session.trackingHref}>Трекинг магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.brandOrderHandoffHref}>Brand handoff</Link>
+            <Link href={session.brandOrderHandoffHref}>Передача бренда</Link>
           </Button>
         </CardContent>
       </Card>

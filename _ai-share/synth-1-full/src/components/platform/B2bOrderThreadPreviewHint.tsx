@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { buildPgB2bOrderChatId } from '@/lib/brand/brand-messages-pg-threads';
-import { ROUTES } from '@/lib/routes';
+import { buildPgB2bOrderChatId } from '@/lib/platform-core-ports/brand/brand-messages-pg-threads';
+import { ROUTES } from '@/lib/platform-core-routes';
 
 type Role = 'brand' | 'shop';
 

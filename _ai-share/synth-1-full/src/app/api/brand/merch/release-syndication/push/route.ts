@@ -7,6 +7,7 @@ import {
   brandReleaseSyndicationPushStorageMode,
   listBrandReleaseSyndicationPushes,
 } from '@/lib/server/brand-release-syndication-push-repository';
+import { postBrandLinesheetSyndicate } from '@/lib/server/brand-linesheet-syndication-server';
 import { products } from '@/lib/products';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
@@ -77,11 +78,21 @@ export async function POST(req: NextRequest) {
     channels: ['showroom', 'b2b_linesheet', 'wholesale_matrix'],
   });
 
+  const syndicate = await postBrandLinesheetSyndicate({
+    collectionId,
+    articleIds,
+    shopBuyerId: 'shop1',
+    source: 'release_syndication',
+    publishMessageRu,
+  });
+
   return NextResponse.json({
     ok: true,
     result,
+    syndicate,
     storageMode: brandReleaseSyndicationPushStorageMode(),
     messageRu:
+      syndicate.messageRu ??
       publishMessageRu ??
       `Syndication push: ${result.readyCount} артикул(ов) → каналы.`,
   });

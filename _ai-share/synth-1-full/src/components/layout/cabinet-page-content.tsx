@@ -1,6 +1,7 @@
 'use client';
 
 import type { HTMLAttributes, ReactNode } from 'react';
+import { usePlatformCoreEmbeddedWorkspace } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
 import { resolveCabinetPageMaxWidth } from '@/lib/cabinet-core-mode';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +39,14 @@ export function CabinetPageContent({
   children,
   ...rest
 }: CabinetPageContentProps) {
+  const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
+  if (embeddedWorkspace) {
+    return (
+      <div className={cn('min-w-0 space-y-4', className)} {...rest}>
+        {children}
+      </div>
+    );
+  }
   const resolved = resolveCabinetPageMaxWidth(maxWidth);
   const mw = MAX_WIDTH_CLASS[resolved];
   return (

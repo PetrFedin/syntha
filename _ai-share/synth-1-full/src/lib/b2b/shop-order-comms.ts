@@ -18,6 +18,7 @@ import {
 } from '@/lib/platform-core-mode-surfaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import {
+  brandB2bOrdersCollectionRegistryHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
   ROUTES,
@@ -41,6 +42,7 @@ export type ShopOrderCommsSession = {
   showroomHref: string;
   brandOrderChatHref: string;
   brandOrderHandoffHref: string;
+  brandRegistryHref: string;
   brandLandedMarginHref: string;
   inventoryOverviewHref: string;
   platformMarketroomHref: string;
@@ -72,6 +74,7 @@ export function buildShopOrderCommsSession(input?: {
     showroomHref: shopShowroomTabHref('showroom', collectionId, orderId),
     brandOrderChatHref: brandOrderCommsTabHref('chat', orderId, collectionId),
     brandOrderHandoffHref: brandOrderCommsTabHref('handoff', orderId, collectionId),
+    brandRegistryHref: brandB2bOrdersCollectionRegistryHref(orderId),
     brandLandedMarginHref: brandLandedMarginTabHref('simulator', collectionId, orderId),
     inventoryOverviewHref: `${ROUTES.shop.inventory}?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(collectionId)}`,
     platformMarketroomHref: `${PLATFORM_CORE_B2B_MARKETROOM_HREF}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=showcase`,

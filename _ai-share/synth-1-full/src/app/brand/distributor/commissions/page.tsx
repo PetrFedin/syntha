@@ -24,10 +24,14 @@ import {
   BrandAgentRepRepsPanel,
   BrandAgentRepShopPortalPanel,
 } from '@/components/brand/distributor/BrandAgentRepWorkspacePanels';
+import { BrandAgentRepCommissionDisputeStrip } from '@/components/brand/distributor/BrandAgentRepCommissionDisputeStrip';
+import { BrandAgentRepShopPortalReadOnlyRuStrip } from '@/components/brand/distributor/BrandAgentRepShopPortalReadOnlyRuStrip';
 import {
   BrandAgentRepGoldenPathStrip,
   brandAgentRepGoldenPathStepFromFeature,
 } from '@/components/brand/distributor/BrandAgentRepGoldenPathStrip';
+import { BrandCoAgentRepCoPeerStrip } from '@/components/platform/BrandCoAgentRepCoPeerStrip';
+import { BrandAgentRepTerritoryPeerStrip } from '@/components/brand/distributor/BrandAgentRepTerritoryPeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 
 const statusLabels: Record<CommissionRecord['status'], string> = {
@@ -105,13 +109,25 @@ function CommissionsWorkspaceBody() {
         />
       }
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandAgentRepGoldenPathStrip
           activeStep={brandAgentRepGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoAgentRepCoPeerStrip />
       </div>
-      {activeFeatureId === 'ledger' ? <BrandAgentRepLedgerPanel /> : null}
-      {activeFeatureId === 'reps' ? <BrandAgentRepRepsPanel /> : null}
+      {activeFeatureId === 'ledger' ? (
+        <>
+          <BrandAgentRepShopPortalReadOnlyRuStrip />
+          <BrandAgentRepCommissionDisputeStrip />
+          <BrandAgentRepLedgerPanel />
+        </>
+      ) : null}
+      {activeFeatureId === 'reps' ? (
+        <>
+          <BrandAgentRepTerritoryPeerStrip />
+          <BrandAgentRepRepsPanel />
+        </>
+      ) : null}
       {activeFeatureId === 'shop-portal' ? <BrandAgentRepShopPortalPanel /> : null}
     </PillarCapabilityWorkspaceChrome>
   );

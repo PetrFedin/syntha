@@ -2093,6 +2093,44 @@ export type Workshop2DossierPhase1 = {
   /** Lab dip status keyed by colorway palette code. */
   colorLabDipStatuses?: Record<string, 'pending' | 'approved' | 'rejected'>;
   colorLabDipSyncedAt?: string;
+  /** PG-backed physical material test logs (S3 dossier journal). */
+  materialPhysicalTestLogs?: Array<{
+    id: string;
+    materialId: string;
+    testCategory: 'shrinkage' | 'pilling' | 'colorfastness';
+    resultValue: string;
+    isPass: boolean;
+    testedAt: string;
+    notes?: string;
+  }>;
+  materialPhysicalTestMirror?: Workshop2DossierPgMirror;
+  /** Supplier alt material approvals keyed by primary::alternative. */
+  supplierAltMaterialApprovals?: Record<string, 'pending' | 'approved' | 'rejected'>;
+  supplierAltMaterialApprovalsSyncedAt?: string;
+  /** PG-backed fit session records (S3 — replaces in-memory fit-sessions API). */
+  fitGoldSessions?: Array<{
+    id: string;
+    articleId?: string;
+    sampleType: 'proto' | 'sms' | 'pps' | 'top';
+    status: 'pending' | 'approved' | 'rework' | 'approved_with_comments';
+    dateStr: string;
+    measurementsDelta: Record<string, number>;
+    comments: Array<{
+      id: string;
+      targetAnchor: string;
+      text: string;
+      photoUrls: string[];
+      by?: string;
+      at?: string;
+    }>;
+    cadVersionId?: string | null;
+    photoVaultDocumentId?: string;
+    aiFitAnalysis?: {
+      wrinklesDetected: string[];
+      recommendations: string[];
+    };
+    createdAt?: string;
+  }>;
   colorMasterLabDipMirror?: {
     syncedAt: string;
     source: 'runtime' | 'static';

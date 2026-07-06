@@ -1,0 +1,257 @@
+[
+  {
+    "grainId": "shop1-SYN-S006-WHT-on-hand",
+    "productId": "SYN-S006-WHT",
+    "sku": "SYN-S006-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 1
+  },
+  {
+    "grainId": "shop1-SYN-S006-WHT-reserved",
+    "productId": "SYN-S006-WHT",
+    "sku": "SYN-S006-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 1
+  },
+  {
+    "grainId": "shop1-SYN-S006-WHT-transit",
+    "productId": "SYN-S006-WHT",
+    "sku": "SYN-S006-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "in_transit",
+    "quantity": 2
+  },
+  {
+    "grainId": "shop1-SYN-S006-WHT-unconfirmed",
+    "productId": "SYN-S006-WHT",
+    "sku": "SYN-S006-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "ex_factory",
+    "quantity": 1
+  },
+  {
+    "grainId": "shop1-RC-A007-MLT-on-hand",
+    "productId": "RC-A007-MLT",
+    "sku": "RC-A007-MLT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 3
+  },
+  {
+    "grainId": "shop1-RC-A007-MLT-reserved",
+    "productId": "RC-A007-MLT",
+    "sku": "RC-A007-MLT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 2
+  },
+  {
+    "grainId": "shop1-SYN-C008-BLU-on-hand",
+    "productId": "SYN-C008-BLU",
+    "sku": "SYN-C008-BLU",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 5
+  },
+  {
+    "grainId": "shop1-SYN-C008-BLU-reserved",
+    "productId": "SYN-C008-BLU",
+    "sku": "SYN-C008-BLU",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 3
+  },
+  {
+    "grainId": "shop1-SYN-T009-WHT-on-hand",
+    "productId": "SYN-T009-WHT",
+    "sku": "SYN-T009-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 7
+  },
+  {
+    "grainId": "shop1-SYN-T009-WHT-reserved",
+    "productId": "SYN-T009-WHT",
+    "sku": "SYN-T009-WHT",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 4
+  },
+  {
+    "grainId": "shop1-SYN-C010-GRY-on-hand",
+    "productId": "SYN-C010-GRY",
+    "sku": "SYN-C010-GRY",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 13
+  },
+  {
+    "grainId": "shop1-SYN-C010-GRY-reserved",
+    "productId": "SYN-C010-GRY",
+    "sku": "SYN-C010-GRY",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 1
+  },
+  {
+    "grainId": "shop1-SYN-C010-GRY-transit",
+    "productId": "SYN-C010-GRY",
+    "sku": "SYN-C010-GRY",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "in_transit",
+    "quantity": 2
+  },
+  {
+    "grainId": "shop1-SYN-S011-BLK-on-hand",
+    "productId": "SYN-S011-BLK",
+    "sku": "SYN-S011-BLK",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 15
+  },
+  {
+    "grainId": "shop1-SYN-S011-BLK-reserved",
+    "productId": "SYN-S011-BLK",
+    "sku": "SYN-S011-BLK",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 2
+  },
+  {
+    "grainId": "shop1-SYN-D012-PNK-on-hand",
+    "productId": "SYN-D012-PNK",
+    "sku": "SYN-D012-PNK",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "on_hand",
+    "quantity": 1
+  },
+  {
+    "grainId": "shop1-SYN-D012-PNK-reserved",
+    "productId": "SYN-D012-PNK",
+    "sku": "SYN-D012-PNK",
+    "locationId": "shop-main",
+    "ownerId": "shop1",
+    "tenantId": "shop1",
+    "channelId": "b2b",
+    "metadata": {
+      "updatedAt": "2026-06-27T00:32:18.311Z",
+      "version": 1
+    },
+    "state": "reserved",
+    "quantity": 1
+  }
+]

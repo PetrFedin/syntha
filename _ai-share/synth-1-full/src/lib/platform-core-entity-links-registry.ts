@@ -3,7 +3,7 @@
  * `sanitizeEntityLinksForPlatformCore` в entity-links.ts применяет этот реестр.
  */
 
-import { ROUTES } from '@/lib/routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 
 /** Side-path href — не показываем в RelatedModulesBlock в core mode. */
 export const PLATFORM_CORE_ENTITY_LINK_HIDDEN_HREFS: readonly string[] = [

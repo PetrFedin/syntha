@@ -24,6 +24,7 @@ import {
   type BrandProductionOpsPoRow,
 } from '@/lib/production/brand-production-ops-spine';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { AlertTriangle, ClipboardList, Factory, Loader2, Package, Upload } from 'lucide-react';
 
 type Props = {
@@ -121,7 +122,7 @@ export function BrandProductionOperationsPanel({
           ) : (
             <Upload className="mr-1 h-3 w-3" />
           )}
-          Push local → spine
+          Отправить local → spine
         </Button>
         {syncMsg ? (
           <span className="text-text-secondary text-xs" data-testid="brand-production-ops-sync-msg">
@@ -133,13 +134,13 @@ export function BrandProductionOperationsPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Factory className="h-4 w-4" />
-            <CardTitle className="text-base">PO · production spine</CardTitle>
+            <CardTitle className="text-base">PO · цепочка производства</CardTitle>
             <Badge variant="outline" data-testid={`brand-production-ops-po-source-${storageMode}`}>
               {poRows.length ? `PG · ${storageMode}` : `Local · ${localPoCount} PO`}
             </Badge>
           </div>
           <CardDescription>
-            workshop2_purchase_orders — связка с handoff, cut ticket и ERP (столп 4).
+            workshop2_purchase_orders — связка с передачей, техкартой и ERP (столп 4).
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -153,10 +154,10 @@ export function BrandProductionOperationsPanel({
                 <TableRow>
                   <TableHead>PO</TableHead>
                   <TableHead>SKU</TableHead>
-                  <TableHead>Factory / supplier</TableHead>
-                  <TableHead>Qty</TableHead>
+                  <TableHead>Цех / поставщик</TableHead>
+                  <TableHead>Кол-во</TableHead>
                   <TableHead>MES</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Статус</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -184,13 +185,13 @@ export function BrandProductionOperationsPanel({
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Package className="h-4 w-4" />
-            <CardTitle className="text-base">BOM · material requisitions</CardTitle>
+            <CardTitle className="text-base">BOM · заявки на материалы</CardTitle>
             <Badge variant="outline" data-testid={`brand-production-ops-bom-source-${storageMode}`}>
               {bomRows.length ? `PG · ${storageMode}` : `Local · ${localBomCount} lines`}
             </Badge>
           </div>
           <CardDescription>
-            workshop2_material_requisitions — supplier BOM tab и procurement (столп 4 ↔ supplier).
+            workshop2_material_requisitions — BOM поставщика и закупки (столп 4 ↔ поставщик).
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -202,10 +203,10 @@ export function BrandProductionOperationsPanel({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Article</TableHead>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Артикул</TableHead>
+                  <TableHead>Материал</TableHead>
+                  <TableHead>Кол-во</TableHead>
+                  <TableHead>Статус</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -234,7 +235,7 @@ export function BrandProductionOperationsPanel({
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
-              Alerts (local model)
+              Оповещения (локальная модель)
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-slate-600">
@@ -249,33 +250,35 @@ export function BrandProductionOperationsPanel({
 
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.handoffTabHref}>Handoff</Link>
+          <Link href={session.handoffTabHref}>Передача</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.cutTicketTabHref}>Cut ticket</Link>
+          <Link href={session.cutTicketTabHref}>Техкарта раскроя</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.qcGateTabHref}>QC gate</Link>
+          <Link href={session.qcGateTabHref}>Контроль качества</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
           <Link href={session.supplierBomHref} data-testid="brand-production-ops-supplier-bom-link">
-            Supplier BOM
+            BOM поставщика
           </Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.factoryMaterialsHref}>Factory materials</Link>
+          <Link href={session.factoryMaterialsHref}>Материалы цеха</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.w2ArticlePoHref}>W2 PO plan</Link>
+          <Link href={session.w2ArticlePoHref}>План PO W2</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.shopOrderCommsHref}>Shop tracking</Link>
+          <Link href={session.shopOrderCommsHref}>Трекинг магазина</Link>
         </Button>
       </div>
 
       <p className="text-text-muted flex items-center gap-1 text-[11px]">
         <ClipboardList className="h-3 w-3" />
-        Ниже — localStorage mock для детального редактирования до полного REST cutover.
+        {isPlatformCoreMode()
+          ? 'Platform Core: состояние PO/BOM — PostgreSQL spine; правки модели — auto-persist в PG.'
+          : 'Ниже — localStorage mock для детального редактирования до полного REST cutover.'}
       </p>
     </div>
   );

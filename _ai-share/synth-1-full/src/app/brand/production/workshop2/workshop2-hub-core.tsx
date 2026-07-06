@@ -19,16 +19,24 @@ import {
 } from '@/lib/production/workshop2-pg-source-stats';
 import { isWorkshop2InvestorDemoModeEnabled } from '@/lib/production/workshop2-investor-demo-mode';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { BRAND_DEV_W2_HUB_SECTION } from '@/lib/platform-core-cabinet-workspace';
 import { Workshop2DevelopmentIntro } from '@/components/brand/production/Workshop2DevelopmentIntro';
 import { Workshop2HubShowroomPublishButton } from '@/components/brand/production/Workshop2HubShowroomPublishButton';
 import { isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
 import { BrandDevEmptyChainOnboarding } from '@/components/platform/BrandDevEmptyChainOnboarding';
 import { BrandDevPgSyncPeerStrip } from '@/components/platform/BrandDevPgSyncPeerStrip';
 import { BrandDevW2HubInvestorSummaryStrip } from '@/components/platform/BrandDevW2HubInvestorSummaryStrip';
+import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
+import {
+  shouldShowHubCabinetInvestorReadinessStrip,
+  shouldShowHubCabinetPgSyncDiagnostics,
+} from '@/lib/platform/wave-yt-hub-noise-pass2';
 import { BrandDevW2HubContextStrip } from '@/components/brand/production/BrandDevW2HubContextStrip';
 import { BrandScPublishReleasePeerStrip } from '@/components/platform/BrandScPublishReleasePeerStrip';
 import { Workshop2HubSlaOpsPanel } from '@/components/brand/production/Workshop2HubSlaOpsPanel';
 import { BrandScPublishAuditLog } from '@/components/brand/sample/BrandScPublishAuditLog';
+import { shouldSuppressWorkshop2CorePgSyncHintForReadPathBanner } from '@/lib/platform/wave-xs-brand-w2-readpath-banner';
+import { PlatformCoreArticleSpineGoldenPathStrip } from '@/components/platform/peers/PlatformCoreArticleSpineGoldenPathStrip';
 
 function isWorkshop2InvestorPath(): boolean {
   return (
@@ -66,10 +74,17 @@ function formatPgHydrateMessage(stats: {
 }
 
 /** Компактный PG-статус в platform core — только при деградации (не шум на happy path). */
-function Workshop2CorePgSyncHint({ active }: { active: boolean }) {
+function Workshop2CorePgSyncHint({
+  active,
+  pgAvailable,
+}: {
+  active: boolean;
+  pgAvailable: boolean;
+}) {
   const platformCore = isPlatformCoreMode();
   const status = useWorkshop2BackendStatusHint(active);
   if (!platformCore) return null;
+  if (shouldSuppressWorkshop2CorePgSyncHintForReadPathBanner(pgAvailable)) return null;
   if (status === 'loading' || status === 'server') return null;
   const isFilePersist = status === 'pg_disabled';
   return (
@@ -171,9 +186,15 @@ function Workshop2CorePgHydrateBanner({
   );
 }
 
-export function Workshop2HubCorePage() {
+type Workshop2HubCorePageProps = {
+  /** Встроен в `/brand/core?pillar=development` — без дублирующего ListChrome. */
+  embedded?: boolean;
+};
+
+export function Workshop2HubCorePage({ embedded = false }: Workshop2HubCorePageProps = {}) {
   const investorPath = isWorkshop2InvestorPath();
   const platformCore = isPlatformCoreMode();
+  const auditUi = usePlatformCoreAuditUi();
   const ctx = useWorkshop2LocalState();
   const searchParams = useSearchParams();
   const pageCollectionId = resolvePageCollectionId({
@@ -216,7 +237,33 @@ export function Workshop2HubCorePage() {
   const hubInner = (
     <>
       {!platformCore ? <Workshop2DevelopmentIntro /> : null}
-      {platformCore && hubArticleIds.length > 0 ? (
+      {embedded && platformCore ? (
+        <Workshop2TabContent
+          basePath={`/brand/core?pillar=development&section=${BRAND_DEV_W2_HUB_SECTION}&collection=${encodeURIComponent(activeCollectionId)}`}
+          activeCollections={ctx.activeCollections}
+          archivedCollections={ctx.archivedCollections}
+          metricsByCollectionId={ctx.metricsByCollectionId}
+          getArticlePipelineProgress={ctx.getArticlePipelineProgress}
+          getSkuFlowDoc={ctx.getSkuFlowDoc}
+          onCreateCollection={ctx.onCreateCollection}
+          onArchiveCollection={ctx.onArchiveCollection}
+          onRestoreCollection={ctx.onRestoreCollection}
+          onToggleCollectionPin={ctx.onToggleCollectionPin}
+          getUserCollectionRow={ctx.getUserCollectionRow}
+          getCollectionCoverDataUrl={ctx.getCollectionCoverDataUrl}
+          onUpdateUserCollection={ctx.onUpdateUserCollection}
+          onUpdateSs27Meta={ctx.onUpdateSs27Meta}
+          articlePickerLines={ctx.articlePickerLines}
+          onCommitWorkshop2Article={ctx.onCommitWorkshop2Article}
+          onBulkAddWorkshop2Articles={ctx.onBulkAddWorkshop2Articles}
+          onRemoveWorkshop2Article={ctx.onRemoveWorkshop2Article}
+          onPatchWorkshop2ArticleLine={ctx.onPatchWorkshop2ArticleLine}
+          createdByLabel={ctx.createdByLabel}
+          highlightArticleId={ctx.highlightArticleId}
+          embeddedHub
+        />
+      ) : null}
+      {platformCore && !embedded && hubArticleIds.length > 0 ? (
         <div
           className="rounded-lg border border-border-subtle bg-bg-surface px-3 py-2.5"
           data-testid="brand-dev-w2-hub-publish-strip"
@@ -237,21 +284,27 @@ export function Workshop2HubCorePage() {
           <BrandScPublishAuditLog collectionId={activeCollectionId} reloadNonce={publishReloadNonce} />
           <BrandScPublishReleasePeerStrip collectionId={activeCollectionId} />
         </div>
-      ) : platformCore && isPlatformCoreEmptyChainCollection(activeCollectionId) ? (
+      ) : platformCore && !embedded && isPlatformCoreEmptyChainCollection(activeCollectionId) ? (
         <BrandDevEmptyChainOnboarding collectionId={activeCollectionId} variant="w2-hub" />
       ) : null}
-      <Workshop2CorePgSyncHint active />
-      {platformCore ? (
+      {!embedded ? (
+        <Workshop2CorePgSyncHint active pgAvailable={ctx.preferPgApiForPublishedArticles} />
+      ) : null}
+      {platformCore && !embedded ? (
         <div className="space-y-2">
           <BrandDevW2HubContextStrip collectionId={activeCollectionId} />
-          <BrandDevPgSyncPeerStrip
-            collectionId={activeCollectionId}
-            articleId={getPlatformCoreDemo(activeCollectionId).demoArticleId}
-          />
-          <BrandDevW2HubInvestorSummaryStrip
-            collectionId={activeCollectionId}
-            articleId={getPlatformCoreDemo(activeCollectionId).demoArticleId}
-          />
+          {shouldShowHubCabinetPgSyncDiagnostics(auditUi) ? (
+            <BrandDevPgSyncPeerStrip
+              collectionId={activeCollectionId}
+              articleId={getPlatformCoreDemo(activeCollectionId).demoArticleId}
+            />
+          ) : null}
+          {shouldShowHubCabinetInvestorReadinessStrip(auditUi) ? (
+            <BrandDevW2HubInvestorSummaryStrip
+              collectionId={activeCollectionId}
+              articleId={getPlatformCoreDemo(activeCollectionId).demoArticleId}
+            />
+          ) : null}
           <Workshop2HubSlaOpsPanel compact />
         </div>
       ) : null}
@@ -282,8 +335,13 @@ export function Workshop2HubCorePage() {
           </Button>
         </div>
       ) : null}
+      {!(embedded && platformCore) ? (
       <Workshop2TabContent
-        basePath={ROUTES.brand.productionWorkshop2}
+        basePath={
+          embedded
+            ? `/brand/core?pillar=development&section=${BRAND_DEV_W2_HUB_SECTION}&collection=${encodeURIComponent(activeCollectionId)}`
+            : ROUTES.brand.productionWorkshop2
+        }
         activeCollections={ctx.activeCollections}
         archivedCollections={ctx.archivedCollections}
         metricsByCollectionId={ctx.metricsByCollectionId}
@@ -305,6 +363,7 @@ export function Workshop2HubCorePage() {
         createdByLabel={ctx.createdByLabel}
         highlightArticleId={ctx.highlightArticleId}
       />
+      ) : null}
     </>
   );
 
@@ -326,6 +385,23 @@ export function Workshop2HubCorePage() {
       </PlatformCoreDevelopmentChrome>
     </div>
   );
+
+  if (embedded) {
+    const spineDemo = getPlatformCoreDemo(activeCollectionId);
+    return (
+      <div
+        className="w-full min-w-0 max-w-none space-y-4 pb-20"
+        data-testid="brand-dev-w2-hub-panel"
+        data-audit-legacy="workshop2-hub-core-embedded"
+      >
+        <PlatformCoreArticleSpineGoldenPathStrip
+          demo={spineDemo}
+          activeStep="brand-dev-w2-hub"
+        />
+        {hubInner}
+      </div>
+    );
+  }
 
   return hubPanel;
 }

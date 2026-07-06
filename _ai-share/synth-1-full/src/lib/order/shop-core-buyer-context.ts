@@ -9,6 +9,14 @@ import { SHOP_CORE_DEMO_BUYER_ID } from '@/lib/order/shop-workshop2-b2b-order-ui
 export const SHOP_CORE_BUYER_COOKIE = 'shop_b2b_buyer_id';
 export const SHOP_CORE_BUYER_LS_KEY = 'shop_b2b_buyer_id';
 export const SHOP_CORE_BUYER_QUERY = 'buyer';
+export const SHOP_B2B_CART_SESSION_COOKIE = 'b2b_cart_session';
+
+/** Invite accept flow: partner email → W2 buyer preset (Wave XK). */
+export const SHOP_CORE_PARTNER_EMAIL_TO_BUYER_ID: Readonly<Record<string, string>> = {
+  'buyer@shop-demo.local': 'shop1',
+  'buyer-demo@shop-demo.local': 'shop1',
+  'buyer-demo-spb@shop-demo.local': 'shop2',
+};
 
 export type ShopCoreBuyerPreset = {
   id: string;
@@ -44,6 +52,29 @@ export const SHOP_CORE_SESSION_UID_TO_BUYER_ID: Readonly<Record<string, string>>
   'shop-002': 'shop2',
   'shop-buyer': 'shop1',
 };
+
+export function resolveShopCoreBuyerIdFromPartnerEmail(
+  buyerEmail?: string | null
+): string | undefined {
+  const email = buyerEmail?.trim().toLowerCase();
+  if (!email) return undefined;
+
+  const direct = SHOP_CORE_PARTNER_EMAIL_TO_BUYER_ID[email];
+  if (direct && VALID_BUYER_IDS.has(direct)) return direct;
+
+  const localPart = email.split('@')[0]?.trim();
+  const fromLocal = localPart ? resolveShopCoreBuyerIdFromOrganization(localPart) : undefined;
+  if (fromLocal) return fromLocal;
+
+  if (email.includes('spb') || email.includes('peter') || email.includes('petersburg')) {
+    return 'shop2';
+  }
+  if (email.includes('msk') || email.includes('shop-demo') || email.includes('buyer-demo')) {
+    return 'shop1';
+  }
+
+  return undefined;
+}
 
 export function resolveShopCoreBuyerIdFromSessionUid(
   sessionUid?: string | null

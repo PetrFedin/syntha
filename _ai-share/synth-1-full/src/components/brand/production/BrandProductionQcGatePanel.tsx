@@ -18,6 +18,7 @@ import { buildBrandProductionHandoffSession } from '@/lib/brand-production/brand
 import { buildManufacturerQcGateSession } from '@/lib/production/manufacturer-qc-gate';
 import type { BrandProductionState } from '@/lib/brand-production';
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
+import { PlatformCoreQcGateInlineRecordStrip } from '@/components/platform/PlatformCoreQcGateInlineRecordStrip';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { ROUTES } from '@/lib/routes';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
@@ -32,6 +33,7 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
   const localSummary = useMemo(() => buildBrandProductionQcGateSummary(state), [state]);
   const [pgRows, setPgRows] = useState<BrandProductionQcGateRow[]>([]);
   const [pgMode, setPgMode] = useState<'pg' | 'empty'>('empty');
+  const [reloadNonce, setReloadNonce] = useState(0);
 
   useEffect(() => {
     void (async () => {
@@ -48,12 +50,15 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
         if (json.ok && json.rows?.length) {
           setPgRows(json.rows);
           setPgMode(json.storageMode === 'pg' ? 'pg' : 'empty');
+        } else {
+          setPgRows(json.ok && json.rows ? json.rows : []);
+          setPgMode(json.storageMode === 'pg' ? 'pg' : 'empty');
         }
       } catch {
         setPgRows([]);
       }
     })();
-  }, [selectedCollectionId]);
+  }, [selectedCollectionId, reloadNonce]);
 
   const summary = useMemo(() => {
     if (!pgRows.length) return localSummary;
@@ -85,7 +90,7 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <ClipboardCheck className="h-4 w-4" />
-            <CardTitle className="text-base">QC gate</CardTitle>
+            <CardTitle className="text-base">Гейт КК</CardTitle>
             <Badge variant="outline" className="text-[10px] uppercase">
               AQL
             </Badge>
@@ -99,26 +104,35 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
             ) : null}
           </div>
           <CardDescription>
-            Inspectorio pattern: инспекции блокируют отгрузку до pass.
-            {pgMode === 'pg' ? ' PG enforcement на shipped.' : ' Local model + PG empty.'}
+            Инспекции блокируют отгрузку до прохождения.
+            {pgMode === 'pg' ? ' Контроль PG при отгрузке.' : ' Локальная модель, PG пуст.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Badge variant="outline" data-testid={`brand-qc-gate-source-${pgMode}`}>
-            {pgMode === 'pg' ? 'PG QC gate' : 'Local model'}
+            {pgMode === 'pg' ? 'Гейт КК (PG)' : 'Локальная модель'}
           </Badge>
-          <Badge variant="secondary">Planned: {summary.plannedCount}</Badge>
+          <Badge variant="secondary">Запланировано: {summary.plannedCount}</Badge>
           <Badge variant="outline" className="border-emerald-500/40 text-emerald-800">
-            Pass: {summary.passCount}
+            Пройдено: {summary.passCount}
           </Badge>
           <Badge variant="outline" className="border-rose-500/40 text-rose-800">
-            Fail/rework: {summary.failCount}
+            Брак/доработка: {summary.failCount}
           </Badge>
           <Badge variant={summary.blockedShipments > 0 ? 'destructive' : 'secondary'}>
-            Block ship: {summary.blockedShipments}
+            Блок отгрузки: {summary.blockedShipments}
           </Badge>
         </CardContent>
       </Card>
+
+      <PlatformCoreQcGateInlineRecordStrip
+        collectionId={selectedCollectionId || PLATFORM_CORE_DEMO.collectionId}
+        defaultOrderId={resolvedOrderId}
+        articleId={state.b2bOrderRefs.find((r) => r.status !== 'cancelled')?.articleSku}
+        inspectorLabel="Гейт КК бренда"
+        testIdPrefix="brand-qc-gate"
+        onRecorded={() => setReloadNonce((n) => n + 1)}
+      />
 
       <Card>
         <CardContent className="p-0">
@@ -129,10 +143,10 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
               <TableHeader>
                 <TableRow>
                   <TableHead>PO</TableHead>
-                  <TableHead>Result</TableHead>
-                  <TableHead>Inspector</TableHead>
-                  <TableHead>Checklist</TableHead>
-                  <TableHead>Ship block</TableHead>
+                  <TableHead>Результат</TableHead>
+                  <TableHead>Инспектор</TableHead>
+                  <TableHead>Чеклист</TableHead>
+                  <TableHead>Блок отгрузки</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -157,29 +171,29 @@ export function BrandProductionQcGatePanel({ state, selectedCollectionId }: Prop
 
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.brand.productionQcApp}>QC App · поле</Link>
+          <Link href={ROUTES.brand.productionQcApp}>QC-приложение · поле</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={handoff.handoffTabHref} data-testid="brand-qc-gate-handoff-tab-link">
-            Handoff tab
+            Вкладка передачи
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={mfrQc.qcTabHref} data-testid="brand-qc-gate-mfr-tab-link">
-            Manufacturer QC tab
+            КК производства
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={handoff.shopOrderCommsHref}>Shop order tracking</Link>
+          <Link href={handoff.shopOrderCommsHref}>Трекинг заказа магазина</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={mfrQc.shopLandedMarginHref}>Shop margin</Link>
+          <Link href={mfrQc.shopLandedMarginHref}>Маржа магазина</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={handoff.brandOrderCommsChatHref}>Brand order chat</Link>
+          <Link href={handoff.brandOrderCommsChatHref}>Чат заказа бренда</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={ROUTES.brand.processLiveQc}>Live QC</Link>
+          <Link href={ROUTES.brand.processLiveQc}>Онлайн КК</Link>
         </Button>
       </div>
     </div>

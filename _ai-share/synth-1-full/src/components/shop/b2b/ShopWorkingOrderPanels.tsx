@@ -25,15 +25,15 @@ export function ShopWorkingOrderVersionsPanel({ wholesaleOrderId, collectionId }
         trackingHref={session.orderCommsHref}
       />
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">Order: {session.wholesaleOrderId}</Badge>
+        <Badge variant="secondary">Заказ: {session.wholesaleOrderId}</Badge>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.bulkHref}>Bulk entry</Link>
+          <Link href={session.bulkHref}>Оптовый ввод</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.handoffHref}>Handoff</Link>
+          <Link href={session.handoffHref}>Передача</Link>
         </Button>
       </div>
-      <ShopWorkingOrderSpinePanel wholesaleOrderId={wholesaleOrderId} />
+      <ShopWorkingOrderSpinePanel wholesaleOrderId={wholesaleOrderId} collectionId={collectionId} />
     </div>
   );
 }
@@ -50,18 +50,18 @@ export function ShopWorkingOrderBulkPanel({ wholesaleOrderId, collectionId }: Pr
       />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Bulk entry · NuOrder</CardTitle>
-          <CardDescription>Replenishment → matrix → pre-pack → working versions.</CardDescription>
+          <CardTitle className="text-base">Оптовый ввод</CardTitle>
+          <CardDescription>Пополнение → матрица → препак → версии рабочего заказа.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.matrixHref}>Co-edit matrix</Link>
+            <Link href={session.matrixHref}>Совместная матрица</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.replenishmentHref}>Replenishment ATP</Link>
+            <Link href={session.replenishmentHref}>Пополнение ATP</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.versionsHref}>Versions</Link>
+            <Link href={session.versionsHref}>Версии</Link>
           </Button>
         </CardContent>
       </Card>
@@ -81,21 +81,21 @@ export function ShopWorkingOrderHandoffPanel({ wholesaleOrderId, collectionId }:
       />
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Handoff · comms</CardTitle>
-          <CardDescription>Export confirm → approvals → order chat.</CardDescription>
+          <CardTitle className="text-base">Передача · связь</CardTitle>
+          <CardDescription>Подтверждение экспорта → согласования → чат заказа.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={shopB2bOrderHref(wholesaleOrderId)}>Order card</Link>
+            <Link href={shopB2bOrderHref(wholesaleOrderId)}>Карточка заказа</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.collaborativeHref}>Collaborative approvals</Link>
+            <Link href={session.collaborativeHref}>Согласования совместного заказа</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.messagesHref}>Order chat</Link>
+            <Link href={session.messagesHref}>Чат заказа</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.brandOrderHandoffHref}>Brand handoff</Link>
+            <Link href={session.brandOrderHandoffHref}>Передача бренда</Link>
           </Button>
         </CardContent>
       </Card>

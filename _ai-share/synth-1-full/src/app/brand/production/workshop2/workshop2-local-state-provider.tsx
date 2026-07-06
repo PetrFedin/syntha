@@ -37,6 +37,7 @@ import {
   isWorkshop2InternalArticleCodeValid,
   mergeWorkshop2ActiveOrder,
   patchWorkshop2ArticleLine,
+  isUiOnlyWorkshop2LinePatch,
   registerUserCollection,
   removeArticleFromInventory,
   restoreWorkshop2Collection,
@@ -83,6 +84,7 @@ import {
   type Workshop2PgPublishedArticleRow,
 } from '@/lib/production/workshop2-pg-collection-hydrate';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { Workshop2CoreHubReadPathBanner } from '@/components/platform/Workshop2CoreHubReadPathBanner';
 import {
   isPlatformCoreEmptyChainCollection,
   isPlatformCoreGoldenCollectionId,
@@ -92,6 +94,7 @@ import {
   buildWorkshop2PgSourceStats,
   type Workshop2PgSourceStats,
 } from '@/lib/production/workshop2-pg-source-stats';
+import { resolveWorkshop2HubPublishedArticlesReadPath, shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
 import {
   getRangePlannerOverlayForCollection,
   syncRangePlannerOverlayFromDevelopmentStatus,
@@ -276,6 +279,7 @@ export type Workshop2LocalStateApi = {
     rows: { sku: string; name?: string }[]
   ) => { added: number; skippedDuplicates: number };
   onRemoveWorkshop2Article: (collectionId: string, articleId: string) => void;
+  getArticleLine: (collectionId: string, articleId: string) => LocalOrderLine | undefined;
   onPatchWorkshop2ArticleLine: (
     collectionId: string,
     articleId: string,
@@ -368,6 +372,7 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
   }, []);
 
   useEffect(() => {
+    if (!shouldUseLocalStorageClientFallbackInCore()) return;
     const onStorage = (e: StorageEvent) => {
       if (e.key === LOCAL_COLLECTION_INVENTORY_STORAGE_KEY && e.newValue != null) {
         setStorageStaleBanner(true);
@@ -392,6 +397,24 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
   }, [localInventory, workshop2PgServerAvailable]);
 
   const seedOrderLines = useMemo(() => initialOrderItems as unknown as LocalOrderLine[], []);
+
+
+  const getArticleLine = useCallback(
+    (collectionId: string, articleId: string): LocalOrderLine | undefined => {
+      const key = storageKeyForCollectionId(collectionId);
+      const fromLocal = localInventory.articlesByCollection[key]?.find((l) => l.id === articleId);
+      if (fromLocal) return fromLocal;
+      const merged = workshop2MergedItemsForCollectionList(
+        collectionId,
+        localInventory,
+        seedOrderLines
+      );
+      return merged.find((line) => (line as LocalOrderLine).id === articleId) as
+        | LocalOrderLine
+        | undefined;
+    },
+    [localInventory, seedOrderLines]
+  );
 
   const articlePickerLines = useMemo(
     () => listWorkshop2ArticlePickerLines(localInventory, seedOrderLines),
@@ -766,7 +789,10 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
 
   const handlePatchWorkshop2ArticleLine = useCallback(
     (collectionId: string, articleId: string, patch: Workshop2ArticleLinePatch): boolean => {
-      if (isWorkshop2PgAuthoritativeCollection(collectionId, workshop2PgServerAvailable)) {
+      if (
+        isWorkshop2PgAuthoritativeCollection(collectionId, workshop2PgServerAvailable) &&
+        !isUiOnlyWorkshop2LinePatch(patch)
+      ) {
         return false;
       }
       let ok = false;
@@ -829,12 +855,16 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
         localInventory: inv,
         seedLines: seedOrderLines,
       });
+      const rangeOverlay = workshop2PgServerAvailable
+        ? await syncRangePlannerOverlayFromDevelopmentStatus(cid)
+        : null;
       const stats = buildWorkshop2PgSourceStats({
         collectionId: cid,
         pgArticles: articles,
         localInventory: inv,
         seedLines: seedOrderLines,
-        rangePlannerOverlay: getRangePlannerOverlayForCollection(cid),
+        rangePlannerOverlay:
+          rangeOverlay ?? getRangePlannerOverlayForCollection(cid, { authoritativeOnly: true }),
         publishedArticlesReadPath: readPath,
       });
       setPgSourceStatsByCollection((prev) => ({ ...prev, [cid]: stats }));
@@ -894,7 +924,10 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
         });
       }
       const rangeOverlay = await syncRangePlannerOverlayFromDevelopmentStatus(cid);
-      const readPath = workshop2PgServerAvailable ? 'api' : 'localStorage';
+      const readPath = resolveWorkshop2HubPublishedArticlesReadPath({
+        collectionId: cid,
+        preferApi: workshop2PgServerAvailable,
+      });
       setPgSourceStatsByCollection((prev) => ({
         ...prev,
         [cid]: buildWorkshop2PgSourceStats({
@@ -902,7 +935,8 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
           pgArticles: articles,
           localInventory: loadLocalCollectionInventory(),
           seedLines: seedOrderLines,
-          rangePlannerOverlay: rangeOverlay ?? getRangePlannerOverlayForCollection(cid),
+          rangePlannerOverlay:
+            rangeOverlay ?? getRangePlannerOverlayForCollection(cid, { authoritativeOnly: true }),
           publishedArticlesReadPath: readPath,
         }),
       }));
@@ -964,6 +998,7 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
       onCommitWorkshop2Article: handleArticleCommit,
       onBulkAddWorkshop2Articles: handleBulkWorkshop2Articles,
       onRemoveWorkshop2Article: handleRemoveWorkshop2Article,
+      getArticleLine,
       onPatchWorkshop2ArticleLine: handlePatchWorkshop2ArticleLine,
       syncPublishedArticlesFromPg,
       hydrateCollectionFromPg,
@@ -993,6 +1028,7 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
       handleArticleCommit,
       handleBulkWorkshop2Articles,
       handleRemoveWorkshop2Article,
+      getArticleLine,
       handlePatchWorkshop2ArticleLine,
       syncPublishedArticlesFromPg,
       hydrateCollectionFromPg,
@@ -1005,6 +1041,11 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
 
   return (
     <Workshop2LocalStateContext.Provider value={value}>
+      {isPlatformCoreMode() ? (
+        <div className="mb-3 px-1" data-testid="workshop2-core-readpath-banner-slot">
+          <Workshop2CoreHubReadPathBanner pgAvailable={workshop2PgServerAvailable} />
+        </div>
+      ) : null}
       {children}
     </Workshop2LocalStateContext.Provider>
   );

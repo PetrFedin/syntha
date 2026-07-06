@@ -18,7 +18,7 @@ describe('pillar-cross-link-order-policy', () => {
   it('disables order-scoped capabilities without orderId', () => {
     expect(pillarCrossLinkRequiresOrder('comms-order-context', { role: 'shop' })).toBe(true);
     const link = annotatePillarCrossLink(
-      { label: 'Order comms', href: '/shop/b2b/tracking' },
+      { label: 'Чат по заказу', href: '/shop/b2b/tracking' },
       'comms-order-context',
       { role: 'shop' }
     );

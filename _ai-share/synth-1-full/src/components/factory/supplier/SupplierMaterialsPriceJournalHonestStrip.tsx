@@ -29,7 +29,7 @@ export function SupplierMaterialsPriceJournalHonestStrip({
       data-testid="sup-dev-materials-price-journal-honest-strip"
     >
       <Badge variant="outline" className="border-amber-300 text-[9px]">
-        Price journal
+        Журнал цен
       </Badge>
       <span>
         {hasUnitCostFallback
@@ -55,7 +55,7 @@ export function SupplierMaterialsPriceJournalHonestStrip({
         data-testid="sup-dev-materials-price-comms-link"
         className="font-medium text-amber-900 underline"
       >
-        Comms · quote →
+        Связь · котировка →
       </Link>
     </div>
   );

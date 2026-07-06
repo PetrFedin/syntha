@@ -33,9 +33,9 @@ describe('shop-collaborative-approval-feed', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
     };
     expect(shopCollaborativeApprovalStepsFromState(state)).toEqual([
-      { id: 'matrix', labelRu: 'Matrix qty locked', done: true },
-      { id: 'margin', labelRu: 'Landed margin OK', done: false },
-      { id: 'submit', labelRu: 'Submit to brand', done: false },
+      { id: 'matrix', labelRu: 'Матрица зафиксирована', done: true },
+      { id: 'margin', labelRu: 'Маржа согласована брендом', done: false },
+      { id: 'submit', labelRu: 'Отправлено бренду', done: false },
     ]);
   });
 });

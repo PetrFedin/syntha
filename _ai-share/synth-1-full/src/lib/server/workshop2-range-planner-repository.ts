@@ -179,3 +179,107 @@ export async function assignWorkshop2ArticleRangePlannerTier(input: {
 
   return { ok: true };
 }
+
+/** Пакетное назначение tier нескольким артикулам (PATCH assignTier + articleIds). */
+export async function bulkAssignWorkshop2ArticleRangePlannerTier(input: {
+  collectionId: string;
+  articleIds: string[];
+  tier: string;
+}): Promise<
+  | { ok: true; assigned: number; failed: number }
+  | { ok: false; error: string; messageRu?: string }
+> {
+  const collectionId = input.collectionId.trim();
+  const tier = input.tier.trim();
+  const articleIds = [...new Set(input.articleIds.map((id) => id.trim()).filter(Boolean))];
+  if (!collectionId) {
+    return { ok: false, error: 'missing_collection', messageRu: 'Не указана коллекция.' };
+  }
+  if (!tier) {
+    return { ok: false, error: 'invalid_tier', messageRu: 'Укажите уровень ассортимента.' };
+  }
+  if (articleIds.length === 0) {
+    return { ok: false, error: 'empty_batch', messageRu: 'Выберите хотя бы один артикул.' };
+  }
+
+  let assigned = 0;
+  let failed = 0;
+  for (const articleId of articleIds) {
+    const result = await assignWorkshop2ArticleRangePlannerTier({ collectionId, articleId, tier });
+    if (result.ok) assigned += 1;
+    else failed += 1;
+  }
+
+  if (assigned === 0) {
+    return {
+      ok: false,
+      error: 'batch_failed',
+      messageRu: 'Не удалось назначить уровень ни одному артикулу.',
+    };
+  }
+
+  return { ok: true, assigned, failed };
+}
+
+/** Сохранить порядок артикулов внутри tier (metadata.rangePlanner.tierArticleOrder). */
+export async function reorderWorkshop2RangePlannerTierArticles(input: {
+  collectionId: string;
+  tier: string;
+  articleIds: string[];
+}): Promise<{ ok: true } | { ok: false; error: string; messageRu?: string }> {
+  const collectionId = input.collectionId.trim();
+  const tier = parseRangePlannerTier(input.tier);
+  const articleIds = input.articleIds.map((id) => id.trim()).filter(Boolean);
+  if (!collectionId) {
+    return { ok: false, error: 'missing_collection', messageRu: 'Не указана коллекция.' };
+  }
+  if (!tier) {
+    return { ok: false, error: 'invalid_tier', messageRu: 'Уровень: core, trend или novelty.' };
+  }
+  if (articleIds.length === 0) {
+    return { ok: false, error: 'empty_order', messageRu: 'Укажите порядок артикулов.' };
+  }
+  if (!isWorkshop2PostgresEnabled()) {
+    return {
+      ok: false,
+      error: 'pg_disabled',
+      messageRu: 'Сортировка tier доступна только при подключении к базе данных.',
+    };
+  }
+
+  await ensureWorkshop2PgSchema();
+  const pool = getWorkshop2PgPool();
+  const res = await pool.query<{ metadata: unknown }>(
+    `SELECT metadata FROM workshop2_collections WHERE id = $1`,
+    [collectionId]
+  );
+
+  let metadata: Record<string, unknown> = {};
+  const existing = res.rows[0]?.metadata;
+  if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    metadata = { ...(existing as Record<string, unknown>) };
+  }
+
+  const rangePlanner =
+    metadata.rangePlanner && typeof metadata.rangePlanner === 'object'
+      ? { ...(metadata.rangePlanner as Record<string, unknown>) }
+      : {};
+  const tierArticleOrder =
+    rangePlanner.tierArticleOrder && typeof rangePlanner.tierArticleOrder === 'object'
+      ? { ...(rangePlanner.tierArticleOrder as Record<string, string[]>) }
+      : {};
+  tierArticleOrder[tier] = articleIds;
+  rangePlanner.tierArticleOrder = tierArticleOrder;
+  metadata.rangePlanner = rangePlanner;
+
+  await pool.query(
+    `INSERT INTO workshop2_collections (id, organization_id, display_name, metadata, updated_at)
+     VALUES ($1, $2, $3, $4::jsonb, NOW())
+     ON CONFLICT (id) DO UPDATE SET
+       metadata = EXCLUDED.metadata,
+       updated_at = NOW()`,
+    [collectionId, 'org-brand-001', collectionId, JSON.stringify(metadata)]
+  );
+
+  return { ok: true };
+}

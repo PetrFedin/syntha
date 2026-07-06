@@ -123,7 +123,7 @@ export function BrandReleaseSyndicationPanel({ products }: Props) {
             href={session.techpackGateHref}
             data-testid="brand-release-syndication-techpack-gate-link"
           >
-            Factory pack gate
+            Гейт фабричного пакета
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
@@ -131,14 +131,14 @@ export function BrandReleaseSyndicationPanel({ products }: Props) {
             href={session.showroomPublishHref}
             data-testid="brand-release-syndication-showroom-publish-link"
           >
-            Showroom publish
+            Публикация шоурума
           </Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.shopShowroomHref}>Shop showroom</Link>
+          <Link href={session.shopShowroomHref}>Шоурум магазина</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.matrixHref}>Shop matrix</Link>
+          <Link href={session.matrixHref}>Матрица магазина</Link>
         </Button>
         {pushSucceeded ? (
           <Button size="sm" asChild data-testid="brand-release-syndication-push-publish-cta">

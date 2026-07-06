@@ -3,7 +3,7 @@
 import {
   formatErpAutoRetryAttemptRu,
   formatErpAutoRetryExhaustedRu,
-} from '@/lib/production/workshop2-erp-retry-hint';
+} from '@/lib/platform-core-ports/erp-retry-hint';
 import { useErpRetryCountdown } from '@/hooks/use-erp-retry-countdown';
 
 export function PlatformCoreErpRetryHint({

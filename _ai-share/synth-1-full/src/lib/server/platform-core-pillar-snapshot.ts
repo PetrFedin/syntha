@@ -61,47 +61,56 @@ import {
   getSpineProcurementContext,
   type SpineProcurementContext,
 } from '@/lib/integrations/spine/procurement-context.service';
+import { isWorkshop2PgConnectionError } from '@/lib/server/workshop2-pg-pool';
 
 type OrderProductionVariant = 'brand' | 'shop' | 'manufacturer';
 
 async function resolveSpineOrderTracking(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
-  const fromFile = getOrderTracking(orderId);
-  if (fromFile) return fromFile;
-  if (!isPlatformCoreSpinePgPrimary()) return undefined;
-  const { getOrderTrackingShipmentFromPg } = await import(
-    '@/lib/integrations/spine/spine-operational-persistence.pg'
-  );
-  return getOrderTrackingShipmentFromPg(orderId);
+  if (isPlatformCoreSpinePgPrimary()) {
+    const { getOrderTrackingShipmentFromPg } = await import(
+      '@/lib/integrations/spine/spine-operational-persistence.pg'
+    );
+    const fromPg = await getOrderTrackingShipmentFromPg(orderId);
+    if (fromPg) return fromPg;
+  }
+  return getOrderTracking(orderId);
 }
 
 async function resolveSpineProductionWipByB2bOrderId(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
-  const fromFile = getProductionWipByB2bOrderId(orderId);
-  if (fromFile) return fromFile;
-  if (!isPlatformCoreSpinePgPrimary()) return undefined;
-  const { getProductionWipByB2bOrderIdFromPg } = await import(
-    '@/lib/integrations/spine/spine-operational-persistence.pg'
-  );
-  return getProductionWipByB2bOrderIdFromPg(orderId);
+  if (isPlatformCoreSpinePgPrimary()) {
+    const { getProductionWipByB2bOrderIdFromPg } = await import(
+      '@/lib/integrations/spine/spine-operational-persistence.pg'
+    );
+    const fromPg = await getProductionWipByB2bOrderIdFromPg(orderId);
+    if (fromPg) return fromPg;
+  }
+  return getProductionWipByB2bOrderId(orderId);
 }
 
 async function resolveSpineDeliveryWindow(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
-  const fromFile = getDeliveryWindow(orderId);
-  if (fromFile) return fromFile;
-  if (!isPlatformCoreSpinePgPrimary()) return undefined;
-  const { getDeliveryWindowFromPg } = await import(
-    '@/lib/integrations/spine/spine-operational-persistence.pg'
-  );
-  return getDeliveryWindowFromPg(orderId);
+  if (isPlatformCoreSpinePgPrimary()) {
+    const { getDeliveryWindowFromPg } = await import(
+      '@/lib/integrations/spine/spine-operational-persistence.pg'
+    );
+    const fromPg = await getDeliveryWindowFromPg(orderId);
+    if (fromPg) return fromPg;
+  }
+  return getDeliveryWindow(orderId);
 }
 
 async function resolveHandoffQueueOrderId(
   factoryId: string,
   wholesaleOrderIdInput?: string,
   collectionId?: string
-): Promise<{ orderId: string; queueHit: boolean }> {
+): Promise<{
+  orderId: string;
+  queueHit: boolean;
+  productionOrderId: string | null;
+  handoffAt: string | null;
+}> {
   await ensureSpineOperationalStoreReady(SPINE_HUB_MINIMAL_SCOPES);
   const [queue, spineOrderId] = await Promise.all([
     listWorkshop2FactoryProductionHandoffQueue({ factoryId }),
@@ -121,7 +130,14 @@ async function resolveHandoffQueueOrderId(
     items[0];
   const orderId = preferred || resolved?.b2bOrderId || spineOrderId || '';
   const queueHit = Boolean(orderId && items.some((i) => i.b2bOrderId === orderId));
-  return { orderId, queueHit };
+  const matched =
+    orderId ? items.find((i) => i.b2bOrderId === orderId) ?? resolved : resolved;
+  return {
+    orderId,
+    queueHit,
+    productionOrderId: matched?.productionOrderId?.trim() || null,
+    handoffAt: matched?.handoffAt?.trim() || null,
+  };
 }
 
 async function resolveWholesaleOrderStatusLabel(orderId: string): Promise<string | null> {
@@ -198,16 +214,34 @@ async function buildSupplierCollectionOrderForecast(
   factoryId: string,
   wholesaleOrderIdInput?: string
 ): Promise<SupplierCollectionOrderForecastSnapshot> {
-  const { orderId } = await resolveHandoffQueueOrderId(factoryId, wholesaleOrderIdInput, collectionId);
+  const { orderId, productionOrderId, handoffAt } = await resolveHandoffQueueOrderId(
+    factoryId,
+    wholesaleOrderIdInput,
+    collectionId
+  );
   if (!orderId) {
-    return { orderId: '', orderStatusLabel: null, totalUnits: 0, rows: [] };
+    return {
+      orderId: '',
+      orderStatusLabel: null,
+      totalUnits: 0,
+      rows: [],
+      productionOrderId: null,
+      expectedHandoffAt: null,
+    };
   }
   const [orderStatusLabel, lines] = await Promise.all([
     resolveWholesaleOrderStatusLabel(orderId),
     resolveWholesaleOrderArticleLines(orderId),
   ]);
   if (!lines.length) {
-    return { orderId, orderStatusLabel, totalUnits: 0, rows: [] };
+    return {
+      orderId,
+      orderStatusLabel,
+      totalUnits: 0,
+      rows: [],
+      productionOrderId,
+      expectedHandoffAt: handoffAt,
+    };
   }
   const articleIds = lines.map((l) => l.articleId);
   const materialBatch = await batchWorkshop2DossierMaterialNames({
@@ -231,7 +265,14 @@ async function buildSupplierCollectionOrderForecast(
     supplierConfirmed: confirmedMap[line.articleId] === true,
   }));
   const totalUnits = lines.reduce((s, l) => s + l.qty, 0);
-  return { orderId, orderStatusLabel, totalUnits, rows };
+  return {
+    orderId,
+    orderStatusLabel,
+    totalUnits,
+    rows,
+    productionOrderId,
+    expectedHandoffAt: handoffAt,
+  };
 }
 
 async function buildDevelopmentSnapshot(
@@ -379,6 +420,9 @@ async function buildOrderProductionSnapshot(
       b2bOrderId: item.b2bOrderId,
       productionOrderId: item.productionOrderId,
       articleId: item.articleId,
+      collectionId: item.collectionId,
+      status: item.status,
+      wipStatus: item.wipStatus ?? item.mesReleaseStage,
     }));
   }
 
@@ -704,4 +748,25 @@ export async function getPlatformCorePillarSnapshot(input: {
   }
 
   return { pillarId: input.pillarId, unsupported: true };
+}
+
+/** PG connection error → offline demo snapshot (без 503 в UI). */
+export async function getPlatformCorePillarSnapshotResilient(input: {
+  collectionId: string;
+  pillarId: CoreHubPillarId;
+  roleId?: CoreChainRoleId;
+  factoryId?: string;
+  wholesaleOrderId?: string;
+  articleId?: string;
+  pillarVariant?: OrderProductionVariant;
+}): Promise<PlatformCorePillarSnapshotPayload> {
+  try {
+    return await getPlatformCorePillarSnapshot(input);
+  } catch (err) {
+    if (!isWorkshop2PgConnectionError(err)) throw err;
+    const { buildPlatformCorePillarSnapshotOffline } = await import(
+      '@/lib/server/platform-core-pillar-snapshot-offline'
+    );
+    return buildPlatformCorePillarSnapshotOffline(input);
+  }
 }

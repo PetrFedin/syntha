@@ -135,30 +135,38 @@ describe('platform-core-hub-matrix', () => {
   });
 
   it('resolves demo trail primary href per pillar', () => {
-    expect(getDemoTrailPrimaryHref('development')).toContain('w2col=SS27');
-    expect(getDemoTrailPrimaryHref('sample_collection')).toContain('showroom');
-    expect(getDemoTrailPrimaryHref('collection_order')).toContain('matrix');
-    expect(getDemoTrailPrimaryHref('order_production')).toContain('factory/production');
-    expect(getDemoTrailPrimaryHref('comms')).toContain('messages');
+    process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
+    expect(getDemoTrailPrimaryHref('development')).toContain('pillar=development');
+    expect(getDemoTrailPrimaryHref('development')).toContain('collection=SS27');
+    expect(getDemoTrailPrimaryHref('sample_collection')).toContain('pillar=sample_collection');
+    expect(getDemoTrailPrimaryHref('collection_order')).toContain('pillar=collection_order');
+    expect(getDemoTrailPrimaryHref('order_production')).toContain('order_production');
+    expect(getDemoTrailPrimaryHref('comms')).toContain('pillar=comms');
   });
 
   it('chain strip on hub uses demo trail, with role uses workspace', () => {
+    process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
     expect(
       getChainStripPillarHref('order_production', { primaryHref: '/fallback' })
-    ).toContain('factory/production');
+    ).toContain('order_production');
     expect(
       getChainStripPillarHref('collection_order', {
         highlightRole: 'shop',
         primaryHref: '/fallback',
       })
-    ).toContain('matrix');
+    ).toContain('pillar=collection_order');
   });
 
   it('role pillar workspace href points to golden path screen', () => {
-    expect(getRolePillarWorkspaceHref('brand', 'development')).toContain('w2col=SS27');
-    expect(getRolePillarWorkspaceHref('shop', 'collection_order')).toContain('matrix');
+    process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
+    expect(getRolePillarWorkspaceHref('brand', 'development')).toContain('pillar=development');
+    expect(getRolePillarWorkspaceHref('brand', 'development')).toContain('collection=SS27');
+    expect(getRolePillarWorkspaceHref('brand', 'sample_collection')).toContain(
+      'pillar=sample_collection'
+    );
+    expect(getRolePillarWorkspaceHref('shop', 'collection_order')).toContain('pillar=collection_order');
     expect(getRoleAdjacentPillarWorkspaceHref('brand', 'development', 'next')).toContain(
-      'linesheets'
+      'pillar=sample_collection'
     );
   });
 
@@ -329,7 +337,7 @@ describe('platform-core-hub-matrix', () => {
       expect(mComms.actions.some((a) => a.href === ROUTES.factory.messages)).toBe(false);
       expect(sHref).toContain('/factory/messages');
       expect(sHref).toContain('role=supplier');
-      expect(sHref).toContain('/factory/production/calendar');
+      expect(sHref).toContain('/factory/calendar');
       expect(sComms.actions.some((a) => a.label === 'Сообщения')).toBe(false);
     }
   });
@@ -360,12 +368,13 @@ describe('platform-core-hub-matrix', () => {
     expect(brand?.demoHref).not.toContain('production-handoff');
   });
 
-  it('cross-role peers for manufacturer development link brand W2 not dead-end', () => {
+  it('cross-role peers for manufacturer development link brand core development not dead-end', () => {
     const peers = getPillarCrossRolePeers('manufacturer', 'development');
     const brand = peers.find((p) => p.roleId === 'brand');
     expect(brand?.participates).toBe(true);
-    expect(brand?.demoHref).toContain('/brand/production/workshop2');
-    expect(brand?.demoHref).toContain('w2col=SS27');
+    expect(brand?.demoHref).toContain('/brand/core');
+    expect(brand?.demoHref).toContain('pillar=development');
+    expect(brand?.demoHref).toContain('collection=SS27');
   });
 
   it('cross-role peers expose demo href for active shop in collection_order', () => {
@@ -420,11 +429,12 @@ describe('platform-core-hub-matrix', () => {
     }
   });
 
-  it('shop development peer demo href is brand W2 not factory dossier', () => {
+  it('shop development peer demo href is brand core development not factory dossier', () => {
     const peers = getPillarCrossRolePeersForDemo('shop', 'development', PLATFORM_CORE_DEMO);
     const brand = peers.find((p) => p.roleId === 'brand');
     expect(brand?.participates).toBe(true);
-    expect(brand?.demoHref).toContain('w2col=SS27');
+    expect(brand?.demoHref).toContain('/brand/core');
+    expect(brand?.demoHref).toContain('collection=SS27');
     expect(brand?.demoHref).not.toContain('/factory/production/dossier/');
     const manufacturer = peers.find((p) => p.roleId === 'manufacturer');
     expect(manufacturer?.participates).toBe(true);
@@ -440,13 +450,14 @@ describe('platform-core-hub-matrix', () => {
     }
   });
 
-  it('brand order_production dossier links to brand W2 not factory', () => {
+  it('brand order_production dossier links to brand core development not factory', () => {
     const brand = getPlatformCoreHubRow('brand')!;
     const cell = brand.pillars.order_production;
     expect(cell.kind).toBe('active');
     if (cell.kind === 'active') {
       const dossier = cell.actions.find((a) => a.label.startsWith('Досье'));
-      expect(dossier?.href).toContain('/brand/production/workshop2');
+      expect(dossier?.href).toContain('/brand/core');
+      expect(dossier?.href).toContain('pillar=development');
       expect(dossier?.href).not.toContain('/factory/production/dossier/');
     }
   });
@@ -514,13 +525,13 @@ describe('platform-core-hub-matrix', () => {
     expect(empty.demoOrderId).toBe('__EMPTY27__');
     expect(empty.demoOrderId.startsWith('B2B-DEMO-')).toBe(false);
     const trail = buildPlatformCoreDemoTrail(empty);
-    expect(trail.some((t) => t.href.includes('w2col=EMPTY27'))).toBe(true);
+    expect(trail.some((t) => t.href.includes('collection=EMPTY27'))).toBe(true);
   });
 
   it('builds FW27 demo trail with collection-specific hrefs', () => {
     const fw27 = getPlatformCoreDemo('FW27');
     const trail = buildPlatformCoreDemoTrail(fw27);
-    expect(trail.some((t) => t.href.includes('w2col=FW27'))).toBe(true);
+    expect(trail.some((t) => t.href.includes('collection=FW27'))).toBe(true);
     expect(trail.some((t) => t.href.includes('B2B-DEMO-SHOP1-FW27'))).toBe(true);
     expect(trail.some((t) => t.href.includes('demo-fw27-01'))).toBe(true);
   });
@@ -537,6 +548,9 @@ describe('platform-core-hub-matrix', () => {
   it('platformCoreRolePillarHref preserves collection query', () => {
     expect(platformCoreRolePillarHref('brand', 'collection_order', 'FW27')).toBe(
       '/brand/core?pillar=collection_order&collection=FW27'
+    );
+    expect(platformCoreRolePillarHref('brand', 'collection_order', 'SS27')).toBe(
+      '/brand/core?pillar=collection_order'
     );
   });
 

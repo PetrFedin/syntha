@@ -6,6 +6,8 @@ import { factoryMaterialsProcurementHrefForDemo } from '@/lib/platform-core-hub-
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { shopB2bTrackingOrderHref } from '@/lib/routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   collectionId: string;
@@ -34,21 +36,24 @@ export function SupCmCalendarContextPeerStrip({ collectionId, articleId, factory
   });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="sup-cm-calendar-context-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="sup-cm-calendar-context-peer-strip"
+    >
       <Link href={procurementHref} data-testid="sup-cm-calendar-procurement-link" className={hubGadget.goldenLink}>
-        Procurement
+        Закупки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.forecastHref} data-testid="sup-cm-calendar-forecast-link" className={hubGadget.goldenLink}>
-        Forecast
+        Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={mfrHandoffHref} data-testid="sup-cm-calendar-mfr-handoff-link" className={hubGadget.goldenLink}>
-        Mfr handoff
+        Передача производству
       </Link>
       {resolvedOrderId ? (
         <>
@@ -60,7 +65,7 @@ export function SupCmCalendarContextPeerStrip({ collectionId, articleId, factory
             data-testid="sup-cm-calendar-tracking-link"
             className={hubGadget.goldenLink}
           >
-            Tracking
+            Трекинг
           </Link>
         </>
       ) : null}

@@ -1,252 +1,35 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Check, ChevronDown, ChevronRight, Play, RefreshCw, Search, Sparkles } from 'lucide-react';
+import { Play, RefreshCw, Search, Sparkles } from 'lucide-react';
 import {
   EMPTY_PLATFORM_CORE_PLANNER_SNAPSHOT,
-  PLANNER_KIND_LABELS,
-  PLANNER_STATUS_LABELS,
-  TECH_DEBT_CATEGORY_LABELS,
   type PlannerPriority,
   type PlatformCorePlannerItem,
   type PlatformCorePlannerSnapshot,
-  type PlatformCoreTechDebtItem,
 } from '@/lib/platform-core-planner';
 import { cn } from '@/lib/utils';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { platformCoreHubLayout } from '@/lib/platform-core-hub-layout';
 import { PlatformCoreAgentChat } from '@/components/platform/PlatformCoreAgentChat';
+import { PlatformAiTaskStrip } from '@/components/platform/PlatformAiTaskStrip';
+import {
+  PlannerDebtRow,
+  PlannerPriorityGroup,
+  PlannerStatChip,
+  PlannerTaskRow,
+} from '@/components/platform/PlatformCorePlannerPanelParts';
+import {
+  PLANNER_PANEL_PRIORITIES,
+  sortPlannerItemsByPriorityThenStatus,
+} from '@/lib/platform-core-planner-panel-layout';
 
 type Props = {
   collectionId?: string;
 };
 
 type PlannerTab = 'development' | 'tech-debt';
-
-const PRIORITIES: PlannerPriority[] = ['P0', 'P1', 'P2'];
-
-const PRIORITY_RANK: Record<PlannerPriority, number> = { P0: 0, P1: 1, P2: 2 };
-
-const STATUS_RANK: Record<NonNullable<PlatformCorePlannerItem['status']>, number> = {
-  open: 0,
-  in_progress: 1,
-  done: 2,
-};
-
-function sortByPriorityThenStatus<
-  T extends { priority: PlannerPriority; status?: PlatformCorePlannerItem['status']; title: string },
->(items: T[]): T[] {
-  return [...items].sort(
-    (a, b) =>
-      PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority] ||
-      STATUS_RANK[a.status ?? 'open'] - STATUS_RANK[b.status ?? 'open'] ||
-      a.title.localeCompare(b.title, 'ru')
-  );
-}
-
-const PRIORITY_BORDER: Record<PlannerPriority, string> = {
-  P0: 'border-l-red-500',
-  P1: 'border-l-amber-500',
-  P2: 'border-l-slate-300',
-};
-
-const STATUS_DOT = {
-  open: 'bg-slate-300',
-  in_progress: 'bg-blue-500',
-  done: 'bg-emerald-500',
-} as const;
-
-function StatChip({ label, value }: { label: string; value: number }) {
-  return (
-    <span className="text-text-muted inline-flex items-baseline gap-1 text-[11px]">
-      <span className="text-text-primary font-semibold tabular-nums">{value}</span>
-      {label}
-    </span>
-  );
-}
-
-function TaskRow({
-  item,
-  busy,
-  apiOnline,
-  onAgent,
-  onDone,
-}: {
-  item: PlatformCorePlannerItem;
-  busy?: boolean;
-  apiOnline?: boolean;
-  onAgent: (id: string) => void;
-  onDone: (id: string) => void;
-}) {
-  const meta = [
-    PLANNER_STATUS_LABELS[item.status],
-    PLANNER_KIND_LABELS[item.kind],
-    item.roleLabel,
-    item.pillarTitle,
-  ]
-    .filter(Boolean)
-    .join(' · ');
-
-  return (
-    <li
-      data-testid={`planner-item-${item.id}`}
-      className={cn(
-        'border-border-subtle/80 group flex gap-3 border-b border-l-[3px] px-3 py-2.5 last:border-b-0 max-md:flex-col max-md:gap-2',
-        PRIORITY_BORDER[item.priority],
-        item.status === 'done' && 'opacity-45',
-        item.status === 'in_progress' && 'bg-blue-50/40'
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start gap-2">
-          <span
-            className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', STATUS_DOT[item.status])}
-            aria-hidden
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-text-primary text-[13px] font-medium leading-snug">{item.title}</p>
-            <p className="text-text-muted mt-0.5 text-[10px]">{meta}</p>
-            {item.note ? (
-              <p className="text-text-secondary mt-1 text-[10px] leading-snug">{item.note}</p>
-            ) : null}
-          </div>
-          <span className="text-text-muted shrink-0 text-[9px] font-bold uppercase tracking-wide">
-            {item.priority}
-          </span>
-        </div>
-      </div>
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-0.5 opacity-80 group-hover:opacity-100 max-md:w-full">
-        {item.href ? (
-          <Link
-            href={item.href}
-            className={cn(
-              platformCoreHubLayout.plannerTaskActionBtn,
-              'text-text-muted hover:text-accent-primary'
-            )}
-            title="Открыть в продукте"
-          >
-            ↗
-          </Link>
-        ) : null}
-        {item.status !== 'done' ? (
-          <>
-            <button
-              type="button"
-              data-testid={`planner-start-${item.id}`}
-              disabled={busy}
-              title={apiOnline ? 'Запустить агента по задаче' : 'API offline — попробуйте dev:core'}
-              className={cn(
-                platformCoreHubLayout.plannerTaskActionBtn,
-                'text-accent-primary hover:bg-accent-primary/10 inline-flex items-center gap-1 disabled:opacity-40'
-              )}
-              onClick={() => onAgent(item.id)}
-            >
-              <Play className="h-3.5 w-3.5" aria-hidden />
-              <span className="max-md:sr-only">Доработать</span>
-            </button>
-            <button
-              type="button"
-              data-testid={`planner-done-${item.id}`}
-              disabled={busy || !apiOnline}
-              title="Отметить готово"
-              className={cn(
-                platformCoreHubLayout.plannerTaskActionBtn,
-                'text-emerald-700 hover:bg-emerald-50 disabled:opacity-40'
-              )}
-              onClick={() => onDone(item.id)}
-            >
-              <Check className="h-3.5 w-3.5" aria-hidden />
-              <span className="sr-only">Готово</span>
-            </button>
-          </>
-        ) : null}
-      </div>
-    </li>
-  );
-}
-
-function DebtRow({
-  item,
-  busy,
-  apiOnline,
-  onAgent,
-}: {
-  item: PlatformCoreTechDebtItem & { status?: PlatformCorePlannerItem['status'] };
-  busy?: boolean;
-  apiOnline?: boolean;
-  onAgent: (id: string) => void;
-}) {
-  return (
-    <li
-      data-testid={`tech-debt-${item.id}`}
-      className={cn(
-        'border-border-subtle/80 flex gap-3 border-b border-l-[3px] px-3 py-2.5 last:border-b-0 max-md:flex-col max-md:gap-2',
-        PRIORITY_BORDER[item.priority]
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <p className="text-text-primary text-[13px] font-medium leading-snug">{item.title}</p>
-        <p className="text-text-muted mt-0.5 text-[10px]">
-          {TECH_DEBT_CATEGORY_LABELS[item.category]} · {item.action}
-        </p>
-        {item.hint ? <p className="text-text-secondary mt-1 text-[10px]">{item.hint}</p> : null}
-      </div>
-      {item.status !== 'done' ? (
-        <button
-          type="button"
-          data-testid={`planner-start-${item.id}`}
-          disabled={busy}
-          title={apiOnline ? 'Запустить агента' : 'API offline — попробуйте dev:core'}
-          className={cn(
-            platformCoreHubLayout.plannerTaskActionBtn,
-            'text-accent-primary hover:bg-accent-primary/10 inline-flex shrink-0 items-center gap-1 disabled:opacity-40 max-md:w-full max-md:justify-center'
-          )}
-          onClick={() => onAgent(item.id)}
-        >
-          <Play className="h-3.5 w-3.5" aria-hidden />
-          Доработать
-        </button>
-      ) : null}
-    </li>
-  );
-}
-
-function PriorityGroup({
-  priority,
-  items,
-  defaultOpen,
-  children,
-}: {
-  priority: PlannerPriority;
-  items: { priority: PlannerPriority }[];
-  defaultOpen?: boolean;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen ?? priority === 'P0');
-  if (items.length === 0) return null;
-
-  return (
-    <div className="border-border-subtle overflow-hidden rounded-lg border bg-white">
-      <button
-        type="button"
-        className="hover:bg-bg-surface2 flex w-full items-center gap-2 px-3 py-2 text-left"
-        onClick={() => setOpen((v) => !v)}
-      >
-        {open ? (
-          <ChevronDown className="text-text-muted h-3.5 w-3.5 shrink-0" />
-        ) : (
-          <ChevronRight className="text-text-muted h-3.5 w-3.5 shrink-0" />
-        )}
-        <span className="text-text-primary text-[11px] font-bold uppercase tracking-wide">
-          {priority}
-        </span>
-        <span className="text-text-muted text-[10px]">{items.length}</span>
-      </button>
-      {open ? <ul>{children}</ul> : null}
-    </div>
-  );
-}
 
 export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
   const [tab, setTab] = useState<PlannerTab>('development');
@@ -472,7 +255,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
       );
       const j = (await r.json()) as { ok: boolean; p0Active?: number; removedDiscovered?: number };
       if (!r.ok || !j.ok) {
-        setActionMsg('Scrub не выполнен — нужен dev:core :3001');
+        setActionMsg('Сброс архива не выполнен — нужен dev:core :3001');
         return;
       }
       setActionMsg(
@@ -480,7 +263,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
       );
       await refresh();
     } catch {
-      setActionMsg('Scrub недоступен — dev:core :3001');
+      setActionMsg('Сброс архива недоступен — dev:core :3001');
     } finally {
       setBusy(false);
     }
@@ -523,7 +306,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
     let items = snapshot.development;
     if (hideDone) items = items.filter((i) => i.status !== 'done');
     if (priority !== 'all') items = items.filter((i) => i.priority === priority);
-    return sortByPriorityThenStatus(items);
+    return sortPlannerItemsByPriorityThenStatus(items);
   }, [snapshot.development, priority, hideDone]);
 
   const devByPriority = useMemo(() => {
@@ -536,7 +319,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
     let items = snapshot.techDebt;
     if (hideDone) items = items.filter((i) => i.status !== 'done');
     if (priority !== 'all') items = items.filter((i) => i.priority === priority);
-    return sortByPriorityThenStatus(items);
+    return sortPlannerItemsByPriorityThenStatus(items);
   }, [snapshot.techDebt, priority, hideDone]);
 
   const debtByPriority = useMemo(() => {
@@ -551,7 +334,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
   const debtOpenCount = snapshot.techDebt.filter((i) => i.status !== 'done').length;
 
   return (
-    <section data-testid="platform-core-planner" className="space-y-4">
+    <section data-testid="platform-core-planner" className="min-w-0 space-y-4 overflow-x-clip">
       <div className="border-border-subtle rounded-xl border bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
@@ -567,18 +350,18 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                 <span
                   className={cn('h-1.5 w-1.5 rounded-full', apiOnline ? 'bg-emerald-500' : 'bg-slate-400')}
                 />
-                {apiOnline ? 'online' : 'offline'}
+                {apiOnline ? 'в сети' : 'офлайн'}
               </span>
             </div>
             <p className="text-text-secondary max-w-xl text-[12px] leading-relaxed">
               Очередь улучшений по ролям и столпам — локальный аудит + Cursor SDK для глубокого скана.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <StatChip label="P0 live" value={plannerMeta.p0Active ?? snapshot.counts.p0} />
-            <StatChip label="открыто" value={snapshot.counts.open} />
-            <StatChip label="в работе" value={snapshot.counts.inProgress} />
-            <StatChip label="готово" value={snapshot.counts.done} />
+          <div className={cn(platformCoreHubLayout.plannerToolbarRow, 'flex flex-wrap items-center gap-3')}>
+            <PlannerStatChip label="P0 активно" value={plannerMeta.p0Active ?? snapshot.counts.p0} />
+            <PlannerStatChip label="открыто" value={snapshot.counts.open} />
+            <PlannerStatChip label="в работе" value={snapshot.counts.inProgress} />
+            <PlannerStatChip label="готово" value={snapshot.counts.done} />
             <button
               type="button"
               title="Обновить"
@@ -669,8 +452,8 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
             data-testid="planner-offline-hint"
             className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
           >
-            Планировщик offline — hub должен быть на <strong>dev:core (:3001)</strong>. Запустите{' '}
-            <code className="text-[10px]">npm run dev:core</code> из корня Projects. Старый offline-snapshot
+            Планировщик офлайн — hub должен быть на <strong>dev:core (:3001)</strong>. Запустите{' '}
+            <code className="text-[10px]">npm run dev:core</code> из корня Projects. Устаревший офлайн-снимок
             больше не показывается — только live API.
           </p>
         ) : null}
@@ -732,6 +515,15 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
           data-testid="platform-core-planner-actions"
           className={cn(hubCabinet.workspaceStickyActions, 'mt-4 max-md:static')}
         >
+          <PlatformAiTaskStrip
+            sectionId="planner-ui-dedup"
+            pillarId="development"
+            roleId="brand"
+            task="Platform Core UI dedup scan: suggest ui_improvement tasks for duplicate tsx patterns"
+            buttonLabel="UI dedup (AI scan)"
+            testId="planner-ui-improvement-ai"
+            className="w-full max-w-xl"
+          />
           <button
             type="button"
             data-testid="planner-run-agents"
@@ -816,7 +608,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
 
         <div className={cn(platformCoreHubLayout.plannerToolbarRow, 'shrink-0')}>
           <div className="border-border-subtle inline-flex shrink-0 rounded-lg border bg-white p-0.5 text-[10px] font-semibold">
-            {(['all', ...PRIORITIES] as const).map((p) => (
+            {(['all', ...PLANNER_PANEL_PRIORITIES] as const).map((p) => (
               <button
                 key={p}
                 type="button"
@@ -871,10 +663,10 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                 ) : null}
               </div>
             ) : priority === 'all' ? (
-              PRIORITIES.map((p) => (
-                <PriorityGroup key={p} priority={p} items={devByPriority[p]} defaultOpen={p === 'P0'}>
+              PLANNER_PANEL_PRIORITIES.map((p) => (
+                <PlannerPriorityGroup key={p} priority={p} items={devByPriority[p]} defaultOpen={p === 'P0'}>
                   {devByPriority[p].map((item) => (
-                    <TaskRow
+                    <PlannerTaskRow
                       key={item.id}
                       item={item}
                       busy={busy}
@@ -883,12 +675,12 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                       onDone={(id) => void markDone(id)}
                     />
                   ))}
-                </PriorityGroup>
+                </PlannerPriorityGroup>
               ))
             ) : (
               <ul className="border-border-subtle overflow-hidden rounded-lg border bg-white">
                 {devItems.map((item) => (
-                  <TaskRow
+                  <PlannerTaskRow
                     key={item.id}
                     item={item}
                     busy={busy}
@@ -905,10 +697,10 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                 <p className="text-text-muted text-sm">Список пуст</p>
               </div>
             ) : priority === 'all' ? (
-              PRIORITIES.map((p) => (
-                <PriorityGroup key={p} priority={p} items={debtByPriority[p]} defaultOpen={p === 'P0'}>
+              PLANNER_PANEL_PRIORITIES.map((p) => (
+                <PlannerPriorityGroup key={p} priority={p} items={debtByPriority[p]} defaultOpen={p === 'P0'}>
                   {debtByPriority[p].map((item) => (
-                    <DebtRow
+                    <PlannerDebtRow
                       key={item.id}
                       item={item}
                       busy={busy}
@@ -916,12 +708,12 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                       onAgent={(id) => void runAgents(id)}
                     />
                   ))}
-                </PriorityGroup>
+                </PlannerPriorityGroup>
               ))
             ) : (
               <ul className="border-border-subtle overflow-hidden rounded-lg border bg-white">
                 {debtItems.map((item) => (
-                  <DebtRow
+                  <PlannerDebtRow
                     key={item.id}
                     item={item}
                     busy={busy}

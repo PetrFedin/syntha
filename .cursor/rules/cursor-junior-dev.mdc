@@ -1,0 +1,61 @@
+---
+description: Режим «младший разработчик» — якорь, minimal diff, корень Projects
+alwaysApply: true
+---
+
+# Junior dev workflow (Projects)
+
+**Корень workspace = `Projects`** (не только `_ai-share/synth-1-full`). GSD/MCP/`.cursor/` — от корня монорепо.
+
+## Стартовый промпт (Platform Core — вставить в чат)
+
+```text
+Read AGENTS.md + _platform-core-split/platform-core/DEEP-AUDIT-PROGRESS.md.
+Scope: {role} × {pillar} × {section-id}.
+Anchor: {one file}.
+grep → read ≤150 lines. npm run dev:platform-core. Minimal diff.
+```
+
+Platform Core scope: **`.cursor/rules/platform-core-scope.mdc`**. Не открывать `DEEP-AUDIT-*.md` целиком (~14k, `.cursorignore`).
+
+## Цикл задачи
+
+1. `AGENTS.md` + правило зоны (`project.mdc` / `platform-core-scope.mdc`)
+2. Один якорь: `RoleCoreCabinetHub` · `*-audit.ts` · `workspaces/*`
+3. `grep` / `ast-grep` → read 50–150 строк (`token-economy.mdc`)
+4. План: 1–3 файла
+5. Minimal diff
+6. `npm test -- --testPathPattern=…` (full e2e — только по запросу)
+7. Ответ: только изменённые файлы + зачем
+
+**Новый чат:** смена role×pillar или контекст >60% → см. **`chat-efficiency.mdc`**.
+
+## CLI (Mac, из корня Projects)
+
+```bash
+npm run bootstrap:p0          # Poetry 3.12 venv + ml + analytics + PG + ollama pull
+npm run bootstrap:p0:fast     # без ollama pull
+npm run audit:rd-stack
+ruff check app/               # или: poetry run ruff check app/
+poetry run pytest -q          # из .venv (Python 3.12, не 3.14)
+```
+
+Backend: **`brew install python@3.12`** — Poetry env на 3.12 (`asyncpg`/Pillow ломаются на 3.14).
+
+ast-grep — для AST-рефакторинга (playground.ast-grep.github.io), не каждый чат:
+
+```bash
+ast-grep run -p 'resolveHref: ($A) => $B' --lang typescript path/to/file.ts
+```
+
+## Context Explorer (Cursor UI, ~раз в неделю)
+
+Rules vs files vs skills: если rules >30% контекста — урезать `alwaysApply` или вынести в `agent_requestable`.
+
+## Linear MCP
+
+Задачи из `DEEP-AUDIT-PROGRESS.md` → issues с меткой **`platform-core`** (напр. P0.6 golden e2e).
+
+## Не добавлять
+
+pnpm вместо npm · Prisma/Drizzle параллельно SQLAlchemy · Meilisearch/Supabase как core · дубли `docs/architecture.md` · DEEP-AUDIT целиком.

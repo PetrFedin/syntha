@@ -18,12 +18,15 @@ import {
 } from '@/components/brand/merch/BrandRfqSupplierGoldenPathStrip';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
+import { PLATFORM_CORE_DEMO, getPlatformCoreDemo } from '@/lib/platform-core-demo-context';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { BrandDevMerchCoSpinePeerStrip } from '@/components/platform/BrandDevMerchCoSpinePeerStrip';
 
 function CentricIntegrationsWorkspaceBody() {
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-rfq-supplier');
   const collectionId = PLATFORM_CORE_DEMO.collectionId;
   const articleId = PLATFORM_CORE_DEMO.demoArticleId;
+  const demo = getPlatformCoreDemo(collectionId);
 
   return (
     <PillarCapabilityWorkspaceChrome
@@ -47,6 +50,15 @@ function CentricIntegrationsWorkspaceBody() {
           activeStep={brandRfqSupplierGoldenPathStepFromFeature(activeFeatureId)}
         />
       </div>
+      {isPlatformCoreMode() ? (
+        <div className="mb-4">
+          <BrandDevMerchCoSpinePeerStrip
+            variant="rfq-supplier"
+            collectionId={collectionId}
+            orderId={demo.demoOrderId}
+          />
+        </div>
+      ) : null}
       {activeFeatureId === 'upstream' ? (
         <div className="grid gap-4">
           <BrandCentricStyleImportPanel collectionId={collectionId} articleId={articleId} />

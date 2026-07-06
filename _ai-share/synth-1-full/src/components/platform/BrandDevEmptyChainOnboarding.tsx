@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES, brandDevelopmentCabinetHref } from '@/lib/platform-core-routes';
 import { getPlatformCoreCollectionLabel } from '@/lib/platform-core-hub-matrix';
-import { WORKSHOP2_COL_PARAM, WORKSHOP2_CREATE_PARAM } from '@/lib/production/workshop2-url';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 type Props = {
   collectionId: string;
@@ -15,10 +15,10 @@ type Props = {
 
 /** EMPTY27 / пустая цепочка: один путь старта без лишних CTA. */
 export function BrandDevEmptyChainOnboarding({ collectionId, variant = 'cabinet' }: Props) {
-  const rangeHref = `${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`;
-  const createHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}&${WORKSHOP2_CREATE_PARAM}=1`;
-  const ss27W2Href = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=SS27`;
-  const ss27RangeHref = `${ROUTES.brand.rangePlanner}?collection=SS27`;
+  const rangeHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`);
+  const createHref = brandDevelopmentCabinetHref(collectionId, undefined, { create: true });
+  const ss27W2Href = brandDevelopmentCabinetHref('SS27');
+  const ss27RangeHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=SS27`);
 
   return (
     <div

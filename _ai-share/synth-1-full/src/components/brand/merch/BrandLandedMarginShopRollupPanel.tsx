@@ -90,7 +90,7 @@ export function BrandLandedMarginShopRollupPanel({ collectionId = 'SS27', orderI
           {storageMode === 'pg' ? 'PG margin feed' : `${storageMode} margin feed`}
         </Badge>
         <Button size="sm" asChild>
-          <Link href={session.shopMarginRollupHref}>Shop rollup tab</Link>
+          <Link href={session.shopMarginRollupHref}>Сводка магазина</Link>
         </Button>
         <Button variant="outline" size="sm" type="button" onClick={() => void reload()}>
           Refresh
@@ -109,7 +109,7 @@ export function BrandLandedMarginShopRollupPanel({ collectionId = 'SS27', orderI
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Shop roll-up preview</CardTitle>
+          <CardTitle className="text-base">Превью сводки магазина</CardTitle>
           <CardDescription>
             Buyer landed margin vs brand simulator · same PG feed as shop rollup tab.
           </CardDescription>

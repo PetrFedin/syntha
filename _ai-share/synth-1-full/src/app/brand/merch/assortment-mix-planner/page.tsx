@@ -15,6 +15,8 @@ import {
   BrandWssiGoldenPathStrip,
   brandWssiGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandWssiGoldenPathStrip';
+import { BrandCoWssiCoPeerStrip } from '@/components/platform/BrandCoWssiCoPeerStrip';
+import { BrandCoOtbReplenishmentSyncStrip } from '@/components/platform/BrandCoOtbReplenishmentSyncStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { products } from '@/lib/products';
@@ -89,11 +91,15 @@ function WssiPlanWorkspaceBody() {
         </div>
       }
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandWssiGoldenPathStrip
           collectionId={collectionId}
           activeStep={brandWssiGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoWssiCoPeerStrip collectionId={collectionId} />
+        {activeFeatureId === 'otb' ? (
+          <BrandCoOtbReplenishmentSyncStrip collectionId={collectionId} orderId={articleId} />
+        ) : null}
       </div>
       {activeFeatureId === 'otb' ? <BrandWssiOtbPanel collectionId={collectionId} /> : null}
       {activeFeatureId === 'mix' ? <BrandWssiMixPanel /> : null}

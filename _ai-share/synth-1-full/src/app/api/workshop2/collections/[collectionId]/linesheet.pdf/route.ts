@@ -2,7 +2,8 @@
  * GET collection linesheet PDF — опубликованные артикулы PG (brand pillar 2).
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlatformCoreDemo } from '@/lib/platform-core-demo-context';
+import { getPlatformCoreDemo, isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
+import { brandScLinesheetPdfEmptyApiMessageRu } from '@/lib/b2b/brand-sc-linesheet-readpath';
 import { resolveWorkshop2B2bArticleHeroImageUrl } from '@/lib/production/workshop2-b2b-article-hero-image';
 import { buildWorkshop2CollectionLinesheetPdfBytes } from '@/lib/production/workshop2-collection-linesheet-pdf';
 import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
@@ -23,7 +24,10 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
 
   let articles = await listWorkshop2PublishedShowroomArticles(collectionId);
 
-  if (!articles.length) {
+  if (
+    !articles.length &&
+    !isPlatformCoreEmptyChainCollection(collectionId)
+  ) {
     const demoArticleId = getPlatformCoreDemo(collectionId).demoArticleId;
     const record = await getWorkshop2ServerDossierRecord(collectionId, demoArticleId);
     if (record?.dossier) {
@@ -44,7 +48,11 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
 
   if (!articles.length) {
     return NextResponse.json(
-      { ok: false, messageRu: 'Нет опубликованных артикулов — опубликуйте витрину в W2.' },
+      {
+        ok: false,
+        messageRu: brandScLinesheetPdfEmptyApiMessageRu(collectionId),
+        testId: 'brand-sc-linesheet-pdf-empty-api',
+      },
       { status: 404 }
     );
   }

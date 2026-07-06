@@ -105,3 +105,85 @@ Core mode: одна строка `← Кабинет · роль · столп �
 - `e2e/core-101-comms-mobile-viewports.spec.ts` — messages split `< md`
 - `e2e/core-102-calendar-viewports.spec.ts` — calendar compact 393 / 834
 - `e2e/core-103-op-viewports.spec.ts` — handoff, mfr cards, sup procurement
+
+## Range planner (`brand-dev-range`)
+
+| Viewport | План по уровням | Tier board | Формы |
+|----------|-----------------|------------|-------|
+| < md | 1 col | h-scroll (`brand-dev-range-tier-board-scroll`) | full-width touch |
+| md–lg | `workspaceCardGrid` 2 col | 3 col grid | 2 col inputs |
+| lg+ | 3 col | 3 col grid | inline |
+
+E2E: `e2e/core-105-range-planner-viewports.spec.ts`
+
+## Order detail (brand/shop)
+
+| Viewport | Layout | Cross-role |
+|----------|--------|------------|
+| < lg | stack, `orderDetailCrossRoleMobile` под facts | `platform-core-order-detail-cross-role-mobile` |
+| lg+ | `orderDetailLayout` 2-col | `platform-core-order-detail-rail` sticky |
+
+Строки заказа: `platform-core-order-lines-scroll` (`workspaceTableScroll`). Brand: `showCrossLinks={false}` в workspace — без дубля footer.
+
+E2E: `e2e/core-106-order-detail-viewports.spec.ts`
+
+## Sample collection (brand-sc / shop-sc)
+
+| Экран | < md | md–lg | lg+ |
+|-------|------|-------|-----|
+| Brand linesheets | `brand-sc-linesheets-card-grid` 1 col | 2 col grid | table `brand-sc-linesheets-list` |
+| Shop showroom | cover hero `h-12`, article 1 col | 2 col grid | 2 col |
+| Publish / unpublish | `min-h-11` touch targets | same | table actions |
+
+E2E: `e2e/core-107-sc-viewports.spec.ts`
+
+## shop-op buyer tracking (Фаза 11 follow-up)
+
+- `PlatformCoreShopB2bTrackingPanel`: context strip h-scroll + `trackingGoldenLink` (≥44px < md); `ShopOpTrackingSpinePeerStrip` под strip при `?order=`; timeline — chips h-scroll `< md` (`trackingTimelineMobile`), список `md+`.
+- `CollectionOrderPillarCard` (shop OP cabinet): `ShopOpCabinetSpinePeerStrip` после ETA peek.
+- E2E: `core-97` — mobile timeline + spine peer; iPad скрывает mobile timeline.
+- Audit: `inventory_reserved` + `!compact` regex fix (41/41).
+
+## Shop buyer tracking (shop-op / shop-co-buyer-tracking) — 2026-06-12
+
+- `tracking-core.tsx`: `pb-safe` на странице.
+- `PlatformCoreShopB2bTrackingPanel`: timeline → `PillarInsightSteps` (chips < md, list md+); shipment strip touch.
+- `ShopOrderShipmentTrackingStrip`: `break-all` на ТТН, pull CTA `min-h-11` < md.
+- `pillarInsight.goldenLink`: touch `min-h-11` < md (все golden path / shop-op peer strips).
+- Audit: `inventory_reserved` + `!compact` regex multiline; mfr WMS badge скрыт в compact.
+- E2E: `core-97` (393 timeline + 834 calendar); требует `npm run dev:core` + `db:core:bootstrap`.
+
+## Brand dossier (brand-dev-dossier) — 2026-06-12
+
+- `workshop2-article-core-wayfinding.tsx`: context/cross strips → `hubGadget.goldenPath`, `pb-safe`.
+- `workshop2-phase1-dossier-panel-tz-dense-nav.tsx`: h-scroll tabs < md, `min-h-11`, `brand-dev-dossier-section-nav`.
+- `workshop2-phase1-dossier-panel-body-shell.tsx`: compact hero < md.
+- `workshop2-phase1-dossier-panel-tz-stage-sticky-header.tsx`: sticky stage board < md (`workspaceStickyHead`).
+- `workshop2-phase1-dossier-panel-footer-actions.tsx`: sticky actions + `brand-dev-dossier-actions-strip`, touch CTA.
+- E2E: `core-108` (393 + 834); требует `npm run core:bootstrap`.
+
+## Русификация UI + brand-dev-pg-sync — 2026-06-12
+
+- Peer-стрипы shop-op / shop-cm / tracking bridge: русские подписи для ролей бренд·магазин·производство.
+- brand-dev-pg-sync: `BrandDevPgSyncPeerStrip` (Схема атрибутов, Чат по артикулу), `brand-dev-pg-sync-stack` + `pb-safe` на W2 hub.
+- `Workshop2HubSlaOpsPanel` compact: h-scroll < md, русские метки SLO.
+- W2/dossier/range: «Хаб W2», «Сводка для инвестора».
+- E2E: `core-98` — pg-sync peer strip + SLA panel на 393/834.
+
+## Обновление 2026-06-12 — фазы 12–15
+
+### Фаза 12 (development) — закрыто
+- `materials-core.tsx`: h-scroll context-strips, `overflow-x-clip`, section nav артикулов, таблицы BOM через `workspaceTableScroll`.
+- E2E: `core-100` (393 development + 834 procurement).
+
+### Фаза 15 (hub planner) — закрыто
+- `PlatformCorePlannerPanel`: `overflow-x-clip`, `plannerToolbarRow` на stats, touch CTA `min-h-11`, русские статусы (в сети/офлайн).
+- Hub: `PlatformHubPageClient` — `overflow-x-clip` на колонке и секции planner.
+- E2E: `core-104` (393 + 834).
+
+### Русификация platform-core (peer strips)
+- Передача, Техкарта раскроя, Связь с цехом, Прогноз, Операции цеха — вместо EN в OP/comms/empty peer strips.
+
+### M3 — core-109 representative workspaces
+- `e2e/core-109-representative-workspaces.spec.ts`: 5 экранов × 393/834, overflow smoke.
+- W2 hub · shop matrix · brand CO registry · factory dossier · brand order messages.

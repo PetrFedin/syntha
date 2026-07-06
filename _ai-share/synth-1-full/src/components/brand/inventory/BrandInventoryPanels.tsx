@@ -18,37 +18,37 @@ export function BrandInventoryOverviewBridgePanel({ collectionId }: Props) {
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center gap-2">
           <Package className="h-4 w-4" />
-          <CardTitle className="text-base">Brand ATP · ledger</CardTitle>
+          <CardTitle className="text-base">ATP бренда · журнал</CardTitle>
         </div>
         <CardDescription>
-          Onfinity/SAP: brand matrix → balance transfer → shop retail sync (столп 4).
+          Матрица бренда → перенос остатков → синхронизация с розницей магазина (столп 4).
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         <Button size="sm" variant="outline" asChild>
           <Link href={session.countHref} data-testid="brand-inventory-bridge-count-link">
-            Physical count
+            Физический пересчёт
           </Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
           <Link href={session.balanceHref} data-testid="brand-inventory-bridge-balance-link">
-            Balance tab
+            Вкладка баланса
           </Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.inventoryBalanceHref}>Stock transfer</Link>
+          <Link href={session.inventoryBalanceHref}>Перенос остатков</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.multiLocationHref}>Multi-location</Link>
+          <Link href={session.multiLocationHref}>Несколько складов</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.legacyMatrixHref}>Full matrix (legacy)</Link>
+          <Link href={session.legacyMatrixHref}>Полная матрица (legacy)</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.shopInventoryOverviewHref}>Shop inventory</Link>
+          <Link href={session.shopInventoryOverviewHref}>Склад магазина</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.shopLandedMarginHref}>Shop margin</Link>
+          <Link href={session.shopLandedMarginHref}>Маржа магазина</Link>
         </Button>
       </CardContent>
     </Card>
@@ -64,30 +64,30 @@ export function BrandInventoryBalanceBridgePanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <ArrowRightLeft className="h-4 w-4" />
-            <CardTitle className="text-base">Balance · transfer</CardTitle>
+            <CardTitle className="text-base">Баланс · перенос</CardTitle>
           </div>
-          <CardDescription>WMS proposals между складами и offline-точками.</CardDescription>
+          <CardDescription>Предложения WMS между складами и офлайн-точками.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.inventoryBalanceHref} data-testid="brand-inventory-balance-deep-link">
-              Open stock transfer
+              Открыть перенос остатков
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shadowInventoryHref}>Shadow inventory</Link>
+            <Link href={session.shadowInventoryHref}>Теневой склад</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={session.warehouseHref}>
               <Warehouse className="mr-1 h-3 w-3" />
-              Warehouse
+              Склад
             </Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.overviewHref}>Overview tab</Link>
+            <Link href={session.overviewHref}>Обзор</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopLandedMarginHref}>Shop margin</Link>
+            <Link href={session.shopLandedMarginHref}>Маржа магазина</Link>
           </Button>
         </CardContent>
       </Card>
@@ -104,30 +104,30 @@ export function BrandInventoryNetworkBridgePanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Network className="h-4 w-4" />
-            <CardTitle className="text-base">Retailer network</CardTitle>
+            <CardTitle className="text-base">Сеть ритейлеров</CardTitle>
           </div>
-          <CardDescription>Shop ATP · reconcile · replenishment alerts по сети.</CardDescription>
+          <CardDescription>ATP магазина · сверка · оповещения пополнения по сети.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.shopInventoryOverviewHref} data-testid="brand-inventory-shop-stock-link">
-              Shop inventory
+              Склад магазина
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shopInventoryReconcileHref}>Shop reconcile</Link>
+            <Link href={session.shopInventoryReconcileHref}>Сверка магазина</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.replenishmentAtpHref}>Replenishment · ATP</Link>
+            <Link href={session.replenishmentAtpHref}>Пополнение · ATP</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.replenishmentAlertsHref}>Replenishment alerts</Link>
+            <Link href={session.replenishmentAlertsHref}>Оповещения пополнения</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopOrderCommsHref}>Shop order tracking</Link>
+            <Link href={session.shopOrderCommsHref}>Трекинг заказа магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopMatrixHref}>Shop matrix</Link>
+            <Link href={session.shopMatrixHref}>Матрица магазина</Link>
           </Button>
         </CardContent>
       </Card>
@@ -142,31 +142,31 @@ export function BrandInventoryPhysicalCountPanel({ collectionId }: Props) {
     <div className="space-y-4" data-testid="brand-inventory-physical-count-panel">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Physical count · reconcile</CardTitle>
+          <CardTitle className="text-base">Физический пересчёт · сверка</CardTitle>
           <CardDescription>
-            Onfinity: cycle count → discrepancy → shop ledger adjust (brand orchestrates network).
+            Цикл пересчёта → расхождения → корректировка журнала магазина (бренд оркестрирует сеть).
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
             <Link href={session.shopInventoryReconcileHref} data-testid="brand-inventory-count-reconcile-link">
-              Shop reconcile
+              Сверка магазина
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.cycleCountHref}>Cycle counting</Link>
+            <Link href={session.cycleCountHref}>Циклический пересчёт</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.multiLocationHref}>Multi-location</Link>
+            <Link href={session.multiLocationHref}>Несколько складов</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.countHref}>Count tab</Link>
+            <Link href={session.countHref}>Вкладка пересчёта</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.shopLandedMarginHref}>Shop margin</Link>
+            <Link href={session.shopLandedMarginHref}>Маржа магазина</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.brandLandedMarginHref}>Brand margin</Link>
+            <Link href={session.brandLandedMarginHref}>Маржа бренда</Link>
           </Button>
         </CardContent>
       </Card>

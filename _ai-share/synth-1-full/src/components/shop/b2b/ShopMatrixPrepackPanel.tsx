@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,9 +24,14 @@ import { fetchShopMatrixSizeCurveView } from '@/lib/b2b/shop-matrix-size-curve-c
 import type { ShopMatrixSizeCurveView } from '@/lib/b2b/shop-matrix-size-curve';
 import { mergeCurveIntoStandardGrid } from '@/lib/b2b/shop-matrix-size-curve';
 import { buildShopWholesaleMatrixSession } from '@/lib/b2b/shop-wholesale-matrix-workspace';
+import { ShopCoMatrixInspectorPrepackPeerStrip } from '@/components/platform/ShopCoMatrixInspectorPrepackPeerStrip';
 import { fetchWorkshop2MatrixProducts } from '@/lib/b2b/workshop2-b2b-matrix-catalog';
 import type { Product } from '@/lib/types';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import {
+  isShopCoMatrixEmbeddedCabinetContext,
+  shopCoMatrixEmbeddedTabHref,
+} from '@/lib/platform-core-cabinet-workspace';
 import { ROUTES, shopB2bMatrixPrepackApplyHref, shopB2bMatrixReorderHref } from '@/lib/routes';
 import type { ShopMatrixPrepackApplyRequest } from '@/lib/b2b/shop-matrix-prepack-apply';
 
@@ -42,6 +48,9 @@ export function ShopMatrixPrepackPanel({
   focusArticleId,
   onApplyInMatrix,
 }: Props) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const embeddedMatrix = isShopCoMatrixEmbeddedCabinetContext(pathname, searchParams.get('section'));
   const [packCount, setPackCount] = useState(2);
   const [articleId, setArticleId] = useState(focusArticleId ?? '');
   const [products, setProducts] = useState<Product[]>([]);
@@ -125,12 +134,18 @@ export function ShopMatrixPrepackPanel({
     onApplyInMatrix?.(requests.length === 1 ? requests[0] : requests);
   };
 
-  const matrixHref = `${shopB2bMatrixReorderHref(collectionId, orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=matrix`;
-
   const session = useMemo(
     () => buildShopWholesaleMatrixSession({ collectionId, orderId, articleId: articleId || undefined }),
     [collectionId, orderId, articleId]
   );
+  const matrixNavInput = {
+    collectionId,
+    orderId,
+    articleId: articleId || focusArticleId,
+  };
+  const matrixHref = embeddedMatrix
+    ? shopCoMatrixEmbeddedTabHref('matrix', matrixNavInput)
+    : `${shopB2bMatrixReorderHref(collectionId, orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=matrix`;
 
   const displaySizes = curveView?.sizes?.length
     ? [...new Set([...SHOP_MATRIX_SIZE_CURVE_SIZES, ...curveView.sizes])]
@@ -138,14 +153,22 @@ export function ShopMatrixPrepackPanel({
 
   return (
     <div className="space-y-4" data-testid="shop-matrix-prepack-panel">
+      {!embeddedMatrix ? (
+      <ShopCoMatrixInspectorPrepackPeerStrip
+        collectionId={collectionId}
+        orderId={orderId}
+        articleId={articleId || focusArticleId}
+        activeTab="prepack"
+      />
+      ) : null}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Pre-pack · size curve</CardTitle>
+          <CardTitle className="text-base">Препак · размерная кривая</CardTitle>
           <CardDescription>
-            W2 size chart SoT ({curveView?.source ?? '…'}) × pack multiple{' '}
-            {breakdown.packSize} ед. · brand:{' '}
+            Размерная сетка W2 ({curveView?.source ?? '…'}) × кратность препака{' '}
+            {breakdown.packSize} ед. · бренд:{' '}
             <Link href={session.brandPackRulesCurveHref} className="text-accent-primary hover:underline">
-              pack rules · curve
+              правила препака · кривая
             </Link>
           </CardDescription>
         </CardHeader>
@@ -161,7 +184,7 @@ export function ShopMatrixPrepackPanel({
               />
             </label>
             <label className="space-y-1 text-xs">
-              <span className="text-text-muted block">Кол-во pack</span>
+              <span className="text-text-muted block">Кол-во препаков</span>
               <Input
                 type="number"
                 min={1}
@@ -184,7 +207,7 @@ export function ShopMatrixPrepackPanel({
           {products.length > 1 ? (
             <div className="space-y-2 rounded-md border p-3">
               <p className="text-text-secondary text-xs">
-                Batch apply — выберите артикулы с общим pack count:
+                Пакетное применение — выберите артикулы с общим числом препаков:
               </p>
               <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
                 {products.slice(0, 12).map((product) => {
@@ -220,9 +243,9 @@ export function ShopMatrixPrepackPanel({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Size</TableHead>
-                <TableHead className="text-right">Weight</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
+                <TableHead>Размер</TableHead>
+                <TableHead className="text-right">Вес</TableHead>
+                <TableHead className="text-right">Кол-во</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -254,37 +277,37 @@ export function ShopMatrixPrepackPanel({
           </Button>
         ) : null}
         <Button size="sm" variant={onApplyInMatrix ? 'outline' : 'default'} asChild data-testid="shop-matrix-prepack-apply-matrix">
-          <Link href={applyHref}>{onApplyInMatrix ? 'Apply · URL' : 'Применить в матрице'}</Link>
+          <Link href={applyHref}>{onApplyInMatrix ? 'Применить · URL' : 'Применить в матрице'}</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={matrixHref}>Матрица</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.brandPackRulesShopPrepackHref}>Brand · shop-prepack</Link>
+          <Link href={session.brandPackRulesShopPrepackHref}>Бренд · препак магазина</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.workingOrderBulkHref}>Working order · bulk</Link>
+          <Link href={session.workingOrderBulkHref}>Рабочий заказ · пакетно</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.replenishmentHref}>Replenishment · ATP</Link>
+          <Link href={session.replenishmentHref}>Пополнение · ATP</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.landedMarginHref}>Landed margin</Link>
+          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.collaborativeHref}>Collaborative approvals</Link>
+          <Link href={session.collaborativeHref}>Совместный заказ · согласования</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.showroomHref}>Showroom</Link>
+          <Link href={session.showroomHref}>Шоурум</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.platformMarketroomHref}>Platform marketroom</Link>
+          <Link href={session.platformMarketroomHref}>Маркетрум платформы</Link>
         </Button>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={session.inventoryOverviewHref}>Inventory overview</Link>
+          <Link href={session.inventoryOverviewHref}>Обзор остатков</Link>
         </Button>
       </div>
     </div>

@@ -39,9 +39,9 @@ const PILLAR_CHAIN_HINT: Record<CoreHubPillarId, string> = {
   collection_order:
     'Связка shop↔brand и handoff в «Заказ → производство» + inventory/comms.',
   order_production:
-    'Связка brand/manufacturer/supplier; downstream — shop tracking и comms.',
+    'Связка brand↔shop: исполнение заказа, handoff и buyer tracking после опта.',
   comms:
-    'Горизонталь всех ролей вокруг PO; без этого рвётся цепочка статусов и чатов.',
+    'Горизонталь brand↔shop вокруг PO; без этого рвётся цепочка статусов и чатов.',
 };
 
 const ROLE_ALIASES: Partial<Record<CoreChainRoleId, string[]>> = {
@@ -110,8 +110,8 @@ function buildLinkageRu(input: {
     parts.push(
       `Между ролями: ${[input.roleId, ...otherRoles].map((r) => ROLE_LABELS[r]).join(' ↔ ')} — нужен общий контекст заказа/коллекции.`
     );
-  } else if (lower.includes('shop') || lower.includes('brand') || lower.includes('factory')) {
-    parts.push(`Между ролями: затрагивает соседние кабинеты в цепочке B2B → производство.`);
+  } else if (lower.includes('shop') || lower.includes('brand') || lower.includes('магазин') || lower.includes('бренд')) {
+    parts.push(`Между ролями: бренд ↔ магазин — общий контекст коллекции и оптового заказа.`);
   }
 
   const pillars = detectPillars(input.text, input.pillarId);

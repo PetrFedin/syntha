@@ -19,10 +19,13 @@ export type Workshop2FactoryPackServerExportResult =
         | `http_${number}`;
     };
 
+type Workshop2FactoryPackServerExportFailureReason = Extract<
+  Workshop2FactoryPackServerExportResult,
+  { ok: false }
+>['reason'];
+
 export function workshop2FactoryPackServerExportFailureRu(
-  reason: Workshop2FactoryPackServerExportResult extends { ok: false; reason: infer R }
-    ? R
-    : never
+  reason: Workshop2FactoryPackServerExportFailureReason
 ): string {
   switch (reason) {
     case 'not_found':

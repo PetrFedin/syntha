@@ -9,13 +9,16 @@ import {
 import type { PgContextualThreadsCabinet } from '@/lib/server/pg-contextual-message-threads-handler';
 import {
   buildPgB2bOrderChatId,
-  buildPlaceholderB2bOrderChat,
   isBrandPgContextChatId,
   mapBrandPgThreadsToChats,
   parseBrandPgContextChatId,
   type BrandPgThreadRow,
 } from '@/lib/brand/brand-messages-pg-threads';
 import { WORKSHOP2_B2B_ORDER_CONTEXT_TYPE } from '@/lib/production/workshop2-b2b-order-lifecycle';
+import { WORKSHOP2_ARTICLE_CONTEXT_TYPE } from '@/lib/production/workshop2-domain-event-types';
+import { appendUniqueContextualChatPlaceholder } from '@/lib/communications/dedupe-contextual-chat-conversations';
+import { postPlatformCoreCommsContextualThread } from '@/lib/communications/platform-core-comms-contextual-thread-client';
+import { isPlatformCorePgB2bOrder } from '@/lib/platform-core-demo-order';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { mergePlatformCoreB2bInboxChats } from '@/lib/platform-core-b2b-inbox-merge';
 import {
@@ -187,13 +190,7 @@ export function useChatState(initialRole?: string) {
       const rest = conversationsWithMatrix.filter((c) => !ids.has(c.id));
       merged = [...pgChats, ...rest];
     }
-    if (contextualChatFromUrl && !merged.some((c) => c.id === contextualChatFromUrl)) {
-      const parsed = parseBrandPgContextChatId(contextualChatFromUrl);
-      if (parsed?.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE && parsed.contextId) {
-        return [buildPlaceholderB2bOrderChat(parsed.contextId), ...merged];
-      }
-    }
-    return merged;
+    return appendUniqueContextualChatPlaceholder(merged, contextualChatFromUrl);
   }, [pgThreadsOnly, pgChats, conversationsWithMatrix, contextualChatFromUrl]);
 
   const [chats, setChats] = React.useState<ChatConversation[]>(filteredConversations);
@@ -294,6 +291,38 @@ export function useChatState(initialRole?: string) {
       cancelled = true;
     };
   }, [activeChatId]);
+
+  const contextualThreadEnsuredRef = React.useRef('');
+  React.useEffect(() => {
+    if (!coreMode || !activeChatId || !isBrandPgContextChatId(String(activeChatId))) return;
+    const parsed = parseBrandPgContextChatId(String(activeChatId));
+    if (!parsed) return;
+    const ensureKey = `${parsed.contextType}:${parsed.contextId}`;
+    if (contextualThreadEnsuredRef.current === ensureKey) return;
+    contextualThreadEnsuredRef.current = ensureKey;
+
+    if (parsed.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE) {
+      const orderId = parsed.contextId.trim();
+      if (!isPlatformCorePgB2bOrder(orderId)) return;
+      void postPlatformCoreCommsContextualThread({ orderId, pillarId: 'comms' }).catch(() => {
+        contextualThreadEnsuredRef.current = '';
+      });
+      return;
+    }
+
+    if (parsed.contextType === WORKSHOP2_ARTICLE_CONTEXT_TYPE) {
+      const sep = parsed.contextId.indexOf(':');
+      if (sep <= 0) return;
+      const collectionId = parsed.contextId.slice(0, sep).trim();
+      const articleId = parsed.contextId.slice(sep + 1).trim();
+      if (!collectionId || !articleId) return;
+      void postPlatformCoreCommsContextualThread({ collectionId, articleId, pillarId: 'comms' }).catch(
+        () => {
+          contextualThreadEnsuredRef.current = '';
+        }
+      );
+    }
+  }, [activeChatId, coreMode]);
 
   const [messages, setMessages] = React.useState<ChatMessage[]>(() =>
     activeChatId ? messagesForChat(activeChatId) : []

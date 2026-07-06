@@ -1,4 +1,8 @@
 import type { PlatformCoreB2bMessageTemplateContext } from '@/lib/communications/platform-core-b2b-message-templates';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
 export type SavedPlatformCoreB2bMessageTemplate = {
   id: string;
@@ -25,6 +29,7 @@ export function interpolateB2bMessageTemplateBody(
 
 export function readSavedPlatformCoreB2bMessageTemplates(): SavedPlatformCoreB2bMessageTemplate[] {
   if (typeof window === 'undefined') return [];
+  if (!shouldUseLocalStorageClientFallbackInCore()) return [];
   try {
     const raw = localStorage.getItem(PLATFORM_CORE_B2B_MESSAGE_TEMPLATES_LS_KEY);
     if (!raw) return [];
@@ -49,6 +54,7 @@ function writeSavedPlatformCoreB2bMessageTemplates(
   rows: SavedPlatformCoreB2bMessageTemplate[]
 ): void {
   if (typeof window === 'undefined') return;
+  if (!shouldMirrorPgClientStoreToLocalStorage()) return;
   try {
     localStorage.setItem(
       PLATFORM_CORE_B2B_MESSAGE_TEMPLATES_LS_KEY,

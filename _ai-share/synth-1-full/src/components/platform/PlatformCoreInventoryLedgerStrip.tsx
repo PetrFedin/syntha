@@ -13,8 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { ReplenishmentStockAtpSource } from '@/lib/platform/shop-replenishment-stock-atp';
-import { fetchShopInventoryLedgerFeed } from '@/lib/shop/shop-inventory-ledger-feed-store';
+import type { ReplenishmentStockAtpSource } from '@/lib/platform-core-ports/platform/shop-replenishment-stock-atp';
+import { fetchShopInventoryLedgerFeed } from '@/lib/platform-core-ports/legacy/shop/shop-inventory-ledger-feed-store';
 import { Loader2 } from 'lucide-react';
 
 type Props = {
@@ -89,7 +89,7 @@ export function PlatformCoreInventoryLedgerStrip({
             </Button>
             <Button size="sm" asChild>
               <Link href={reconcileHref} data-testid={`${rootTestId}-reconcile-link`}>
-                Reconcile
+                Сверка
               </Link>
             </Button>
           </div>

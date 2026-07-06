@@ -50,6 +50,13 @@ export type Workshop2RealtimeEvent =
       messageId: string;
       sender: string;
       createdAt: string;
+    }
+  | { type: 'HANDOFF_QUEUE_BUMP'; factoryId?: string; ts: string }
+  | {
+      type: 'COMMS_NOTIFICATION_PREFS_BUMP';
+      role?: string;
+      scopeKey?: string;
+      ts: string;
     };
 
 export function workshop2RealtimeRoomKey(collectionId: string, articleId: string): string {

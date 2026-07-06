@@ -12,11 +12,13 @@ import {
   removeUserCollectionFromInventory,
   storageKeyForCollectionId,
   type LocalCollectionInventory,
+  type LocalOrderLine,
 } from '@/lib/production/local-collection-inventory';
 import {
   removeSkuFromUnifiedDoc,
   type CollectionSkuFlowDoc,
 } from '@/lib/production/unified-sku-flow-store';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 
 export function useBrandProductionLocalArticles({
@@ -27,6 +29,7 @@ export function useBrandProductionLocalArticles({
   setLocalInventory,
   setUnifiedDoc,
   pendingFocusLocalSkuRef,
+  updateOverlayArticles,
 }: {
   collectionIdFromQuery: string;
   collectionFlowKey: string;
@@ -35,6 +38,7 @@ export function useBrandProductionLocalArticles({
   setLocalInventory: Dispatch<SetStateAction<LocalCollectionInventory>>;
   setUnifiedDoc: Dispatch<SetStateAction<CollectionSkuFlowDoc>>;
   pendingFocusLocalSkuRef: MutableRefObject<string | null>;
+  updateOverlayArticles?: (updater: (prev: LocalOrderLine[]) => LocalOrderLine[]) => void;
 }) {
   const router = useRouter();
   const pathname = usePathname() ?? '';
@@ -59,22 +63,36 @@ export function useBrandProductionLocalArticles({
         investorDemo: collectionIdFromQuery === 'Investor',
       });
       pendingFocusLocalSkuRef.current = draft.id;
-      setLocalInventory((inv) => ({
-        ...inv,
-        articlesByCollection: {
-          ...inv.articlesByCollection,
-          [key]: [...(inv.articlesByCollection[key] ?? []), draft],
-        },
-      }));
+      if (isPlatformCoreMode() && updateOverlayArticles) {
+        updateOverlayArticles((articles) => [...articles, draft]);
+      } else {
+        setLocalInventory((inv) => ({
+          ...inv,
+          articlesByCollection: {
+            ...inv.articlesByCollection,
+            [key]: [...(inv.articlesByCollection[key] ?? []), draft],
+          },
+        }));
+      }
       return true;
     },
-    [collectionIdFromQuery, isLocalSkuDuplicate, pendingFocusLocalSkuRef, setLocalInventory]
+    [
+      collectionIdFromQuery,
+      isLocalSkuDuplicate,
+      pendingFocusLocalSkuRef,
+      setLocalInventory,
+      updateOverlayArticles,
+    ]
   );
 
   const removeLocalArticle = useCallback(
     (articleId: string) => {
       const key = storageKeyForCollectionId(collectionIdFromQuery);
-      setLocalInventory((inv) => removeArticleFromInventory(inv, key, articleId));
+      if (isPlatformCoreMode() && updateOverlayArticles) {
+        updateOverlayArticles((articles) => articles.filter((row) => row.id !== articleId));
+      } else {
+        setLocalInventory((inv) => removeArticleFromInventory(inv, key, articleId));
+      }
       setUnifiedDoc((d) => {
         const next = removeSkuFromUnifiedDoc(d, articleId);
         void getProductionDataPort().saveSkuFlow(collectionFlowKey, next);
@@ -96,6 +114,7 @@ export function useBrandProductionLocalArticles({
       searchParams,
       setLocalInventory,
       setUnifiedDoc,
+      updateOverlayArticles,
     ]
   );
 

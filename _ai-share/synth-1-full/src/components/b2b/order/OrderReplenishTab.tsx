@@ -1,17 +1,75 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RefreshCcw, ShieldCheck, ShoppingCart, Minus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ROUTES } from '@/lib/routes';
-import { getReplenishmentRecommendations } from '@/lib/b2b/replenishment-recommendations';
+import {
+  getReplenishmentRecommendations,
+  type ReplenishmentRecommendation,
+} from '@/lib/b2b/replenishment-recommendations';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
 import { cn } from '@/lib/utils';
 
-export function OrderReplenishTab() {
-  const recommendations = getReplenishmentRecommendations().slice(0, 6);
+type Props = {
+  collectionId?: string;
+};
+
+export function OrderReplenishTab({ collectionId = 'SS27' }: Props) {
+  const coreMode = isPlatformCoreMode();
+  const { buyerId } = useShopCoreBuyerId();
+  const [recommendations, setRecommendations] = useState<ReplenishmentRecommendation[]>(() =>
+    coreMode ? [] : getReplenishmentRecommendations().slice(0, 6)
+  );
+  const [loadState, setLoadState] = useState<'idle' | 'loading' | 'ready' | 'error'>(
+    coreMode ? 'loading' : 'ready'
+  );
+  const [source, setSource] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!coreMode) {
+      setRecommendations(getReplenishmentRecommendations().slice(0, 6));
+      setLoadState('ready');
+      return;
+    }
+    let cancelled = false;
+    setLoadState('loading');
+    void (async () => {
+      try {
+        const res = await fetch(
+          `/api/shop/b2b/replenishment/suggest?collection=${encodeURIComponent(collectionId)}&buyerId=${encodeURIComponent(buyerId)}&limit=6`,
+          { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
+        );
+        const json = (await res.json()) as {
+          ok?: boolean;
+          recommendations?: ReplenishmentRecommendation[];
+          source?: string;
+        };
+        if (cancelled) return;
+        if (res.ok && json.ok && Array.isArray(json.recommendations)) {
+          setRecommendations(json.recommendations);
+          setSource(json.source ?? null);
+          setLoadState('ready');
+          return;
+        }
+        setRecommendations([]);
+        setLoadState('error');
+      } catch {
+        if (!cancelled) {
+          setRecommendations([]);
+          setLoadState('error');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [coreMode, collectionId, buyerId]);
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
@@ -23,15 +81,26 @@ export function OrderReplenishTab() {
                 Рекомендации к пополнению
               </h4>
               <p className="text-text-muted text-[10px] font-bold uppercase tracking-widest">
-                По sell-through и остатку · Дозаказать X шт. или не дозаказывать
+                {coreMode
+                  ? `Spine + ATP · ${collectionId}${source ? ` · ${source}` : ''}`
+                  : 'По sell-through и остатку · Дозаказать X шт. или не дозаказывать'}
               </p>
             </div>
-            <RefreshCcw className="text-accent-primary animate-spin-slow h-8 w-8" />
+            <RefreshCcw
+              className={cn(
+                'text-accent-primary h-8 w-8',
+                loadState === 'loading' && 'animate-spin'
+              )}
+            />
           </div>
           <div className="space-y-4">
-            {recommendations.length === 0 ? (
+            {loadState === 'loading' ? (
+              <p className="text-text-secondary text-[10px] font-bold uppercase">Загрузка…</p>
+            ) : recommendations.length === 0 ? (
               <p className="text-text-secondary text-[10px] font-bold uppercase">
-                Нет данных. Оформите заказы — появятся подсказки.
+                {loadState === 'error'
+                  ? 'Нет данных из PG — оформите заказ SS27 или проверьте bootstrap.'
+                  : 'Нет данных. Оформите заказы — появятся подсказки.'}
               </p>
             ) : (
               recommendations.map((r) => (
@@ -68,7 +137,9 @@ export function OrderReplenishTab() {
                           className="bg-text-primary h-10 rounded-xl px-6 text-[9px] font-black uppercase text-white"
                           asChild
                         >
-                          <Link href={`${ROUTES.shop.b2bMatrix}?sku=${encodeURIComponent(r.sku)}`}>
+                          <Link
+                            href={`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}&sku=${encodeURIComponent(r.sku)}`}
+                          >
                             Apply
                           </Link>
                         </Button>
@@ -90,7 +161,7 @@ export function OrderReplenishTab() {
             className="bg-accent-primary shadow-accent-primary/10 h-10 w-full rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl"
             asChild
           >
-            <Link href={ROUTES.shop.b2bMatrix}>
+            <Link href={`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`}>
               <ShoppingCart className="mr-2 h-3.5 w-3.5" /> В матрицу заказа
             </Link>
           </Button>

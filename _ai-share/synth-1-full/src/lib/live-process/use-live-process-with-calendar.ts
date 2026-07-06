@@ -13,7 +13,7 @@ export function useLiveProcessRuntimeWithCalendar(
   /** Схема с сервера (`/api/processes/:id`) — приоритетнее встроенной. */
   definitionOverride?: LiveProcessDefinition | null
 ) {
-  const { runtimes, updateStageRuntime } = useLiveProcessRuntime(processId, contextId);
+  const { runtimes, updateStageRuntime, persistMode } = useLiveProcessRuntime(processId, contextId);
   const definition = definitionOverride ?? getLiveProcessDefinition(processId);
   const ctx = contextId || 'default';
 
@@ -34,5 +34,5 @@ export function useLiveProcessRuntimeWithCalendar(
     [processId, ctx, definition, runtimes, updateStageRuntime]
   );
 
-  return { runtimes, updateStageRuntime: updateWithCalendarSync };
+  return { runtimes, updateStageRuntime: updateWithCalendarSync, persistMode };
 }

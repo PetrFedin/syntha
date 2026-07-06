@@ -34,7 +34,12 @@ describe('pillar-capability-role-resolve', () => {
 
   it('routes dev-rfq and mrp supply per role', () => {
     expect(resolveDevRfqSupplierHref({ ...ctx, role: 'brand' })).toContain('centric');
-    expect(resolveDevRfqSupplierHref({ ...ctx, role: 'supplier' })).toContain(`${PILLAR_CAPABILITY_FEATURE_PARAM}=rfq`);
+    expect(resolveDevRfqSupplierHref({ ...ctx, role: 'supplier' })).toContain(
+      '/factory/supplier/rfq-inbox'
+    );
+    expect(resolveDevRfqSupplierHref({ ...ctx, role: 'supplier' })).not.toContain(
+      `${PILLAR_CAPABILITY_FEATURE_PARAM}=rfq`
+    );
     expect(resolveOpMrpSupplyHref({ ...ctx, role: 'supplier' })).toContain('pcf=supply');
     expect(resolveOpMrpSupplyHref({ ...ctx, role: 'brand' })).toContain('w2pane=supply');
   });

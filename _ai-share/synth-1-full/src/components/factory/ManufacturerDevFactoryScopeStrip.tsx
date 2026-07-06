@@ -8,6 +8,7 @@ import {
 } from '@/lib/routes';
 import { WORKSHOP2_COL_PARAM } from '@/lib/production/workshop2-url';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { factorySampleQueueDeepHref } from '@/lib/platform/wave-xc-mfr-sample-status-patch';
 
 type Props = {
   collectionId: string;
@@ -50,7 +51,7 @@ export function ManufacturerDevFactoryScopeStrip({
         Досье
       </Link>
       <Link
-        href={`${ROUTES.factory.production}#sample-queue`}
+        href={factorySampleQueueDeepHref({ collectionId, articleId, factoryId })}
         data-testid="mfr-dev-factory-scope-sample-queue-link"
         className={hubGadget.goldenLink}
       >

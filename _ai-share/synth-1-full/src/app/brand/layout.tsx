@@ -538,7 +538,7 @@ function BrandLayoutContent({ children }: { children: React.ReactNode }) {
               businessMode={businessMode}
             />
           </div>
-          <SidebarWidget />
+          {!platformCore ? <SidebarWidget /> : null}
         </aside>
 
         {/* Мобильное меню — Sheet */}
@@ -560,7 +560,7 @@ function BrandLayoutContent({ children }: { children: React.ReactNode }) {
                 onNavigate={() => setSidebarOpen(false)}
               />
             </div>
-            <SidebarWidget />
+            {!platformCore ? <SidebarWidget /> : null}
           </SheetContent>
         </Sheet>
 

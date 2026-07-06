@@ -7,6 +7,7 @@
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import { getPlatformCoreDemo, platformCoreRolePillarHref, rewriteHrefForDemo } from '@/lib/platform-core-hub-matrix';
 import type { ReadinessSubItem } from '@/lib/platform-core-readiness-audit';
+import { filterReadinessSubItemsForTwoRoleBaseline } from '@/lib/platform-core-two-role-sections';
 
 import { BRAND_SECTION_AUDIT } from './brand-audit';
 import { SHOP_SECTION_AUDIT } from './shop-audit';
@@ -14,8 +15,14 @@ import { MANUFACTURER_SECTION_AUDIT } from './manufacturer-audit';
 import { SUPPLIER_SECTION_AUDIT } from './supplier-audit';
 import { EMPTY_SECTION_AUDIT as EMPTY_SECTION_AUDIT_DATA } from './empty-cells-audit';
 import type { SectionAuditMap } from './types';
+import { deriveHonestLiveScore } from './scoring';
 
 export type { SectionAuditTemplate, SectionAuditMap } from './types';
+export {
+  buildReadinessScoreBreakdown,
+  deriveHonestLiveScore,
+  roundReadinessScore,
+} from './scoring';
 
 /** Канон разделов по 15 активным ячейкам (hub CTA + кабинет + рабочие экраны + связи). */
 export const SECTION_AUDIT: SectionAuditMap = {
@@ -40,18 +47,19 @@ export function buildSectionSubItems(
   if (!templates?.length) return [];
 
   const demo = getPlatformCoreDemo(collectionId);
-  return templates.map((t) => ({
+  const items = templates.map((t) => ({
     id: t.id,
     label: t.label,
     order: t.order,
     staticScore: t.staticScore,
-    liveScore: t.liveScore,
+    liveScore: deriveHonestLiveScore(t.staticScore, t.good ?? [], t.bad ?? [], t.fix ?? []),
     summary: t.summary,
     good: t.good ?? [],
     bad: t.bad ?? [],
     fix: t.fix ?? [],
     href: rewriteHrefForDemo(t.resolveHref(demo), demo),
   }));
+  return filterReadinessSubItemsForTwoRoleBaseline(items, roleId, pillarId);
 }
 
 /** Средняя оценка разделов ячейки (для сверки с CELL_AUDIT). */
@@ -90,11 +98,12 @@ export function buildEmptySectionSubItems(
     label: t.label,
     order: t.order,
     staticScore: t.staticScore,
-    liveScore: t.liveScore,
+    liveScore: deriveHonestLiveScore(t.staticScore, t.good ?? [], t.bad ?? [], t.fix ?? []),
     summary: t.summary,
     good: t.good ?? [],
     bad: t.bad ?? [],
     fix: t.fix ?? [],
+    adrBacklog: t.adrBacklog ?? [],
     href: rewriteHrefForDemo(t.resolveHref(demo), demo),
   }));
 }

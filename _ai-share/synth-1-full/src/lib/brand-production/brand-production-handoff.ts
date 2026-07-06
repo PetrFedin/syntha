@@ -37,6 +37,7 @@ export type BrandProductionHandoffSession = {
   brandLandedMarginHref: string;
   shopCollaborativeApprovalsHref: string;
   shopReplenishmentAtpHref: string;
+  shopLandedMarginHref: string;
   manufacturerOrderCommsHref: string;
 };
 

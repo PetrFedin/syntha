@@ -12,13 +12,19 @@ export const REPLENISHMENT_STOCK_SLICE_PRESETS: readonly ReplenishmentStockSlice
     orgId: 'shop1',
     seasonId: 'SS27',
     collectionId: 'SS27',
-    labelRu: 'Shop1 · SS27',
+    labelRu: 'Магазин 1 · SS27',
   },
   {
     orgId: 'shop1',
     seasonId: 'FW27',
     collectionId: 'FW27',
-    labelRu: 'Shop1 · FW27',
+    labelRu: 'Магазин 1 · FW27',
+  },
+  {
+    orgId: 'shop2',
+    seasonId: 'SS27',
+    collectionId: 'SS27',
+    labelRu: 'Магазин 2 · SS27',
   },
   {
     orgId: 'shop1',

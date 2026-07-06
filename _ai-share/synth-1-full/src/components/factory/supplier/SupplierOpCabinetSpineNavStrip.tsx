@@ -68,7 +68,7 @@ export function SupplierOpCabinetSpineNavStrip({ demo, orderId }: Props) {
         data-testid="sup-op-spine-comms-link"
         className={hubGadget.goldenLink}
       >
-        Comms
+        Связь
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -78,13 +78,13 @@ export function SupplierOpCabinetSpineNavStrip({ demo, orderId }: Props) {
         data-testid="sup-op-spine-dev-materials-link"
         className={hubGadget.goldenLink}
       >
-        Dev BOM
+        BOM разработки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={cabinetHref} data-testid="sup-op-spine-cabinet-link" className={hubGadget.goldenLink}>
-        Hub
+        Кабинет
       </Link>
     </div>
   );

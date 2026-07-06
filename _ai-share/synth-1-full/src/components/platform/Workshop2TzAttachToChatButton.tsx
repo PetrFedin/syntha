@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { attachWorkshop2TzBundleToArticleChat } from '@/lib/production/workshop2-tz-attach-to-chat-client';
+import { attachWorkshop2TzBundleToArticleChat } from '@/lib/platform-core-ports/tz-client';
 
 type Props = {
   collectionId: string;

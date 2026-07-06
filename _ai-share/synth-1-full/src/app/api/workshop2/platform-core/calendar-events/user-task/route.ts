@@ -7,7 +7,7 @@ import {
   listPlatformCoreUserCalendarTasks,
 } from '@/lib/server/platform-core-user-calendar-task';
 import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
+import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
 import type { UserRole } from '@/lib/types';
 
 type Body = {
@@ -68,6 +68,9 @@ export async function GET(req: NextRequest) {
 
 /** POST — user task в Platform Core календаре + auto-thread (order/article). */
 export async function POST(req: NextRequest) {
+  const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
+  if (auth instanceof NextResponse) return auth;
+
   let body: Body = {};
   try {
     body = (await req.json()) as Body;

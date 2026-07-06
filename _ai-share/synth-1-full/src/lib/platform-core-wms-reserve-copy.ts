@@ -43,3 +43,25 @@ export function formatPlatformCoreWmsReserveDoneWithQtyRu(qty?: number): string 
     ? `Резерв на складе: ${qty} ед.`
     : PLATFORM_CORE_WMS_RESERVE_DONE_RU;
 }
+
+/** Checkout badge: live WMS ATP без claim резерва (wave VE). */
+export function formatPlatformCoreWmsCheckoutAtpBadgeRu(input: {
+  loading: boolean;
+  liveWms: boolean;
+  atpTotal: number;
+}): string {
+  if (input.loading) return 'Склад · проверка…';
+  if (input.liveWms && input.atpTotal > 0) {
+    return `Доступно ${input.atpTotal.toLocaleString('ru-RU')} ед.`;
+  }
+  return 'Склад · ожидание резерва';
+}
+
+/** Честная подпись источника stock-atp для checkout (RU). */
+export function formatPlatformCoreWmsStockAtpSourceRu(source: string | null | undefined): string | null {
+  if (!source?.trim()) return null;
+  if (source === 'pg+wms') return 'PG + склад WMS';
+  if (source === 'wms') return 'WMS';
+  if (source === 'pg') return 'PostgreSQL';
+  return source;
+}

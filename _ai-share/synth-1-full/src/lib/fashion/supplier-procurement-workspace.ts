@@ -1,9 +1,12 @@
-import { ROUTES, factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/routes';
+import {
+  ROUTES,
+  factorySupplierMessagesWorkshop2ArticleContextHref,
+  factorySupplierRfqInboxHref,
+} from '@/lib/routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
-import {
-  shopOrderCommsTabHref,
-} from '@/lib/b2b/shop-collection-order-hrefs';
+import { shopOrderCommsTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
+import { appendSupplierOpPoContextToHref } from '@/lib/b2b/supplier-op-po-context-hrefs';
 import {
   factoryMaterialsProcurementHrefForDemo,
   getPlatformCoreDemo,
@@ -50,11 +53,14 @@ export function buildSupplierProcurementSession(input?: {
   articleId?: string;
   orderId?: string;
   factoryId?: string;
+  productionOrderId?: string;
 }): SupplierProcurementSession {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const factoryId = input?.factoryId?.trim() || PLATFORM_CORE_DEMO.factoryId;
+  const productionOrderId = input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
+  const poCtx = { orderId, productionOrderId };
 
   return {
     collectionId,
@@ -64,9 +70,15 @@ export function buildSupplierProcurementSession(input?: {
     bomHref: supplierProcurementTabHref('bom', { collectionId, articleId, orderId }),
     forecastHref: supplierProcurementTabHref('forecast', { collectionId, articleId, orderId }),
     supplyHref: supplierProcurementTabHref('supply', { collectionId, articleId, orderId }),
-    handoffHref: manufacturerHandoffFeatureHref('handoff', { collectionId, orderId, factoryId }),
-    shopTrackingHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
-    rfqHref: supplierProcurementTabHref('rfq', { collectionId, articleId, orderId }),
+    handoffHref: appendSupplierOpPoContextToHref(
+      manufacturerHandoffFeatureHref('handoff', { collectionId, orderId, factoryId }),
+      poCtx
+    ),
+    shopTrackingHref: appendSupplierOpPoContextToHref(
+      shopOrderCommsTabHref('tracking', orderId, collectionId),
+      poCtx
+    ),
+    rfqHref: factorySupplierRfqInboxHref({ collectionId, articleId }),
     entitiesHref: supplierProcurementTabHref('entities', { collectionId, articleId, orderId }),
     orderTabHref: supplierProcurementTabHref('order', { collectionId, articleId, orderId }),
     inboxHref: supplierProcurementTabHref('inbox', { collectionId, articleId, orderId }),
@@ -79,9 +91,11 @@ export type SupplierProcurementWorkspaceLink = {
   href: string;
 };
 
-export function summarizeSupplierProcurementBom(
-  lines: readonly SupplierProcurementBomLine[]
-): { total: number; filled: number; pct: number } {
+export function summarizeSupplierProcurementBom(lines: readonly SupplierProcurementBomLine[]): {
+  total: number;
+  filled: number;
+  pct: number;
+} {
   const total = lines.length;
   const filled = lines.filter((line) => {
     if (!line.materialName?.trim()) return false;

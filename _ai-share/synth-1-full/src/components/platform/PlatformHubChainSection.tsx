@@ -12,7 +12,7 @@ export function PlatformHubChainSection({
 }: Props) {
   return (
     <section className="space-y-2">
-      <p className="text-text-muted text-[10px] font-black uppercase tracking-widest">
+      <p className="text-text-muted text-[11px] font-semibold uppercase tracking-wide">
         Живая цепочка
       </p>
       <PlatformCoreChainFlowStrip collectionId={collectionId} />

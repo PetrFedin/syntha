@@ -62,6 +62,7 @@ export function usePlatformCoreShopTrackingChains(
   lastFetchedAt: string | null;
   refresh: () => void;
   sseConnected: boolean;
+  chainPollTick: number;
 } {
   const enabled = options?.enabled !== false;
   const [chains, setChains] = useState<Record<string, PlatformCoreShopTrackingChain | null>>({});
@@ -149,5 +150,5 @@ export function usePlatformCoreShopTrackingChains(
     };
   }, [enabled, idsKey, tick]);
 
-  return { chains, loading, lastFetchedAt, refresh, sseConnected };
+  return { chains, loading, lastFetchedAt, refresh, sseConnected, chainPollTick: tick };
 }

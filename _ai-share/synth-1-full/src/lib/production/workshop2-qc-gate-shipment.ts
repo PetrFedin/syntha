@@ -25,6 +25,13 @@ export function workshop2QcGateBlocksOrderShipment(
   return inspections.some(workshop2QcInspectionBlocksShipment);
 }
 
+/** QC gate блокирует handoff — та же семантика, что блок отгрузки до pass. */
+export function workshop2QcGateBlocksHandoff(
+  inspections: readonly Pick<Workshop2QcInspectionRecord, 'blocksShipment' | 'result'>[]
+): boolean {
+  return workshop2QcGateBlocksOrderShipment(inspections);
+}
+
 export function workshop2QcInspectionToBrandRow(
   row: Workshop2QcInspectionRecord
 ): BrandProductionQcGateRow {

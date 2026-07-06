@@ -15,6 +15,7 @@ describe('platform-core-b2b-registry-hub', () => {
     const unsubscribe = subscribePlatformCoreB2bRegistry(listener);
     bumpPlatformCoreB2bRegistry('b2b.order.status_changed');
     expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith('b2b.order.status_changed');
     unsubscribe();
     bumpPlatformCoreB2bRegistry('b2b.order.status_changed');
     expect(listener).toHaveBeenCalledTimes(1);

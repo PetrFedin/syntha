@@ -7,54 +7,11 @@ import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import MessagesPage from '@/components/user/messages/MessagesPage';
 import { PlatformCoreCommsWorkspaceExtras } from '@/components/platform/PlatformCoreCommsWorkspaceExtras';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
-import { CommsNotificationCenterStrip } from '@/components/platform/CommsNotificationCenterStrip';
+import { PlatformCoreCommsUniversalInboxStrip } from '@/components/platform/PlatformCoreCommsUniversalInboxStrip';
 import { usePlatformCoreCommsThreadsSource } from '@/hooks/use-platform-core-comms-threads-source';
-import { useShopCoreBuyerId } from '@/hooks/use-shop-core-buyer-id';
-import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
-import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
-import {
-  isPlatformCoreEmptyChainCollection,
-  resolvePageCollectionId,
-} from '@/lib/platform-core-hub-matrix';
-import { resolvePlatformCoreCabinetOrderId } from '@/lib/platform-core-spine-active-order-fallback';
+import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { ROUTES } from '@/lib/routes';
 import { PLATFORM_CORE_MESSAGES_UNAVAILABLE_RU } from '@/lib/platform-core-user-messages';
-
-function ShopMessagesNotificationStrip() {
-  const searchParams = useSearchParams();
-  const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
-  const demo = usePlatformCoreDemoContext();
-  const { buyerId } = useShopCoreBuyerId();
-  const emptyChain = isPlatformCoreEmptyChainCollection(collectionId);
-  const orderFromUrl =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    searchParams.get('wholesaleOrderId')?.trim() ||
-    '';
-  const w2Fallback = demo.demoOrderId.startsWith('__') ? '' : demo.demoOrderId;
-  const { activeOrderId } = useSpineActiveWholesaleOrderId({
-    fallbackOrderId: w2Fallback,
-    collectionId,
-    resolveFrom: ['w2_registry', 'allocation', 'operational'],
-    actorRole: 'shop',
-    buyerId,
-    enabled: !emptyChain,
-  });
-  const orderId = resolvePlatformCoreCabinetOrderId(orderFromUrl || activeOrderId, demo.demoOrderId);
-
-  if (emptyChain || !orderId) return null;
-
-  return (
-    <div className="mb-3" data-testid="shop-cm-workspace-notification-bar">
-      <CommsNotificationCenterStrip
-        variant="shop"
-        collectionId={collectionId}
-        orderId={orderId}
-        orderScoped
-      />
-    </div>
-  );
-}
 
 function ShopMessagesCoreContent() {
   const source = usePlatformCoreCommsThreadsSource('/api/shop/messages/threads');
@@ -89,7 +46,7 @@ function ShopMessagesCoreContent() {
   return (
     <>
       <Suspense fallback={null}>
-        <ShopMessagesNotificationStrip />
+        <PlatformCoreCommsUniversalInboxStrip variant="shop" />
       </Suspense>
       <MessagesPage initialRole="shop" slimCore />
     </>

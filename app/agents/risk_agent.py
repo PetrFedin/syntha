@@ -15,12 +15,17 @@ class RiskAgent(BaseAgent):
         )
 
     def _build_prompt(self, task: str, context: Optional[dict]) -> str:
+        from app.agents.platform_context import platform_context_summary
+
         region = context.get("region", "Global") if context else "Global"
         additional_info = context.get("context", "") if context else ""
-        
+        platform = platform_context_summary(context or {})
+        platform_line = f" Platform context: {platform}." if platform else ""
+
         return (
-            f"Analyze risks in region {region}. "
+            f"Analyze risks in region {region}.{platform_line} "
             f"Additional context: {additional_info}. "
+            f"Task: {task}. "
             f"Provide identified risk level, impact score (0.0 to 10.0), a concise description, and a mitigation plan."
         )
 

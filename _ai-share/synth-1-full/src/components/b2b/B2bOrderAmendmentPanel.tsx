@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,14 +10,25 @@ import {
   type Workshop2B2bAmendmentRecord,
 } from '@/lib/production/workshop2-b2b-amendment';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import {
+  brandB2bOrderHref,
+  brandOrderAmendmentsOrderHref,
+  shopCoreCollectionOrderCabinetHref,
+} from '@/lib/routes';
 
 type Props = {
   orderId: string;
   variant: 'shop' | 'brand';
   canShopSubmit: boolean;
+  collectionId?: string;
 };
 
-export function B2bOrderAmendmentPanel({ orderId, variant, canShopSubmit }: Props) {
+export function B2bOrderAmendmentPanel({
+  orderId,
+  variant,
+  canShopSubmit,
+  collectionId,
+}: Props) {
   const [pending, setPending] = useState<Workshop2B2bAmendmentRecord | null>(null);
   const [noteRu, setNoteRu] = useState('');
   const [busy, setBusy] = useState(false);
@@ -145,6 +157,15 @@ export function B2bOrderAmendmentPanel({ orderId, variant, canShopSubmit }: Prop
               {message}
             </p>
           ) : null}
+          {collectionId?.trim() ? (
+            <Link
+              href={brandOrderAmendmentsOrderHref(orderId)}
+              className="text-accent-primary text-[11px] font-medium hover:underline"
+              data-testid="shop-b2b-amend-brand-amendments-link"
+            >
+              Заявки бренда
+            </Link>
+          ) : null}
         </CardContent>
       </Card>
     );
@@ -193,6 +214,24 @@ export function B2bOrderAmendmentPanel({ orderId, variant, canShopSubmit }: Prop
             {message}
           </p>
         ) : null}
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+          <Link
+            href={brandB2bOrderHref(orderId)}
+            className="text-accent-primary font-medium hover:underline"
+            data-testid="brand-b2b-amend-order-detail-link"
+          >
+            Карточка заказа
+          </Link>
+          {collectionId?.trim() ? (
+            <Link
+              href={shopCoreCollectionOrderCabinetHref(collectionId, orderId)}
+              className="text-accent-primary font-medium hover:underline"
+              data-testid="brand-b2b-amend-shop-cabinet-link"
+            >
+              Кабинет магазина
+            </Link>
+          ) : null}
+        </div>
       </CardContent>
     </Card>
   );

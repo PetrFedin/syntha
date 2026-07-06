@@ -22,10 +22,10 @@ type Props = {
 
 const STEPS: { id: SupplierProcurementGoldenPathStepId; label: string }[] = [
   { id: 'bom', label: 'BOM' },
-  { id: 'forecast', label: 'Forecast' },
-  { id: 'supply', label: 'Supply' },
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
+  { id: 'forecast', label: 'Прогноз' },
+  { id: 'supply', label: 'Поставка' },
+  { id: 'handoff', label: 'Передача' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
 export function SupplierProcurementGoldenPathStrip({

@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
-import { shopMatrixWorkspaceTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
-import { buildManufacturerHandoffQueueSession } from '@/lib/production/manufacturer-handoff-queue';
+import { shopMatrixWorkspaceTabHref } from '@/lib/platform-core-ports/b2b/shop-collection-order-hrefs';
+import { buildManufacturerHandoffQueueSession } from '@/lib/platform-core-ports/manufacturer-handoff';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -24,25 +24,25 @@ export function MfrEmptyCoPeerStrip({ demo, orderId }: Props) {
   return (
     <div className={hubGadget.goldenPath} data-testid="mfr-empty-co-peer-strip">
       <Link href={session.brandHandoffHref} data-testid="mfr-empty-co-brand-handoff-link" className={hubGadget.goldenLink}>
-        Brand handoff
+        Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopTrackingHref} data-testid="mfr-empty-co-shop-tracking-link" className={hubGadget.goldenLink}>
-        Shop tracking
+        Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={matrixHref} data-testid="mfr-empty-co-shop-matrix-link" className={hubGadget.goldenLink}>
-        Shop matrix
+        Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.handoffHref} data-testid="mfr-empty-co-handoff-queue-link" className={hubGadget.goldenLink}>
-        Handoff queue
+        Очередь передачи
       </Link>
     </div>
   );

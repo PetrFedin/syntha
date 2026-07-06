@@ -90,17 +90,17 @@ export function BrandProductionCutTicketPanel({ state, selectedCollectionId, ord
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Scissors className="h-4 w-4" />
-            <CardTitle className="text-base">Cut tickets</CardTitle>
+            <CardTitle className="text-base">Техкарты раскроя</CardTitle>
             <Badge variant="outline" className="text-[10px] uppercase">
               {rows.length} пакет(ов)
             </Badge>
             <Badge variant="outline" data-testid={`brand-cut-ticket-source-${storageMode}`}>
-              {pgRows.length ? `PG · ${storageMode}` : 'Local model'}
+              {pgRows.length ? `PG · ${storageMode}` : 'Локальная модель'}
             </Badge>
           </div>
           <CardDescription>
-            Work packets из confirmed PO lines — мост B2B handoff → цех (столп 4).
-            {pgRows.length ? ' PG workshop2_cut_tickets.' : ' Fallback localStorage до sync.'}
+            Рабочие пакеты из подтверждённых строк PO — мост передачи B2B → цех (столп 4).
+            {pgRows.length ? ' PG workshop2_cut_tickets.' : ' Локальный fallback до синхронизации.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -115,9 +115,9 @@ export function BrandProductionCutTicketPanel({ state, selectedCollectionId, ord
                   <TableHead>PO</TableHead>
                   <TableHead>Артикул</TableHead>
                   <TableHead>Фабрика</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Size break</TableHead>
-                  <TableHead>Cut date</TableHead>
+                  <TableHead>Кол-во</TableHead>
+                  <TableHead>Размерный ряд</TableHead>
+                  <TableHead>Дата раскроя</TableHead>
                   <TableHead>Статус</TableHead>
                   <TableHead />
                 </TableRow>
@@ -167,21 +167,21 @@ export function BrandProductionCutTicketPanel({ state, selectedCollectionId, ord
 
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.handoffTabHref}>Handoff tab</Link>
+          <Link href={session.handoffTabHref}>Вкладка передачи</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.factoryQueueHref}>Factory queue</Link>
+          <Link href={session.factoryQueueHref}>Очередь цеха</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={mfrOps.cutTicketHref} data-testid="brand-cut-ticket-mfr-tab-link">
-            Manufacturer cut ticket
+            Техкарта цеха
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={session.shopOrderCommsHref}>Shop order tracking</Link>
+          <Link href={session.shopOrderCommsHref}>Трекинг заказа магазина</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
-          <Link href={session.qcGateTabHref}>QC gate</Link>
+          <Link href={session.qcGateTabHref}>Гейт КК</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild>
           <Link href={session.productionFloorHref}>Пол цеха W2</Link>

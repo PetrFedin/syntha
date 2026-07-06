@@ -8,6 +8,8 @@ import {
   formatPlatformCoreWmsReserveBrandBadgeRu,
   formatPlatformCoreWmsReserveCabinetLongRu,
   formatPlatformCoreWmsReserveDoneWithQtyRu,
+  formatPlatformCoreWmsCheckoutAtpBadgeRu,
+  formatPlatformCoreWmsStockAtpSourceRu,
 } from '@/lib/platform-core-wms-reserve-copy';
 
 describe('platform-core-wms-reserve-copy', () => {
@@ -40,5 +42,13 @@ describe('platform-core-wms-reserve-copy', () => {
   it('константы pending/disabled не пустые', () => {
     expect(PLATFORM_CORE_WMS_RESERVE_PENDING_AFTER_HANDOFF_RU.length).toBeGreaterThan(10);
     expect(PLATFORM_CORE_WMS_RESERVE_DISABLED_RU).toContain('WMS');
+  });
+
+  it('checkout ATP badge + source RU (wave VE)', () => {
+    expect(formatPlatformCoreWmsCheckoutAtpBadgeRu({ loading: false, liveWms: true, atpTotal: 12 })).toContain(
+      '12'
+    );
+    expect(formatPlatformCoreWmsStockAtpSourceRu('wms')).toBe('WMS');
+    expect(formatPlatformCoreWmsStockAtpSourceRu('pg+wms')).toContain('PG');
   });
 });

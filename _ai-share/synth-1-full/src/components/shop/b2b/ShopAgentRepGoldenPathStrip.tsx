@@ -23,12 +23,12 @@ type Props = {
 };
 
 const STEPS: { id: ShopAgentRepGoldenPathStepId; label: string }[] = [
-  { id: 'portal', label: 'Portal' },
-  { id: 'commission', label: 'Commission' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'checkout', label: 'Checkout' },
-  { id: 'tracking', label: 'Tracking' },
-  { id: 'brand-ledger', label: 'Brand ledger' },
+  { id: 'portal', label: 'Портал' },
+  { id: 'commission', label: 'Комиссия' },
+  { id: 'matrix', label: 'Матрица' },
+  { id: 'checkout', label: 'Оформление' },
+  { id: 'tracking', label: 'Трекинг' },
+  { id: 'brand-ledger', label: 'Леджер бренда' },
 ];
 
 export function ShopAgentRepGoldenPathStrip({

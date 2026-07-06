@@ -38,8 +38,9 @@ import {
   summarizeWorkshop2B2bOrderStatusChangeRu,
   workshop2B2bOrderContextId,
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
-import { resolveShopCoreBuyerIdFromRequest } from '@/lib/order/shop-core-buyer-context';
+import { resolveShopCoreBuyerIdFromRequestAsync } from '@/lib/server/shop-core-buyer-partner-session';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
+import { evaluateShopB2bCartCheckoutPreflight } from '@/lib/server/shop-b2b-cart-preflight-server';
 
 function resolveSessionId(req: NextRequest, bodySessionId?: string): string {
   return (
@@ -92,10 +93,15 @@ export async function GET(req: NextRequest) {
     resolved.lines.length > 0
       ? summarizeWorkshop2B2bMixedBrandCheckoutRu({ lines: resolved.lines })
       : null;
+  const includePreflight = req.nextUrl.searchParams.get('preflight') === '1';
+  const preflight = includePreflight
+    ? await evaluateShopB2bCartCheckoutPreflight(session)
+    : undefined;
   return NextResponse.json({
     ok: true,
     session: resolved,
     multiBrand,
+    preflight,
     messageRu: session?.lines.length
       ? multiBrand?.mixed
         ? multiBrand.headlineRu
@@ -139,7 +145,7 @@ export async function POST(req: NextRequest) {
   if (action === 'checkout') {
     const checkoutAuth = await guardShopB2bCheckoutRoute(req, body.buyerId);
     if (checkoutAuth instanceof NextResponse) return checkoutAuth;
-    const resolvedBuyerId = checkoutAuth.buyerId;
+    const resolvedBuyerId = await resolveShopCoreBuyerIdFromRequestAsync(req, body.buyerId);
     const session = resolveWorkshop2B2bCartSession(sessionId);
     if (!session?.lines.length) {
       return NextResponse.json({ ok: false, messageRu: 'Корзина пуста.' }, { status: 400 });
@@ -160,7 +166,20 @@ export async function POST(req: NextRequest) {
           ok: false,
           code: 'moq_violation',
           moqViolations,
-          messageRu: `Checkout заблокирован: MOQ — ${moqViolations[0]}`,
+          messageRu: `Оформление заблокирован: MOQ — ${moqViolations[0]}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const checkoutPreflight = await evaluateShopB2bCartCheckoutPreflight(session);
+    if (checkoutPreflight.packViolations.length > 0) {
+      return NextResponse.json(
+        {
+          ok: false,
+          code: 'pack_rule_violation',
+          packViolations: checkoutPreflight.packViolations,
+          messageRu: checkoutPreflight.messageRu,
         },
         { status: 400 }
       );
@@ -253,7 +272,7 @@ export async function POST(req: NextRequest) {
     return res;
   }
 
-  const resolvedBuyerId = resolveShopCoreBuyerIdFromRequest(req, body.buyerId);
+  const resolvedBuyerId = await resolveShopCoreBuyerIdFromRequestAsync(req, body.buyerId);
 
   const line = body.line;
   if (!line?.collectionId?.trim() || !line.articleId?.trim()) {

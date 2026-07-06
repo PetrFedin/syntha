@@ -38,10 +38,10 @@ function QuickCardBody({
         <Icon className="h-3 w-3 md:h-2 md:w-2" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
-        <h3 className="text-text-primary line-clamp-1 text-xs font-bold leading-tight md:text-[11px]">
+        <h3 className="text-text-primary line-clamp-1 text-[13px] font-semibold leading-tight md:text-sm">
           {title}
         </h3>
-        <p className="text-text-secondary line-clamp-1 text-[8px] leading-snug md:text-[9px]">
+        <p className="text-text-secondary line-clamp-1 text-[11px] leading-snug">
           {subtitle}
         </p>
       </div>
@@ -95,8 +95,8 @@ export function PlatformCoreHubQuickCard({
   }
 
   return (
-    <div id={id} data-testid={testId} className={shell}>
-      <Link href={href} className={innerClass}>
+    <div id={id} className={shell}>
+      <Link href={href} data-testid={testId} className={innerClass}>
         <QuickCardBody Icon={Icon} title={title} subtitle={subtitle} showArrow />
       </Link>
     </div>

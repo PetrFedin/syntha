@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { buildBrandInventoryOpsSession } from '@/lib/b2b/brand-inventory-ops';
-import { buildBrandProductionHandoffSession } from '@/lib/brand-production/brand-production-handoff';
+import { buildBrandInventoryOpsSession } from '@/lib/platform-core-ports/b2b/brand-inventory-ops';
+import { buildBrandProductionHandoffSession } from '@/lib/platform-core-ports/brand-production-handoff';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   factoryId?: string;
 };
 
-/** Handoff tab · inventory ledger + order comms downstream. */
+/** Вкладка передачи · inventory ledger + order comms downstream. */
 export function BrandOpHandoffInventoryPeerStrip({ orderId, collectionId, factoryId }: Props) {
   const handoff = buildBrandProductionHandoffSession({ orderId, collectionId, factoryId });
   const inventory = buildBrandInventoryOpsSession({ orderId, collectionId });
@@ -23,7 +23,7 @@ export function BrandOpHandoffInventoryPeerStrip({ orderId, collectionId, factor
         data-testid="brand-op-handoff-inventory-overview-link"
         className={hubGadget.goldenLink}
       >
-        Inventory
+        Склад
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -33,7 +33,7 @@ export function BrandOpHandoffInventoryPeerStrip({ orderId, collectionId, factor
         data-testid="brand-op-handoff-order-comms-link"
         className={hubGadget.goldenLink}
       >
-        Order comms
+        Чат по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -43,13 +43,13 @@ export function BrandOpHandoffInventoryPeerStrip({ orderId, collectionId, factor
         data-testid="brand-op-handoff-replenishment-link"
         className={hubGadget.goldenLink}
       >
-        Replenishment
+        Пополнение
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={handoff.qcGateTabHref} data-testid="brand-op-handoff-qc-gate-link" className={hubGadget.goldenLink}>
-        QC gate
+        Гейт КК
       </Link>
     </div>
   );

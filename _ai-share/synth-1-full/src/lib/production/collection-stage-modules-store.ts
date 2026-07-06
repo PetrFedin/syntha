@@ -1,7 +1,17 @@
 /**
  * Данные модулей этапов коллекции (не SKU): поля формы, вложения, аудит.
- * MVP: localStorage; тот же collectionKey, что у unified SKU flow.
+ * Core mode: PG SoT через `/api/brand/collection-stage-modules`; localStorage только вне core.
  */
+
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import {
+  fetchCollectionStageModulesFromServerWithMode,
+  persistCollectionStageModulesToServer,
+} from '@/lib/production/collection-stage-modules-api-client';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
 export const BRAND_COLLECTION_STAGE_MODULES_SAVED = 'brand-collection-stage-modules-saved';
 
@@ -42,7 +52,9 @@ export type CollectionStageModulesDoc = {
   steps: Record<string, CollectionStageModuleData>;
 };
 
-const PREFIX = 'brand_collection_stage_modules_v1__';
+export const COLLECTION_STAGE_MODULES_LS_PREFIX = 'brand_collection_stage_modules_v1__';
+
+const PREFIX = COLLECTION_STAGE_MODULES_LS_PREFIX;
 const MAX_HISTORY = 120;
 
 function storageKey(collectionKey: string): string {
@@ -60,6 +72,7 @@ function emptyStep(): CollectionStageModuleData {
 
 export function loadCollectionStageModules(collectionKey: string): CollectionStageModulesDoc {
   if (typeof window === 'undefined') return { v: 1, steps: {} };
+  if (!shouldUseLocalStorageClientFallbackInCore()) return { v: 1, steps: {} };
   try {
     const raw = window.localStorage.getItem(storageKey(collectionKey));
     if (!raw) return { v: 1, steps: {} };
@@ -76,10 +89,87 @@ export function saveCollectionStageModules(
   doc: CollectionStageModulesDoc
 ): void {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(storageKey(collectionKey), JSON.stringify(doc));
+  if (shouldMirrorPgClientStoreToLocalStorage()) {
+    window.localStorage.setItem(storageKey(collectionKey), JSON.stringify(doc));
+  }
   window.dispatchEvent(
     new CustomEvent(BRAND_COLLECTION_STAGE_MODULES_SAVED, { detail: { collectionKey } })
   );
+  if (isPlatformCoreMode()) {
+    void persistCollectionStageModulesToServer({ collectionKey, doc });
+  }
+}
+
+export type CollectionStageModulesPersistMode = 'postgres' | 'local';
+
+export type CollectionStageModulesLoadResult = {
+  doc: CollectionStageModulesDoc;
+  persistMode: CollectionStageModulesPersistMode;
+  pgUnavailable: boolean;
+};
+
+let cachedPersistMode: CollectionStageModulesPersistMode | null = null;
+
+export function resetCollectionStageModulesPersistModeCacheForTests(): void {
+  cachedPersistMode = null;
+}
+
+function emptyDoc(): CollectionStageModulesDoc {
+  return { v: 1, steps: {} };
+}
+
+function mirrorDocToLocalStorage(collectionKey: string, doc: CollectionStageModulesDoc): void {
+  if (typeof window === 'undefined' || !shouldMirrorPgClientStoreToLocalStorage()) return;
+  window.localStorage.setItem(storageKey(collectionKey), JSON.stringify(doc));
+}
+
+/** PG `/api/brand/collection-stage-modules` when доступен; иначе localStorage (не в Platform Core pg-only). */
+export async function loadCollectionStageModulesWithMode(
+  collectionKey: string
+): Promise<CollectionStageModulesLoadResult> {
+  const corePgOnly = !shouldUseLocalStorageClientFallbackInCore();
+  const cid = collectionKey.trim();
+  if (!cid) {
+    return { doc: emptyDoc(), persistMode: corePgOnly ? 'postgres' : 'local', pgUnavailable: corePgOnly };
+  }
+
+  try {
+    const fromServer = await fetchCollectionStageModulesFromServerWithMode(cid);
+    if (fromServer.storageMode === 'postgres') {
+      cachedPersistMode = 'postgres';
+      const doc = fromServer.doc ?? emptyDoc();
+      mirrorDocToLocalStorage(cid, doc);
+      return { doc, persistMode: 'postgres', pgUnavailable: false };
+    }
+    if (corePgOnly) {
+      cachedPersistMode = 'postgres';
+      return { doc: emptyDoc(), persistMode: 'postgres', pgUnavailable: true };
+    }
+  } catch {
+    if (corePgOnly) {
+      cachedPersistMode = 'postgres';
+      return { doc: emptyDoc(), persistMode: 'postgres', pgUnavailable: true };
+    }
+  }
+
+  cachedPersistMode = 'local';
+  return {
+    doc: loadCollectionStageModules(cid),
+    persistMode: 'local',
+    pgUnavailable: false,
+  };
+}
+
+/** Wave SE / XJ · hydrate PG (core mode); без localStorage fallback как SoT. */
+export async function hydrateCollectionStageModulesFromServer(
+  collectionKey: string
+): Promise<CollectionStageModulesDoc | null> {
+  const { doc, persistMode, pgUnavailable } = await loadCollectionStageModulesWithMode(collectionKey);
+  if (persistMode !== 'postgres' || pgUnavailable) return null;
+  window.dispatchEvent(
+    new CustomEvent(BRAND_COLLECTION_STAGE_MODULES_SAVED, { detail: { collectionKey } })
+  );
+  return doc;
 }
 
 export function getStepModule(

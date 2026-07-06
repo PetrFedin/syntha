@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { buildManufacturerProductionOpsSession } from '@/lib/production/manufacturer-production-ops';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   factoryId: string;
@@ -33,33 +35,36 @@ export function MfrOpProductionOrdersHandoffPeerStrip({
   const qcHref = manufacturerHandoffFeatureHref('qc-gate', { factoryId, collectionId, orderId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="mfr-op-production-orders-handoff-peer-strip">
+    <div
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      data-testid="mfr-op-production-orders-handoff-peer-strip"
+    >
       <Link href={session.handoffQueueHref} data-testid="mfr-op-production-handoff-queue-link" className={hubGadget.goldenLink}>
-        Handoff queue
+        Очередь передачи
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={sampleQueueHref} data-testid="mfr-op-production-sample-queue-link" className={hubGadget.goldenLink}>
-        Sample queue
+        Очередь образцов
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={qcHref} data-testid="mfr-op-production-qc-gate-link" className={hubGadget.goldenLink}>
-        QC gate
+        Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.brandCutTicketHref} data-testid="mfr-op-production-brand-cut-ticket-link" className={hubGadget.goldenLink}>
-        Brand cut ticket
+        Техкарта бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.shopTrackingHref} data-testid="mfr-op-production-shop-tracking-link" className={hubGadget.goldenLink}>
-        Shop tracking
+        Трекинг магазина
       </Link>
     </div>
   );

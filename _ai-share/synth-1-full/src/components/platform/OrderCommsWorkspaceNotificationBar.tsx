@@ -40,7 +40,7 @@ export function OrderCommsWorkspaceNotificationBar({ variant }: Props) {
         className="text-text-muted text-xs"
         data-testid={`${testIdPrefix(variant)}-workspace-notification-missing-order`}
       >
-        Укажите `?order=` для notification center.
+        Укажите `?order=` для центра уведомлений.
       </p>
     );
   }

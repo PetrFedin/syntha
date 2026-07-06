@@ -16,6 +16,9 @@ import { usePlatformCoreCalendarEvents } from '@/hooks/use-platform-core-calenda
 import { usePlatformCoreCalendarTaskCreateEnabled } from '@/hooks/use-platform-core-calendar-task-create-enabled';
 import { PlatformCoreCalendarUserTasksStrip } from '@/components/platform/PlatformCoreCalendarUserTasksStrip';
 import { BrandCmCalendarContextPeerStrip } from '@/components/platform/BrandCmCalendarContextPeerStrip';
+import { PlatformCoreCmCalendarEventTrackingStrip } from '@/components/platform/PlatformCoreCmCalendarEventTrackingStrip';
+import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
+import { BrandDevTasksKanbanMiniPanel } from '@/components/platform/BrandDevTasksKanbanMiniPanel';
 
 function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps) {
   const searchParams = useSearchParamsNonNull();
@@ -25,12 +28,15 @@ function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps)
     fallback: searchParams.get('collectionId'),
   });
   const orderId =
-    searchParams.get('orderId')?.trim() ||
-    searchParams.get('order')?.trim() ||
-    undefined;
+    searchParams.get('orderId')?.trim() || searchParams.get('order')?.trim() || undefined;
+  const focusTaskId = searchParams.get('pcTask')?.trim() || undefined;
   const [w2Events, setW2Events] = useState<CalendarEvent[]>([]);
-  const [taskReloadNonce, setTaskReloadNonce] = useState(0);
-  const { events: b2bEvents, loading, error, refetch } = usePlatformCoreCalendarEvents({
+  const {
+    events: b2bEvents,
+    loading,
+    error,
+    refetch,
+  } = usePlatformCoreCalendarEvents({
     collectionId,
     orderId,
     ownerRole: 'brand',
@@ -38,6 +44,16 @@ function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps)
     initialEvents: initialB2bEvents,
   });
   const calendarTaskCreateEnabled = usePlatformCoreCalendarTaskCreateEnabled(true);
+  const resolvedOrderId = orderId?.trim() || '';
+  const { tick: chainTick } = usePlatformCoreChainStatusPoll(
+    Boolean(resolvedOrderId),
+    resolvedOrderId ? [resolvedOrderId] : []
+  );
+
+  useEffect(() => {
+    if (!chainTick) return;
+    refetch();
+  }, [chainTick, refetch]);
 
   const contextSearchSeed = useMemo(() => {
     if (orderId) return undefined;
@@ -71,6 +87,12 @@ function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps)
   return (
     <>
       <BrandCmCalendarContextPeerStrip collectionId={collectionId} orderId={orderId} />
+      <PlatformCoreCmCalendarEventTrackingStrip
+        ownerRole="brand"
+        collectionId={collectionId}
+        orderId={resolvedOrderId || undefined}
+        reloadNonce={chainTick}
+      />
       {!loading && !error && b2bEvents.length > 0 ? (
         <p
           className="text-text-muted mb-1 text-[10px] tabular-nums"
@@ -93,8 +115,12 @@ function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps)
         orderId={orderId}
         ownerRole="brand"
         testIdPrefix="brand-cm-calendar-user-tasks"
-        reloadNonce={taskReloadNonce}
+        focusTaskId={focusTaskId}
+        onTaskCreated={() => refetch()}
       />
+      <div data-testid="brand-dev-tasks-kanban-calendar-strip">
+        <BrandDevTasksKanbanMiniPanel collectionId={collectionId} variant="full" />
+      </div>
       {loading ? <p className="text-text-secondary text-sm">Загрузка…</p> : null}
       {error ? <p className="text-sm text-amber-800">{error}</p> : null}
       <StyleCalendar
@@ -108,10 +134,7 @@ function BrandCalendarCoreMain({ initialB2bEvents }: BrandCalendarCoreMainProps)
           orderId,
           articleId: orderId ? undefined : getPlatformCoreDemo(collectionId).demoArticleId,
         }}
-        onPlatformCoreTaskCreated={() => {
-          setTaskReloadNonce((n) => n + 1);
-          refetch();
-        }}
+        onPlatformCoreTaskCreated={() => refetch()}
         platformCoreTaskCreateEnabled={calendarTaskCreateEnabled}
         calendarSearchTestId="brand-cm-calendar-search"
       />

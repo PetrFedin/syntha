@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { BrandLayoutSidebarPanel } from '@/app/brand/BrandLayoutSidebarPanel';
 import { SidebarOrgHeader } from '@/components/brand/SidebarOrgHeader';
-import { SidebarWidget } from '@/components/brand/SidebarWidget';
+import { BrandSidebarWidgetGate } from '@/app/brand/BrandSidebarWidgetGate';
 import type { PlatformRole } from '@/lib/rbac';
 import type { Resource, Action } from '@/lib/rbac';
 
@@ -35,7 +35,7 @@ export function BrandMobileSidebarSheet({
         <div className="min-h-0 flex-1 overflow-y-auto">
           <BrandLayoutSidebarPanel role={role} can={can} onNavigate={() => onOpenChange(false)} />
         </div>
-        <SidebarWidget />
+        <BrandSidebarWidgetGate />
       </SheetContent>
     </Sheet>
   );

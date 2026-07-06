@@ -204,7 +204,7 @@ export function Workshop2DossierAssignmentSendPanel({
                         assignmentChain.handoffClosed ? 'text-emerald-800' : 'text-text-secondary'
                       }
                     >
-                      {assignmentChain.handoffClosed ? '✓' : '○'} Handoff (бренд + цех)
+                      {assignmentChain.handoffClosed ? '✓' : '○'} Передача (бренд + цех)
                     </li>
                   </ol>
                   <button
@@ -505,7 +505,7 @@ export function Workshop2DossierAssignmentSendPanel({
                     <li>
                       Мастер «Итоговое ТЗ» и при необходимости повторный экспорт после правок.
                     </li>
-                    <li>Handoff: вложения CAD, отметки «бренд передал» и «цех получил».</li>
+                    <li>Передача: вложения CAD, отметки «бренд передал» и «цех получил».</li>
                   </ol>
                   <p>
                     <strong className="text-text-primary">Дизайнер:</strong> «Визуал» — референсы,

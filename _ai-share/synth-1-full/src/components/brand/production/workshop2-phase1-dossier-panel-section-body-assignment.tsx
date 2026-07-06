@@ -111,7 +111,7 @@ export function Workshop2DossierSectionBodyAssignment({
     setDossier(next);
     setHandoffMirrorBusy(false);
     toast({
-      title: formatWorkshop2PersistToastTitle({ scopeLabelRu: 'Handoff bundle', ok: true }),
+      title: formatWorkshop2PersistToastTitle({ scopeLabelRu: 'Пакет передачи', ok: true }),
       description: formatWorkshop2PersistToastDescription({
         mirrorField: 'factoryHandoffBundleMirror',
         ok: true,
@@ -186,7 +186,7 @@ export function Workshop2DossierSectionBodyAssignment({
           updatedByLabel={handoffBlockProps.updatedByLabel}
           tzWriteDisabled={handoffBlockProps.tzWriteDisabled}
           onExportNotice={(message) =>
-            toast({ title: 'Factory pack', description: message })
+            toast({ title: 'Фабричный пакет', description: message })
           }
         />
       ) : null}

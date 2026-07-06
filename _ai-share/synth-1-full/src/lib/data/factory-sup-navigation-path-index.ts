@@ -27,24 +27,24 @@ export const factorySupNavPathCandidates: readonly CabinetNavPathCandidate[] = [
     label: 'Партнёры',
   },
   {
-    href: '/brand/materials',
-    label: 'Материалы и RFQ',
-  },
-  {
-    href: '/brand/materials',
+    href: '/factory/production/catalog',
     label: 'Каталог материалов',
   },
   {
-    href: '/brand/materials/reservation',
-    label: 'Резервирование',
+    href: '/factory/production/materials',
+    label: 'BOM · спецификация',
   },
   {
-    href: '/brand/suppliers/rfq',
-    label: 'RFQ и заявки',
+    href: '/factory/production/materials',
+    label: 'BOM из досье',
   },
   {
-    href: '/brand/vmi',
-    label: 'VMI',
+    href: '/factory/production/catalog',
+    label: 'Каталог материалов',
+  },
+  {
+    href: '/factory/production/materials',
+    label: 'Закупка под PO',
   },
   {
     href: '/brand/logistics',

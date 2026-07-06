@@ -8,7 +8,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { PlatformCoreThemeBridge } from '@/components/platform/PlatformCoreThemeBridge';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import {
   getPlatformCoreDemo,
   mergePlatformCoreDemoWithActiveOrder,
@@ -187,4 +188,20 @@ export function usePlatformCoreChainOverview(
 /** Demo SS27/FW27 из provider или fallback. */
 export function usePlatformCoreDemoContext(): PlatformCoreDemoContext {
   return usePlatformCoreChainOverview().demo;
+}
+
+/** Единый provider chain-overview + theme bridge для всех Platform Core chrome-слоёв. */
+export function PlatformCoreChromeShell({
+  children,
+  collectionId = PLATFORM_CORE_DEMO.collectionId,
+}: {
+  children: ReactNode;
+  collectionId?: string;
+}) {
+  return (
+    <PlatformCoreChainOverviewProvider collectionId={collectionId}>
+      <PlatformCoreThemeBridge />
+      {children}
+    </PlatformCoreChainOverviewProvider>
+  );
 }

@@ -12,6 +12,7 @@ import {
   shopB2bOrdersProductionRegistryHref,
   shopB2bTrackingOrderHref,
   brandCalendarB2bOrderContextHref,
+  brandDevelopmentCabinetHref,
   brandMessagesB2bOrderContextHref,
   brandW2ProductionTzHref,
   factoryMessagesB2bOrderContextHref,
@@ -23,8 +24,7 @@ import {
   factorySupplierMessagesWorkshop2ArticleContextHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
-import { WORKSHOP2_COL_PARAM, workshop2ArticleHref } from '@/lib/production/workshop2-url';
+} from '@/lib/platform-core-routes';
 import {
   type PlatformCoreDemoContext,
   PLATFORM_CORE_COLLECTION_PRESETS,
@@ -48,17 +48,21 @@ import {
   buildPlatformCoreContextSearchParams,
   type PlatformCoreContextQueryStyle,
 } from '@/lib/platform-core-hub-matrix-context';
+import { isDefaultPlatformCoreCollectionId } from '@/lib/platform-core-url-canon';
 import {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
   factoryHandoffQueueHrefForDemo,
+  factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
   shopShowroomHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
 import { getRolePillarDemoHrefForDemo } from '@/lib/platform-core-hub-matrix-role-pillar-hrefs';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { coercePlatformCoreNativeHref } from '@/lib/platform-core-native-href';
 import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
+import { filterPlatformCoreHubRowsForBaseline } from '@/lib/platform-core-article-spine';
 import {
   PLATFORM_CORE_CHAIN_LEAD,
   PLATFORM_CORE_HUB_HEADING,
@@ -109,11 +113,17 @@ export {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
   factoryHandoffQueueHrefForDemo,
+  factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
   shopShowroomHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
 export { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
+
+/** Hub UI: brand + shop по умолчанию; 4 роли при `NEXT_PUBLIC_PC_EXTENDED_ROLES=1`. */
+export function getPlatformCoreHubRowsForUi(): readonly CoreHubRoleRow[] {
+  return filterPlatformCoreHubRowsForBaseline(PLATFORM_CORE_HUB_ROWS);
+}
 export {
   PLATFORM_CORE_CHAIN_LEAD,
   PLATFORM_CORE_HUB_HEADING,
@@ -142,12 +152,12 @@ export function buildPlatformCoreDemoTrail(
   href: string;
 }> {
   const { collectionId, demoOrderId, demoArticleId } = demo;
-  const w2ColHref = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${collectionId}`;
+  const brandDevelopmentHref = brandDevelopmentCabinetHref(collectionId);
   const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
   const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
   const factoryDossierHref = factoryProductionDossierHref(demoArticleId, { collectionId });
   return [
-    { pillarId: 'development', label: 'Цех разработки', href: w2ColHref },
+    { pillarId: 'development', label: 'Цех разработки', href: brandDevelopmentHref },
     { pillarId: 'sample_collection', label: 'Витрина коллекции', href: shopShowroomHref },
     { pillarId: 'collection_order', label: 'Матрица', href: shopMatrixHref },
     { pillarId: 'collection_order', label: 'Заказ', href: shopB2bOrderHref(demoOrderId) },
@@ -171,7 +181,7 @@ export function getPrimaryPillarHrefForDemo(
   demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
 ): string {
   const brandDemo = getRolePillarDemoHrefForDemo('brand', pillarId, demo);
-  return brandDemo ?? '/platform';
+  return brandDemo ? rewriteHrefForDemo(brandDemo, demo) : '/platform';
 }
 
 
@@ -196,7 +206,8 @@ export function getRolePillarWorkspaceHref(
   if (!demoHref) {
     return platformCoreRolePillarHref(roleId, pillarId, demo.collectionId);
   }
-  return appendPlatformCoreContextToHref(demoHref, demo);
+  const nativeHref = rewriteHrefForDemo(demoHref, demo);
+  return appendPlatformCoreContextToHref(nativeHref, demo);
 }
 
 export function getRoleAdjacentPillarWorkspaceHref(
@@ -330,8 +341,9 @@ export function platformCoreRolePillarHref(
   if (!row) return '/platform';
   const params = new URLSearchParams({ pillar: pillarId });
   const cid = collectionId?.trim();
-  if (cid && resolvePlatformCoreCollectionId(cid) === cid) {
-    params.set('collection', cid);
+  const resolved = cid ? resolvePlatformCoreCollectionId(cid) : undefined;
+  if (resolved && !isDefaultPlatformCoreCollectionId(resolved)) {
+    params.set('collection', resolved);
   }
   return `${row.landingHref}?${params.toString()}`;
 }
@@ -411,6 +423,9 @@ export function rewriteHrefForDemo(
       }
     }
   }
+  if (isPlatformCoreMode()) {
+    out = coercePlatformCoreNativeHref(out, demo);
+  }
   return out;
 }
 
@@ -468,7 +483,8 @@ export function getDemoTrailPrimaryHrefForDemo(
   pillarId: CoreHubPillarId,
   demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
 ): string | undefined {
-  return buildPlatformCoreDemoTrail(demo).find((t) => t.pillarId === pillarId)?.href;
+  const raw = buildPlatformCoreDemoTrail(demo).find((t) => t.pillarId === pillarId)?.href;
+  return raw ? rewriteHrefForDemo(raw, demo) : undefined;
 }
 
 /** Actions ячейки матрицы с href/label под demo-коллекцию. */
@@ -603,7 +619,7 @@ export function getCrossRolePeerDemoHrefForDemo(
 
   if (pillarId === 'development') {
     const showroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
-    const w2Href = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(demo.collectionId)}`;
+    const brandDevHref = brandDevelopmentCabinetHref(demo.collectionId);
     const dossierHref = factoryProductionDossierHref(demo.demoArticleId, {
       collectionId: demo.collectionId,
     });
@@ -612,7 +628,7 @@ export function getCrossRolePeerDemoHrefForDemo(
     if (viewerRoleId === 'brand' && peerRoleId === 'supplier') {
       return factoryMaterialsHrefForDemo(demo);
     }
-    if (viewerRoleId === 'shop' && peerRoleId === 'brand') return w2Href;
+    if (viewerRoleId === 'shop' && peerRoleId === 'brand') return brandDevHref;
     if (viewerRoleId === 'shop' && peerRoleId === 'manufacturer') return dossierHref;
     if (viewerRoleId === 'shop' && peerRoleId === 'supplier') {
       return factoryMaterialsHrefForDemo(demo);
@@ -644,7 +660,7 @@ export function getCrossRolePeerDemoHrefForDemo(
     return factoryHandoffQueueHrefForDemo(demo);
   }
   if (viewerRoleId === 'manufacturer' && peerRoleId === 'brand' && pillarId === 'development') {
-    return `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${demo.collectionId}`;
+    return brandDevelopmentCabinetHref(demo.collectionId);
   }
   if (viewerRoleId === 'manufacturer' && peerRoleId === 'supplier' && pillarId === 'order_production') {
     return factoryMaterialsProcurementHrefForDemo(demo, { role: 'manufacturer' });
@@ -665,7 +681,7 @@ export function getPillarCrossRolePeersForDemo(
 ): PillarCrossRolePeer[] {
   const collectionId =
     demo.collectionId !== PLATFORM_CORE_DEMO.collectionId ? demo.collectionId : undefined;
-  return PLATFORM_CORE_HUB_ROWS.filter((r) => r.id !== viewerRoleId).map((row) => {
+  return getPlatformCoreHubRowsForUi().filter((r) => r.id !== viewerRoleId).map((row) => {
     const cell = row.pillars[pillarId];
     const participates = cell.kind === 'active';
     return {
@@ -675,9 +691,11 @@ export function getPillarCrossRolePeersForDemo(
       cabinetHref: platformCoreRolePillarHref(row.id, pillarId, collectionId),
       title: participates ? cell.title : cell.reason,
       demoEntityRu: getPlatformCorePillarEntityLabelForDemo(pillarId, demo),
-      demoHref: participates
-        ? getCrossRolePeerDemoHrefForDemo(viewerRoleId, row.id, pillarId, demo)
-        : undefined,
+      demoHref: (() => {
+        if (!participates) return undefined;
+        const href = getCrossRolePeerDemoHrefForDemo(viewerRoleId, row.id, pillarId, demo);
+        return href ? rewriteHrefForDemo(href, demo) : undefined;
+      })(),
     };
   });
 }

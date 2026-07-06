@@ -104,6 +104,7 @@ export const ChatList: React.FC<ChatListProps> = ({
               >
                 <button
                   type="button"
+                  data-chat-id={slimCore ? c.id : undefined}
                   data-testid={slimCore ? 'platform-core-comms-thread-item' : undefined}
                   className={cn(
                     'relative flex w-full min-w-0 items-center gap-3 rounded-xl border p-2.5 text-left transition-all',

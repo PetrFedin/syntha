@@ -1,52 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
-import { PLATFORM_CORE_B2B_BASE } from '@/lib/platform-core-mode-surfaces';
-import { ROUTES } from '@/lib/routes';
-import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { isPlatformCoreArticleSpineMode } from '@/lib/platform-core-article-spine';
+import { BrandScShowroomRetailPeerStrip as Archived } from '@/_archive/platform-core-legacy/components/platform/retail-crm/BrandScShowroomRetailPeerStrip';
 
-type Props = {
-  collectionId: string;
-};
-
-/** Brand showroom · linesheets + release + platform + shop monetization. */
-export function BrandScShowroomRetailPeerStrip({ collectionId }: Props) {
-  const linesheetsHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
-  const releaseGateHref = `${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=checklist&collection=${encodeURIComponent(collectionId)}`;
-  const platformHubHref = `${PLATFORM_CORE_B2B_BASE}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=hub`;
-  const matrixHref = `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`;
-  const checkoutHref = `${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(collectionId)}`;
-
-  return (
-    <div className={hubGadget.goldenPath} data-testid="brand-sc-showroom-retail-peer-strip">
-      <Link href={linesheetsHref} data-testid="brand-sc-showroom-linesheets-link" className={hubGadget.goldenLink}>
-        Linesheets
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link href={releaseGateHref} data-testid="brand-sc-showroom-release-gate-link" className={hubGadget.goldenLink}>
-        Release gate
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link href={platformHubHref} data-testid="brand-sc-showroom-platform-hub-link" className={hubGadget.goldenLink}>
-        Platform B2B
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link href={matrixHref} data-testid="brand-sc-showroom-shop-matrix-link" className={hubGadget.goldenLink}>
-        Shop matrix
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link href={checkoutHref} data-testid="brand-sc-showroom-shop-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
-      </Link>
-    </div>
-  );
+export function BrandScShowroomRetailPeerStrip(props: Parameters<typeof Archived>[0]) {
+  if (isPlatformCoreArticleSpineMode()) return null;
+  return <Archived {...props} />;
 }

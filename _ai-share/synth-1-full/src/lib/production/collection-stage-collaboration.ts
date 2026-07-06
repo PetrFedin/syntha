@@ -59,8 +59,7 @@ export type CollectionStageReviewRequestResult = {
 };
 
 /**
- * Заменить на fetch('/api/brand/collection-stage-review', { method: 'POST', body: JSON.stringify(payload) })
- * при появлении бэкенда. Пока — детерминированный stub для UI и тестов.
+ * POST /api/brand/collection-stage-review — создаёт задачу/тред согласования этапа.
  */
 export async function submitCollectionStageReviewRequest(
   payload: CollectionStageReviewRequestPayload

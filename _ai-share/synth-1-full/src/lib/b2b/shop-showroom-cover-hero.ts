@@ -13,10 +13,10 @@ export type ShopShowroomCoverHero = {
 };
 
 const SOURCE_LABEL: Record<ShopShowroomCoverHeroSource, string> = {
-  dossier: 'Hero · PG dossier',
-  'partner-cover': 'Hero · partner cover',
-  'partner-logo': 'Hero · partner logo',
-  fallback: 'Hero · fallback',
+  dossier: 'Hero · dossier PG',
+  'partner-cover': 'Hero · обложка партнёра',
+  'partner-logo': 'Hero · лого партнёра',
+  fallback: 'Hero · заглушка',
 };
 
 /** Dossier/published hero wins over partner stub (Platform Core cover hero policy). */

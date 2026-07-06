@@ -53,25 +53,49 @@ async function ensureIntakeAllocationTable(): Promise<void> {
       organization_id TEXT NOT NULL,
       batch_id TEXT NOT NULL,
       plan JSONB NOT NULL,
+      demand_fingerprint TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+  await getWorkshop2PgPool().query(`
+    CREATE INDEX IF NOT EXISTS workshop2_b2b_intake_alloc_batch_idx
+      ON workshop2_b2b_intake_allocations (organization_id, batch_id, created_at DESC)
+  `);
 }
 
-/** Persist allocation plan (PG transaction or file/memory lock snapshot). */
+function hashIntakeAllocationLockKey(batchId: string, organizationId: string): string {
+  return `intake:${organizationId}:${batchId}`;
+}
+
+function fingerprintIntakeDemand(plan: AllocationPlan): string {
+  return JSON.stringify({
+    allocations: plan.allocations?.map((a) => ({
+      destinationType: a.destinationType,
+      articleId: a.articleId,
+      size: a.size,
+      allocatedQuantity: a.allocatedQuantity,
+    })),
+    unallocated: plan.unallocated,
+  });
+}
+
+/** Persist allocation plan (PG transaction + advisory lock or file/memory snapshot). */
 export async function persistB2bIntakeAllocationPlan(input: {
   batchId: string;
   plan: AllocationPlan;
   organizationId?: string;
+  idempotent?: boolean;
 }): Promise<{
   ok: true;
   planId: string;
   mode: 'postgres' | 'file' | 'memory' | 'pg_only_blocked';
+  idempotent?: boolean;
 }> {
   const batchId = input.batchId.trim();
   if (!batchId) throw new Error('batchId required');
 
   const organizationId = input.organizationId?.trim() || 'org-brand-001';
+  const demandFingerprint = fingerprintIntakeDemand(input.plan);
   const planId = `alloc-${batchId}-${Date.now()}`;
   const row: PersistedB2bIntakeAllocationPlan = {
     id: planId,
@@ -86,13 +110,44 @@ export async function persistB2bIntakeAllocationPlan(input: {
     const client = await getWorkshop2PgPool().connect();
     try {
       await client.query('BEGIN');
+      await client.query(`SELECT pg_advisory_xact_lock(hashtext($1))`, [
+        hashIntakeAllocationLockKey(batchId, organizationId),
+      ]);
+
+      if (input.idempotent !== false) {
+        const existing = await client.query<{
+          id: string;
+          plan: AllocationPlan;
+          demand_fingerprint: string | null;
+        }>(
+          `SELECT id, plan, demand_fingerprint
+           FROM workshop2_b2b_intake_allocations
+           WHERE organization_id = $1 AND batch_id = $2
+           ORDER BY created_at DESC
+           LIMIT 1
+           FOR UPDATE`,
+          [organizationId, batchId]
+        );
+        const prev = existing.rows[0];
+        if (prev && prev.demand_fingerprint === demandFingerprint) {
+          await client.query('COMMIT');
+          return {
+            ok: true,
+            planId: prev.id,
+            mode: 'postgres',
+            idempotent: true,
+          };
+        }
+      }
+
       await client.query(
-        `INSERT INTO workshop2_b2b_intake_allocations (id, organization_id, batch_id, plan, created_at)
-         VALUES ($1, $2, $3, $4::jsonb, $5::timestamptz)`,
-        [planId, organizationId, batchId, JSON.stringify(input.plan), row.createdAt]
+        `INSERT INTO workshop2_b2b_intake_allocations
+           (id, organization_id, batch_id, plan, demand_fingerprint, created_at)
+         VALUES ($1, $2, $3, $4::jsonb, $5, $6::timestamptz)`,
+        [planId, organizationId, batchId, JSON.stringify(input.plan), demandFingerprint, row.createdAt]
       );
       await client.query('COMMIT');
-      return { ok: true, planId, mode: 'postgres' };
+      return { ok: true, planId, mode: 'postgres', idempotent: false };
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;

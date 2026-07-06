@@ -1,4 +1,4 @@
-import { factoryProductionDossierHref } from '@/lib/routes';
+import { factoryProductionDossierHref } from '@/lib/platform-core-routes';
 import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 
 export type BrandDevelopmentSamplePeerOpts = {

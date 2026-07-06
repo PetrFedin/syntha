@@ -48,6 +48,7 @@ import {
   workshop2ArticlePath,
   workshop2ArticleUrlSegment,
   workshop2CollectionListHref,
+  resolveWorkshop2W2SecOperationalDeepLink,
 } from '@/lib/production/workshop2-url';
 import {
   defaultSketchExportSurfaceForDossierView,
@@ -81,6 +82,12 @@ import {
   appendWorkshop2ArticleActivity,
   buildWorkshop2ArticleProductionHistory,
 } from '@/lib/production/workshop2-activity-log';
+import {
+  filterW2MainTabsForCreationMode,
+  resolveArticleCreationMode,
+  resolveW2MainTabForCreationMode,
+  type ArticleCreationMode,
+} from '@/lib/platform-core-article-spine';
 import { cn } from '@/lib/utils';
 import type {
   LocalOrderLine,
@@ -227,6 +234,8 @@ type Props = {
     collectionId: string,
     commit: Workshop2ArticleCommit
   ) => string | false;
+  /** Platform Core Wave 8b: режим из inventory line (strip в BrandDevelopmentArticleWorkspace). */
+  articleCreationModeOverride?: ArticleCreationMode;
 };
 
 type StageUiStatus =
@@ -297,6 +306,7 @@ function Workshop2ArticleWorkspaceScreen({
   sketchFloorInUrl,
   articlePickerLines,
   onCommitWorkshop2Article,
+  articleCreationMode,
 }: {
   collectionId: string;
   article: Workshop2CollectionListItem['articleRows'][number];
@@ -321,12 +331,14 @@ function Workshop2ArticleWorkspaceScreen({
     collectionId: string,
     commit: Workshop2ArticleCommit
   ) => string | false;
+  articleCreationMode: ArticleCreationMode;
 }) {
   const { bundle, dossier, setDossier } = useArticleWorkspace();
   const [dossierHydrateKey, setDossierHydrateKey] = useState(0);
   const { role } = useRbac();
+  const creationMode = articleCreationMode;
   const visibleTabs = useMemo(() => {
-    return W2_ARTICLE_MAIN_TAB_STRIP.filter((t) => {
+    const roleFiltered = W2_ARTICLE_MAIN_TAB_STRIP.filter((t) => {
       if (role === 'designer') return t.id === 'tz' || t.id === 'fit' || t.id === 'supply';
       if (role === 'manufacturer')
         return (
@@ -338,7 +350,8 @@ function Workshop2ArticleWorkspaceScreen({
         );
       return true;
     });
-  }, [role]);
+    return filterW2MainTabsForCreationMode(roleFiltered, creationMode);
+  }, [role, creationMode]);
   const [signatoriesDialogOpen, setSignatoriesDialogOpen] = useState(false);
   const [pulseDialogOpen, setPulseDialogOpen] = useState(false);
   const [tzPreviewHtml, setTzPreviewHtml] = useState('');
@@ -1325,6 +1338,7 @@ function Workshop2ArticleWorkspaceScreen({
                   key={t.id}
                   type="button"
                   role="tab"
+                  data-testid={`w2-article-tab-${t.id}`}
                   aria-selected={active}
                   onMouseEnter={() => {
                     if (prefetchTab) prefetchWorkshop2ArticleTabChunks(prefetchTab);
@@ -2421,6 +2435,23 @@ function Workshop2ArticleWorkspaceScreen({
   );
 }
 
+
+function findWorkshop2InventoryLineForArticle(
+  lines: LocalOrderLine[],
+  articleId: string
+): LocalOrderLine | undefined {
+  return lines.find((l) => l.id === articleId);
+}
+
+function resolveWorkshop2ArticleCreationMode(
+  article: { articleCreationMode?: unknown; id?: string } | null | undefined,
+  lines: LocalOrderLine[],
+  articleId: string
+) {
+  const line = findWorkshop2InventoryLineForArticle(lines, articleId);
+  return resolveArticleCreationMode(line ?? article ?? null);
+}
+
 export function Workshop2ArticleWorkspace({
   collectionId,
   articleId,
@@ -2432,6 +2463,7 @@ export function Workshop2ArticleWorkspace({
   onPatchWorkshop2ArticleLine,
   articlePickerLines,
   onCommitWorkshop2Article,
+  articleCreationModeOverride,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -2445,12 +2477,6 @@ export function Workshop2ArticleWorkspace({
     () => parseWorkshop2ArticlePaneParam(w2paneQueryValue),
     [w2paneQueryValue]
   );
-  const mainTab = useMemo((): MainTab => {
-    if (!paneFromUrl) return 'tz';
-    if (paneFromUrl === 'overview') return 'tz';
-    return paneFromUrl as MainTab;
-  }, [paneFromUrl]);
-
   const collections = useMemo(
     () => [...activeCollections, ...archivedCollections],
     [activeCollections, archivedCollections]
@@ -2471,6 +2497,20 @@ export function Workshop2ArticleWorkspace({
       ),
     [collection, articleId]
   );
+
+  const articleCreationMode = useMemo(
+    () =>
+      articleCreationModeOverride ??
+      (article
+        ? resolveWorkshop2ArticleCreationMode(article, articlePickerLines, article.id)
+        : resolveArticleCreationMode(null)),
+    [articleCreationModeOverride, article, articlePickerLines, article?.id]
+  );
+
+  const mainTab = useMemo((): MainTab => {
+    const fromUrl = !paneFromUrl ? 'tz' : paneFromUrl === 'overview' ? 'tz' : (paneFromUrl as MainTab);
+    return resolveW2MainTabForCreationMode(fromUrl, articleCreationMode) as MainTab;
+  }, [paneFromUrl, articleCreationMode]);
 
   /** В адресной строке — внутренний 6-значный номер, если уже выдан; старые ссылки по line id остаются рабочими. */
   useEffect(() => {
@@ -2557,9 +2597,29 @@ export function Workshop2ArticleWorkspace({
 
   const w2secParam = query.get(WORKSHOP2_DOSSIER_SECTION_PARAM);
 
+  /** Скрытые вкладки (buy_or_import) → ТЗ. */
+  useEffect(() => {
+    if (!article || !w2paneQueryValue) return;
+    const fromUrl = w2paneQueryValue === 'overview' ? 'tz' : w2paneQueryValue;
+    const resolved = resolveW2MainTabForCreationMode(fromUrl, articleCreationMode);
+    if (fromUrl !== resolved) {
+      syncMainTabToUrl(resolved as MainTab);
+    }
+  }, [article, articleCreationMode, syncMainTabToUrl, w2paneQueryValue]);
+
   /** Нормализация deep link: `?w2sec=…` без `w2pane`, legacy `?w2pane=assignment`. */
   useEffect(() => {
     if (!article) return;
+    const operational = resolveWorkshop2W2SecOperationalDeepLink(w2secParam);
+    if (operational && !w2paneQueryValue && articleCreationMode === 'full_production') {
+      syncMainTabToUrl('plan');
+      if (typeof window !== 'undefined') {
+        const { pathname: p, search } = window.location;
+        window.history.replaceState(null, '', `${p}${search}#${operational.scrollHash}`);
+      }
+      return;
+    }
+
     const secFromQuery = parseWorkshop2DossierSection(w2secParam);
 
     if (isWorkshop2ArticlePaneAssignmentLegacy(w2paneQueryValue)) {
@@ -2571,7 +2631,7 @@ export function Workshop2ArticleWorkspace({
 
     if (!secFromQuery) return;
     syncMainTabToUrl('tz', { dossierSection: secFromQuery });
-  }, [article?.id, collectionId, syncMainTabToUrl, w2paneQueryValue, w2secParam]);
+  }, [article?.id, articleCreationMode, collectionId, syncMainTabToUrl, w2paneQueryValue, w2secParam]);
 
   const articleWorkspaceRef = useMemo(
     () =>
@@ -2641,6 +2701,7 @@ export function Workshop2ArticleWorkspace({
         sketchFloorInUrl={isSketchFloorInSearch(query.toString())}
         articlePickerLines={articlePickerLines}
         onCommitWorkshop2Article={onCommitWorkshop2Article}
+        articleCreationMode={articleCreationMode}
       />
     </ArticleWorkspaceProvider>
   );

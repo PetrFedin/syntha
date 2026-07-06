@@ -27,7 +27,7 @@ describe('workshop2 factory ERP auto-retry', () => {
     expect(WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX).toBe(3);
   });
 
-  it('пропускает PO с erpNextRetryAt в будущем', async () => {
+  it('пропускает PO с erpNextRetryAt в будущем (lazy, без burst)', async () => {
     listPos.mockResolvedValueOnce([
       {
         id: 'PO-1',

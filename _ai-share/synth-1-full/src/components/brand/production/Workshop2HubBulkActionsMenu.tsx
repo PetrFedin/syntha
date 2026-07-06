@@ -71,28 +71,50 @@ export function Workshop2HubBulkActionsMenu({
     setBusy('showroom');
     onMessage?.(null);
     try {
-      const res = await fetch(
-        `/api/workshop2/collections/${encodeURIComponent(collectionId)}/bulk-showroom-publish`,
-        {
-          method: 'POST',
-          headers: {
-            ...buildWorkshop2ApiRequestHeaders(),
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ articleIds }),
-        }
-      );
-      const json = (await res.json()) as {
-        messageRu?: string;
-        passed?: number;
-        blocked?: unknown[];
+      const postShowroom = async (ids: string[]) => {
+        const res = await fetch(
+          `/api/workshop2/collections/${encodeURIComponent(collectionId)}/bulk-showroom-publish`,
+          {
+            method: 'POST',
+            headers: {
+              ...buildWorkshop2ApiRequestHeaders(),
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ articleIds: ids }),
+          }
+        );
+        return (await res.json()) as {
+          ok?: boolean;
+          messageRu?: string;
+          passed?: number;
+          blocked?: Array<{ articleId: string; reasons?: string[] }>;
+        };
       };
+
+      let json = await postShowroom(articleIds);
+      const blockedIds =
+        json.blocked?.map((row) => row.articleId).filter(Boolean) ?? [];
+      let retried = 0;
+      if (json.ok && blockedIds.length > 0 && (json.passed ?? 0) > 0) {
+        await new Promise((r) => window.setTimeout(r, 400));
+        const retryJson = await postShowroom(blockedIds);
+        retried = blockedIds.length;
+        json = {
+          ...retryJson,
+          passed: (json.passed ?? 0) + (retryJson.passed ?? 0),
+          blocked: retryJson.blocked ?? [],
+          messageRu: retryJson.messageRu
+            ? `${retryJson.messageRu} (повтор ${retried} заблокированных)`
+            : json.messageRu,
+        };
+      }
+
       notify(
         json.messageRu ??
-          (res.ok
-            ? `Опубликовано в витрину: ${json.passed ?? 0}, блок: ${json.blocked?.length ?? 0}`
+          (json.ok
+            ? `Опубликовано в витрину: ${json.passed ?? 0}, блок: ${json.blocked?.length ?? 0}${retried ? ` · retry ${retried}` : ''}`
             : 'Ошибка публикации витрины'),
-        res.ok
+        Boolean(json.ok && (json.blocked?.length ?? 0) === 0)
       );
     } catch {
       notify('Bulk showroom: сеть недоступна', false);

@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { brandProductionOpsFeatureHref } from '@/lib/brand-production/brand-production-handoff';
-import { buildManufacturerQcGateSession } from '@/lib/production/manufacturer-qc-gate';
+import { brandProductionOpsFeatureHref } from '@/lib/platform-core-ports/brand-production-handoff';
+import { buildManufacturerQcGateSession } from '@/lib/platform-core-ports/manufacturer-handoff';
 import {
   brandB2bOrderChainContextHref,
   brandB2bOrderHandoffContextHref,
   shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
+import { cn } from '@/lib/utils';
 
 type Props = {
   orderId: string;
@@ -28,7 +30,7 @@ export function BrandOpDossierProductionPeerStrip({
 
   return (
     <div
-      className={hubGadget.goldenPath}
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="brand-op-dossier-production-peer-strip"
     >
       <Link
@@ -46,7 +48,7 @@ export function BrandOpDossierProductionPeerStrip({
         data-testid="brand-op-dossier-handoff-link"
         className={hubGadget.goldenLink}
       >
-        Handoff
+        Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -56,7 +58,7 @@ export function BrandOpDossierProductionPeerStrip({
         data-testid="brand-op-dossier-qc-gate-link"
         className={hubGadget.goldenLink}
       >
-        QC gate
+        Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -66,7 +68,7 @@ export function BrandOpDossierProductionPeerStrip({
         data-testid="brand-op-dossier-cut-ticket-link"
         className={hubGadget.goldenLink}
       >
-        Cut ticket
+        Техкарта раскроя
       </Link>
       {poHandedOff ? (
         <>
@@ -88,7 +90,7 @@ export function BrandOpDossierProductionPeerStrip({
             data-testid="brand-op-dossier-shop-tracking-link"
             className={hubGadget.goldenLink}
           >
-            Shop tracking
+            Трекинг магазина
           </Link>
         </>
       ) : null}

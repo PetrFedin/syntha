@@ -1,11 +1,15 @@
 import {
+  clearBrandScPublishAuditJournalMemoryForTests,
+  listBrandScPublishAuditJournalForCollection,
+} from '@/lib/server/brand-sc-publish-audit-repository';
+import {
   clearWorkshop2DomainEventOutboxMemoryForTests,
   enqueueWorkshop2DomainEvent,
-  listWorkshop2DomainEventsForCollection,
 } from '@/lib/server/workshop2-domain-events';
 
-describe('listWorkshop2DomainEventsForCollection', () => {
+describe('listBrandScPublishAuditJournalForCollection', () => {
   beforeEach(() => {
+    clearBrandScPublishAuditJournalMemoryForTests();
     clearWorkshop2DomainEventOutboxMemoryForTests();
   });
 
@@ -15,30 +19,26 @@ describe('listWorkshop2DomainEventsForCollection', () => {
       collectionId: 'SS27',
       articleId: 'art-a',
       payload: { source: 'bulk_showroom_publish', campaignName: 'SS27 drop' },
+      dispatchNow: false,
     });
     await enqueueWorkshop2DomainEvent({
       type: 'dossier.gate_passed',
       collectionId: 'SS27',
       articleId: 'art-b',
       payload: {},
+      dispatchNow: false,
     });
     await enqueueWorkshop2DomainEvent({
       type: 'showroom.published',
       collectionId: 'FW27',
       articleId: 'art-x',
       payload: {},
+      dispatchNow: false,
     });
 
-    const all = await listWorkshop2DomainEventsForCollection({ collectionId: 'SS27', limit: 10 });
-    expect(all.length).toBe(2);
-
-    const publishedOnly = await listWorkshop2DomainEventsForCollection({
-      collectionId: 'SS27',
-      eventType: 'showroom.published',
-      limit: 10,
-    });
-    expect(publishedOnly).toHaveLength(1);
-    expect(publishedOnly[0]?.articleId).toBe('art-a');
-    expect(publishedOnly[0]?.type).toBe('showroom.published');
+    const all = await listBrandScPublishAuditJournalForCollection('SS27', 10);
+    expect(all.length).toBe(1);
+    expect(all[0]?.articleId).toBe('art-a');
+    expect(all[0]?.eventType).toBe('showroom.published');
   });
 });

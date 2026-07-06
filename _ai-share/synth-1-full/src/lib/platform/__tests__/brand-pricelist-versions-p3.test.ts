@@ -1,6 +1,8 @@
 import {
+  buildBrandPricelistVersionDiffFields,
   buildBrandPricelistVersionSeedRows,
   filterBrandPricelistVersions,
+  pickDefaultBrandPricelistVersionDiffPair,
   summarizeBrandPricelistVersionRows,
 } from '@/lib/b2b/brand-pricelist-versions-feed';
 import {
@@ -23,6 +25,16 @@ describe('brand-pricelist-versions-feed', () => {
       index === 0 ? { ...row, customerGroupIds: ['vip'] as const } : row
     );
     expect(filterBrandPricelistVersions(rows, 'vip')).toHaveLength(1);
+  });
+
+  it('builds version diff fields for multiplier delta', () => {
+    const rows = buildBrandPricelistVersionSeedRows('SS27');
+    const pair = pickDefaultBrandPricelistVersionDiffPair(rows);
+    expect(pair).not.toBeNull();
+    const base = rows.find((row) => row.id === pair!.baseId)!;
+    const target = rows.find((row) => row.id === pair!.targetId)!;
+    const fields = buildBrandPricelistVersionDiffFields(base, target);
+    expect(fields.length).toBeGreaterThan(3);
   });
 });
 

@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { buildBrandLinesheetSyndicationSession } from '@/lib/fashion/brand-linesheet-syndication';
 import { Workshop2HubShowroomPublishButton } from '@/components/brand/production/Workshop2HubShowroomPublishButton';
-import { BrandScPublishAuditLog } from '@/components/brand/sample/BrandScPublishAuditLog';
+import { BrandReleasePublishAuditPanel } from '@/components/brand/merch/BrandReleasePublishAuditPanel';
+import { BrandScReleaseGateBlockStrip } from '@/components/brand/sample/BrandScReleaseGateBlockStrip';
+import { BrandScReleaseGateBlockPublishBanner } from '@/components/brand/sample/BrandScReleaseGateBlockPublishBanner';
 import { useWorkshop2CollectionArticleIds } from '@/hooks/use-workshop2-collection-article-ids';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { Store } from 'lucide-react';
@@ -37,7 +39,7 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Store className="h-4 w-4" />
-            <CardTitle className="text-base">Showroom publish</CardTitle>
+            <CardTitle className="text-base">Публикация шоурума</CardTitle>
           </div>
           <CardDescription>
             Checklist → syndication → publish → shop buy. Golden path сверху; здесь — одна кнопка
@@ -45,6 +47,8 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          <BrandScReleaseGateBlockStrip collectionId={resolvedCollectionId} compact />
+          <BrandScReleaseGateBlockPublishBanner collectionId={resolvedCollectionId} />
           {loading ? (
             <p className="text-text-muted text-xs">Загрузка артикулов коллекции…</p>
           ) : articleIds.length === 0 ? (
@@ -63,7 +67,7 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
               {publishMessage}
             </p>
           ) : null}
-          <BrandScPublishAuditLog
+          <BrandReleasePublishAuditPanel
             collectionId={resolvedCollectionId}
             reloadNonce={publishReloadNonce}
           />
@@ -75,7 +79,7 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
             </Button>
             <Button size="sm" variant="outline" asChild>
               <Link href={session.shopShowroomHref} data-testid="brand-release-showroom-shop-link">
-                Shop showroom
+                Шоурум магазина
               </Link>
             </Button>
           </div>

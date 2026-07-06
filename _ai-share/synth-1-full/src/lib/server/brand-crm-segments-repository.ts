@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { BrandCrmSegmentObject, BrandCrmSegmentQuery } from '@/lib/b2b/brand-crm-segment-object';
+import { sortBrandCrmSegments } from '@/lib/b2b/brand-crm-segment-object';
 import type { CustomerGroup } from '@/lib/b2b/customer-groups';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
@@ -18,6 +19,7 @@ const DEFAULT_SEED: Omit<BrandCrmSegmentObject, 'id' | 'updatedAt'>[] = [
     defaultNetTermDays: 14,
     firstOrderDiscountPct: 5,
     vatExempt: false,
+    displayOrder: 0,
   },
   {
     segmentKey: 'wholesale',
@@ -28,6 +30,7 @@ const DEFAULT_SEED: Omit<BrandCrmSegmentObject, 'id' | 'updatedAt'>[] = [
     defaultNetTermDays: 30,
     firstOrderDiscountPct: 8,
     vatExempt: false,
+    displayOrder: 1,
   },
   {
     segmentKey: 'distribution',
@@ -37,6 +40,7 @@ const DEFAULT_SEED: Omit<BrandCrmSegmentObject, 'id' | 'updatedAt'>[] = [
     defaultPriceTier: 'retail_b',
     defaultNetTermDays: 60,
     vatExempt: true,
+    displayOrder: 2,
   },
   {
     segmentKey: 'franchise',
@@ -47,6 +51,7 @@ const DEFAULT_SEED: Omit<BrandCrmSegmentObject, 'id' | 'updatedAt'>[] = [
     defaultNetTermDays: 30,
     firstOrderDiscountPct: 10,
     vatExempt: true,
+    displayOrder: 3,
   },
 ];
 
@@ -97,6 +102,7 @@ function mapPgRow(row: {
   default_net_term_days: number;
   first_order_discount_pct: string | number | null;
   vat_exempt: boolean;
+  display_order?: number | null;
   updated_at: Date;
 }): BrandCrmSegmentObject {
   const queryRaw = row.query;
@@ -115,6 +121,7 @@ function mapPgRow(row: {
     firstOrderDiscountPct:
       row.first_order_discount_pct != null ? Number(row.first_order_discount_pct) : undefined,
     vatExempt: row.vat_exempt,
+    displayOrder: row.display_order != null ? Number(row.display_order) : undefined,
     updatedAt: row.updated_at.toISOString(),
   };
 }
@@ -122,12 +129,12 @@ function mapPgRow(row: {
 async function seedDefaultsPg(org: string): Promise<void> {
   if (!isWorkshop2PostgresEnabled()) return;
   await ensureWorkshop2PgSchema();
-  for (const seed of DEFAULT_SEED) {
+  for (const [index, seed] of DEFAULT_SEED.entries()) {
     await getWorkshop2PgPool().query(
       `INSERT INTO brand_crm_segments
          (id, organization_id, segment_key, name_ru, customer_group_id, query,
-          default_price_tier, default_net_term_days, first_order_discount_pct, vat_exempt)
-       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10)
+          default_price_tier, default_net_term_days, first_order_discount_pct, vat_exempt, display_order)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10, $11)
        ON CONFLICT (organization_id, segment_key) DO NOTHING`,
       [
         newSegmentId(seed.segmentKey),
@@ -140,6 +147,7 @@ async function seedDefaultsPg(org: string): Promise<void> {
         seed.defaultNetTermDays,
         seed.firstOrderDiscountPct ?? null,
         seed.vatExempt,
+        seed.displayOrder ?? index,
       ]
     );
   }
@@ -149,8 +157,13 @@ function seedDefaultsMemory(): void {
   hydrateFileIfNeeded();
   if (memoryRows.size) return;
   const now = new Date().toISOString();
-  for (const seed of DEFAULT_SEED) {
-    memoryRows.set(seed.segmentKey, { ...seed, id: newSegmentId(seed.segmentKey), updatedAt: now });
+  for (const [index, seed] of DEFAULT_SEED.entries()) {
+    memoryRows.set(seed.segmentKey, {
+      ...seed,
+      displayOrder: seed.displayOrder ?? index,
+      id: newSegmentId(seed.segmentKey),
+      updatedAt: now,
+    });
   }
   persistFile();
 }
@@ -169,32 +182,34 @@ export async function listBrandCrmSegmentsServer(input?: {
     await ensureWorkshop2PgSchema();
     let res = await getWorkshop2PgPool().query(
       `SELECT id, segment_key, name_ru, customer_group_id, query, default_price_tier,
-              default_net_term_days, first_order_discount_pct, vat_exempt, updated_at
+              default_net_term_days, first_order_discount_pct, vat_exempt,
+              COALESCE(display_order, 0) AS display_order, updated_at
        FROM brand_crm_segments
        WHERE organization_id = $1
-       ORDER BY segment_key ASC`,
+       ORDER BY display_order ASC, segment_key ASC`,
       [org]
     );
     if (!res.rows.length) {
       await seedDefaultsPg(org);
       res = await getWorkshop2PgPool().query(
         `SELECT id, segment_key, name_ru, customer_group_id, query, default_price_tier,
-                default_net_term_days, first_order_discount_pct, vat_exempt, updated_at
+                default_net_term_days, first_order_discount_pct, vat_exempt,
+                COALESCE(display_order, 0) AS display_order, updated_at
          FROM brand_crm_segments
          WHERE organization_id = $1
-         ORDER BY segment_key ASC`,
+         ORDER BY display_order ASC, segment_key ASC`,
         [org]
       );
     }
     return {
-      segments: res.rows.map((row) => mapPgRow(row as Parameters<typeof mapPgRow>[0])),
+      segments: sortBrandCrmSegments(res.rows.map((row) => mapPgRow(row as Parameters<typeof mapPgRow>[0]))),
       storageMode: 'pg',
     };
   }
 
   seedDefaultsMemory();
   return {
-    segments: [...memoryRows.values()].sort((a, b) => a.segmentKey.localeCompare(b.segmentKey)),
+    segments: sortBrandCrmSegments([...memoryRows.values()]),
     storageMode: canUseDiskPersistence() ? 'file' : 'memory',
   };
 }
@@ -253,4 +268,49 @@ export async function patchBrandCrmSegmentServer(input: {
     segment: next,
     storageMode: listed.storageMode === 'demo' ? 'memory' : listed.storageMode,
   };
+}
+
+export async function reorderBrandCrmSegmentsServer(input: {
+  segmentKeys: string[];
+  organizationId?: string;
+}): Promise<{ segments: BrandCrmSegmentObject[]; storageMode: 'pg' | 'file' | 'memory' | 'demo' }> {
+  const org = input.organizationId ?? 'org-brand-001';
+  const listed = await listBrandCrmSegmentsServer({ organizationId: org });
+  const requested = input.segmentKeys.map((key) => key.trim()).filter(Boolean);
+  if (!requested.length) {
+    return { segments: listed.segments, storageMode: listed.storageMode };
+  }
+
+  const known = new Set(listed.segments.map((segment) => segment.segmentKey));
+  if (requested.some((key) => !known.has(key))) {
+    return { segments: listed.segments, storageMode: listed.storageMode };
+  }
+
+  const orderedKeys = [...requested];
+  for (const segment of listed.segments) {
+    if (!orderedKeys.includes(segment.segmentKey)) orderedKeys.push(segment.segmentKey);
+  }
+
+  if (listed.storageMode === 'pg') {
+    await ensureWorkshop2PgSchema();
+    for (let index = 0; index < orderedKeys.length; index += 1) {
+      await getWorkshop2PgPool().query(
+        `UPDATE brand_crm_segments SET display_order = $3, updated_at = NOW()
+         WHERE organization_id = $1 AND segment_key = $2`,
+        [org, orderedKeys[index], index]
+      );
+    }
+  } else {
+    const now = new Date().toISOString();
+    for (let index = 0; index < orderedKeys.length; index += 1) {
+      const key = orderedKeys[index]!;
+      const existing = memoryRows.get(key);
+      if (existing) {
+        memoryRows.set(key, { ...existing, displayOrder: index, updatedAt: now });
+      }
+    }
+    persistFile();
+  }
+
+  return listBrandCrmSegmentsServer({ organizationId: org });
 }

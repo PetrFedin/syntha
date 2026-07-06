@@ -6,8 +6,14 @@ import type {
   Workshop2DossierPhase1,
   Workshop2PassportProductionBrief,
 } from './workshop2-dossier-phase1.types';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
-const STORAGE_KEY = 'synth.brand.workshop2Phase1Dossier.v1';
+export const WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY = 'synth.brand.workshop2Phase1Dossier.v1';
+
+const STORAGE_KEY = WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY;
 
 export type Workshop2Phase1DossierMap = Record<string, Workshop2DossierPhase1>;
 
@@ -26,6 +32,7 @@ export function emptyWorkshop2DossierPhase1(): Workshop2DossierPhase1 {
 
 export function loadWorkshop2Phase1DossierMap(): Workshop2Phase1DossierMap {
   if (typeof window === 'undefined') return {};
+  if (!shouldUseLocalStorageClientFallbackInCore()) return {};
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
@@ -40,6 +47,7 @@ export function loadWorkshop2Phase1DossierMap(): Workshop2Phase1DossierMap {
 /** @returns false при переполнении quota / приватном режиме */
 export function saveWorkshop2Phase1DossierMap(map: Workshop2Phase1DossierMap): boolean {
   if (typeof window === 'undefined') return true;
+  if (!shouldMirrorPgClientStoreToLocalStorage()) return true;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
     return true;

@@ -7,6 +7,7 @@ import {
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
 import type { Workshop2B2bAmendmentRecord } from '@/lib/production/workshop2-b2b-amendment';
 import { bumpPlatformCoreChainStatus } from '@/lib/server/platform-core-chain-status-hub';
+import { bumpPlatformCoreCommsInbox } from '@/lib/server/platform-core-comms-inbox-hub';
 import { appendWorkshop2ContextualSystemMessage } from '@/lib/server/workshop2-contextual-messages-repository';
 import {
   createWorkshop2B2bAmendment,
@@ -98,6 +99,10 @@ export async function submitShopWorkshop2B2bAmendmentRequest(input: {
 
   await createWorkshop2B2bAmendment(amendment);
   bumpPlatformCoreChainStatus([orderId]);
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('b2b.order.amendment_requested');
+  bumpPlatformCoreCommsInbox('b2b.order.amendment_requested');
 
   void appendWorkshop2ContextualSystemMessage({
     contextType: WORKSHOP2_B2B_ORDER_CONTEXT_TYPE,
@@ -158,6 +163,17 @@ export async function approveBrandWorkshop2B2bAmendment(input: {
   }
 
   bumpPlatformCoreChainStatus([orderId]);
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('b2b.order.amendment_approved');
+  bumpPlatformCoreCommsInbox('b2b.order.amendment_approved');
+  const { pushShopOperationalStatusMirrorFromBrandAmend } =
+    await import('@/lib/server/shop-b2b-operational-status-mirror');
+  void pushShopOperationalStatusMirrorFromBrandAmend({
+    orderId,
+    amendmentId,
+    amendmentStatus: 'approved',
+  }).catch(() => {});
   const detail = orderUpdated
     ? ' Бренд применил новые строки заказа.'
     : ' Бренд одобрил запрос — уточните детали в матрице или чате.';
@@ -205,6 +221,17 @@ export async function rejectBrandWorkshop2B2bAmendment(input: {
   }
 
   bumpPlatformCoreChainStatus([orderId]);
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('b2b.order.amendment_rejected');
+  bumpPlatformCoreCommsInbox('b2b.order.amendment_rejected');
+  const { pushShopOperationalStatusMirrorFromBrandAmend } =
+    await import('@/lib/server/shop-b2b-operational-status-mirror');
+  void pushShopOperationalStatusMirrorFromBrandAmend({
+    orderId,
+    amendmentId,
+    amendmentStatus: 'rejected',
+  }).catch(() => {});
   const note = input.resolutionNoteRu?.trim();
   void appendWorkshop2ContextualSystemMessage({
     contextType: WORKSHOP2_B2B_ORDER_CONTEXT_TYPE,

@@ -8,12 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import {
   summarizeBrandCrmSegmentQuery,
+  sortBrandCrmSegments,
   type BrandCrmSegmentObject,
 } from '@/lib/b2b/brand-crm-segment-object';
-import { fetchBrandCrmSegments, patchBrandCrmSegment } from '@/lib/b2b/brand-crm-segments-store';
+import { fetchBrandCrmSegments, patchBrandCrmSegment, reorderBrandCrmSegments } from '@/lib/b2b/brand-crm-segments-store';
+import { BrandCrmShopBuyerAssignPanel } from '@/components/brand/b2b/BrandCrmShopBuyerAssignPanel';
 import { buildBrandCrmSegmentationSession } from '@/lib/b2b/brand-crm-segmentation';
 import { ROUTES } from '@/lib/routes';
-import { Loader2, Store, Users } from 'lucide-react';
+import { Loader2, Store, Users, ChevronDown, ChevronUp } from 'lucide-react';
 
 type Props = {
   collectionId?: string;
@@ -27,7 +29,7 @@ function useBrandCrmSegments() {
 
   const reload = useCallback(async () => {
     const result = await fetchBrandCrmSegments();
-    setSegments(result.segments);
+    setSegments(sortBrandCrmSegments(result.segments));
     setStorageMode(result.storageMode);
   }, []);
 
@@ -49,7 +51,7 @@ function useBrandCrmSegments() {
     try {
       const result = await patchBrandCrmSegment({ segmentKey, ...patch });
       if (result.ok) {
-        setSegments(result.segments);
+        setSegments(sortBrandCrmSegments(result.segments));
         setStorageMode(result.storageMode);
       } else {
         await reload();
@@ -59,12 +61,35 @@ function useBrandCrmSegments() {
     }
   };
 
-  return { segments, storageMode, loading, busyKey, saveSegment, reload };
+  const reorderSegment = async (segmentKey: string, direction: 'up' | 'down') => {
+    const ordered = sortBrandCrmSegments(segments);
+    const index = ordered.findIndex((segment) => segment.segmentKey === segmentKey);
+    if (index < 0) return;
+    const swapWith = direction === 'up' ? index - 1 : index + 1;
+    if (swapWith < 0 || swapWith >= ordered.length) return;
+    const nextKeys = ordered.map((segment) => segment.segmentKey);
+    [nextKeys[index], nextKeys[swapWith]] = [nextKeys[swapWith]!, nextKeys[index]!];
+    setBusyKey(segmentKey);
+    try {
+      const result = await reorderBrandCrmSegments(nextKeys);
+      if (result.ok) {
+        setSegments(sortBrandCrmSegments(result.segments));
+        setStorageMode(result.storageMode);
+      } else {
+        await reload();
+      }
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  return { segments, storageMode, loading, busyKey, saveSegment, reorderSegment, reload };
 }
 
 export function BrandCrmSegmentationSegmentsPanel({ collectionId }: Props) {
-  const { segments, storageMode, loading, busyKey, saveSegment } = useBrandCrmSegments();
+  const { segments, storageMode, loading, busyKey, saveSegment, reorderSegment } = useBrandCrmSegments();
   const session = buildBrandCrmSegmentationSession({ collectionId });
+  const orderedSegments = useMemo(() => sortBrandCrmSegments(segments), [segments]);
 
   return (
     <div className="space-y-4" data-testid="brand-crm-segmentation-segments-panel">
@@ -73,7 +98,7 @@ export function BrandCrmSegmentationSegmentsPanel({ collectionId }: Props) {
           {storageMode === 'pg' ? 'PG segments' : `Local ${storageMode}`}
         </Badge>
         <Button size="sm" variant="outline" asChild>
-          <Link href={session.orderCommsHref}>Order tracking</Link>
+          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
         </Button>
       </div>
       <Card>
@@ -94,7 +119,7 @@ export function BrandCrmSegmentationSegmentsPanel({ collectionId }: Props) {
               Нет сегментов — проверьте PG seed.
             </p>
           ) : (
-            segments.map((segment) => {
+            orderedSegments.map((segment, index) => {
               const queryChips = summarizeBrandCrmSegmentQuery(segment.query);
               const groupId = segment.customerGroupId ?? segment.segmentKey;
               const busy = busyKey === segment.segmentKey;
@@ -109,7 +134,33 @@ export function BrandCrmSegmentationSegmentsPanel({ collectionId }: Props) {
                       <p className="font-medium">{segment.nameRu}</p>
                       <p className="text-text-secondary mt-1 text-xs">Tier: {segment.defaultPriceTier}</p>
                     </div>
-                    <Badge variant="outline">{segment.segmentKey}</Badge>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        disabled={busy || index === 0}
+                        onClick={() => void reorderSegment(segment.segmentKey, 'up')}
+                        data-testid={`brand-crm-segment-up-${segment.segmentKey}`}
+                        aria-label={`Поднять ${segment.nameRu}`}
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        disabled={busy || index === orderedSegments.length - 1}
+                        onClick={() => void reorderSegment(segment.segmentKey, 'down')}
+                        data-testid={`brand-crm-segment-down-${segment.segmentKey}`}
+                        aria-label={`Опустить ${segment.nameRu}`}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                      <Badge variant="outline">{segment.segmentKey}</Badge>
+                    </div>
                   </div>
                   {queryChips.length ? (
                     <div className="mt-2 flex flex-wrap gap-1">
@@ -179,6 +230,7 @@ export function BrandCrmSegmentationPricelistPanel({ collectionId }: Props) {
 
   return (
     <div className="space-y-4" data-testid="brand-crm-segmentation-pricelist-panel">
+      <BrandCrmShopBuyerAssignPanel collectionId={collectionId} />
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Price lists · tiers</CardTitle>
@@ -194,7 +246,7 @@ export function BrandCrmSegmentationPricelistPanel({ collectionId }: Props) {
             <Link href={ROUTES.brand.companyAccounts}>Company accounts</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shopMarginPricelistHref}>Shop margin pricelist</Link>
+            <Link href={session.shopMarginPricelistHref}>Прайс-лист маржи магазина</Link>
           </Button>
         </CardContent>
       </Card>
@@ -211,7 +263,7 @@ export function BrandCrmSegmentationShowroomPanel({ collectionId }: Props) {
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Store className="h-4 w-4" />
-            <CardTitle className="text-base">Showroom · buyer access</CardTitle>
+            <CardTitle className="text-base">Шоурум · доступ покупателя</CardTitle>
           </div>
           <CardDescription>Segment-gated linesheets · brand preview → shop buy.</CardDescription>
         </CardHeader>
@@ -222,7 +274,7 @@ export function BrandCrmSegmentationShowroomPanel({ collectionId }: Props) {
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.shopShowroomHref}>Shop showroom</Link>
+            <Link href={session.shopShowroomHref}>Шоурум магазина</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link href={session.retailersHref}>Retailers registry</Link>

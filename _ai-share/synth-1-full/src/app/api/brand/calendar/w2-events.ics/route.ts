@@ -7,8 +7,12 @@ import {
   listAllWorkshop2BrandCalendarEvents,
   listWorkshop2BrandCalendarEventsForCollection,
 } from '@/lib/server/workshop2-brand-calendar-repository';
+import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
 
 export async function GET(req: NextRequest) {
+  const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);
+  if (auth instanceof NextResponse) return auth;
+
   const collectionId = req.nextUrl.searchParams.get('collectionId')?.trim();
   const events = collectionId
     ? await listWorkshop2BrandCalendarEventsForCollection({ collectionId })

@@ -251,7 +251,7 @@ export function BrandWssiCapacityPanel({
           <Link href={brandWssiSupplyHref(resolvedCollection, articleId)}>W2 · supply / MRP</Link>
         </Button>
         <Button size="sm" variant="outline" asChild>
-          <Link href={ROUTES.brand.productionOperations}>Production ops</Link>
+          <Link href={ROUTES.brand.productionOperations}>Операции производства</Link>
         </Button>
       </div>
     </div>

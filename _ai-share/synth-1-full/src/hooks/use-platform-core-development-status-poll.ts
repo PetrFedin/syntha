@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { platformCoreSsePollIntervalMs } from '@/lib/platform-core-sse-poll-intervals';
 
-const VISIBLE_POLL_MS = 15_000;
-const HIDDEN_POLL_MS = 45_000;
 const SSE_MAX_COLLECTION_IDS = 8;
 
 function capCollectionIdsForSse(collectionIds: readonly string[]): string[] {
@@ -81,8 +80,7 @@ export function usePlatformCoreDevelopmentStatusPoll(
     let timer: number | undefined;
     const schedule = () => {
       if (timer !== undefined) window.clearInterval(timer);
-      const ms =
-        document.visibilityState === 'visible' ? VISIBLE_POLL_MS : HIDDEN_POLL_MS;
+      const ms = platformCoreSsePollIntervalMs(sseConnected);
       timer = window.setInterval(() => setTick((t) => t + 1), ms);
     };
     schedule();
@@ -91,7 +89,7 @@ export function usePlatformCoreDevelopmentStatusPoll(
       document.removeEventListener('visibilitychange', schedule);
       if (timer !== undefined) window.clearInterval(timer);
     };
-  }, [enabled]);
+  }, [enabled, sseConnected]);
 
   return { tick, refresh, sseConnected };
 }

@@ -11,7 +11,7 @@ import {
   factorySupplierMessagesWorkshop2ArticleContextHref,
   shopMessagesB2bOrderContextHref,
   shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 
 /** PG chat id (`w2ctx:…`) для события B2B-календаря Platform Core. */
 export function resolvePlatformCoreCalendarThreadChatId(

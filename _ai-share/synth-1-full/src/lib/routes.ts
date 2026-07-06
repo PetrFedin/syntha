@@ -63,6 +63,39 @@ export function brandCoreOrderProductionCabinetHref(collectionId: string): strin
   return `${ROUTES.brand.coreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
 }
 
+/** Кабинет бренда · столп «Оптовый заказ». */
+export function brandCoreCollectionOrderCabinetHref(
+  collectionId: string,
+  orderId?: string | null
+): string {
+  const sp = new URLSearchParams({
+    pillar: 'collection_order',
+    collection: collectionId,
+  });
+  const oid = orderId?.trim();
+  if (oid) sp.set('order', oid);
+  return `${ROUTES.brand.coreCabinet}?${sp.toString()}`;
+}
+
+/** Заявки на изменение заказа бренда · фильтр по order. */
+export function brandOrderAmendmentsOrderHref(orderId: string): string {
+  return `${ROUTES.brand.orderAmendments}?order=${encodeURIComponent(orderId)}`;
+}
+
+/** Кабинет магазина · столп «Оптовый заказ». */
+export function shopCoreCollectionOrderCabinetHref(
+  collectionId: string,
+  orderId?: string | null
+): string {
+  const sp = new URLSearchParams({
+    pillar: 'collection_order',
+    collection: collectionId,
+  });
+  const oid = orderId?.trim();
+  if (oid) sp.set('order', oid);
+  return `${ROUTES.shop.coreCabinet}?${sp.toString()}`;
+}
+
 /** Карточка заказа бренда · мониторинг цепочки/PO (`?pillar=order_production`). */
 export function brandB2bOrderChainContextHref(orderId: string): string {
   return `${brandB2bOrderHref(orderId)}?pillar=order_production`;
@@ -188,6 +221,15 @@ export function shopB2bCheckoutCollectionHref(
     sp.set('buyer', buyerId);
   }
   return `${ROUTES.shop.b2bCheckout}?${sp.toString()}`;
+}
+
+/** Матрица магазина с фокусом на артикул (size run / checkout cross-link). */
+export function shopB2bMatrixArticleHref(collectionId: string, articleId: string): string {
+  const sp = new URLSearchParams({
+    collection: collectionId.trim(),
+    article: articleId.trim(),
+  });
+  return `${ROUTES.shop.b2bMatrix}?${sp.toString()}`;
 }
 
 /** Публичный профиль клиента по id/handle (`/client/{id}`). Кабинет «я» — `ROUTES.client.profile` (`/client/me`). */
@@ -881,6 +923,8 @@ export const ROUTES = {
     supplier: '/factory/supplier',
     /** Сообщения поставщика (role=supplier по pathname) */
     supplierMessages: '/factory/supplier/messages',
+    /** RFQ inbox поставщика — отдельный маршрут (не alias messages?feature=rfq) */
+    supplierRfqInbox: '/factory/supplier/rfq-inbox',
     /** Личный кабинет Platform Core — поставщик */
     supplierCoreCabinet: '/factory/supplier/core',
     supplierCircularHub: '/factory/supplier/circular-hub',
@@ -1037,6 +1081,19 @@ export function factoryMessagesRoleHref(role: FactoryMessagesRole): string {
   return `${ROUTES.factory.messages}?role=${role}`;
 }
 
+export function factorySupplierRfqInboxHref(input?: {
+  collectionId?: string;
+  articleId?: string;
+}): string {
+  const sp = new URLSearchParams();
+  const collectionId = input?.collectionId?.trim();
+  const articleId = input?.articleId?.trim();
+  if (collectionId) sp.set('collection', collectionId);
+  if (articleId) sp.set('article', articleId);
+  const q = sp.toString();
+  return q ? `${ROUTES.factory.supplierRfqInbox}?${q}` : ROUTES.factory.supplierRfqInbox;
+}
+
 /** `/factory/supplier/messages` с контекстом B2B (pathname → role=supplier). */
 export function factorySupplierMessagesB2bOrderContextHref(orderId: string): string {
   return `${ROUTES.factory.supplierMessages}?${b2bOrderMessagesQuery(orderId)}`;
@@ -1101,7 +1158,11 @@ export function shopB2bMatrixOrderContextHref(orderId: string): string {
 }
 
 /** Матрица с режимом повторного/изменённого заказа и опциональным контекстом B2B order. */
-export function shopB2bMatrixReorderHref(collectionId: string, orderId?: string): string {
+export function shopB2bMatrixReorderHref(
+  collectionId: string,
+  orderId?: string,
+  opts?: { buyerId?: string }
+): string {
   const sp = new URLSearchParams({
     collection: collectionId,
     mode: 'reorder',
@@ -1110,6 +1171,10 @@ export function shopB2bMatrixReorderHref(collectionId: string, orderId?: string)
     const id = orderId.trim();
     sp.set(B2B_CTX.order, id);
     sp.set(B2B_CTX.orderId, id);
+  }
+  const buyerId = opts?.buyerId?.trim();
+  if (buyerId && buyerId !== 'shop1') {
+    sp.set('buyer', buyerId);
   }
   return `${ROUTES.shop.b2bMatrix}?${sp.toString()}`;
 }

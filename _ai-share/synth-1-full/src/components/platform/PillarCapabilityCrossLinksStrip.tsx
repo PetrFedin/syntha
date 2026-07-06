@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { EntityLink } from '@/lib/data/entity-links';
-import { finalizeRelatedModuleLinks } from '@/lib/data/entity-links';
+import type { EntityLink } from '@/lib/platform-core-ports/legacy/data/entity-links';
+import { finalizeRelatedModuleLinks } from '@/lib/platform-core-ports/legacy/data/entity-links';
 
 export type PillarCapabilityCrossLinksStripProps = {
   title?: string;

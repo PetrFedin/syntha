@@ -49,3 +49,29 @@ def test_pick_agent_for_catalog_task():
         section_id="brand-sc-showroom",
     )
     assert agent in ("product_architect", "market_intelligence", "content", "lookbook")
+
+
+def test_pick_agent_for_workshop2_task():
+    agent = pick_agent_for_task(
+        "Review workshop2 dossier tech pack for demo article",
+        pillar="development",
+        role="brand",
+        section_id="brand-dev-w2-hub",
+    )
+    assert agent in ("product_architect", "architecture_guard", "tech_debt")
+
+
+def test_pick_agent_for_procurement_task():
+    agent = pick_agent_for_task(
+        "factory-ack procurement handoff queue",
+        pillar="order_production",
+        role="manufacturer",
+        section_id="mfr-op-handoff-queue",
+    )
+    assert agent in ("order_anomaly", "risk", "tech_debt")
+
+
+def test_postgresql_capability_has_agents():
+    agents = get_agents_for_capability(StackCapabilityId.POSTGRESQL)
+    assert "tech_debt" in agents
+    assert "order_anomaly" in agents

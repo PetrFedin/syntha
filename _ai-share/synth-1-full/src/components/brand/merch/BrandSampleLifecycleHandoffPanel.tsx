@@ -16,7 +16,7 @@ export function BrandSampleLifecycleHandoffPanel({ collectionId }: Props) {
     <div className="space-y-4" data-testid="brand-sample-lifecycle-handoff-panel">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Handoff · столпы 1→2→3</CardTitle>
+          <CardTitle className="text-base">Передача · столпы 1→2→3</CardTitle>
           <CardDescription>
             Gold sample approval — дальше release и shop showroom в golden path.
           </CardDescription>

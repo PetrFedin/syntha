@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { buildPlatformB2bHubSession } from '@/lib/b2b/platform-b2b-hub';
+import { buildPlatformB2bHubSession } from '@/lib/platform-core-ports/b2b/platform-b2b-hub';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
 
@@ -18,11 +18,11 @@ type Props = {
 };
 
 const STEPS: { id: PlatformB2bHubGoldenPathStepId; label: string }[] = [
-  { id: 'hub', label: 'Hub' },
-  { id: 'marketroom', label: 'Marketroom' },
-  { id: 'partners', label: 'Partners' },
-  { id: 'showroom', label: 'Showroom' },
-  { id: 'matrix', label: 'Matrix' },
+  { id: 'hub', label: 'Хаб' },
+  { id: 'marketroom', label: 'Маркетрум' },
+  { id: 'partners', label: 'Партнёры' },
+  { id: 'showroom', label: 'Витрина' },
+  { id: 'matrix', label: 'Матрица' },
 ];
 
 export function PlatformB2bHubGoldenPathStrip({ collectionId, activeStep }: Props) {

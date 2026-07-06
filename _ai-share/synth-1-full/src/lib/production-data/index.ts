@@ -18,4 +18,9 @@ export {
   resetBrandTasksPersistModeCacheForTests,
 } from './brand-tasks-client';
 export { loadFloorTabDraft, saveFloorTabDraftToStorage } from './floor-tab-draft-store';
+export {
+  loadFloorTabDraftWithMode,
+  persistFloorTabDraft,
+  resetFloorTabDraftPersistModeCacheForTests,
+} from './floor-tab-draft-client';
 export { HttpProductionDataPort } from './http-production-data-port';

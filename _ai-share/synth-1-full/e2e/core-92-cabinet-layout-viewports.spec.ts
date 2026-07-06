@@ -50,6 +50,10 @@ test.describe('core-92: cabinet + workspace layout viewports', () => {
     await expect(page.getByTestId('role-core-cabinet-shop')).toBeVisible({ timeout: 60_000 });
     await expectCabinetPillarNav(page);
 
+    await gotoRoleCoreCabinet(page, '/shop/core?collection=SS27&pillar=collection_order');
+    await expect(page.getByTestId('role-pillar-primary-cta')).toBeVisible();
+    await expectCabinetAboveFold(page);
+
     const matrixRes = await page.goto('/shop/b2b/matrix?collection=SS27', GOTO);
     expect(matrixRes?.status() ?? 599).toBeLessThan(500);
     await expect(page.getByText('Ошибка B2B магазина')).toHaveCount(0);

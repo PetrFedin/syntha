@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { reportError } from '@/lib/logger';
-import { ROUTES } from '@/lib/routes';
+import { reportError } from '@/lib/platform-core-ports/legacy/logger';
+import { ROUTES } from '@/lib/platform-core-routes';
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 
 type Props = {
   error: Error & { digest?: string };
   reset: () => void;
-  role: 'shop' | 'brand' | 'manufacturer';
+  role: 'shop' | 'brand' | 'manufacturer' | 'supplier';
   defaultPillar?: CoreHubPillarId;
   title?: string;
 };
@@ -32,7 +32,9 @@ export function PlatformCoreSegmentError({
       ? `${ROUTES.shop.coreCabinet}?pillar=${defaultPillar}`
       : role === 'brand'
         ? `${ROUTES.brand.coreCabinet}?pillar=${defaultPillar}`
-        : `${ROUTES.factory.productionCoreCabinet}?pillar=${defaultPillar}`;
+        : role === 'supplier'
+          ? `${ROUTES.factory.supplierCoreCabinet}?pillar=${defaultPillar}`
+          : `${ROUTES.factory.productionCoreCabinet}?pillar=${defaultPillar}`;
 
   return (
     <div

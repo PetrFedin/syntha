@@ -6,15 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { factoryMaterialsProcurementHrefForDemo } from '@/lib/platform-core-hub-matrix';
-import { shopB2bOrderHref } from '@/lib/routes';
-import { shopReplenishmentTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
+import { shopReplenishmentTabHref } from '@/lib/platform-core-ports/b2b/shop-collection-order-hrefs';
 import { SupEmptyCoPeerStrip } from '@/components/platform/empty-cells/SupEmptyCoPeerStrip';
+import { SupEmptyCoExpectedPoDateStrip } from '@/components/platform/empty-cells/SupEmptyCoExpectedPoDateStrip';
 import { SupplierManufacturerHandoffPeerStrip } from '@/components/factory/supplier/SupplierManufacturerHandoffPeerStrip';
-import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
+import { WAVE_WZ_SUP_EMPTY_CO_CHECKOUT_RU } from '@/lib/platform-core-ports/platform/wave-wz-ru-noise-dedup-final';
 import {
   formatDossierMaterialPreviewLine,
   type Workshop2DossierMaterialPreview,
-} from '@/lib/production/workshop2-dossier-material-preview';
+} from '@/lib/platform-core-ports/dossier-material-preview';
 import { formatWholesaleOrderDisplayId } from '@/lib/integrations/spine/integration-ui-utils';
 import {
   estimateSupplierMaterialNeed,
@@ -24,6 +24,7 @@ import {
 } from '@/lib/platform-core-supplier-forecast';
 import { SupplierBomDrawer } from '@/components/platform/SupplierBomDrawer';
 import { PlatformCoreTerm } from '@/components/platform/PlatformCoreTerm';
+import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
 import {
   PLATFORM_CORE_BOM_UNAVAILABLE_RU,
   PLATFORM_CORE_SUPPLIER_BOM_EMPTY_RU,
@@ -65,6 +66,8 @@ export default function SupplierCollectionOrderForecast({
   }));
   const totalUnits = forecast?.totalUnits ?? null;
   const orderStatus = forecast?.orderStatusLabel ?? null;
+  const productionOrderId = forecast?.productionOrderId ?? null;
+  const expectedHandoffAt = forecast?.expectedHandoffAt ?? null;
   const confirmedArticles = Object.fromEntries(rows.map((r) => [r.articleId, r.supplierConfirmed]));
   const loadState = loading
     ? 'loading'
@@ -78,6 +81,15 @@ export default function SupplierCollectionOrderForecast({
 
   return (
     <section data-testid="supplier-collection-order-workspace" className="space-y-2">
+      {hideLead && activeOrderId ? (
+        <PlatformCorePillarNotificationCenterCompact
+          variant="supplier"
+          compact
+          collectionId={collectionId}
+          orderId={activeOrderId}
+          orderScoped
+        />
+      ) : null}
       <Card data-testid="supplier-collection-order-forecast" className="border-blue-200/60">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-bold">Прогноз сырья по оптовому заказу</CardTitle>
@@ -91,7 +103,10 @@ export default function SupplierCollectionOrderForecast({
           <p className="flex flex-wrap items-center gap-1">
             {activeOrderId ? (
               <Link
-                href={shopB2bOrderHref(activeOrderId)}
+                href={factoryMaterialsProcurementHrefForDemo(
+                  { ...demo, demoOrderId: activeOrderId },
+                  { role: 'supplier' }
+                )}
                 className="text-accent-primary font-mono text-[10px] hover:underline"
                 data-testid="supplier-forecast-b2b-order-link"
               >
@@ -122,7 +137,7 @@ export default function SupplierCollectionOrderForecast({
             <p className="text-text-muted">{PLATFORM_CORE_BOM_UNAVAILABLE_RU}</p>
           ) : loadState === 'waiting-order' ? (
             <p className="text-text-muted" data-testid="supplier-forecast-waiting-order">
-              Ожидание оптового заказа в spine — откройте SS27 после checkout магазина.
+              {WAVE_WZ_SUP_EMPTY_CO_CHECKOUT_RU}
             </p>
           ) : loadState === 'waiting-data' ? (
             <p className="text-text-muted" data-testid="supplier-forecast-waiting-data">
@@ -207,6 +222,12 @@ export default function SupplierCollectionOrderForecast({
           orderId={activeOrderId}
         />
       ) : null}
+      <SupEmptyCoExpectedPoDateStrip
+        demo={demo}
+        orderId={activeOrderId || undefined}
+        productionOrderId={productionOrderId}
+        expectedPoDateIso={expectedHandoffAt}
+      />
       <SupEmptyCoPeerStrip demo={demo} orderId={activeOrderId || undefined} />
       {embedCrossRole ? (
         <RolePillarCrossRoleLinks roleId="supplier" pillarId="collection_order" variant="compact" />

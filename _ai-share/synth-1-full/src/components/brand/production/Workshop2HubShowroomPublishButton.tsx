@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { fetchBrandScReleaseGateCheck } from '@/lib/production/brand-sc-release-gate-passport';
 import { ROUTES } from '@/lib/routes';
 
 type BlockedRow = { articleId: string; reasons: string[] };
@@ -29,6 +30,19 @@ export function Workshop2HubShowroomPublishButton({
   const [blocked, setBlocked] = useState<BlockedRow[]>([]);
   const [passedIds, setPassedIds] = useState<string[]>([]);
   const [published, setPublished] = useState(false);
+  const [passportBlocked, setPassportBlocked] = useState<boolean | null>(null);
+  const [passportMessageRu, setPassportMessageRu] = useState<string | null>(null);
+
+  const runPassportGate = useCallback(async () => {
+    try {
+      const gate = await fetchBrandScReleaseGateCheck(collectionId);
+      setPassportBlocked(gate.blocked);
+      setPassportMessageRu(gate.blocked ? gate.messageRu : null);
+    } catch {
+      setPassportBlocked(true);
+      setPassportMessageRu('Release gate: material passport — проверка недоступна.');
+    }
+  }, [collectionId]);
 
   const runReadiness = useCallback(async () => {
     if (!articleIds.length) return;
@@ -66,8 +80,11 @@ export function Workshop2HubShowroomPublishButton({
   }, [articleIds, collectionId, onMessage]);
 
   useEffect(() => {
-    if (articleIds.length > 0) void runReadiness();
-  }, [articleIds, runReadiness]);
+    if (articleIds.length > 0) {
+      void runReadiness();
+      void runPassportGate();
+    }
+  }, [articleIds, runReadiness, runPassportGate]);
 
   const runPublish = async () => {
     const ids = ready ? articleIds : passedIds.length ? passedIds : articleIds;
@@ -90,7 +107,12 @@ export function Workshop2HubShowroomPublishButton({
         messageRu?: string;
         passed?: number;
         blocked?: unknown[];
+        code?: string;
       };
+      if (res.status === 409 && json.code === 'material_passport_release_gate') {
+        setPassportBlocked(true);
+        setPassportMessageRu(json.messageRu ?? 'Release gate: material passport не завершён.');
+      }
       setPublished(res.ok && (json.blocked?.length ?? 0) === 0);
       onMessage?.(
         json.messageRu ??
@@ -104,7 +126,12 @@ export function Workshop2HubShowroomPublishButton({
     }
   };
 
-  const canPublish = ready === true && !checking && !busy && articleIds.length > 0;
+  const canPublish =
+    ready === true &&
+    passportBlocked === false &&
+    !checking &&
+    !busy &&
+    articleIds.length > 0;
   const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
   const brandLinesheetsHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
 
@@ -158,6 +185,14 @@ export function Workshop2HubShowroomPublishButton({
           </>
         ) : null}
       </div>
+      {passportBlocked ? (
+        <p
+          className="rounded border border-rose-200/80 bg-rose-50/70 px-2 py-1.5 text-[10px] text-rose-950"
+          data-testid="brand-sc-release-gate-block-publish-hint"
+        >
+          {passportMessageRu ?? 'Release gate: material passport не завершён — publish заблокирован.'}
+        </p>
+      ) : null}
       {blocked.length > 0 ? (
         <ul className="max-h-24 overflow-y-auto rounded border border-amber-200/80 bg-amber-50/60 px-2 py-1.5 text-[10px] text-amber-950">
           {blocked.map((row) => (

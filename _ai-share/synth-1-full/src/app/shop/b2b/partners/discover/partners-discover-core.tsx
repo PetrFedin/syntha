@@ -14,6 +14,7 @@ import {
   ShopB2bPartnersGoldenPathStrip,
   shopB2bPartnersGoldenPathStepFromFeature,
 } from '@/components/shop/b2b/ShopB2bPartnersGoldenPathStrip';
+import { ShopScPartnersB2bPeerStrip } from '@/components/platform/ShopScPartnersB2bPeerStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
@@ -21,7 +22,11 @@ import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 function ShopB2bPartnersDiscoverWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
-  const ctx = { collectionId };
+  const orderId =
+    searchParams.get('order')?.trim() ||
+    searchParams.get('orderId')?.trim() ||
+    undefined;
+  const ctx = { collectionId, orderId, role: 'shop' as const };
   const { activeFeatureId } = usePillarCapabilityWorkspace('shop-b2b-partners');
 
   return (
@@ -30,11 +35,13 @@ function ShopB2bPartnersDiscoverWorkspaceBody() {
       ctx={ctx}
       crossLinksTitle="Roster · rep · showroom spine"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <ShopB2bPartnersGoldenPathStrip
           collectionId={collectionId}
+          orderId={orderId}
           activeStep={shopB2bPartnersGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <ShopScPartnersB2bPeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'discover' ? (
         <ShopB2bPartnersDiscoverGrid collectionId={collectionId} />

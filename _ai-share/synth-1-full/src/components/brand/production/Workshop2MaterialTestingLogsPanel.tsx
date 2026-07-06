@@ -20,10 +20,25 @@ import { CheckCircle2, XCircle, Plus, FlaskConical } from 'lucide-react';
 
 interface Workshop2MaterialTestingLogsPanelProps {
   materialId: string;
+  collectionId?: string;
+  articleId?: string;
+}
+
+function buildTestingQuery(input: {
+  materialId: string;
+  collectionId?: string;
+  articleId?: string;
+}): string {
+  const params = new URLSearchParams({ materialId: input.materialId });
+  if (input.collectionId?.trim()) params.set('collectionId', input.collectionId.trim());
+  if (input.articleId?.trim()) params.set('articleId', input.articleId.trim());
+  return params.toString();
 }
 
 export function Workshop2MaterialTestingLogsPanel({
   materialId,
+  collectionId,
+  articleId,
 }: Workshop2MaterialTestingLogsPanelProps) {
   const [logs, setLogs] = useState<PhysicalTestLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,13 +54,13 @@ export function Workshop2MaterialTestingLogsPanel({
 
   useEffect(() => {
     fetchLogs();
-  }, [materialId]);
+  }, [articleId, collectionId, materialId]);
 
   const fetchLogs = async () => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `/api/brand/workshop2/materials/testing?materialId=${materialId}`
+        `/api/brand/workshop2/materials/testing?${buildTestingQuery({ materialId, collectionId, articleId })}`
       );
       if (!response.ok) throw new Error('Failed to fetch testing logs');
       const data = (await response.json()) as {
@@ -71,6 +86,8 @@ export function Workshop2MaterialTestingLogsPanel({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           materialId,
+          collectionId,
+          articleId,
           testCategory: category,
           resultValue,
           isPass: isPass === 'true',

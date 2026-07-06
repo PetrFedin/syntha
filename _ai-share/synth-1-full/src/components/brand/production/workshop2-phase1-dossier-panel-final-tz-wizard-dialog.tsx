@@ -147,7 +147,7 @@ export function Workshop2FinalTzWizardDialog({
                   data-testid="workshop2-final-tz-factory-pack-preview"
                   onClick={() => setPreviewMode('factory-pack')}
                 >
-                  Factory pack · 6 листов
+                  Фабричный пакет · 6 листов
                 </Button>
               </div>
               <p className="text-text-secondary text-xs">
@@ -193,7 +193,7 @@ export function Workshop2FinalTzWizardDialog({
                     data-testid="workshop2-final-tz-download-factory-pack"
                     onClick={onDownloadFactoryPack}
                   >
-                    Скачать factory pack
+                    Скачать фабричный пакет
                   </Button>
                 ) : null}
                 <Tooltip>

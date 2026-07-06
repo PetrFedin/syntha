@@ -32,15 +32,17 @@ test.describe('core-94: manufacturer + supplier cabinet viewports', () => {
     }
   });
 
-  test('iPad 834 — aside + pillar panel', async ({ page }) => {
+  test('iPad 834 — aside + pillar panel + above fold', async ({ page }) => {
     await page.setViewportSize({ width: 834, height: 1194 });
     for (const cabinet of CABINETS) {
-      const res = await gotoRoleCoreCabinet(page, cabinet.path);
+      const res = await gotoRoleCoreCabinet(page, `${cabinet.path}&pillar=development`);
       expect(res?.status() ?? 599).toBeLessThan(500);
       await expect(page.getByTestId(cabinet.testId)).toBeVisible({ timeout: 60_000 });
       await expectCabinetPillarNav(page);
       await expect(page.getByTestId('role-core-pillar-panel')).toBeVisible();
       await expectCabinetAsidePanelLayout(page);
+      await expect(page.getByTestId('role-pillar-primary-cta')).toBeVisible();
+      await expectCabinetAboveFold(page);
     }
   });
 

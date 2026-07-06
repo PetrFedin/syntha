@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 
 const SidebarWidget = dynamic(
   () =>
@@ -19,7 +20,7 @@ const SidebarWidget = dynamic(
   }
 );
 
-/** Notes/calendar widget в sidebar — после idle (date-fns + calendar stores). */
+/** Notes/calendar widget в sidebar — только вне Platform Core (заметки → столп «Связь»). */
 export function BrandSidebarWidgetGate() {
   const [mounted, setMounted] = useState(false);
 
@@ -33,6 +34,7 @@ export function BrandSidebarWidgetGate() {
     return () => clearTimeout(timer);
   }, []);
 
+  if (isPlatformCoreMode()) return null;
   if (!mounted) return null;
   return <SidebarWidget />;
 }

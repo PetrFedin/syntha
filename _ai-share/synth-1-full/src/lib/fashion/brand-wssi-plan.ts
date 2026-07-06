@@ -3,6 +3,7 @@ import { calculateAssortmentMix } from '@/lib/fashion/assortment-mix-logic';
 import type { Product } from '@/lib/types';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
+import { shopReplenishmentTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
 import { ROUTES, shopB2bCheckoutCollectionHref, shopB2bMatrixOrderContextHref } from '@/lib/routes';
 import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 
@@ -89,4 +90,12 @@ export function brandWssiShowroomHref(collectionId: string = PLATFORM_CORE_DEMO.
 
 export function brandWssiCheckoutHref(collectionId: string = PLATFORM_CORE_DEMO.collectionId): string {
   return shopB2bCheckoutCollectionHref(collectionId);
+}
+
+/** Wave VR · OTB/WSSI → shop replenishment rules (extend wave UC). */
+export function brandWssiShopReplenishmentRulesHref(
+  collectionId: string = PLATFORM_CORE_DEMO.collectionId,
+  orderId?: string
+): string {
+  return shopReplenishmentTabHref('rules', collectionId, orderId);
 }

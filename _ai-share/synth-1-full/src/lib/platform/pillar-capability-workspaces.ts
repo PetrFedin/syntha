@@ -35,7 +35,7 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
   'shop-order-comms': {
     id: 'shop-order-comms',
     capabilityId: 'comms-order-context',
-    titleRu: 'Order comms · tracking',
+    titleRu: 'Чат по заказу · трекинг',
     leadRu: 'NuOrder: chain status + order chat + calendar.',
     pillar: 'comms',
     role: 'shop',
@@ -44,14 +44,14 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
     features: [
       {
         id: 'tracking',
-        labelRu: 'Tracking',
+        labelRu: 'Трекинг',
         summaryRu: 'B2B chain · reserve · shipment.',
         status: 'live',
         testId: 'shop-order-comms-feature-tracking',
       },
       {
         id: 'chat',
-        labelRu: 'Chat',
+        labelRu: 'Чат',
         summaryRu: 'Messages + collaborative comms.',
         status: 'live',
         testId: 'shop-order-comms-feature-chat',
@@ -59,7 +59,7 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
       },
       {
         id: 'calendar',
-        labelRu: 'Calendar',
+        labelRu: 'Календарь',
         summaryRu: 'Delivery · milestones · working order.',
         status: 'live',
         testId: 'shop-order-comms-feature-calendar',
@@ -399,7 +399,7 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
   'brand-order-comms': {
     id: 'brand-order-comms',
     capabilityId: 'comms-order-context',
-    titleRu: 'Order comms · card',
+    titleRu: 'Чат по заказу · карточка',
     leadRu: 'NuOrder: order detail + chat + production handoff bridges.',
     pillar: 'comms',
     role: 'brand',
@@ -415,7 +415,7 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
       },
       {
         id: 'chat',
-        labelRu: 'Chat',
+        labelRu: 'Чат',
         summaryRu: 'Messages + entity threads + calendar.',
         status: 'live',
         testId: 'brand-order-comms-feature-chat',
@@ -996,7 +996,7 @@ export const PILLAR_CAPABILITY_WORKSPACES: Record<string, PillarCapabilityWorksp
       {
         id: 'cut-ticket',
         labelRu: 'Cut ticket',
-        summaryRu: 'Brand cut ticket · dossier · tracking.',
+        summaryRu: 'Техкарта раскроя бренда · досье · трекинг.',
         status: 'live',
         testId: 'manufacturer-production-feature-cut-ticket',
       },

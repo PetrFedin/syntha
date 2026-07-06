@@ -1,9 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-const VISIBLE_POLL_MS = 15_000;
-const HIDDEN_POLL_MS = 45_000;
+import { platformCoreSsePollIntervalMs } from '@/lib/platform-core-sse-poll-intervals';
 /** Совпадает с MAX_ORDERS в chain-status-stream route — длинный query рвёт SSE при навигации. */
 const SSE_MAX_ORDER_IDS = 16;
 
@@ -79,8 +77,7 @@ export function usePlatformCoreChainStatusPoll(
     let timer: number | undefined;
     const schedule = () => {
       if (timer !== undefined) window.clearInterval(timer);
-      const ms =
-        document.visibilityState === 'visible' ? VISIBLE_POLL_MS : HIDDEN_POLL_MS;
+      const ms = platformCoreSsePollIntervalMs(sseConnected);
       timer = window.setInterval(() => setTick((t) => t + 1), ms);
     };
     schedule();
@@ -89,7 +86,7 @@ export function usePlatformCoreChainStatusPoll(
       document.removeEventListener('visibilitychange', schedule);
       if (timer !== undefined) window.clearInterval(timer);
     };
-  }, [enabled]);
+  }, [enabled, sseConnected]);
 
   return { tick, refresh, sseConnected };
 }

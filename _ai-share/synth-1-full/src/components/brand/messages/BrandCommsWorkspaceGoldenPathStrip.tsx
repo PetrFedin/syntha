@@ -21,9 +21,9 @@ type Props = {
 const STEPS: { id: BrandCommsGoldenPathStepId; label: string }[] = [
   { id: 'inbox', label: 'Inbox' },
   { id: 'entities', label: 'Entities' },
-  { id: 'order-chat', label: 'Order chat' },
-  { id: 'order-handoff', label: 'Handoff' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
+  { id: 'order-chat', label: 'Чат заказа' },
+  { id: 'order-handoff', label: 'Передача' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
 export function BrandCommsWorkspaceGoldenPathStrip({

@@ -50,6 +50,8 @@ export type RangePlannerCollectionMetadataTier = {
 
 export type RangePlannerCollectionMetadata = {
   tiers: RangePlannerCollectionMetadataTier[];
+  /** Порядок артикулов внутри tier (metadata.rangePlanner.tierArticleOrder). */
+  tierArticleOrder?: Partial<Record<RangePlannerTier, string[]>>;
 };
 
 export const RANGE_PLANNER_DEMO_TIERS: ReadonlyArray<{
@@ -158,6 +160,53 @@ export function parseRangePlannerCollectionMetadata(
     });
   }
   return tiers.length > 0 ? { tiers } : null;
+}
+
+/** Порядок артикулов внутри tier из metadata.rangePlanner.tierArticleOrder. */
+export function parseRangePlannerTierArticleOrder(
+  metadata: unknown
+): Partial<Record<RangePlannerTier, string[]>> | null {
+  const root = metadata as { rangePlanner?: { tierArticleOrder?: unknown } } | null;
+  const raw = root?.rangePlanner?.tierArticleOrder;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out: Partial<Record<RangePlannerTier, string[]>> = {};
+  for (const key of ['core', 'trend', 'novelty'] as const) {
+    const ids = (raw as Record<string, unknown>)[key];
+    if (!Array.isArray(ids)) continue;
+    const cleaned = ids.map((id) => String(id).trim()).filter(Boolean);
+    if (cleaned.length > 0) out[key] = cleaned;
+  }
+  return Object.keys(out).length > 0 ? out : null;
+}
+
+export function parseRangePlannerCollectionMetadataFull(
+  metadata: unknown
+): RangePlannerCollectionMetadata | null {
+  const tiers = parseRangePlannerCollectionMetadata(metadata);
+  if (!tiers) return null;
+  const tierArticleOrder = parseRangePlannerTierArticleOrder(metadata) ?? undefined;
+  return tierArticleOrder ? { ...tiers, tierArticleOrder } : tiers;
+}
+
+/** Сортировка артикулов tier: сохранённый порядок → остаток по articleId. */
+export function sortRangePlannerTierArticles(
+  articles: readonly RangePlannerUnassignedArticle[],
+  orderedIds?: readonly string[] | null
+): RangePlannerUnassignedArticle[] {
+  if (!orderedIds?.length) {
+    return [...articles].sort((a, b) => a.articleId.localeCompare(b.articleId));
+  }
+  const byId = new Map(articles.map((row) => [row.articleId, row] as const));
+  const sorted: RangePlannerUnassignedArticle[] = [];
+  for (const id of orderedIds) {
+    const row = byId.get(id);
+    if (row) {
+      sorted.push(row);
+      byId.delete(id);
+    }
+  }
+  const remainder = [...byId.values()].sort((a, b) => a.articleId.localeCompare(b.articleId));
+  return [...sorted, ...remainder];
 }
 
 export function aggregateTierBudgetMarginFromHints(
@@ -295,7 +344,10 @@ export function buildRangePlannerPgSnapshot(input: {
     });
   }
   for (const row of RANGE_PLANNER_DEMO_TIERS) {
-    tierArticles[row.id].sort((a, b) => a.articleId.localeCompare(b.articleId));
+    tierArticles[row.id] = sortRangePlannerTierArticles(
+      tierArticles[row.id],
+      input.collectionMeta?.tierArticleOrder?.[row.id]
+    );
   }
 
   return {

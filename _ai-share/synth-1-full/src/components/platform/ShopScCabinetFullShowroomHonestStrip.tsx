@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { ROUTES } from '@/lib/routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 type Props = {
   collectionId: string;
@@ -10,7 +11,7 @@ type Props = {
 
 /** Hub mini vs full showroom — honest alias + CTA to PG cart path. */
 export function ShopScCabinetFullShowroomHonestStrip({ collectionId }: Props) {
-  const fullHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
+  const fullHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
 
   return (
     <div

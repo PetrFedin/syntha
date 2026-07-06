@@ -12,7 +12,7 @@ export type SewingPlanPartnerRow = {
 export type Workshop2SewingContractorsPayload = {
   partners: SewingPlanPartnerRow[];
   source: {
-    partners: 'b2b_json' | 'catalog_and_demo';
+    partners: 'b2b_json' | 'catalog_and_demo' | 'enterprise_and_b2b';
   };
 };
 
@@ -27,7 +27,7 @@ export type Workshop2SewingPlanReferencePayload = {
   /** Базовый список ISO 3166-2:RU + extras, отсортировано по названию. */
   rfSubjects: RfFederalSubjectOption[];
   source: {
-    partners: 'b2b_json' | 'catalog_and_demo';
+    partners: 'b2b_json' | 'catalog_and_demo' | 'enterprise_and_b2b';
     rfSubjects: 'base_only' | 'base_plus_extra';
   };
 };

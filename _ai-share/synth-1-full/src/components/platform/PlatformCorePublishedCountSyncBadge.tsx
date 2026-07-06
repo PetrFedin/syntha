@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { WAVE_YT_PUBLISHED_COUNT_OUT_OF_SYNC_RU } from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 
 /** Сравнение live API count и snapshot/страницы — mini ↔ full sync. */
 export function PlatformCorePublishedCountSyncBadge({
@@ -44,7 +45,7 @@ export function PlatformCorePublishedCountSyncBadge({
         ? compact
           ? `${liveCount} арт.`
           : `Синхронно · ${liveCount} арт.`
-        : `live ${liveCount} / ${ref}`}
+        : WAVE_YT_PUBLISHED_COUNT_OUT_OF_SYNC_RU(liveCount, ref)}
     </Badge>
   );
 }

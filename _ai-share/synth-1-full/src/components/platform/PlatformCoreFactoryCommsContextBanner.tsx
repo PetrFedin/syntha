@@ -20,8 +20,8 @@ import {
   brandB2bOrderHandoffContextHref,
   ROUTES,
   type FactoryMessagesRole,
-} from '@/lib/routes';
-import { parseSynthaOverlayContext } from '@/lib/communications/syntha-overlay-context';
+} from '@/lib/platform-core-routes';
+import { parseSynthaOverlayContext } from '@/lib/platform-core-ports/communications/syntha-overlay-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   factoryHandoffQueueHrefForDemo,

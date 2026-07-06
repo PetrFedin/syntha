@@ -8,6 +8,10 @@ import {
   getWorkshop2MaterialRequisitionById,
   type Workshop2MaterialRequisitionSupplierStatus,
 } from '@/lib/server/workshop2-material-requisition-repository';
+import {
+  parseSupplierMaterialPartialShipFields,
+  supplierMaterialPartialShipJournalFields,
+} from '@/lib/production/workshop2-supplier-material-partial-ship';
 import { confirmWorkshop2SupplierMaterialRequest } from '@/lib/server/workshop2-supplier-material-request-confirm';
 import { guardWorkshop2Route, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
 import { resolveWorkshop2UpdatedBy } from '@/lib/server/workshop2-api-context';
@@ -52,6 +56,7 @@ export const PATCH = withWorkshop2ApiErrorRu(async function patchSupplierMateria
   const note = body.note != null ? String(body.note) : undefined;
   const updatedBy = resolveWorkshop2UpdatedBy(req, String(body.updatedBy ?? ''), auth.actor);
   const b2bOrderId = String(body.b2bOrderId ?? '').trim();
+  const { shippedQty, backorder } = parseSupplierMaterialPartialShipFields(body);
 
   const existing = await getWorkshop2MaterialRequisitionById(reqId);
   if (!existing) {
@@ -64,17 +69,25 @@ export const PATCH = withWorkshop2ApiErrorRu(async function patchSupplierMateria
     note,
     updatedBy: updatedBy ?? undefined,
     b2bOrderId: b2bOrderId || undefined,
+    shippedQty,
+    backorder,
   });
   if (!result) {
     return jsonWorkshop2ErrorRu(404, 'not_found');
   }
 
   const statusRu = status === 'confirmed' ? 'подтверждена' : 'отклонена';
+  const journal = supplierMaterialPartialShipJournalFields({
+    shippedQty: result.requisition.partialShipQty ?? shippedQty ?? null,
+    backorder: result.requisition.backorderFlag ?? backorder === true,
+    status,
+  });
 
   return NextResponse.json({
     ok: true,
     idempotent: result.idempotent,
     requisition: result.requisition,
+    ...journal,
     messageRu: result.idempotent
       ? `Заявка уже ${statusRu} — повторное подтверждение не требуется.`
       : `Заявка ${statusRu} — зеркало досье и чат обновлены.`,

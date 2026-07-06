@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import type { PlatformCorePillarSnapshotPayload } from '@/lib/platform-core-pillar-snapshot.types';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 
 type Options = {
   collectionId: string;
@@ -17,8 +17,13 @@ type Options = {
   reloadNonce?: number;
 };
 
-const snapshotCache = new Map<string, { at: number; snap: PlatformCorePillarSnapshotPayload | null }>();
-const inflightRequests = new Map<string, Promise<PlatformCorePillarSnapshotPayload | null>>();
+type SnapshotFetchResult = {
+  snap: PlatformCorePillarSnapshotPayload | null;
+  pgUnavailable: boolean;
+};
+
+const snapshotCache = new Map<string, { at: number; result: SnapshotFetchResult }>();
+const inflightRequests = new Map<string, Promise<SnapshotFetchResult>>();
 
 const SNAPSHOT_TTL_MS =
   typeof process !== 'undefined' && process.env.NODE_ENV === 'development'
@@ -35,18 +40,17 @@ function snapshotCacheKey(options: Options): string {
   return sp.toString();
 }
 
-async function fetchPillarSnapshot(options: Options): Promise<PlatformCorePillarSnapshotPayload | null> {
+async function fetchPillarSnapshot(options: Options): Promise<SnapshotFetchResult> {
   const key = snapshotCacheKey(options);
   const cached = snapshotCache.get(key);
   if (cached && Date.now() - cached.at < SNAPSHOT_TTL_MS) {
-    return cached.snap;
+    return cached.result;
   }
   if (snapshotCache.has(key) && cached && Date.now() - cached.at >= SNAPSHOT_TTL_MS) {
-    // stale — revalidate below, return stale meanwhile if inflight
-    const stale = cached.snap;
+    const stale = cached.result;
     if (!inflightRequests.has(key)) {
-      void fetchPillarSnapshotFresh(options, key).then((snap) => {
-        snapshotCache.set(key, { at: Date.now(), snap });
+      void fetchPillarSnapshotFresh(options, key).then((result) => {
+        snapshotCache.set(key, { at: Date.now(), result });
       });
     }
     return stale;
@@ -57,7 +61,7 @@ async function fetchPillarSnapshot(options: Options): Promise<PlatformCorePillar
 async function fetchPillarSnapshotFresh(
   options: Options,
   key: string
-): Promise<PlatformCorePillarSnapshotPayload | null> {
+): Promise<SnapshotFetchResult> {
   let promise = inflightRequests.get(key);
   if (!promise) {
     promise = (async () => {
@@ -75,13 +79,19 @@ async function fetchPillarSnapshotFresh(
         const json = (await res.json()) as {
           ok?: boolean;
           snapshot?: PlatformCorePillarSnapshotPayload;
+          pgUnavailable?: boolean;
         };
         const snap = json.ok && json.snapshot ? json.snapshot : null;
-        snapshotCache.set(key, { at: Date.now(), snap });
-        return snap;
+        const result: SnapshotFetchResult = {
+          snap,
+          pgUnavailable: Boolean(json.pgUnavailable) || res.status === 503,
+        };
+        snapshotCache.set(key, { at: Date.now(), result });
+        return result;
       } catch {
-        snapshotCache.set(key, { at: Date.now(), snap: null });
-        return null;
+        const result: SnapshotFetchResult = { snap: null, pgUnavailable: false };
+        snapshotCache.set(key, { at: Date.now(), result });
+        return result;
       } finally {
         inflightRequests.delete(key);
       }
@@ -105,6 +115,7 @@ export function usePillarSnapshot({
   const [snapshot, setSnapshot] = useState<PlatformCorePillarSnapshotPayload | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState(false);
+  const [pgUnavailable, setPgUnavailable] = useState(false);
 
   useEffect(() => {
     if (!enabled || !collectionId) {
@@ -112,21 +123,24 @@ export function usePillarSnapshot({
       return;
     }
     if (reloadNonce > 0) {
-      snapshotCache.delete(snapshotCacheKey({
-        collectionId,
-        pillarId,
-        roleId,
-        wholesaleOrderId,
-        articleId,
-        factoryId,
-        pillarVariant,
-        enabled,
-        reloadNonce,
-      }));
+      snapshotCache.delete(
+        snapshotCacheKey({
+          collectionId,
+          pillarId,
+          roleId,
+          wholesaleOrderId,
+          articleId,
+          factoryId,
+          pillarVariant,
+          enabled,
+          reloadNonce,
+        })
+      );
     }
     let cancelled = false;
     setLoading(true);
     setError(false);
+    setPgUnavailable(false);
     void fetchPillarSnapshot({
       collectionId,
       pillarId,
@@ -137,17 +151,28 @@ export function usePillarSnapshot({
       pillarVariant,
       enabled,
       reloadNonce,
-    }).then((snap) => {
+    }).then((result) => {
       if (!cancelled) {
-        setSnapshot(snap);
-        setError(!snap);
+        setSnapshot(result.snap);
+        setPgUnavailable(result.pgUnavailable);
+        setError(!result.snap && !result.pgUnavailable);
         setLoading(false);
       }
     });
     return () => {
       cancelled = true;
     };
-  }, [collectionId, pillarId, roleId, wholesaleOrderId, articleId, factoryId, pillarVariant, enabled, reloadNonce]);
+  }, [
+    collectionId,
+    pillarId,
+    roleId,
+    wholesaleOrderId,
+    articleId,
+    factoryId,
+    pillarVariant,
+    enabled,
+    reloadNonce,
+  ]);
 
-  return { snapshot, loading, error };
+  return { snapshot, loading, error, pgUnavailable };
 }

@@ -13,6 +13,7 @@ import {
   ShopInventoryOpsGoldenPathStrip,
   shopInventoryOpsGoldenPathStepFromFeature,
 } from '@/components/shop/inventory/ShopInventoryOpsGoldenPathStrip';
+import { ShopOpInventorySpinePeerStrip } from '@/components/platform/ShopOpInventorySpinePeerStrip';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { B2bOrderUrlContextBanner } from '@/components/b2b/B2bOrderUrlContextBanner';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
@@ -44,6 +45,7 @@ function ShopInventoryWorkspaceBody() {
           orderId={orderId}
           activeStep={shopInventoryOpsGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <ShopOpInventorySpinePeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'overview' ? (
         <div className="space-y-4">

@@ -15,6 +15,6 @@ export const hubGadget = {
   ctaLink: pillarInsight.ctaLink,
   pillarCard: pillarInsight.card,
   pillarBody: pillarInsight.body,
-  chip: 'h-5 shrink-0 border-border-subtle px-1.5 text-[10px] font-medium',
+  chip: 'h-5 shrink-0 border-border-subtle px-1.5 text-[11px] font-medium',
   metaBadge: pillarInsight.metaBadge,
 } as const;

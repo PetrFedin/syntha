@@ -43,8 +43,7 @@ import {
   resolveDossierLifecycleState,
   calculateDossierReadiness,
 } from '@/lib/production/dossier-readiness-engine';
-import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { isPlatformCoreGoldenCollectionId } from '@/lib/platform-core-demo-context';
+import { shouldPersistPhase1DossierOfflineDualWrite } from '@/lib/production/workshop2-pg-read-path-policy';
 
 type ToastFn = (opts: {
   title: string;
@@ -225,13 +224,16 @@ export function useWorkshop2Phase1DossierPersist(
         }
       }
 
-      const coreGolden =
-        isPlatformCoreMode() && isPlatformCoreGoldenCollectionId(collectionId);
-      const savedOk = apiSynced
-        ? coreGolden || setWorkshop2Phase1Dossier(collectionId, articleId, stamped)
-        : apiOffline && !coreGolden
-          ? setWorkshop2Phase1Dossier(collectionId, articleId, stamped)
-          : false;
+      const allowOfflineDualWrite = shouldPersistPhase1DossierOfflineDualWrite();
+      let savedOk = false;
+      if (apiSynced) {
+        savedOk = true;
+        if (allowOfflineDualWrite) {
+          setWorkshop2Phase1Dossier(collectionId, articleId, stamped);
+        }
+      } else if (apiOffline && allowOfflineDualWrite) {
+        savedOk = setWorkshop2Phase1Dossier(collectionId, articleId, stamped);
+      }
 
       const emitAt = new Date().toISOString();
       workshop2EventBridge.emit('DOSSIER_SAVED', {
@@ -275,11 +277,13 @@ export function useWorkshop2Phase1DossierPersist(
       setSaveError(
         filePersistOnly
           ? null
-          : apiSynced && !savedOk && !coreGolden
+          : apiSynced && !savedOk && allowOfflineDualWrite
             ? 'Сервер сохранил досье, но localStorage недоступен. Продолжайте работу онлайн.'
-            : apiOffline && !coreGolden
+            : apiOffline && allowOfflineDualWrite
               ? 'Офлайн-кэш (localStorage)'
-              : null
+              : !allowOfflineDualWrite && apiOffline
+                ? 'PostgreSQL недоступен — офлайн-кэш отключён в Platform Core.'
+                : null
       );
       recordW2DossierPersistSuccess(collectionId, articleId);
       setDossierMetricsTick((n) => n + 1);
@@ -297,10 +301,10 @@ export function useWorkshop2Phase1DossierPersist(
             ? (saveMessageRu ??
               'PostgreSQL недоступен — запись на файловом сервере (не PG primary).')
             : apiSynced
-              ? coreGolden
+              ? !allowOfflineDualWrite
                 ? 'Досье в PostgreSQL (Platform Core).'
                 : workshop2DossierStoreModeMessageRu('server_postgres')
-              : coreGolden
+              : !allowOfflineDualWrite
                 ? 'PostgreSQL недоступен — нужен npm run core:bootstrap.'
                 : 'Сеть недоступна — запись только в localStorage.',
           variant: filePersistOnly ? 'destructive' : 'default',

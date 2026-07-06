@@ -16,6 +16,7 @@ import {
 } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { resolveShopCoreBuyerIdFromRequest } from '@/lib/order/shop-core-buyer-context';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
+import { enqueueWorkshop2DomainEvent } from '@/lib/server/workshop2-domain-events';
 
 export async function POST(req: NextRequest) {
   const auth = await guardShopB2bCheckoutRoute(req);
@@ -77,6 +78,30 @@ export async function POST(req: NextRequest) {
     sender: buyerId,
     isSystem: true,
   });
+
+  void enqueueWorkshop2DomainEvent({
+    type: 'sample_order.status_changed',
+    collectionId,
+    articleId,
+    payload: {
+      status: 'requested',
+      source: 'b2b_sample_request',
+      buyerId,
+      requisitionId: requisition.id,
+      orderId: orderId || null,
+    },
+    dispatchNow: true,
+  }).catch(() => {});
+
+  const { bumpPlatformCoreDevelopmentStatus } =
+    await import('@/lib/server/platform-core-development-status-hub');
+  bumpPlatformCoreDevelopmentStatus([collectionId]);
+  const { bumpPlatformCoreCommsInbox } =
+    await import('@/lib/server/platform-core-comms-inbox-hub');
+  bumpPlatformCoreCommsInbox('sample_order.status_changed');
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
+  bumpPlatformCoreB2bRegistry('sample_order.status_changed');
 
   const calendarHint = orderId
     ? null

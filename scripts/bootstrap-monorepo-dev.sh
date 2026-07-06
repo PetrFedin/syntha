@@ -22,3 +22,5 @@ REPO_ROOT="$ROOT" python3 "$ROOT/scripts/cursor-mcp-sync.py"
 
 echo "Готово. GSD для Cursor (если нужно обновить): npx get-shit-done-cc@latest --local --cursor"
 echo "Superpowers: submodule tools/superpowers; плагин в Cursor: /add-plugin superpowers"
+
+echo "Опционально P0 backend/PG/Ollama: npm run bootstrap:p0 (см. AGENTS.md)"

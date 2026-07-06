@@ -14,6 +14,10 @@ import {
 } from '@/lib/platform-core-demo-context';
 import type { Workshop2TzSignatoryBindings } from '@/lib/production/workshop2-dossier-phase1.types';
 import { normalizeWorkshopTzSignatoryBindings } from '@/lib/production/workshop2-tz-signatory-options';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
 export const LOCAL_COLLECTION_INVENTORY_STORAGE_KEY = 'synth.brand.localCollectionInventory.v1';
 
@@ -50,6 +54,8 @@ export type LocalOrderLine = Record<string, unknown> & {
   workshopIsUnisex?: boolean;
   /** Закрепление подписантов ТЗ (копируется в досье при создании). */
   workshopTzSignatoryBindings?: Workshop2TzSignatoryBindings;
+  /** Article spine: полное производство vs закупка/импорт образца. */
+  articleCreationMode?: 'full_production' | 'buy_or_import';
 };
 
 export type UserCollectionRow = {
@@ -200,6 +206,7 @@ function takeNextInternalArticleCode(
 
 export function loadLocalCollectionInventory(): LocalCollectionInventory {
   if (typeof window === 'undefined') return emptyLocalCollectionInventory();
+  if (!shouldUseLocalStorageClientFallbackInCore()) return emptyLocalCollectionInventory();
   try {
     const raw = localStorage.getItem(LOCAL_COLLECTION_INVENTORY_STORAGE_KEY);
     if (!raw) return emptyLocalCollectionInventory();
@@ -274,6 +281,7 @@ export function loadLocalCollectionInventory(): LocalCollectionInventory {
 
 export function saveLocalCollectionInventory(data: LocalCollectionInventory): void {
   if (typeof window === 'undefined') return;
+  if (!shouldMirrorPgClientStoreToLocalStorage()) return;
   try {
     localStorage.setItem(LOCAL_COLLECTION_INVENTORY_STORAGE_KEY, JSON.stringify(data));
   } catch {
@@ -728,6 +736,7 @@ function buildWorkshop2NewArticleLine(
       ? { workshopAudienceId: commit.audienceId.trim(), workshopIsUnisex: commit.isUnisex === true }
       : {}),
     ...(tzB ? { workshopTzSignatoryBindings: tzB } : {}),
+    articleCreationMode: 'full_production',
   };
 }
 
@@ -973,6 +982,12 @@ export function applyWorkshop2PgPublishedArticleRows(
   return { inventory: next, added, skippedDuplicates, addedArticleIds };
 }
 
+/** Wave 8b · UI-only поля, разрешённые при PG-authoritative inventory. */
+export function isUiOnlyWorkshop2LinePatch(patch: Workshop2ArticleLinePatch): boolean {
+  const keys = Object.keys(patch) as (keyof Workshop2ArticleLinePatch)[];
+  return keys.length > 0 && keys.every((k) => k === 'articleCreationMode');
+}
+
 export type Workshop2ArticleLinePatch = {
   workshopComment?: string;
   name?: string;
@@ -983,6 +998,7 @@ export type Workshop2ArticleLinePatch = {
   workshopLineSeason?: string;
   /** `null` — снять закрепление подписантов в строке инвентаря. */
   workshopTzSignatoryBindings?: Workshop2TzSignatoryBindings | null;
+  articleCreationMode?: 'full_production' | 'buy_or_import';
 };
 
 /** Обновить поля строки артикула в разработке коллекции (имя, комментарий, категория, вложения). */
@@ -1023,6 +1039,20 @@ export function patchWorkshop2ArticleLine(
       delete nextLine.workshopAttachments;
     }
   }
+
+  if (patch.workshopTags !== undefined) {
+    if (patch.workshopTags.length > 0) nextLine.workshopTags = [...patch.workshopTags];
+    else delete nextLine.workshopTags;
+  }
+  if (patch.workshopLineSeason !== undefined) {
+    const s = patch.workshopLineSeason.trim();
+    if (s) nextLine.workshopLineSeason = s;
+    else delete nextLine.workshopLineSeason;
+  }
+  if (patch.articleCreationMode !== undefined) {
+    nextLine.articleCreationMode = patch.articleCreationMode;
+  }
+
   if (patch.workshopTzSignatoryBindings !== undefined) {
     if (patch.workshopTzSignatoryBindings === null) {
       delete nextLine.workshopTzSignatoryBindings;

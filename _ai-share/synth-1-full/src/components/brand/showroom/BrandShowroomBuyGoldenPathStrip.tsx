@@ -20,9 +20,9 @@ type Props = {
 const STEPS: { id: BrandShowroomBuyGoldenPathStepId; label: string }[] = [
   { id: 'preview', label: 'Preview' },
   { id: 'publish', label: 'Publish' },
-  { id: 'shop-buy', label: 'Shop buy' },
-  { id: 'shop-showroom', label: 'Shop showroom' },
-  { id: 'matrix', label: 'Shop matrix' },
+  { id: 'shop-buy', label: 'Закупка магазина' },
+  { id: 'shop-showroom', label: 'Шоурум магазина' },
+  { id: 'matrix', label: 'Матрица магазина' },
 ];
 
 export function BrandShowroomBuyGoldenPathStrip({ collectionId, activeStep }: Props) {

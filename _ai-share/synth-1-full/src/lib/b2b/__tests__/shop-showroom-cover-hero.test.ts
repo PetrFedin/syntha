@@ -7,7 +7,7 @@ describe('shop-showroom-cover-hero', () => {
       partnerCoverUrl: 'https://cdn.example/partner.jpg',
     });
     expect(hero?.source).toBe('dossier');
-    expect(hero?.url).toContain('dossier');
+    expect(hero?.labelRu).toContain('dossier');
   });
 
   it('falls back to partner cover then logo', () => {

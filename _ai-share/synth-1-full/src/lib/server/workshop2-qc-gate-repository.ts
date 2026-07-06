@@ -184,19 +184,41 @@ export async function upsertWorkshop2QcInspection(input: {
   return row;
 }
 
+function workshop2QcGateBlockedInspections(
+  inspections: Awaited<ReturnType<typeof listWorkshop2QcInspectionsForOrder>>
+) {
+  return inspections.filter((i) => i.blocksShipment && i.result !== 'pass');
+}
+
 export async function assertWorkshop2QcGateAllowsOrderShipment(orderId: string): Promise<
   | { ok: true }
   | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
 > {
   const inspections = await listWorkshop2QcInspectionsForOrder(orderId);
-  const blocking = inspections.filter(
-    (i) => i.blocksShipment && i.result !== 'pass'
-  );
+  const blocking = workshop2QcGateBlockedInspections(inspections);
   if (workshop2QcGateBlocksOrderShipment(inspections)) {
     return {
       ok: false,
       code: 'qc_gate_blocked',
       messageRu: `QC gate: отгрузка заблокирована (${blocking.length} инспекций fail/rework).`,
+      blockedCount: blocking.length,
+    };
+  }
+  return { ok: true };
+}
+
+/** QC gate перед передачей B2B в цех — та же семантика, что отгрузка. */
+export async function assertWorkshop2QcGateAllowsProductionHandoff(orderId: string): Promise<
+  | { ok: true }
+  | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
+> {
+  const inspections = await listWorkshop2QcInspectionsForOrder(orderId);
+  const blocking = workshop2QcGateBlockedInspections(inspections);
+  if (workshop2QcGateBlocksOrderShipment(inspections)) {
+    return {
+      ok: false,
+      code: 'qc_gate_blocked',
+      messageRu: `QC gate: передача в цех заблокирована — завершите контроль качества (${blocking.length} инспекций fail/rework).`,
       blockedCount: blocking.length,
     };
   }

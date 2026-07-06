@@ -6,6 +6,7 @@ import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import {
   factorySupplierMessagesB2bOrderContextHref,
   factorySupplierMessagesWorkshop2ArticleContextHref,
+  factorySupplierRfqInboxHref,
   ROUTES,
 } from '@/lib/routes';
 
@@ -71,7 +72,7 @@ export function buildSupplierCommsEntityThreads(input?: {
       'Centric RFQ',
       'Brand RFQ → supplier award chain.',
       `${baseMessages}&q=${encodeURIComponent('Centric RFQ')}`,
-      `${ROUTES.brand.integrationsCentric}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rfq`,
+      factorySupplierRfqInboxHref({ collectionId, articleId }),
       'development',
       specTzHref
     ),

@@ -1,0 +1,92 @@
+---
+description: Platform Core default scope + token economy (−70–90% контекста)
+alwaysApply: true
+---
+
+# Platform Core Scope Guard
+
+## Default scope
+
+Для SYNTHA / Platform Core — первым делом:
+
+0. `_platform-core-split/platform-core/PLATFORM-CORE-DOC-INDEX.md` — индекс всех доков + doc→код
+1. `_platform-core-split/platform-core/PLATFORM-CORE-TOKEN-BUDGET.md` + `PLATFORM-CORE-ISOLATION-MAP.md` (allowlist only)
+2. `_platform-core-split/platform-core/CURSOR-START-HERE.md`
+3. `_platform-core-split/platform-core/PLATFORM-CORE-CURSOR-RUN.md`
+3. `_platform-core-split/platform-core/PLATFORM-CORE-ACTION-CONTRACTS.md`
+4. `_platform-core-split/platform-core/PLATFORM-CORE-STAGE-GATES.md`
+5. `.cursor/rules/platform-core-planner-agents.mdc` — очередь агентов
+
+`DEEP-AUDIT-*.md` и `PERFORMANCE-UX-*.md` — только если compact specs не хватает.
+
+## Golden path
+
+`article → collection → order → production → supplier → shipment → closeout`
+
+Чат, календарь, документы, исключения — слой цепочки, не отдельный продукт.
+
+## Roles × pillars
+
+Роли: `brand`, `shop`, `manufacturer`, `supplier`.
+
+Столпы: `development`, `sample_collection`, `collection_order`, `order_production`, `comms`.
+
+## Запуск
+
+Из корня монорепо:
+
+```text
+npm run dev:core              # MODE=1, без strict
+npm run dev:platform-core     # MODE=1 + STRICT=1 (legacy pages → /platform)
+http://127.0.0.1:3001/platform
+```
+
+Изоляция: `lib/platform-core-native-href.ts`, `lib/platform-core-strict-routes.ts`, архив `_archive/platform-core-legacy-escapes/`.
+
+## Канонический код (только это для логики Platform Core)
+
+```text
+_ai-share/synth-1-full/src/app/platform/
+_ai-share/synth-1-full/src/app/api/platform-core/
+_ai-share/synth-1-full/src/app/api/dev/platform-core/
+_ai-share/synth-1-full/src/app/api/workshop2/platform-core/
+_ai-share/synth-1-full/src/lib/platform-core-routes.ts
+_ai-share/synth-1-full/src/lib/platform-core-gateways/
+_ai-share/synth-1-full/src/lib/platform-core-ports/
+_ai-share/synth-1-full/src/lib/platform-core-*.ts
+_ai-share/synth-1-full/src/lib/platform-core-readiness-sections/
+_ai-share/synth-1-full/src/lib/server/platform-core-*.ts
+_ai-share/synth-1-full/src/components/platform/
+_ai-share/synth-1-full/src/components/platform/showroom/
+```
+
+**Не существует:** `src/features/platform-core/` (Codex-черновик; канон — пути выше).
+
+## Token economy (обязательно)
+
+1. **Grep → read с offset/limit**; файлы >200 строк — не целиком.
+2. Readiness: **один** файл из `platform-core-readiness-sections/` (например `brand-audit.ts`), не весь каталог.
+3. **Не открывать параллельно:** `src/lib/routes.ts`, `components/brand/production/*`, `lib/production/data|generated`, workshop2 `*repository.ts`, `e2e/`, `docs/` full tree.
+4. Задача из planner: `GET /api/dev/platform-core/planner/next` или `npm run planner:next` — scope только claimed task.
+5. Subagent по pillar: `syntha-w2-development`, `syntha-b2b-order`, `syntha-factory-production`, `syntha-comms`, `syntha-platform-core-e2e`.
+6. Hub matrix: `platform-core-hub-matrix.ts` — читать **секцию** через grep, не весь файл (~650 строк).
+
+## Archive / non-core
+
+Не индексировать и не править без явного запроса: `admin`, `academy`, `client`, `runway`, `wardrobe`, `home`, marketing AI, `components/brand/production/`, `app/brand/production/`, **`lib/production/`**, **`lib/b2b/`**, **`lib/fashion/`**, **`lib/communications/`**, **`lib/platform/`** (wave UI helpers), **`lib/brand/`** (messages PG) — целиком только через `platform-core-ports`, **`app/api/workshop2/`**, legacy `app/brand|shop|factory/` вне core cabinets.
+
+**Канон UI:** `/platform` + `/brand/core` + `/shop/core` + factory core cabinets — **не** `/brand/production/workshop2`. См. `_platform-core-split/platform-core/PLATFORM-CORE-NO-WORKSHOP2-UI.md`.
+
+Идеи из legacy — переписать в `lib/platform-core-*` / `components/platform/`, без runtime-import archive.
+
+## Planner autonomy
+
+1. `npm run core:status` → `npm run dev:core`
+2. `npm run planner:next` → implement → verify → `npm run planner:complete -- <id> "note"`
+3. Или `npm run planner:agent:loop` при настроенном `CURSOR_API_KEY`
+
+## Product quality
+
+- UI без длинных описаний и декоративных табов
+- Кнопка = действие + state + next owner + side effect (chat/calendar/doc/event)
+- Нет дублей action с разными именами

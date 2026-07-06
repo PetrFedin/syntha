@@ -31,6 +31,14 @@ export function ShowroomArticleEligibleBadge({ collectionId, articleId, variant 
 
   const eligible = gate.eligibleForCollection;
   const source = gate.sources[0] ?? 'none';
+  const sourceRu =
+    source === 'centric_approved'
+      ? 'Centric'
+      : source === 'syntha_signoff'
+        ? 'signoff'
+        : source === 'lifecycle'
+          ? 'lifecycle'
+          : '—';
 
   return (
     <Badge
@@ -43,7 +51,7 @@ export function ShowroomArticleEligibleBadge({ collectionId, articleId, variant 
       data-testid={`${variant}-sc-eligible-${articleId}`}
       title={gate.reasons.join(' · ')}
     >
-      {eligible ? 'Eligible' : 'Not eligible'} · {source.replace(/_/g, ' ')}
+      {eligible ? 'Доступен в матрице' : 'Не доступен'} · {sourceRu}
     </Badge>
   );
 }

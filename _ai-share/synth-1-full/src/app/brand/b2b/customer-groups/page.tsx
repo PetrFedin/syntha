@@ -14,6 +14,8 @@ import {
   BrandCrmGoldenPathStrip,
   brandCrmGoldenPathStepFromFeature,
 } from '@/components/brand/b2b/BrandCrmGoldenPathStrip';
+import { BrandCoCrmCoPeerStrip } from '@/components/platform/BrandCoCrmCoPeerStrip';
+import { BrandCoCrmLinesheetVisibilityStrip } from '@/components/platform/BrandCoCrmLinesheetVisibilityStrip';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
@@ -33,11 +35,13 @@ function CustomerGroupsWorkspaceBody() {
       ctx={ctx}
       crossLinksTitle="Price lists · showroom · agent rep"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandCrmGoldenPathStrip
           collectionId={collectionId}
           activeStep={brandCrmGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoCrmCoPeerStrip collectionId={collectionId} />
+        <BrandCoCrmLinesheetVisibilityStrip collectionId={collectionId} />
       </div>
       {activeFeatureId === 'segments' ? (
         <BrandCrmSegmentationSegmentsPanel collectionId={collectionId} />

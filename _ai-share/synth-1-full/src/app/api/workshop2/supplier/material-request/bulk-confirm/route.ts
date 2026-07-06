@@ -4,6 +4,8 @@
 import { jsonWorkshop2ErrorRu } from '@/lib/production/workshop2-api-error-ru';
 import { withWorkshop2ApiErrorRu } from '@/lib/production/workshop2-api-route-ru';
 import { NextRequest, NextResponse } from 'next/server';
+import { parseSupplierMaterialPartialShipFields } from '@/lib/production/workshop2-supplier-material-partial-ship';
+import { buildWorkshop2SupplierBulkConfirmIdempotencyKey } from '@/lib/production/workshop2-supplier-bulk-confirm-idempotency';
 import {
   bulkConfirmWorkshop2SupplierMaterialSupply,
   bulkConfirmWorkshop2SupplierMaterialSupplyForOrder,
@@ -27,6 +29,22 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkConfirm(req: 
   const b2bOrderId = String(body.b2bOrderId ?? '').trim();
   const productionOrderId = String(body.productionOrderId ?? '').trim() || undefined;
   const confirmAllArticles = body.confirmAllArticles === true;
+  const notifyOnly = body.notifyOnly === true;
+  const { shippedQty, backorder } = parseSupplierMaterialPartialShipFields(body);
+
+  const idempotencyKey =
+    req.headers.get('Idempotency-Key')?.trim() ||
+    String(body.idempotencyKey ?? '').trim() ||
+    buildWorkshop2SupplierBulkConfirmIdempotencyKey({
+      b2bOrderId,
+      collectionId,
+      articleId,
+      productionOrderId,
+      confirmAllArticles,
+      partialShipQty: shippedQty,
+      backorderFlag: backorder,
+      notifyOnly,
+    });
 
   if (!b2bOrderId) {
     return jsonWorkshop2ErrorRu(400, 'invalid_body', {
@@ -41,6 +59,10 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkConfirm(req: 
       b2bOrderId,
       productionOrderId,
       updatedBy: updatedBy ?? undefined,
+      shippedQty,
+      backorder,
+      idempotencyKey,
+      notifyOnly,
     });
     if (!result.ok) {
       return jsonWorkshop2ErrorRu(400, 'bulk_confirm_failed', { messageRu: result.messageRu });
@@ -54,6 +76,10 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkConfirm(req: 
       articlesProcessed: result.articlesProcessed,
       articleResults: result.articleResults,
       messageRu: result.messageRu,
+      partialShipQty: result.partialShipQty ?? shippedQty ?? null,
+      backorderFlag: result.backorderFlag ?? backorder,
+      notifyOnly: result.notifyOnly ?? notifyOnly,
+      idempotencyKey,
     });
   }
 
@@ -69,6 +95,10 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkConfirm(req: 
     b2bOrderId,
     productionOrderId,
     updatedBy: updatedBy ?? undefined,
+    shippedQty,
+    backorder,
+    idempotencyKey,
+    notifyOnly,
   });
 
   if (!result.ok) {
@@ -83,5 +113,9 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkConfirm(req: 
     requisitionIds: result.requisitionIds,
     articlesProcessed: 1,
     messageRu: result.messageRu,
+    partialShipQty: result.partialShipQty ?? shippedQty ?? null,
+    backorderFlag: result.backorderFlag ?? backorder,
+    notifyOnly: result.notifyOnly ?? notifyOnly,
+    idempotencyKey,
   });
 });

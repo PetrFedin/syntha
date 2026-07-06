@@ -1,6 +1,9 @@
 import 'server-only';
 
-import { listWorkshop2B2bOrdersAll } from '@/lib/server/workshop2-b2b-orders-repository';
+import {
+  listWorkshop2B2bOrdersAll,
+  listWorkshop2B2bOrdersForCollection,
+} from '@/lib/server/workshop2-b2b-orders-repository';
 import { resolveWorkshop2RetailerBuyerIds } from '@/lib/b2b/workshop2-retailer-buyer-bridge';
 import { shopCoreBuyerLabelRu } from '@/lib/order/shop-core-buyer-context';
 import type { Workshop2B2bOrderRecord } from '@/lib/production/workshop2-b2b-order-lifecycle';
@@ -75,10 +78,11 @@ function aggregateRetailerOrders(
 }
 
 /** CRM: агрегаты W2 B2B заказов по карточкам ритейлеров (PG tier + multi-buyer). */
-export async function summarizeWorkshop2B2bOrdersByRetailer(): Promise<
-  Workshop2RetailerB2bSummary[]
-> {
-  const orders = await listWorkshop2B2bOrdersAll();
+export async function summarizeWorkshop2B2bOrdersByRetailer(
+  collectionId?: string
+): Promise<Workshop2RetailerB2bSummary[]> {
+  const cid = collectionId?.trim();
+  const orders = cid ? await listWorkshop2B2bOrdersForCollection(cid) : await listWorkshop2B2bOrdersAll();
   const sorted = [...orders].sort(
     (a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? '')
   );

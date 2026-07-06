@@ -28,8 +28,8 @@ type Props = {
   article: ArticleLike;
   buyerId: string;
   cartQty: number;
-  matrixHref: string;
-  onCartQtyChange: (qty: number) => void;
+  buildMatrixHref: (qty: number, size: ShopShowroomInlineSize) => string;
+  onCartQtyChange: (qty: number, size: ShopShowroomInlineSize) => void;
 };
 
 function buildShowroomCartItem(
@@ -69,7 +69,7 @@ export function ShopShowroomInlineQtyControl({
   article,
   buyerId,
   cartQty,
-  matrixHref,
+  buildMatrixHref,
   onCartQtyChange,
 }: Props) {
   const minQty = shopShowroomInlineQtyMin(article.moq);
@@ -82,6 +82,9 @@ export function ShopShowroomInlineQtyControl({
     setQtyRaw(String(cartQty > 0 ? cartQty : minQty));
   }, [cartQty, minQty]);
 
+  const resolvedQty = parseShopShowroomInlineQty(qtyRaw, minQty) ?? (cartQty > 0 ? cartQty : minQty);
+  const matrixHref = buildMatrixHref(resolvedQty, selectedSize);
+
   const applyQty = async () => {
     const parsed = parseShopShowroomInlineQty(qtyRaw, minQty);
     if (parsed == null) {
@@ -91,7 +94,7 @@ export function ShopShowroomInlineQtyControl({
     setBusy(true);
     setHintRu(null);
     try {
-      onCartQtyChange(parsed);
+      onCartQtyChange(parsed, selectedSize);
       await upsertWorkshop2CartLine({
         item: buildShowroomCartItem(article, parsed, selectedSize),
         collectionId: article.collectionId,
@@ -157,9 +160,10 @@ export function ShopShowroomInlineQtyControl({
       <Button size="sm" variant="outline" className="h-8 text-[10px]" asChild>
         <Link
           href={matrixHref}
-          data-testid={`shop-sc-showroom-inline-qty-matrix-${article.articleId}`}
+          data-testid={`shop-sc-matrix-entry-link-${article.articleId}`}
+          data-audit-legacy={`shop-sc-showroom-inline-qty-matrix-${article.articleId}`}
         >
-          Матрица
+          В матрицу
         </Link>
       </Button>
       {hintRu ? (

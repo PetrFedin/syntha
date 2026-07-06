@@ -22,7 +22,7 @@ const STEPS: { id: BrandReleaseGoldenPathStepId; label: string }[] = [
   { id: 'syndication', label: 'Syndication' },
   { id: 'showroom-publish', label: 'Publish' },
   { id: 'brand-preview', label: 'Brand preview' },
-  { id: 'shop-showroom', label: 'Shop showroom' },
+  { id: 'shop-showroom', label: 'Шоурум магазина' },
 ];
 
 /** One-click golden path: release gate → syndication → showroom mirrors. */

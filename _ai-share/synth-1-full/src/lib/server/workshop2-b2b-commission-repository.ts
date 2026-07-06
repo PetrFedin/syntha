@@ -369,10 +369,71 @@ export async function markWorkshop2B2bCommissionsPayoutPending(input: {
   for (const line of memoryLines) {
     if (line.repId !== repId) continue;
     if (orderFilter && !orderFilter.includes(line.orderId)) continue;
+    if (line.payoutStatus === 'paid') continue;
+    line.payoutStatus = 'payout_pending';
     updated += 1;
   }
   flushFile();
   return { updatedCount: updated, mode: canUseDiskPersistence() ? 'file' : 'memory' };
+}
+
+export type ShopRepCommissionLedgerWriteAction = 'payout_request';
+
+export async function writeShopRepCommissionLedgerPayout(input: {
+  repId: string;
+  orderIds?: string[];
+  organizationId?: string;
+  action?: ShopRepCommissionLedgerWriteAction;
+}): Promise<{
+  ok: boolean;
+  updatedCount: number;
+  storageMode: 'postgres' | 'file' | 'memory' | 'unavailable';
+  messageRu: string;
+}> {
+  const action = input.action ?? 'payout_request';
+  if (action !== 'payout_request') {
+    return {
+      ok: false,
+      updatedCount: 0,
+      storageMode: 'unavailable',
+      messageRu: 'Неподдерживаемое действие ledger.',
+    };
+  }
+
+  const result = await markWorkshop2B2bCommissionsPayoutPending({
+    repId: input.repId,
+    orderIds: input.orderIds,
+    organizationId: input.organizationId,
+  });
+
+  if (result.mode === 'pg_only_blocked') {
+    return {
+      ok: false,
+      updatedCount: 0,
+      storageMode: 'unavailable',
+      messageRu: 'WORKSHOP2_PG_ONLY: запись payout в ledger требует PostgreSQL.',
+    };
+  }
+
+  const storageMode = result.mode;
+  return {
+    ok: true,
+    updatedCount: result.updatedCount,
+    storageMode,
+    messageRu:
+      result.updatedCount > 0
+        ? `${result.updatedCount} строк ledger → payout_pending (${storageMode === 'postgres' ? 'PG' : storageMode}).`
+        : 'Нет строк для payout — проверьте repId и orderIds.',
+  };
+}
+
+export function shopRepCommissionLedgerStorageMode(
+  lineCount: number
+): 'postgres' | 'file' | 'memory' | 'empty' | 'unavailable' {
+  if (isWorkshop2PgOnlyMode() && !isWorkshop2PostgresEnabled()) return 'unavailable';
+  if (lineCount === 0) return 'empty';
+  if (isWorkshop2PostgresEnabled()) return 'postgres';
+  return process.env.NODE_ENV === 'test' ? 'memory' : 'file';
 }
 
 export function clearWorkshop2B2bCommissionMemoryForTests(): void {

@@ -327,7 +327,7 @@ function labelsHotspotsHtml(
   const h = s.labelHeightMm?.trim() || '—';
   const careIds = (s.careSymbolIds ?? []).slice(0, 5);
   const careLabels = careIds
-    .map((id) => W2_COMPOSITION_LABEL_CARE_SYMBOL_CATALOG.find((c) => c.id === id)?.labelRu ?? id)
+    .map((id) => W2_COMPOSITION_LABEL_CARE_SYMBOL_CATALOG.find((c) => c.id === id)?.label ?? id)
     .join(', ');
   const hotspots = [
     { zone: 'Brand label', ru: 'Бренд', detail: s.brandFaceLines?.trim() || s.brandLogoPlacementNote?.trim() || '—' },

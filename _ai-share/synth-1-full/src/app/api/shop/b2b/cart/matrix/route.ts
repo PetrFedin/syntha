@@ -30,12 +30,20 @@ export async function POST(req: NextRequest) {
   const checkoutAuth = await guardShopB2bCheckoutRoute(req);
   if (checkoutAuth instanceof NextResponse) return checkoutAuth;
 
-  const body = (await req.json()) as {
+  let body: {
     sessionId?: string;
     collectionId?: string;
     articleId?: string;
     updates?: MatrixUpdate[];
   };
+  try {
+    body = (await req.json()) as typeof body;
+  } catch {
+    return NextResponse.json(
+      { ok: false, messageRu: 'Некорректное тело запроса.' },
+      { status: 400 }
+    );
+  }
 
   const collectionId = body.collectionId?.trim();
   const articleId = body.articleId?.trim();

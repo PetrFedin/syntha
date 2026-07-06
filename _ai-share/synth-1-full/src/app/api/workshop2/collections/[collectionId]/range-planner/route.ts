@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import {
   assignWorkshop2ArticleRangePlannerTier,
+  bulkAssignWorkshop2ArticleRangePlannerTier,
   patchWorkshop2CollectionRangePlannerTier,
+  reorderWorkshop2RangePlannerTierArticles,
 } from '@/lib/server/workshop2-range-planner-repository';
 import { bumpPlatformCoreDevelopmentStatus } from '@/lib/server/platform-core-development-status-hub';
 import { guardWorkshop2Route, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
@@ -33,7 +35,67 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     targetMargin?: number;
     articleId?: string;
     assignTier?: boolean;
+    articleIds?: string[];
   };
+
+  if (
+    b.assignTier === true &&
+    b.tier?.trim() &&
+    Array.isArray(b.articleIds) &&
+    b.articleIds.length > 0
+  ) {
+    const bulk = await bulkAssignWorkshop2ArticleRangePlannerTier({
+      collectionId,
+      tier: b.tier,
+      articleIds: b.articleIds,
+    });
+    if (!bulk.ok) {
+      const status =
+        bulk.error === 'pg_disabled'
+          ? 503
+          : bulk.error === 'invalid_tier' || bulk.error === 'empty_batch'
+            ? 400
+            : 400;
+      return NextResponse.json(
+        { ok: false, error: bulk.error, messageRu: bulk.messageRu },
+        { status }
+      );
+    }
+    bumpPlatformCoreDevelopmentStatus([collectionId]);
+    return NextResponse.json({
+      ok: true,
+      assigned: bulk.assigned,
+      failed: bulk.failed,
+      bulkAssigned: true,
+    });
+  }
+
+  if (
+    b.tier?.trim() &&
+    Array.isArray(b.articleIds) &&
+    b.articleIds.length > 0 &&
+    !b.articleId?.trim()
+  ) {
+    const reorder = await reorderWorkshop2RangePlannerTierArticles({
+      collectionId,
+      tier: b.tier,
+      articleIds: b.articleIds,
+    });
+    if (!reorder.ok) {
+      const status =
+        reorder.error === 'pg_disabled'
+          ? 503
+          : reorder.error === 'invalid_tier' || reorder.error === 'empty_order'
+            ? 400
+            : 400;
+      return NextResponse.json(
+        { ok: false, error: reorder.error, messageRu: reorder.messageRu },
+        { status }
+      );
+    }
+    bumpPlatformCoreDevelopmentStatus([collectionId]);
+    return NextResponse.json({ ok: true, reordered: true });
+  }
 
   if (b.articleId?.trim() && b.tier?.trim()) {
     const assign = await assignWorkshop2ArticleRangePlannerTier({

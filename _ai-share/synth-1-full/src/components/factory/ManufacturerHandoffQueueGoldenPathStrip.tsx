@@ -24,11 +24,11 @@ type Props = {
 };
 
 const STEPS: { id: ManufacturerHandoffGoldenPathStepId; label: string }[] = [
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'qc-gate', label: 'QC gate' },
-  { id: 'techpack-ack', label: 'Techpack ack' },
-  { id: 'brand-handoff', label: 'Brand handoff' },
-  { id: 'shop-tracking', label: 'Shop tracking' },
+  { id: 'handoff', label: 'Передача' },
+  { id: 'qc-gate', label: 'Контроль качества' },
+  { id: 'techpack-ack', label: 'Подтверждение ТЗ' },
+  { id: 'brand-handoff', label: 'Передача бренда' },
+  { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
 export function ManufacturerHandoffQueueGoldenPathStrip({

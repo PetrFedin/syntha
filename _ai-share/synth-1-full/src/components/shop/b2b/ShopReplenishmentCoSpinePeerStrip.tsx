@@ -10,33 +10,27 @@ type Props = {
   orderId?: string;
 };
 
-/** Replenishment · checkout + collaborative + brand order chat peers. */
+/** Replenishment · рабочий заказ + collaborative + brand chat (без дубля checkout — golden path). */
 export function ShopReplenishmentCoSpinePeerStrip({ collectionId, orderId }: Props) {
   const session = buildShopReplenishmentSession({ collectionId, orderId });
   const collaborative = buildShopCollaborativeOrderSession({ collectionId, orderId });
 
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-replenishment-co-spine-peer-strip">
-      <Link href={session.checkoutHref} data-testid="shop-replenishment-checkout-link" className={hubGadget.goldenLink}>
-        Checkout
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
       <Link href={session.workingOrderHref} data-testid="shop-replenishment-working-order-link" className={hubGadget.goldenLink}>
-        Working order
+        Рабочий заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={collaborative.sessionHref} data-testid="shop-replenishment-collaborative-link" className={hubGadget.goldenLink}>
-        Collaborative
+        Совместный заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link href={session.brandOrderChatHref} data-testid="shop-replenishment-brand-chat-link" className={hubGadget.goldenLink}>
-        Brand chat
+        Чат бренда
       </Link>
     </div>
   );

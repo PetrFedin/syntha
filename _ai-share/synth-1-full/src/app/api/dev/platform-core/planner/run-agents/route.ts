@@ -75,6 +75,8 @@ export async function POST(request: Request) {
     priority: target.priority,
     source: target.source,
     href: target.href,
+    pillarId: target.pillarId,
+    roleId: target.roleId,
   });
 
   const { sessionId, promptPath } = await startPlannerAgentSession({

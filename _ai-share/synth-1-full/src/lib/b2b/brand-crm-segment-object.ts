@@ -19,8 +19,21 @@ export type BrandCrmSegmentObject = {
   defaultNetTermDays: number;
   firstOrderDiscountPct?: number;
   vatExempt: boolean;
+  /** Lower = earlier in showroom / assign UI. */
+  displayOrder?: number;
   updatedAt: string;
 };
+
+export function sortBrandCrmSegments(
+  segments: readonly BrandCrmSegmentObject[]
+): BrandCrmSegmentObject[] {
+  return [...segments].sort((a, b) => {
+    const ao = a.displayOrder ?? 999;
+    const bo = b.displayOrder ?? 999;
+    if (ao !== bo) return ao - bo;
+    return a.segmentKey.localeCompare(b.segmentKey);
+  });
+}
 
 export function summarizeBrandCrmSegmentQuery(query: BrandCrmSegmentQuery): string[] {
   const chips: string[] = [];

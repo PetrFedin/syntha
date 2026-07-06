@@ -16,7 +16,7 @@ import {
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
   type FactoryMessagesRole,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 

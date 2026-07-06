@@ -30,6 +30,8 @@ import {
   BrandPricelistGoldenPathStrip,
   brandPricelistGoldenPathStepFromFeature,
 } from '@/components/brand/b2b/BrandPricelistGoldenPathStrip';
+import { BrandCoPricelistCoPeerStrip } from '@/components/platform/BrandCoPricelistCoPeerStrip';
+import { BrandPricelistTierSyncHonestyStrip } from '@/components/brand/b2b/BrandPricelistTierSyncHonestyStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { useSearchParams } from 'next/navigation';
@@ -52,12 +54,14 @@ function PriceListsWorkspaceBody() {
       ctx={ctx}
       crossLinksTitle="Tier → shop matrix → landed margin"
     >
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <BrandPricelistGoldenPathStrip
           collectionId={collectionId}
           orderId={orderId}
           activeStep={brandPricelistGoldenPathStepFromFeature(activeFeatureId)}
         />
+        <BrandCoPricelistCoPeerStrip collectionId={collectionId} orderId={orderId} />
+        <BrandPricelistTierSyncHonestyStrip collectionId={collectionId} orderId={orderId} />
       </div>
       {activeFeatureId === 'versions' ? (
         <BrandPricelistVersionsPanel groupFilter={groupFilter} collectionId={collectionId} />

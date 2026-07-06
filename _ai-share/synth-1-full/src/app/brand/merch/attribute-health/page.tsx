@@ -28,11 +28,15 @@ import {
   brandAttributeSchemaGoldenPathStepFromFeature,
 } from '@/components/brand/merch/BrandAttributeSchemaGoldenPathStrip';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
-import { resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
+import { resolvePageCollectionId, getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { BrandDevMerchCoSpinePeerStrip } from '@/components/platform/BrandDevMerchCoSpinePeerStrip';
+import { BrandDevSchemaPassportPeerStrip } from '@/components/platform/BrandDevSchemaPassportPeerStrip';
 
 function AttributeHealthWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
+  const demo = getPlatformCoreDemo(collectionId);
   const rows = useMemo(() => buildAttributeHealthRows(products), []);
   const weak = useMemo(() => rows.filter((r) => r.completeness < 100).length, [rows]);
   const { activeFeatureId } = usePillarCapabilityWorkspace('brand-attribute-schema');
@@ -68,6 +72,16 @@ function AttributeHealthWorkspaceBody() {
           activeStep={brandAttributeSchemaGoldenPathStepFromFeature(activeFeatureId)}
         />
       </div>
+      {isPlatformCoreMode() ? (
+        <div className="mb-4 space-y-2">
+          <BrandDevSchemaPassportPeerStrip collectionId={collectionId} activeSide="schema" />
+          <BrandDevMerchCoSpinePeerStrip
+            variant="attribute-schema"
+            collectionId={collectionId}
+            orderId={demo.demoOrderId}
+          />
+        </div>
+      ) : null}
       {activeFeatureId === 'health' ? (
         <>
           <div className="mb-4 flex flex-wrap items-center gap-2">

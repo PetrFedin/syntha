@@ -23,24 +23,26 @@ export function BrandSampleLifecycleCommsPeerStrip({ collectionId }: Props) {
       data-testid="brand-sample-lifecycle-comms-peer-strip"
     >
       <Badge variant="outline" className="text-[9px]">
-        Comms · sample events
+        Связь · события образца
       </Badge>
       <Badge
         variant="outline"
         className="text-[9px]"
         data-testid={`brand-sample-lifecycle-comms-sse-${sseConnected ? 'live' : 'poll'}`}
       >
-        {sseConnected ? 'inbox SSE' : 'inbox poll'}
+        {sseConnected ? 'входящие SSE' : 'опрос входящих'}
       </Badge>
-      <span className="text-text-secondary">Статус образца → системное сообщение в inbox.</span>
+      <span className="text-text-secondary">
+        Статус образца → POST transition → inbox SSE (`sample_order.status_changed`).
+      </span>
       <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
         <Link href={inboxHref} data-testid="brand-sample-lifecycle-comms-inbox-link">
-          Inbox
+          Входящие
         </Link>
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
         <Link href={entitiesHref} data-testid="brand-sample-lifecycle-comms-entities-link">
-          Entities
+          Сущности
         </Link>
       </Button>
     </div>

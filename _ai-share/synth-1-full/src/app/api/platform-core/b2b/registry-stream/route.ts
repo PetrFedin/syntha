@@ -32,11 +32,12 @@ export async function GET(req: NextRequest) {
         formatPlatformCoreB2bRegistrySseData({ type: 'ping', ts: new Date().toISOString() })
       );
 
-      const onBump = () => {
+      const onBump = (reason?: string) => {
         sendRaw(
           formatPlatformCoreB2bRegistrySseData({
             type: 'registry_update',
             ts: new Date().toISOString(),
+            reason,
           })
         );
       };

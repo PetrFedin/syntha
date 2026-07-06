@@ -1,30 +1,30 @@
 import { cn } from '@/lib/utils';
 
-/** Mobile: h-9 как иконка hub-панели; sm+: h-8 как текстовые вкладки. */
+/** Hub header: компактные вкладки (~25% меньше базового h-9). */
 export const PLATFORM_CORE_HEADER_CONTROL_BTN =
-  'inline-flex h-9 sm:h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-xl border px-2.5 text-[10px] font-bold uppercase tracking-wide transition-all';
+  'inline-flex h-7 sm:h-6 shrink-0 items-center justify-center whitespace-nowrap rounded-lg border px-2 text-[10px] font-semibold leading-none transition-all';
 
 export function platformCoreHeaderControlBtnClass(active: boolean): string {
   return cn(
     PLATFORM_CORE_HEADER_CONTROL_BTN,
-    'min-w-[3.25rem]',
+    'min-w-[2.5rem]',
     active ? 'btn-tab-active' : 'btn-tab-inactive-light'
   );
 }
 
-/** Hub-вкладки чуть шире. */
+/** Hub-вкладки «Продукт» / «Аудит». */
 export const PLATFORM_CORE_HEADER_HUB_TAB_BTN = cn(
   PLATFORM_CORE_HEADER_CONTROL_BTN,
-  'min-w-[4.25rem] sm:min-w-[4.75rem]'
+  'min-w-[3.25rem] sm:min-w-[3.5rem]'
 );
 
 export function platformCoreHeaderHubTabClass(active: boolean): string {
   return cn(PLATFORM_CORE_HEADER_HUB_TAB_BTN, active ? 'btn-tab-active' : 'btn-tab-inactive-light');
 }
 
-/** Иконка mobile hub-menu — та же высота, что B2B/B2C. */
+/** Иконка mobile hub-menu — компактная, в тон вкладкам. */
 export const PLATFORM_CORE_HEADER_ICON_BTN =
-  'relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md';
+  'relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md';
 
 /** Горизонтальный свайп на iPhone — без переноса строк. */
 export const PLATFORM_CORE_HORIZONTAL_SCROLL =

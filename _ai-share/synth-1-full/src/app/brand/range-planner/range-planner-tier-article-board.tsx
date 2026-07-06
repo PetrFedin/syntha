@@ -28,6 +28,56 @@ export function RangePlannerTierArticleBoard({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOverTier, setDragOverTier] = useState<RangePlannerTier | null>(null);
+  const [dragArticleId, setDragArticleId] = useState<string | null>(null);
+  const [dragSourceTier, setDragSourceTier] = useState<RangePlannerTier | null>(null);
+
+  const reorderWithinTier = useCallback(
+    async (tier: RangePlannerTier, articleIds: string[]) => {
+      setBusyId('reorder');
+      setError(null);
+      try {
+        const res = await fetch(
+          `/api/workshop2/collections/${encodeURIComponent(collectionId)}/range-planner`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...buildWorkshop2ApiRequestHeaders(),
+            },
+            body: JSON.stringify({ tier, articleIds }),
+          }
+        );
+        const json = (await res.json()) as { ok?: boolean; messageRu?: string };
+        if (!res.ok || !json.ok) {
+          setError(json.messageRu ?? 'Не удалось сохранить порядок');
+          return;
+        }
+        onMoved();
+      } catch {
+        setError('Ошибка сети');
+      } finally {
+        setBusyId(null);
+        setDragOverTier(null);
+        setDragArticleId(null);
+        setDragSourceTier(null);
+      }
+    },
+    [collectionId, onMoved]
+  );
+
+  const moveWithinTier = useCallback(
+    (tier: RangePlannerTier, articleId: string, direction: -1 | 1) => {
+      const ids = tierArticles[tier].map((row) => row.articleId);
+      const idx = ids.indexOf(articleId);
+      if (idx < 0) return;
+      const swap = idx + direction;
+      if (swap < 0 || swap >= ids.length) return;
+      const next = [...ids];
+      [next[idx], next[swap]] = [next[swap], next[idx]];
+      void reorderWithinTier(tier, next);
+    },
+    [tierArticles, reorderWithinTier]
+  );
 
   const moveArticle = useCallback(
     async (articleId: string, tier: RangePlannerTier) => {
@@ -75,16 +125,15 @@ export function RangePlannerTierArticleBoard({
       <div>
         <p className="text-sm font-semibold">Состав по уровням ассортимента</p>
         <p className="text-text-secondary text-xs">
-          Перетащите артикул в другую колонку или нажмите стрелку — tier сохраняется в PostgreSQL.
+          Перетащите артикул между колонками или внутри колонки — tier и порядок сохраняются в PostgreSQL.
         </p>
       </div>
       <div
         className={cn(
-          'grid gap-3 md:grid-cols-3',
-          'max-md:flex max-md:gap-3 max-md:overflow-x-auto max-md:snap-x max-md:overscroll-x-contain max-md:pb-1',
-          hubCabinet.workspaceTableScroll
+          hubCabinet.workspaceTableScroll,
+          'flex gap-3 max-md:pb-1 md:grid md:grid-cols-3 md:overflow-visible'
         )}
-        data-testid="range-planner-tier-columns-scroll"
+        data-testid="brand-dev-range-tier-board-scroll"
       >
         {RANGE_PLANNER_DEMO_TIERS.map((row) => {
           const articles = tierArticles[row.id];
@@ -93,9 +142,8 @@ export function RangePlannerTierArticleBoard({
             <div
               key={row.id}
               className={cn(
-                'border-border-default min-h-[8rem] rounded-lg border bg-white p-3 transition-colors',
-                isDropTarget ? 'border-accent-primary bg-accent-primary/5' : '',
-                'max-md:min-w-[min(72vw,16rem)] max-md:snap-start max-md:shrink-0'
+                'border-border-default min-h-[8rem] min-w-[min(72vw,16rem)] shrink-0 rounded-lg border bg-white p-3 transition-colors md:min-w-0',
+                isDropTarget && 'border-accent-primary bg-accent-primary/5'
               )}
               data-testid={`range-planner-tier-column-${row.id}`}
               onDragOver={(e) => {
@@ -107,7 +155,20 @@ export function RangePlannerTierArticleBoard({
               onDrop={(e) => {
                 e.preventDefault();
                 const articleId = e.dataTransfer.getData('text/article-id');
-                if (articleId) void moveArticle(articleId, row.id);
+                if (!articleId) return;
+                if (dragSourceTier === row.id && dragArticleId && dragArticleId !== articleId) {
+                  const ids = tierArticles[row.id].map((art) => art.articleId);
+                  const fromIdx = ids.indexOf(dragArticleId);
+                  const toIdx = ids.indexOf(articleId);
+                  if (fromIdx >= 0 && toIdx >= 0 && fromIdx !== toIdx) {
+                    const next = [...ids];
+                    next.splice(fromIdx, 1);
+                    next.splice(toIdx, 0, dragArticleId);
+                    void reorderWithinTier(row.id, next);
+                    return;
+                  }
+                }
+                if (dragSourceTier !== row.id) void moveArticle(articleId, row.id);
               }}
             >
               <p className="text-text-secondary mb-2 text-[10px] font-bold uppercase tracking-wide">
@@ -117,22 +178,50 @@ export function RangePlannerTierArticleBoard({
                 <p className="text-text-muted text-xs">Перетащите сюда артикул</p>
               ) : (
                 <ul className="space-y-2">
-                  {articles.map((art) => (
+                  {articles.map((art, artIndex) => (
                     <li
                       key={art.articleId}
-                      draggable={busyId !== art.articleId}
+                      draggable={busyId !== art.articleId && busyId !== 'reorder'}
                       data-testid={`range-planner-tier-article-${art.articleId}`}
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/article-id', art.articleId);
                         e.dataTransfer.effectAllowed = 'move';
+                        setDragArticleId(art.articleId);
+                        setDragSourceTier(row.id);
                       }}
-                      className="border-border-default flex cursor-grab flex-wrap items-center gap-1 rounded-md border bg-slate-50/80 px-2 py-1.5 text-xs active:cursor-grabbing"
+                      onDragEnd={() => {
+                        setDragArticleId(null);
+                        setDragSourceTier(null);
+                      }}
+                      className="border-border-default flex cursor-grab flex-col gap-1.5 rounded-md border bg-slate-50/80 px-2 py-2 text-xs active:cursor-grabbing sm:flex-row sm:flex-wrap sm:items-center"
                     >
                       <span className="min-w-0 flex-1 font-medium">
                         {art.sku ?? art.articleId}
                         {art.name ? (
                           <span className="text-text-muted ml-1 font-normal">· {art.name}</span>
                         ) : null}
+                      </span>
+                      <span className="flex shrink-0 gap-0.5">
+                        <button
+                          type="button"
+                          disabled={busyId === art.articleId || artIndex === 0}
+                          data-testid={`range-planner-tier-reorder-up-${art.articleId}`}
+                          onClick={() => moveWithinTier(row.id, art.articleId, -1)}
+                          className="text-text-muted hover:text-accent-primary inline-flex h-7 w-7 items-center justify-center rounded disabled:opacity-40"
+                          title="Выше в tier"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === art.articleId || artIndex === articles.length - 1}
+                          data-testid={`range-planner-tier-reorder-down-${art.articleId}`}
+                          onClick={() => moveWithinTier(row.id, art.articleId, 1)}
+                          className="text-text-muted hover:text-accent-primary inline-flex h-7 w-7 items-center justify-center rounded disabled:opacity-40"
+                          title="Ниже в tier"
+                        >
+                          ↓
+                        </button>
                       </span>
                       {RANGE_PLANNER_DEMO_TIERS.filter((t) => t.id !== row.id).map((target) => (
                         <button
@@ -141,7 +230,7 @@ export function RangePlannerTierArticleBoard({
                           disabled={busyId === art.articleId}
                           data-testid={`range-planner-tier-move-${art.articleId}-${target.id}`}
                           onClick={() => void moveArticle(art.articleId, target.id)}
-                          className="text-accent-primary hover:bg-accent-primary/10 rounded px-1.5 py-0.5 text-[10px] font-semibold disabled:opacity-50"
+                          className="text-accent-primary hover:bg-accent-primary/10 inline-flex min-h-11 min-w-11 items-center justify-center rounded px-2 text-[10px] font-semibold disabled:opacity-50"
                           title={`Перенести в ${TIER_SHORT[target.id]}`}
                         >
                           → {target.id}

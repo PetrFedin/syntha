@@ -252,6 +252,54 @@ export async function listWorkshop2WmsBalancesForArticle(input: {
   return res.rows.map((r) => mapPgBalanceRow(r as Parameters<typeof mapPgBalanceRow>[0]));
 }
 
+/** Wave SG · все WMS balances коллекции (ATP feed для replenishment). */
+export async function listWorkshop2WmsBalancesForCollection(input: {
+  collectionId: string;
+  locationCode?: string;
+  limit?: number;
+}): Promise<Workshop2WmsBalance[]> {
+  const collectionId = input.collectionId.trim();
+  const locationCode = input.locationCode?.trim() || WORKSHOP2_WMS_DEFAULT_LOCATION;
+  const limit = Math.min(Math.max(input.limit ?? 48, 1), 96);
+
+  if (!isWorkshop2PostgresEnabled()) {
+    const store = getMemoryStore(collectionId);
+    const balances: Workshop2WmsBalance[] = [];
+    for (const [itemId, item] of store.items) {
+      if (item.collectionId !== collectionId) continue;
+      const b = store.balances.get(balanceKey(itemId, locationCode)) ?? {
+        qtyOnHand: 0,
+        qtyReserved: 0,
+      };
+      balances.push({
+        itemId,
+        collectionId: item.collectionId,
+        sku: item.sku,
+        label: item.label,
+        unit: item.unit,
+        locationCode,
+        qtyOnHand: b.qtyOnHand,
+        qtyReserved: b.qtyReserved,
+        qtyAvailable: b.qtyOnHand - b.qtyReserved,
+      });
+    }
+    return balances.slice(0, limit);
+  }
+
+  await ensureWorkshop2PgSchema();
+  const res = await getWorkshop2PgPool().query(
+    `SELECT i.id AS item_id, i.collection_id, i.sku, i.label, i.unit,
+            b.location_code, b.qty_on_hand, b.qty_reserved
+     FROM workshop2_wms_items i
+     JOIN workshop2_wms_balances b ON b.item_id = i.id
+     WHERE i.collection_id = $1 AND b.location_code = $2
+     ORDER BY i.label
+     LIMIT $3`,
+    [collectionId, locationCode, limit]
+  );
+  return res.rows.map((r) => mapPgBalanceRow(r as Parameters<typeof mapPgBalanceRow>[0]));
+}
+
 export async function listWorkshop2WmsMovements(input: {
   collectionId: string;
   articleId: string;

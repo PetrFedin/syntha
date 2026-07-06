@@ -73,7 +73,7 @@ export function B2bMultiBrandSplitCheckoutBanner({ lines }: { lines: CartLineLik
     >
       <p className="font-semibold">{summary.headlineRu}</p>
       <p className="mt-1 text-[12px] text-amber-900/90">
-        Бренды: {summary.brandIds.join(', ')}. Checkout одним заказом заблокирован (409) — оформите
+        Бренды: {summary.brandIds.join(', ')}. Оформление одним заказом заблокировано (409) — оформите
         каждый бренд отдельно после разделения.
       </p>
 

@@ -120,6 +120,8 @@ type Props = {
   onCreateArticle: () => void;
   /** Какие карточки попадают в выборку до поиска/тегов: все / не завершены / 100% этапов. */
   articleStatusFilter: 'all' | 'in_work' | 'done';
+  /** Platform Core embedded hub — широкие карточки, без 3 колонок в узкой рабочей области. */
+  embeddedHub?: boolean;
 };
 
 function buildEntries(
@@ -179,6 +181,7 @@ export function Workshop2ArticleFlatHub({
   onEditArticle,
   onCreateArticle,
   articleStatusFilter,
+  embeddedHub = false,
 }: Props) {
   const [search, setSearch] = useState('');
   const [tagFilter, setTagFilter] = useState<Set<string>>(() => new Set());
@@ -345,9 +348,16 @@ export function Workshop2ArticleFlatHub({
   }, [allEntries.length, scopeEntries.length, articleStatusFilter]);
 
   return (
-    <div className="space-y-4" data-testid="workshop2-article-flat-hub">
+    <div className="w-full min-w-0 max-w-none space-y-4" data-testid="workshop2-article-flat-hub">
       <FilterToolbar className="border-border-default bg-bg-surface2/70 flex flex-col gap-1.5 p-1.5 sm:p-2">
-        <div className="grid w-full min-w-0 grid-cols-2 gap-1.5 sm:grid-cols-5">
+        <div
+          className={cn(
+            'grid w-full min-w-0 gap-1.5',
+            embeddedHub
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'
+              : 'grid-cols-2 sm:grid-cols-5'
+          )}
+        >
           <div className="col-span-2 flex min-w-0 flex-col gap-0.5 sm:col-span-1">
             <span className="text-text-secondary text-[8px] font-semibold uppercase leading-none">
               Поиск
@@ -505,11 +515,19 @@ export function Workshop2ArticleFlatHub({
           ) : null}
         </EmptyState>
       ) : (
-        <ul className="mx-auto grid w-full max-w-[70rem] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          className={cn(
+            'grid w-full gap-3',
+            embeddedHub
+              ? 'grid-cols-1 xl:grid-cols-2'
+              : 'mx-auto max-w-[70rem] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+          )}
+        >
           {filtered.map((e) => (
-            <li key={`${e.collectionId}-${e.row.id}`}>
+            <li key={`${e.collectionId}-${e.row.id}`} className="min-w-0">
               <ArticleCard
                 entry={e}
+                embeddedHub={embeddedHub}
                 onOpen={() => onOpenArticle(e.collectionId, e.row)}
                 onEdit={() => onEditArticle(e.collectionId, e.row)}
               />
@@ -523,10 +541,12 @@ export function Workshop2ArticleFlatHub({
 
 function ArticleCard({
   entry,
+  embeddedHub = false,
   onOpen,
   onEdit,
 }: {
   entry: ArticleHubEntry;
+  embeddedHub?: boolean;
   onOpen: () => void;
   onEdit: () => void;
 }) {
@@ -566,133 +586,106 @@ function ArticleCard({
   const audienceLine = audienceLineForFlatHubCard(row);
 
   return (
-    <div className="border-border-default hover:border-accent-primary/40 flex h-full w-full min-w-0 flex-col rounded-xl border bg-white p-4 shadow-sm transition-colors">
-      <div className="flex min-h-0 flex-1 flex-col gap-0 p-0">
-        <div className="relative flex min-w-0 gap-1.5">
-          <div className="relative min-h-[3rem] min-w-0 flex-1">
-            <button
-              type="button"
-              onClick={onOpen}
-              className="text-text-primary hover:bg-accent-primary/5 focus-visible:ring-accent-primary/40 absolute inset-0 z-0 cursor-pointer rounded-md border-0 bg-transparent p-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
-              aria-label={`Открыть карточку ${row.sku}`}
-            />
-            <div className="text-text-primary pointer-events-none relative z-10 flex gap-1.5">
-              <div className="text-text-secondary flex w-[5.5rem] min-w-0 shrink-0 flex-col gap-0.5 text-[7px] leading-tight sm:w-24">
-                <div className="bg-bg-surface2 border-border-subtle flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border">
-                  {thumb ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={thumb} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <Package className="text-text-muted h-5 w-5" aria-hidden />
-                  )}
-                </div>
-                <p className="text-text-primary min-w-0" title={`Сезон: ${seasonDisplay}`}>
-                  <span className="text-text-muted">Сезон</span>{' '}
-                  <span className="font-medium">{seasonDisplay}</span>
-                </p>
-                <div className="flex min-w-0 items-baseline justify-between gap-0.5">
-                  <p className="min-w-0 flex-1 truncate leading-tight" title="Ваш бренд">
-                    <span className="text-text-muted">Бренд</span>{' '}
-                    <span className="text-text-primary font-medium">Ваш бренд</span>
-                  </p>
-                </div>
-              </div>
-              <div className="min-w-0 flex-1 space-y-1 pr-0.5">
-                <p className="text-text-primary min-w-0 truncate font-mono text-[12px] font-bold leading-tight">
-                  {row.sku}
-                </p>
-                {idChip ? (
-                  <p className="text-text-secondary font-mono text-[9px] font-semibold tabular-nums">
-                    {idChip}
-                  </p>
-                ) : null}
-                <p
-                  className="text-text-secondary min-w-0 text-[7px] font-medium leading-snug"
-                  title="Аудитория · категория L1–L3"
-                >
-                  <span className="text-text-primary">{audienceLine}</span>
-                  <span className="text-text-muted"> · </span>
-                  <span>{pathCatLine}</span>
-                </p>
-                <p className="text-text-primary line-clamp-2 text-left text-xs font-semibold leading-snug">
-                  {displayName}
-                </p>
-                {row.workshopTags && row.workshopTags.length > 0 ? (
-                  <div className="flex flex-wrap gap-0.5 pt-0.5">
-                    {row.workshopTags.map((t) => (
-                      <Badge
-                        key={t}
-                        variant="secondary"
-                        className="text-text-primary h-4 max-w-full truncate px-1 py-0 text-[7px] font-medium"
-                        title={t}
-                      >
-                        {t}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <div className="pointer-events-auto relative z-20 flex shrink-0 flex-col self-start">
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              className="h-4 min-h-4 w-4 min-w-4 shrink-0 p-0"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onEdit();
-              }}
-              aria-label="Редактировать карточку"
-              title="Редактировать карточку"
-            >
-              <Pencil className="h-2 w-2" strokeWidth={2.5} aria-hidden />
-            </Button>
-          </div>
-          <div
-            className={cn(
-              'absolute bottom-0 right-0 z-20 text-right text-[7px] font-semibold leading-tight',
-              hubFinalization.finalized || isComplete ? 'text-emerald-800' : 'text-text-secondary'
-            )}
-          >
-            <span className="pointer-events-none whitespace-nowrap">{statusLabel}</span>{' '}
-            {hubFinalization.finalized ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span
-                    className="pointer-events-auto inline-flex cursor-default align-middle text-emerald-600"
-                    aria-label={
-                      hubFinalization.finalizedAtIso
-                        ? `Карточка финализирована: ${formatFinalizedAtTooltip(hubFinalization.finalizedAtIso)}`
-                        : 'Карточка финализирована'
-                    }
-                  >
-                    <CircleCheck className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[16rem] text-left text-[11px]">
-                  {hubFinalization.finalizedAtIso
-                    ? `Карточка финализирована: ${formatFinalizedAtTooltip(hubFinalization.finalizedAtIso)}`
-                    : 'Сэмпл принят в коллекцию и проставлены финальные подтверждения ТЗ (дизайнер, технолог, менеджер).'}
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <span
-                className={cn(
-                  'pointer-events-none tabular-nums',
-                  isComplete ? 'text-emerald-700' : 'text-text-primary'
-                )}
-                title="Готовность этапов по матрице коллекции"
+    <article
+      className={cn(
+        'border-border-default hover:border-accent-primary/40 group flex w-full min-w-0 items-stretch gap-3 rounded-xl border bg-white p-3 shadow-sm transition-colors sm:gap-4 sm:p-4',
+        embeddedHub && 'max-w-none'
+      )}
+      data-testid="workshop2-article-flat-hub-card"
+    >
+      <div className="bg-bg-surface2 border-border-subtle flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border">
+        {thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={thumb} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <Package className="text-text-muted h-6 w-6" aria-hidden />
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={onOpen}
+        className="text-text-primary hover:bg-accent-primary/5 focus-visible:ring-accent-primary/40 min-w-0 flex-1 space-y-1 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+        aria-label={`Открыть карточку ${row.sku}`}
+      >
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="font-mono text-sm font-bold leading-tight">{row.sku}</span>
+          {idChip ? (
+            <span className="text-text-secondary font-mono text-xs font-medium tabular-nums">{idChip}</span>
+          ) : null}
+        </div>
+        <p className="text-text-primary line-clamp-2 text-sm font-semibold leading-snug">{displayName}</p>
+        <p className="text-text-secondary text-xs leading-snug" title="Аудитория · категория L1–L3">
+          {audienceLine} · {pathCatLine}
+        </p>
+        <p className="text-text-muted text-[11px] leading-snug">
+          {collectionName} · сезон {seasonDisplay}
+        </p>
+        {row.workshopTags && row.workshopTags.length > 0 ? (
+          <div className="flex flex-wrap gap-1 pt-0.5">
+            {row.workshopTags.map((t) => (
+              <Badge
+                key={t}
+                variant="secondary"
+                className="text-text-primary h-5 max-w-full truncate px-1.5 py-0 text-[10px] font-medium"
+                title={t}
               >
-                {progressLabel}
-              </span>
-            )}
+                {t}
+              </Badge>
+            ))}
           </div>
+        ) : null}
+      </button>
+
+      <div className="flex shrink-0 flex-col items-end justify-between gap-2 self-stretch py-0.5">
+        <span
+          className={cn(
+            'text-right text-xs font-semibold tabular-nums whitespace-nowrap',
+            hubFinalization.finalized || isComplete ? 'text-emerald-800' : 'text-text-secondary'
+          )}
+        >
+          {statusLabel} · {progressLabel}
+        </span>
+        <div className="flex items-center gap-1.5">
+          {hubFinalization.finalized ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className="inline-flex text-emerald-600"
+                  aria-label={
+                    hubFinalization.finalizedAtIso
+                      ? `Карточка финализирована: ${formatFinalizedAtTooltip(hubFinalization.finalizedAtIso)}`
+                      : 'Карточка финализирована'
+                  }
+                >
+                  <CircleCheck className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[16rem] text-left text-[11px]">
+                {hubFinalization.finalizedAtIso
+                  ? `Карточка финализирована: ${formatFinalizedAtTooltip(hubFinalization.finalizedAtIso)}`
+                  : 'Сэмпл принят в коллекцию и проставлены финальные подтверждения ТЗ (дизайнер, технолог, менеджер).'}
+              </TooltipContent>
+            </Tooltip>
+          ) : null}
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            className="h-8 w-8 shrink-0"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onEdit();
+            }}
+            aria-label="Редактировать карточку"
+            title="Редактировать карточку"
+          >
+            <Pencil className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden />
+          </Button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 

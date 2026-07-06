@@ -12,6 +12,12 @@ import {
 } from '@/lib/production/local-collection-inventory';
 import { workshop2MergedItemsForCollectionList } from '@/lib/production/workshop2-articles';
 import type { Workshop2PublishedArticlesReadPath } from '@/lib/production/workshop2-pg-source-stats';
+import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import {
+  isWorkshop2CorePgReadPathOnly,
+  resolveWorkshop2HubPublishedArticlesReadPath,
+  shouldMirrorWorkshop2DossierToLocalStorage,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 import {
   loadWorkshop2Phase1DossierMap,
   setWorkshop2Phase1Dossier,
@@ -69,6 +75,10 @@ export async function hydrateWorkshop2PublishedDossiersFromApi(
     const key = workshop2Phase1DossierStorageKey(cid, articleId);
     const dossier = map[key];
     if (!dossier?.hubPgOverlayAt) continue;
+    if (!shouldMirrorWorkshop2DossierToLocalStorage(cid)) {
+      dossiersHydrated += 1;
+      continue;
+    }
     if (setWorkshop2Phase1Dossier(cid, articleId, dossier)) {
       dossiersHydrated += 1;
     }
@@ -108,9 +118,19 @@ export async function resolveWorkshop2PublishedArticlesForHub(input: {
   readPath: Workshop2PublishedArticlesReadPath;
 }> {
   const cid = input.collectionId.trim();
-  if (!cid) return { articles: [], readPath: 'localStorage' };
-  if (input.preferApi) {
-    const articles = await fetchWorkshop2PublishedArticlesFromApi(cid);
+  if (!cid) {
+    return { articles: [], readPath: isPlatformCoreMode() ? 'api' : 'localStorage' };
+  }
+  const readPath = resolveWorkshop2HubPublishedArticlesReadPath({
+    collectionId: cid,
+    preferApi: input.preferApi,
+  });
+  if (readPath === 'api') {
+    const articles = input.preferApi
+      ? await fetchWorkshop2PublishedArticlesFromApi(cid)
+      : isWorkshop2CorePgReadPathOnly(cid)
+        ? []
+        : await fetchWorkshop2PublishedArticlesFromApi(cid);
     return { articles, readPath: 'api' };
   }
   return {

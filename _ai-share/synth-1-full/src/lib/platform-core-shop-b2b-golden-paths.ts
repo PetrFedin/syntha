@@ -1,4 +1,4 @@
-import { ROUTES } from '@/lib/routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 import { PLATFORM_CORE_SHOP_B2B_LEGACY_REDIRECTS } from '@/lib/platform-core-shop-b2b-legacy-redirects';
 
 export function normalizeShopB2bPathname(pathname: string): string {

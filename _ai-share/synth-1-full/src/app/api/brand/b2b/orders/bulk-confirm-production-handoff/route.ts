@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { bulkConfirmWorkshop2B2bProductionHandoff } from '@/lib/server/workshop2-b2b-production-handoff';
+import { buildWorkshop2BulkHandoffIdempotencyKey } from '@/lib/production/workshop2-bulk-handoff-idempotency';
 import { guardWorkshop2Route, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
 import {
   confirmOperationalImportOrderByBrand,
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 
-  let body: { orderIds?: string[]; factoryId?: string } = {};
+  let body: { orderIds?: string[]; factoryId?: string; idempotencyKey?: string } = {};
   try {
     body = (await req.json()) as typeof body;
   } catch {
@@ -38,6 +39,11 @@ export async function POST(req: NextRequest) {
   const factoryId =
     body.factoryId?.trim() || req.nextUrl.searchParams.get('factoryId')?.trim() || undefined;
 
+  const idempotencyKey =
+    req.headers.get('Idempotency-Key')?.trim() ||
+    body.idempotencyKey?.trim() ||
+    buildWorkshop2BulkHandoffIdempotencyKey(orderIds, factoryId);
+
   const importedIds = orderIds.filter((id) => isIntegrationImportedWholesaleOrderId(id));
   const w2Ids = orderIds.filter((id) => !isIntegrationImportedWholesaleOrderId(id));
 
@@ -56,7 +62,11 @@ export async function POST(req: NextRequest) {
 
   const result =
     w2Ids.length > 0
-      ? await bulkConfirmWorkshop2B2bProductionHandoff({ orderIds: w2Ids, factoryId })
+      ? await bulkConfirmWorkshop2B2bProductionHandoff({
+          orderIds: w2Ids,
+          factoryId,
+          idempotencyKey,
+        })
       : { ok: false, handedOff: [] as string[], skipped: [] as string[], errors: [] as Array<{ orderId: string; messageRu: string }>, messageRu: '' };
 
   const handedOff = [...importedHandoff, ...result.handedOff];
@@ -67,8 +77,18 @@ export async function POST(req: NextRequest) {
     : errors[0]?.messageRu ?? result.messageRu ?? 'Не удалось передать заказы в производство.';
 
   if (!ok) {
-    return NextResponse.json({ ok, handedOff, skipped: result.skipped, errors, messageRu }, { status: 409 });
+    return NextResponse.json(
+      { ok, handedOff, skipped: result.skipped, errors, messageRu, idempotent: result.idempotent },
+      { status: 409 }
+    );
   }
 
-  return NextResponse.json({ ok, handedOff, skipped: result.skipped, errors, messageRu });
+  return NextResponse.json({
+    ok,
+    handedOff,
+    skipped: result.skipped,
+    errors,
+    messageRu,
+    idempotent: result.idempotent,
+  });
 }

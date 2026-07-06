@@ -140,7 +140,7 @@ export function Workshop2DossierNineClosureSummary({
               className="text-text-primary h-auto p-0 text-[10px] font-semibold"
               onClick={() => onJump('visuals', W2_VISUAL_SUBPAGE_ANCHORS.handoff)}
             >
-              Handoff
+              Передача
             </Button>
             <Button
               type="button"

@@ -89,7 +89,12 @@ export const POST = withWorkshop2ApiErrorRu(async function postFactoryAcknowledg
       actor,
       source: 'factory_acknowledge',
     },
+    dispatchNow: true,
   }).catch(() => {});
+
+  const { bumpPlatformCoreDevelopmentStatus } =
+    await import('@/lib/server/platform-core-development-status-hub');
+  bumpPlatformCoreDevelopmentStatus([collectionId]);
 
   return NextResponse.json({
     ok: true,

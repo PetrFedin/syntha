@@ -5,12 +5,7 @@ import { buildShopWorkingOrderSession } from '@/lib/b2b/shop-working-order-sessi
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
 
-export type ShopWorkingOrderGoldenPathStepId =
-  | 'versions'
-  | 'bulk'
-  | 'handoff'
-  | 'tracking'
-  | 'checkout';
+export type ShopWorkingOrderGoldenPathStepId = 'versions' | 'bulk' | 'handoff';
 
 type Props = {
   wholesaleOrderId: string;
@@ -19,11 +14,9 @@ type Props = {
 };
 
 const STEPS: { id: ShopWorkingOrderGoldenPathStepId; label: string }[] = [
-  { id: 'versions', label: 'Versions' },
-  { id: 'bulk', label: 'Bulk' },
-  { id: 'handoff', label: 'Handoff' },
-  { id: 'tracking', label: 'Tracking' },
-  { id: 'checkout', label: 'Checkout' },
+  { id: 'versions', label: 'Версии' },
+  { id: 'bulk', label: 'Опт' },
+  { id: 'handoff', label: 'Передача' },
 ];
 
 export function ShopWorkingOrderGoldenPathStrip({
@@ -36,9 +29,7 @@ export function ShopWorkingOrderGoldenPathStrip({
   const hrefFor = (id: ShopWorkingOrderGoldenPathStepId): string => {
     if (id === 'versions') return session.versionsHref;
     if (id === 'bulk') return session.bulkHref;
-    if (id === 'handoff') return session.handoffHref;
-    if (id === 'tracking') return session.trackingHref;
-    return session.checkoutHref;
+    return session.handoffHref;
   };
 
   return (

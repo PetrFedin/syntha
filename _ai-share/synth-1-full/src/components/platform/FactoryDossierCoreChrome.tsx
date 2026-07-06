@@ -15,35 +15,45 @@ import {
   factoryProductionHandoffQueueHref,
   factoryProductionOrdersOrderContextHref,
   shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
   getPlatformCoreDemoByArticleId,
+  PLATFORM_CORE_DEMO,
 } from '@/lib/platform-core-hub-matrix';
-import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
-import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
+import { brandDevelopmentArticleHref } from '@/lib/platform-core-routes';
+import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
-import { PlatformCoreChromeShell } from '@/components/platform/PlatformCoreChromeShell';
+import { PlatformCoreChromeShell } from '@/components/platform/usePlatformCoreChainOverview';
 import { PlatformCoreContextBar } from '@/components/platform/PlatformCoreContextBar';
 import { PlatformCoreRolePillarStrip } from '@/components/platform/PlatformCoreRolePillarStrip';
 import { PlatformCoreDossierSampleQueueCard } from '@/components/platform/PlatformCoreDossierSampleQueueCard';
 import { FactoryDossierTechPackAckPanel } from '@/components/platform/FactoryDossierTechPackAckPanel';
 import { ManufacturerDevDossierCommentPeerStrip } from '@/components/factory/ManufacturerDevDossierCommentPeerStrip';
+import { ManufacturerDevDossierAnnotationPanel } from '@/components/factory/ManufacturerDevDossierAnnotationPanel';
 import { MfrDevDossierProductionSpinePeerStrip } from '@/components/factory/MfrDevDossierProductionSpinePeerStrip';
+import { MfrOpDossierCoSpinePeerStrip } from '@/components/factory/MfrOpDossierCoSpinePeerStrip';
+import { MfrDevSamplePhotoDamStubStrip } from '@/components/factory/MfrDevSamplePhotoDamStubStrip';
+import { MfrOpDossierExportPrintStrip } from '@/components/factory/MfrOpDossierExportPrintStrip';
+import { MfrOpDossierAttachTzPdfPoPeerStrip } from '@/components/factory/MfrOpDossierAttachTzPdfPoPeerStrip';
 import { ManufacturerArticleAttachTzPeerStrip } from '@/components/factory/ManufacturerArticleAttachTzPeerStrip';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
-import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
+import { MfrDevDossierPgSourceStrip } from '@/components/factory/MfrDevDossierPgSourceStrip';
+import type { FactoryDossierResolveSource } from '@/lib/platform-core-ports/factory-dossier';
 
 type Props = {
   children: ReactNode;
   articleId?: string;
   /** SKU из PG-досье для экспорта ТЗ (честная метка, не mock). */
   exportArticleSku?: string;
+  /** Wave YA · honest dossier source (PG vs legacy localStorage). */
+  dossierSource?: FactoryDossierResolveSource;
+  dossierCollectionId?: string;
 };
 
 type ChainDossierMeta = {
@@ -53,7 +63,13 @@ type ChainDossierMeta = {
   handedOff?: boolean;
 };
 
-function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }: Props) {
+function FactoryDossierCoreChromeInner({
+  children,
+  articleId,
+  exportArticleSku,
+  dossierSource,
+  dossierCollectionId,
+}: Props) {
   const searchParams = useSearchParams();
   const productionPillar = searchParams.get('pillar') === 'order_production';
   const pillarId: CoreHubPillarId = productionPillar ? 'order_production' : 'development';
@@ -119,7 +135,7 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
 
   const brandW2ArticleHref =
     demo && articleId
-      ? workshop2ArticleHref(demo.collectionId, articleId, { w2sec: 'general' })
+      ? brandDevelopmentArticleHref(demo.collectionId, articleId, { section: 'overview' })
       : null;
   const panelTestId = productionPillar ? 'factory-dossier-core-chrome' : 'mfr-dev-dossier-panel';
   const workspaceBackLabel = productionPillar ? 'Кабинет · выпуск' : 'Кабинет · производство';
@@ -150,13 +166,28 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
           <PlatformCoreRolePillarStrip roleId="manufacturer" activePillarId={pillarId} />
         </div>
       ) : null}
-      {!productionPillar && demo && articleId ? (
-        <FactoryDossierTechPackAckPanel collectionId={demo.collectionId} articleId={articleId} />
+      {demo && articleId ? (
+        <FactoryDossierTechPackAckPanel
+          collectionId={demo.collectionId}
+          articleId={articleId}
+          surface={productionPillar ? 'inline' : 'inline'}
+        />
       ) : null}
       {!productionPillar && demo ? (
         <>
+        {articleId && dossierSource ? (
+          <MfrDevDossierPgSourceStrip
+            collectionId={dossierCollectionId ?? demo.collectionId}
+            articleId={articleId}
+            source={dossierSource}
+          />
+        ) : null}
         <div
-          className={hubGadget.goldenPath}
+          className={cn(
+            hubGadget.goldenPath,
+            hubCabinet.workspaceTableScroll,
+            'max-md:flex-nowrap'
+          )}
           data-testid="mfr-dev-dossier-context-strip"
         >
           {brandW2ArticleHref ? (
@@ -195,6 +226,14 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
           <ManufacturerDevDossierCommentPeerStrip collectionId={demo.collectionId} articleId={articleId} />
         ) : null}
         {articleId ? (
+          <ManufacturerDevDossierAnnotationPanel
+            collectionId={demo.collectionId}
+            articleId={articleId}
+            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+            orderId={orderId || undefined}
+          />
+        ) : null}
+        {articleId ? (
           <MfrDevDossierProductionSpinePeerStrip
             factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
             collectionId={demo.collectionId}
@@ -204,64 +243,23 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
         {articleId ? (
           <ManufacturerArticleAttachTzPeerStrip collectionId={demo.collectionId} articleId={articleId} />
         ) : null}
+        {articleId ? (
+          <MfrDevSamplePhotoDamStubStrip
+            collectionId={demo.collectionId}
+            articleId={articleId}
+            orderId={orderId || undefined}
+            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+          />
+        ) : null}
         </>
       ) : null}
       {productionPillar && demo && orderId ? (
         isPlatformCoreMode() ? (
-          <div className={hubGadget.goldenPath} data-testid="mfr-op-dossier-context-strip">
-            <Link
-              href={factoryProductionHandoffQueueHref(orderId, {
-                factoryId: demo.factoryId,
-                collectionId: demo.collectionId,
-              })}
-              data-testid="mfr-op-dossier-handoff-link"
-              className={hubGadget.goldenLink}
-            >
-              Очередь
-            </Link>
-            <span className={hubGadget.goldenSep} aria-hidden>
-              ·
-            </span>
-            <Link
-              href={factoryProductionOrdersOrderContextHref(orderId, {
-                factoryId: demo.factoryId,
-              })}
-              data-testid="mfr-op-dossier-prod-orders-link"
-              className={hubGadget.goldenLink}
-            >
-              Заказы
-            </Link>
-            <span className={hubGadget.goldenSep} aria-hidden>
-              ·
-            </span>
-            <Link
-              href={factoryMaterialsProcurementHrefForDemo(demo)}
-              data-testid="mfr-op-dossier-procurement-link"
-              className={hubGadget.goldenLink}
-            >
-              Закупка
-            </Link>
-            <span className={hubGadget.goldenSep} aria-hidden>
-              ·
-            </span>
-            <Link
-              href={shopB2bTrackingOrderHref(orderId)}
-              data-testid="mfr-op-dossier-shop-tracking-link"
-              className={hubGadget.goldenLink}
-            >
-              Трекинг
-            </Link>
-            <span className={hubGadget.goldenSep} aria-hidden>
-              ·
-            </span>
-            <Link
-              href={`${ROUTES.factory.production}#sample-queue`}
-              data-testid="mfr-op-dossier-sample-queue-link"
-              className={hubGadget.goldenLink}
-            >
-              Образцы
-            </Link>
-          </div>
+          <MfrOpDossierCoSpinePeerStrip
+            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+            collectionId={demo.collectionId}
+            orderId={orderId}
+          />
         ) : (
         <div
           className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
@@ -336,6 +334,22 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
           ) : null}
         </div>
       ) : null}
+      {productionPillar && demo && articleId ? (
+        <MfrOpDossierExportPrintStrip
+          collectionId={demo.collectionId}
+          articleId={articleId}
+          orderId={orderId || undefined}
+        />
+      ) : null}
+      {productionPillar && demo && articleId && orderId ? (
+        <MfrOpDossierAttachTzPdfPoPeerStrip
+          orderId={orderId}
+          collectionId={demo.collectionId}
+          articleId={articleId}
+          productionOrderId={chainMeta?.productionOrderId ?? PLATFORM_CORE_DEMO.productionOrderId}
+          factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+        />
+      ) : null}
       <div
         className={hubCabinet.workspaceStickyActions}
         data-testid="mfr-dev-dossier-actions-strip"
@@ -354,17 +368,19 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
             Чат по артикулу
           </Link>
         ) : null}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(hubCabinet.workspacePrimaryBtn, 'text-[10px] font-semibold')}
-          data-testid="mfr-op-dossier-print-btn"
-          onClick={() => window.print()}
-        >
-          <Printer className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
-          Печать ТЗ
-        </Button>
+        {!productionPillar ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(hubCabinet.workspacePrimaryBtn, 'text-[10px] font-semibold')}
+            data-testid="mfr-op-dossier-print-btn"
+            onClick={() => window.print()}
+          >
+            <Printer className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+            Печать ТЗ
+          </Button>
+        ) : null}
         {productionPillar && articleId && demo ? (
           <Button
             type="button"
@@ -379,7 +395,7 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
               download
             >
               <Download className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
-              Shop-floor bundle
+              Комплект для цеха
             </a>
           </Button>
         ) : null}
@@ -394,16 +410,27 @@ function FactoryDossierCoreChromeInner({ children, articleId, exportArticleSku }
   );
 }
 
-export function FactoryDossierCoreChrome({ children, articleId, exportArticleSku }: Props) {
+export function FactoryDossierCoreChrome({
+  children,
+  articleId,
+  exportArticleSku,
+  dossierSource,
+  dossierCollectionId,
+}: Props) {
   if (!isPlatformCoreMode()) return <>{children}</>;
 
-  const collectionId = articleId
-    ? getPlatformCoreDemoByArticleId(articleId).collectionId
-    : undefined;
+  const collectionId =
+    dossierCollectionId ??
+    (articleId ? getPlatformCoreDemoByArticleId(articleId).collectionId : undefined);
 
   return (
     <PlatformCoreChromeShell collectionId={collectionId}>
-      <FactoryDossierCoreChromeInner articleId={articleId} exportArticleSku={exportArticleSku}>
+      <FactoryDossierCoreChromeInner
+        articleId={articleId}
+        exportArticleSku={exportArticleSku}
+        dossierSource={dossierSource}
+        dossierCollectionId={dossierCollectionId}
+      >
         {children}
       </FactoryDossierCoreChromeInner>
     </PlatformCoreChromeShell>

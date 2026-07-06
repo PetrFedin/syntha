@@ -14,6 +14,39 @@ import {
   shopInventoryLedgerGrainsStorageMode,
 } from '@/lib/server/shop-inventory-ledger-grains-repository';
 import { listWorkshop2B2bOrdersForCollection } from '@/lib/server/workshop2-b2b-orders-repository';
+import { isWorkshop2InternalWmsEnabled } from '@/lib/production/workshop2-internal-wms';
+import { listWorkshop2WmsBalancesForCollection } from '@/lib/server/workshop2-wms-repository';
+
+function mergeWmsAtpIntoRows(input: {
+  rows: ReplenishmentStockRow[];
+  wmsBalances: Awaited<ReturnType<typeof listWorkshop2WmsBalancesForCollection>>;
+  shopId: string;
+  limit: number;
+}): ReplenishmentStockRow[] {
+  const bySku = new Map(input.rows.map((r) => [r.sku, { ...r }]));
+  for (const bal of input.wmsBalances) {
+    const sku = bal.sku.trim();
+    if (!sku) continue;
+    const existing = bySku.get(sku);
+    if (existing) {
+      existing.onHand = Math.max(existing.onHand, bal.qtyOnHand);
+      existing.reserved = Math.max(existing.reserved, bal.qtyReserved);
+      existing.atp = Math.max(existing.atp, bal.qtyAvailable);
+    } else {
+      bySku.set(sku, {
+        sku,
+        name: bal.label || sku,
+        onHand: bal.qtyOnHand,
+        reserved: bal.qtyReserved,
+        inTransit: 0,
+        unconfirmed: 0,
+        atp: bal.qtyAvailable,
+        orgId: input.shopId,
+      });
+    }
+  }
+  return [...bySku.values()].sort((a, b) => a.sku.localeCompare(b.sku)).slice(0, input.limit);
+}
 
 function applyLedgerAdjustments(grains: InventoryGrain[], shopId: string, adjustments: Awaited<ReturnType<typeof listShopInventoryLedgerAdjustments>>): InventoryGrain[] {
   const deltaBySku = new Map<string, number>();
@@ -128,14 +161,40 @@ export async function getShopReplenishmentStockAtpRows(input: {
     });
 
     const storageMode = shopInventoryLedgerGrainsStorageMode();
+    let mergedRows = rows;
+    let source: ReplenishmentStockAtpSource = storageMode;
+    let wmsGrainCount = 0;
+
+    const cid = sliceCollection?.trim() || input.collectionId?.trim() || 'SS27';
+    if (isWorkshop2InternalWmsEnabled()) {
+      const wmsBalances = await listWorkshop2WmsBalancesForCollection({
+        collectionId: cid,
+        limit: limit * 2,
+      });
+      wmsGrainCount = wmsBalances.length;
+      if (wmsBalances.length > 0) {
+        mergedRows = mergeWmsAtpIntoRows({
+          rows,
+          wmsBalances,
+          shopId,
+          limit,
+        });
+        source = storageMode === 'pg' ? 'pg+wms' : 'wms';
+      }
+    }
+
     return {
-      rows,
-      source: storageMode,
-      grainCount: grains.length,
+      rows: mergedRows,
+      source,
+      grainCount: grains.length + wmsGrainCount,
       messageRu:
-        storageMode === 'pg'
-          ? `ATP из PostgreSQL · ${grains.length} grains · ${rows.length} SKU.`
-          : `ATP из ${storageMode} · ${rows.length} SKU.`,
+        source === 'pg+wms'
+          ? `ATP PostgreSQL + WMS · ${mergedRows.length} SKU.`
+          : source === 'wms'
+            ? `ATP из WMS · ${mergedRows.length} SKU.`
+            : storageMode === 'pg'
+              ? `ATP из PostgreSQL · ${grains.length} grains · ${rows.length} SKU.`
+              : `ATP из ${storageMode} · ${rows.length} SKU.`,
     };
   } catch {
     const rows = buildShopReplenishmentStockRows(limit, input.slice);

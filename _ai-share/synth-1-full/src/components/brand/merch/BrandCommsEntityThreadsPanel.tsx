@@ -16,6 +16,8 @@ import { ROUTES } from '@/lib/routes';
 import { PLATFORM_CORE_DEMO, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { PlatformCoreEntityThreadTemplatesStrip } from '@/components/platform/PlatformCoreEntityThreadTemplatesStrip';
+import type { PlatformCoreEntityThreadKind } from '@/lib/communications/platform-core-entity-thread-templates';
 
 export function BrandCommsEntityThreadsPanel() {
   const searchParams = useSearchParams();
@@ -76,9 +78,9 @@ export function BrandCommsEntityThreadsPanel() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Entity threads</CardTitle>
+          <CardTitle className="text-base">Треды сущностей</CardTitle>
           <CardDescription>
-            PLM-style контекст: чат с привязкой к BOM, образцу, QC gate или RFQ.
+            PLM-контекст: чат с привязкой к BOM, образцу, гейту КК или RFQ.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -88,12 +90,18 @@ export function BrandCommsEntityThreadsPanel() {
               className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
               data-testid={`brand-comms-entity-thread-${row.id}`}
             >
-              <div>
+              <div className="min-w-0 flex-1 space-y-2">
                 <p className="text-sm font-medium">{row.labelRu}</p>
                 <p className="text-text-muted text-xs">{row.summaryRu}</p>
                 <Badge variant="outline" className="mt-1 text-[9px]">
                   {row.pillarRu}
                 </Badge>
+                <PlatformCoreEntityThreadTemplatesStrip
+                  variant="brand"
+                  threadKind={row.id as PlatformCoreEntityThreadKind}
+                  collectionId={collectionId}
+                  articleId={articleId}
+                />
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" asChild>

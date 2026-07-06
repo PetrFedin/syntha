@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     rows: result.rows,
     summary: result.summary,
     storageMode: result.storageMode,
+    messageRu: `${result.summary.synced}/${result.summary.total} тиров синхр. с магазином`,
   });
 }
 
@@ -52,16 +53,23 @@ export async function POST(req: NextRequest) {
         pending: pushed.rows.filter((r) => !r.shopSynced).length,
       },
       storageMode: pushed.storageMode,
+      messageRu: `Tier ${tierId} отправлен в матрицу магазина`,
     });
   } catch (err) {
     if (err instanceof Error && err.message === 'TIER_NOT_FOUND') {
       return NextResponse.json(
-        { ok: false, error: { code: 'TIER_NOT_FOUND', message: 'Tier row not found' } },
+        {
+          ok: false,
+          error: { code: 'TIER_NOT_FOUND', messageRu: 'Строка tier sync не найдена' },
+        },
         { status: 404 }
       );
     }
     return NextResponse.json(
-      { ok: false, error: { code: 'ERROR', message: 'Push failed' } },
+      {
+        ok: false,
+        error: { code: 'ERROR', messageRu: 'Не удалось отправить tier в магазин' },
+      },
       { status: 500 }
     );
   }

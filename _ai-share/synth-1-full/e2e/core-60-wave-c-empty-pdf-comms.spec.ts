@@ -16,13 +16,13 @@ test.describe('core-60: Wave C empty PDF + comms compact', () => {
     const res = await page.goto('/brand/linesheets?collection=EMPTY27', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
     await expect(page.getByTestId('brand-sc-linesheets-panel')).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByTestId('brand-sc-linesheets-pdf-disabled')).toBeVisible({
+    await expect(page.getByTestId('brand-sc-linesheet-pdf-empty-disabled')).toBeVisible({
       timeout: 30_000,
     });
-    await expect(page.getByTestId('brand-sc-linesheets-pdf-disabled')).toContainText(
+    await expect(page.getByTestId('brand-sc-linesheet-pdf-empty-disabled')).toContainText(
       /пустая коллекция/i
     );
-    await expect(page.getByTestId('brand-sc-linesheets-empty-pdf-hint')).toContainText(/EMPTY27|SS27/i);
+    await expect(page.getByTestId('brand-sc-linesheet-pdf-empty-hint')).toContainText(/EMPTY27|SS27/i);
     await expect(page.getByTestId('brand-sc-linesheets-pdf-link')).toHaveCount(0);
 
     const pdfRes = await request.get('/api/workshop2/collections/EMPTY27/linesheet.pdf', {

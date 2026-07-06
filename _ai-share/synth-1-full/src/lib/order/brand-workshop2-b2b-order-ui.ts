@@ -16,6 +16,7 @@ import type { OperationalOrderIntegration } from '@/lib/integrations/spine/integ
 export type BrandB2bOrderListRow = {
   order: string;
   shop: string;
+  retailerId?: string;
   status: string;
   amount: string;
   date: string;
@@ -34,12 +35,22 @@ export function workshop2BuyerLabelRu(buyerId?: string): string {
   return BUYER_LABELS[buyerId] ?? shopCoreBuyerLabelRu(buyerId);
 }
 
+function workshop2RetailerIdFromOrderClient(order: Workshop2B2bOrderRecord): string | undefined {
+  const rep = order.repId?.trim();
+  if (rep && /^shop\d/i.test(rep)) return rep.toLowerCase();
+  const buyer = order.buyerId?.trim();
+  if (buyer === 'buyer-demo') return 'shop1';
+  if (buyer && /^shop\d/i.test(buyer)) return buyer.toLowerCase();
+  return rep || buyer || undefined;
+}
+
 export function workshop2B2bOrderToBrandListRow(
   order: Workshop2B2bOrderRecord
 ): BrandB2bOrderListRow {
   return {
     order: order.id,
     shop: workshop2BuyerLabelRu(order.buyerId),
+    retailerId: workshop2RetailerIdFromOrderClient(order),
     status: workshop2B2bOrderStatusLabelRu(order.status),
     amount: `${order.totalRub.toLocaleString('ru-RU')} ₽`,
     date: order.createdAt.slice(0, 10),

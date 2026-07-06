@@ -63,6 +63,14 @@ const Workshop2ArticleNestingPanel = dynamic(
   { loading: () => <TabPanelLoading label="План" /> }
 );
 
+const Workshop2TimeAndActionPanel = dynamic(
+  () =>
+    import('@/components/brand/production/Workshop2TimeAndActionPanel').then((m) => ({
+      default: m.Workshop2TimeAndActionPanel,
+    })),
+  { loading: () => <TabPanelLoading label="T&A" /> }
+);
+
 const Workshop2ArticleReleasePanel = dynamic(
   () =>
     import('@/components/brand/production/workshop2-article-workspace-release-panel').then((m) => ({
@@ -110,6 +118,7 @@ export function Workshop2ArticleWorkspaceTabPanels({
 }) {
   const { ref } = useArticleWorkspace();
   const articleIdStr = String(ref.articleId);
+  const collectionIdStr = String(ref.collectionId);
   const leaf = useMemo(() => findHandbookLeafById(categoryLeafId) ?? null, [categoryLeafId]);
 
   if (tab === 'plan' || tab === 'release') {
@@ -159,6 +168,13 @@ export function Workshop2ArticleWorkspaceTabPanels({
           <Workshop2TabPanelChunkBoundary tabLabelRu="План">
             <SectionFlashWrap id={W2_ARTICLE_SECTION_DOM.planPo} flashSectionId={flashSectionId}>
               <Workshop2ArticlePlanPoPanel dossier={dossier} articleId={articleIdStr} />
+            </SectionFlashWrap>
+            <SectionFlashWrap id={W2_ARTICLE_SECTION_DOM.planTa} flashSectionId={flashSectionId}>
+              <Workshop2TimeAndActionPanel
+                articleId={articleIdStr}
+                collectionId={collectionIdStr}
+                dossier={dossier}
+              />
             </SectionFlashWrap>
             <SectionFlashWrap id={W2_ARTICLE_SECTION_DOM.planNest} flashSectionId={flashSectionId}>
               <Workshop2ArticleNestingPanel dossier={dossier} />

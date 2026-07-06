@@ -6,6 +6,8 @@ from fastapi import APIRouter, Query
 
 from app.platform.stack_probe import build_stack_matrix, probe_all_capabilities
 from app.platform.stack_registry import get_capability_for_section, get_agents_for_capability, StackCapabilityId
+from app.agents.hub_agent_routing import build_hub_agent_matrix, resolve_agent_routing
+from app.agents.orchestrator_agent import orchestrator_agent
 
 router = APIRouter()
 
@@ -52,14 +54,18 @@ async def get_capability_agents(capability_id: str) -> Any:
 async def get_agent_routing(
     pillar: str | None = Query(None),
     role: str | None = Query(None),
+    section_id: str | None = Query(None),
+    task: str | None = Query(None),
 ) -> Any:
-    """Agents filtered by pillar/role via stack registry."""
+    """Agents filtered by pillar/role/section; preferred agent when task or section given."""
     matrix = build_stack_matrix()
     out: list[dict] = []
     for row in matrix:
         if pillar and pillar not in row["pillars"]:
             continue
         if role and role not in row["roles"]:
+            continue
+        if section_id and section_id not in row.get("section_ids", []):
             continue
         for agent_id in row["agent_ids"]:
             out.append(
@@ -70,4 +76,28 @@ async def get_agent_routing(
                     "roles": row["roles"],
                 }
             )
-    return {"agents": out, "pillar": pillar, "role": role}
+    routing = resolve_agent_routing(
+        pillar=pillar,
+        role=role,
+        section_id=section_id,
+        task=task,
+    )
+    payload: dict[str, Any] = {
+        "agents": out,
+        **routing,
+    }
+    if not pillar and not role and not section_id:
+        payload["hub_matrix"] = build_hub_agent_matrix()
+    return payload
+
+
+@router.get("/agents/registry")
+async def get_agent_registry() -> Any:
+    """Agent metadata + orchestrator wiring status."""
+    from app.agents.registry import AGENT_REGISTRY, list_unwired_agents
+
+    return {
+        "agents": AGENT_REGISTRY,
+        "unwired_agent_ids": sorted(list_unwired_agents().keys()),
+        "orchestrator_task_types": orchestrator_agent.list_task_types(),
+    }

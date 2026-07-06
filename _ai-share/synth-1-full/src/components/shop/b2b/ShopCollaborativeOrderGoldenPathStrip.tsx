@@ -5,13 +5,7 @@ import { buildShopCollaborativeOrderSession } from '@/lib/b2b/shop-collaborative
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { cn } from '@/lib/utils';
 
-export type ShopCollaborativeGoldenPathStepId =
-  | 'session'
-  | 'approvals'
-  | 'comms'
-  | 'matrix'
-  | 'working-order'
-  | 'tracking';
+export type ShopCollaborativeGoldenPathStepId = 'session' | 'approvals' | 'comms';
 
 type Props = {
   orderId?: string;
@@ -20,12 +14,9 @@ type Props = {
 };
 
 const STEPS: { id: ShopCollaborativeGoldenPathStepId; label: string }[] = [
-  { id: 'session', label: 'Session' },
-  { id: 'approvals', label: 'Approvals' },
-  { id: 'comms', label: 'Comms' },
-  { id: 'matrix', label: 'Matrix' },
-  { id: 'working-order', label: 'Working order' },
-  { id: 'tracking', label: 'Tracking' },
+  { id: 'session', label: 'Сессия' },
+  { id: 'approvals', label: 'Согласования' },
+  { id: 'comms', label: 'Связь' },
 ];
 
 export function ShopCollaborativeOrderGoldenPathStrip({
@@ -38,10 +29,7 @@ export function ShopCollaborativeOrderGoldenPathStrip({
   const hrefFor = (id: ShopCollaborativeGoldenPathStepId): string => {
     if (id === 'session') return session.sessionHref;
     if (id === 'approvals') return session.approvalsHref;
-    if (id === 'comms') return session.commsHref;
-    if (id === 'matrix') return session.matrixHref;
-    if (id === 'working-order') return session.workingOrderHref;
-    return session.trackingHref;
+    return session.commsHref;
   };
 
   return (

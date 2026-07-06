@@ -1,0 +1,20 @@
+{
+  "sessions": [
+    {
+      "kind": "view",
+      "collectionId": "SS27",
+      "articleId": "demo-ss27-01",
+      "embedMode": "sdk-stub",
+      "error": false,
+      "at": "2026-06-26T13:58:15.088Z"
+    },
+    {
+      "kind": "view",
+      "collectionId": "SS27",
+      "articleId": "demo-ss27-01",
+      "embedMode": "sdk-stub",
+      "error": false,
+      "at": "2026-06-26T13:58:15.093Z"
+    }
+  ]
+}

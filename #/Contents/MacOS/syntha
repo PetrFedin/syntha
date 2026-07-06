@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+for cfg in "${HOME}/.config/syntha/repo.path" "${HOME}/.config/fashion-os/repo.path"; do
+  if [[ -f "${cfg}" ]]; then
+    ROOT="$(tr -d '[:space:]' <"${cfg}")"
+    break
+  fi
+done
+if [[ -z "${ROOT:-}" || ! -f "${ROOT}/scripts/desktop/fashion-os-menu.sh" ]]; then
+  osascript -e 'display alert "SYNTHA" message "Не найден репозиторий Projects. Запустите: npm run desktop:install" as critical'
+  exit 1
+fi
+exec bash "${ROOT}/scripts/desktop/fashion-os-menu.sh"

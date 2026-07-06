@@ -1,7 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 import StyleCalendar from '@/components/user/style-calendar';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -15,6 +15,9 @@ import { PlatformCoreCalendarUserTasksStrip } from '@/components/platform/Platfo
 import { ManufacturerCalendarGanttBridgeStrip } from '@/components/factory/manufacturer/ManufacturerCalendarGanttBridgeStrip';
 import { SupplierCalendarLogisticsPeerStrip } from '@/components/factory/supplier/SupplierCalendarLogisticsPeerStrip';
 import { SupCmCalendarContextPeerStrip } from '@/components/factory/supplier/SupCmCalendarContextPeerStrip';
+import { MfrCmCalendarContextPeerStrip } from '@/components/platform/MfrCmCalendarContextPeerStrip';
+import { PlatformCoreCmCalendarEventTrackingStrip } from '@/components/platform/PlatformCoreCmCalendarEventTrackingStrip';
+import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 
 export function FactoryCalendarCorePage() {
   const searchParams = useSearchParams();
@@ -25,6 +28,7 @@ export function FactoryCalendarCorePage() {
   });
   const orderId =
     searchParams.get('orderId')?.trim() || searchParams.get('order')?.trim() || undefined;
+  const focusTaskId = searchParams.get('pcTask')?.trim() || undefined;
   const { events, loading, error, refetch } = usePlatformCoreCalendarEvents({
     collectionId,
     orderId,
@@ -33,7 +37,16 @@ export function FactoryCalendarCorePage() {
   });
   const demo = getPlatformCoreDemo(collectionId);
   const calendarTaskCreateEnabled = usePlatformCoreCalendarTaskCreateEnabled(true);
-  const [taskReloadNonce, setTaskReloadNonce] = useState(0);
+  const resolvedOrderId = orderId?.trim() || '';
+  const { tick: chainTick } = usePlatformCoreChainStatusPoll(
+    Boolean(resolvedOrderId),
+    resolvedOrderId ? [resolvedOrderId] : []
+  );
+
+  useEffect(() => {
+    if (!chainTick) return;
+    refetch();
+  }, [chainTick, refetch]);
 
   return (
     <CabinetPageContent
@@ -62,25 +75,41 @@ export function FactoryCalendarCorePage() {
           </p>
         ) : null}
         {activeRole === 'manufacturer' ? (
-          <ManufacturerCalendarGanttBridgeStrip collectionId={collectionId} orderId={orderId} />
-        ) : null}
-        {activeRole === 'supplier' ? (
           <>
-            <SupCmCalendarContextPeerStrip
+            <MfrCmCalendarContextPeerStrip
               collectionId={collectionId}
-              articleId={demo.demoArticleId}
               factoryId={demo.factoryId}
               orderId={orderId}
             />
-            {orderId ? (
-              <SupplierCalendarLogisticsPeerStrip
-                collectionId={collectionId}
-                articleId={demo.demoArticleId}
-                orderId={orderId}
-              />
-            ) : null}
+            <ManufacturerCalendarGanttBridgeStrip
+              collectionId={collectionId}
+              orderId={orderId}
+              articleId={demo.demoArticleId}
+              factoryId={demo.factoryId}
+            />
           </>
         ) : null}
+        {activeRole === 'supplier' ? (
+          <SupCmCalendarContextPeerStrip
+            collectionId={collectionId}
+            articleId={demo.demoArticleId}
+            factoryId={demo.factoryId}
+            orderId={orderId}
+          />
+        ) : null}
+        {activeRole === 'supplier' && orderId ? (
+          <SupplierCalendarLogisticsPeerStrip
+            collectionId={collectionId}
+            articleId={demo.demoArticleId}
+            orderId={orderId}
+          />
+        ) : null}
+        <PlatformCoreCmCalendarEventTrackingStrip
+          ownerRole={activeRole}
+          collectionId={collectionId}
+          orderId={resolvedOrderId || undefined}
+          reloadNonce={chainTick}
+        />
         <PlatformCoreCalendarUserTasksStrip
           collectionId={collectionId}
           orderId={orderId}
@@ -88,9 +117,12 @@ export function FactoryCalendarCorePage() {
           testIdPrefix={
             activeRole === 'supplier' ? 'sup-cm-calendar-user-tasks' : 'mfr-cm-calendar-user-tasks'
           }
-          reloadNonce={taskReloadNonce}
+          focusTaskId={focusTaskId}
+          onTaskCreated={() => refetch()}
         />
-        {loading ? <p className="text-text-secondary text-sm">Загрузка событий календаря…</p> : null}
+        {loading ? (
+          <p className="text-text-secondary text-sm">Загрузка событий календаря…</p>
+        ) : null}
         {error ? <p className="text-sm text-amber-800">{error}</p> : null}
         {!calendarTaskCreateEnabled ? (
           <p
@@ -110,10 +142,7 @@ export function FactoryCalendarCorePage() {
             orderId,
             articleId: orderId ? undefined : demo.demoArticleId,
           }}
-          onPlatformCoreTaskCreated={() => {
-            setTaskReloadNonce((n) => n + 1);
-            refetch();
-          }}
+          onPlatformCoreTaskCreated={() => refetch()}
           platformCoreTaskCreateEnabled={calendarTaskCreateEnabled}
           calendarSearchTestId={
             activeRole === 'supplier' ? 'sup-cm-calendar-search' : 'mfr-cm-calendar-search'

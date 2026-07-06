@@ -60,7 +60,7 @@ function B2BMarginCalculatorPageContent() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               <Button variant="outline" size="sm" className="text-xs font-black uppercase" asChild>
-                <Link href={ROUTES.shop.b2bCollaborativeOrder}>Collaborative Order</Link>
+                <Link href={ROUTES.shop.b2bCollaborativeOrder}>Совместный заказ</Link>
               </Button>
             </div>
           </CardContent>

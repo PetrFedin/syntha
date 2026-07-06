@@ -9,7 +9,7 @@ import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   parseSynthaOverlayContext,
   parseWorkspaceThreadContext,
-} from '@/lib/communications/syntha-overlay-context';
+} from '@/lib/platform-core-ports/communications/syntha-overlay-context';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 import {
   factoryHandoffQueueHrefForDemo,
@@ -17,11 +17,12 @@ import {
   factoryMaterialsProcurementHrefForDemo,
   PLATFORM_CORE_DEMO,
 } from '@/lib/platform-core-hub-matrix';
-import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import { brandDevelopmentSamplePeerHref } from '@/lib/platform-core-brand-sample-peer';
-import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
-import { brandProductionOpsFeatureHref } from '@/lib/brand-production/brand-production-handoff';
+import { brandOrderCommsTabHref } from '@/lib/platform-core-ports/b2b/brand-collection-order-hrefs';
+import { brandProductionOpsFeatureHref } from '@/lib/platform-core-ports/brand-production-handoff';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 import {
+  brandDevelopmentArticleHref,
   brandMessagesWorkshop2ArticleContextHref,
   factoryMessagesB2bOrderContextHref,
   factoryMessagesWorkshop2ArticleContextHref,
@@ -30,7 +31,7 @@ import {
   factorySupplierMessagesWorkshop2ArticleContextHref,
   ROUTES,
   shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 
 type Props = {
   variant: CommunicationsEntityContextVariant;
@@ -93,8 +94,8 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     });
     const sampleHandoffHref = brandDevelopmentSamplePeerHref(collectionId, articleId);
     const supplierMaterialsHref = factoryMaterialsHrefForDemo(demoCtx);
-    const w2Href = workshop2ArticleHref(collectionId, articleId);
-    const investorHref = `/brand/production/workshop2/investor-summary?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
+    const w2Href = brandDevelopmentArticleHref(collectionId, articleId);
+    const investorHref = brandDevelopmentArticleHref(collectionId, articleId, { section: 'overview' });
     const productionOpsHref = brandProductionOpsFeatureHref(
       orderId || demo.demoOrderId || PLATFORM_CORE_DEMO.demoOrderId,
       'qc-gate'
@@ -106,45 +107,45 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     return (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1" data-testid={stripTestId}>
         <Link
-          href={brandMessagesWorkshop2ArticleContextHref(collectionId, articleId)}
+          href={platformCoreUiHref(brandMessagesWorkshop2ArticleContextHref(collectionId, articleId), demoCtx)}
           data-testid="brand-cm-article-chat-link"
           className={linkClass}
         >
           Чат · артикул
         </Link>
-        <Link href={w2Href} data-testid="brand-cm-article-w2-link" className={linkClass}>
+        <Link href={platformCoreUiHref(w2Href, demoCtx)} data-testid="brand-cm-article-w2-link" className={linkClass}>
           W2 · карточка
         </Link>
         <Link
-          href={factoryDossierHref}
+          href={platformCoreUiHref(factoryDossierHref, demoCtx)}
           data-testid="brand-cm-article-dossier-link"
           className={linkClass}
         >
           Досье цеха
         </Link>
         <Link
-          href={sampleHandoffHref}
+          href={platformCoreUiHref(sampleHandoffHref, demoCtx)}
           data-testid="brand-cm-article-sample-link"
           className={linkClass}
         >
           Образец в цех
         </Link>
         <Link
-          href={supplierMaterialsHref}
+          href={platformCoreUiHref(supplierMaterialsHref, demoCtx)}
           data-testid="brand-cm-article-supplier-bom-link"
           className={linkClass}
         >
           BOM поставщика
         </Link>
-        <Link href={investorHref} data-testid="brand-cm-article-investor-summary-link" className={linkClass}>
-          Investor summary
+        <Link href={platformCoreUiHref(investorHref, demoCtx)} data-testid="brand-cm-article-investor-summary-link" className={linkClass}>
+          Сводка для инвестора
         </Link>
         {orderId ? (
-          <Link href={orderCommsHref} data-testid="brand-cm-article-order-comms-link" className={linkClass}>
-            Order comms
+          <Link href={platformCoreUiHref(orderCommsHref, demoCtx)} data-testid="brand-cm-article-order-comms-link" className={linkClass}>
+            Чат по заказу
           </Link>
         ) : null}
-        <Link href={productionOpsHref} data-testid="brand-cm-article-production-ops-link" className={linkClass}>
+        <Link href={platformCoreUiHref(productionOpsHref, demoCtx)} data-testid="brand-cm-article-production-ops-link" className={linkClass}>
           Production QC
         </Link>
       </div>
@@ -155,21 +156,27 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     return (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1" data-testid={stripTestId}>
         <Link
-          href={shopMessagesWorkshop2ArticleContextHref(collectionId, articleId)}
+          href={platformCoreUiHref(shopMessagesWorkshop2ArticleContextHref(collectionId, articleId), demoCtx)}
           data-testid="shop-cm-article-chat-link"
           className={linkClass}
         >
           Чат · артикул
         </Link>
         <Link
-          href={`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`}
+          href={platformCoreUiHref(
+            `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`,
+            demoCtx
+          )}
           data-testid="shop-cm-article-showroom-link"
           className={linkClass}
         >
           Витрина
         </Link>
         <Link
-          href={`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`}
+          href={platformCoreUiHref(
+            `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`,
+            demoCtx
+          )}
           data-testid="shop-cm-article-matrix-link"
           className={linkClass}
         >

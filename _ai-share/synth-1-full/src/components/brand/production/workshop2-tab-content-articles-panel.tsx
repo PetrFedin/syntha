@@ -460,7 +460,8 @@ export function Workshop2TabContentArticlesPanel({
                 className="border-accent-primary/20 w-full min-w-0 rounded-md border bg-white/80 p-1.5"
                 data-testid="brand-dev-w2-hub-gates-strip"
               >
-                <div className="flex flex-wrap items-end gap-1">
+                <div className="max-md:overflow-x-auto max-md:pb-0.5">
+                <div className="flex flex-wrap items-end gap-1 max-md:flex-nowrap">
                   {WORKSHOP2_PIPELINE_STEP_IDS.map((sid, idx) => {
                     const step = COLLECTION_STEP_BY_ID.get(sid);
                     const n = articleIds.length;
@@ -527,6 +528,7 @@ export function Workshop2TabContentArticlesPanel({
                       </Fragment>
                     );
                   })}
+                </div>
                 </div>
                 {WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX > 0 &&
                 WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX < WORKSHOP2_PIPELINE_STEP_IDS.length ? (

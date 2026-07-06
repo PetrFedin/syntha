@@ -51,9 +51,9 @@ export default function Workshop2InvestorSummaryPage() {
   return (
     <div className={W2_OPERATIONAL_PANEL_ROOT} data-testid="workshop2-investor-summary-page">
       <header className="space-y-1">
-        <h1 className="text-text-primary text-lg font-semibold">Investor summary</h1>
+        <h1 className="text-text-primary text-lg font-semibold">Сводка для инвестора</h1>
         <p className="text-text-secondary text-xs">
-          Read-only сводка готовности W2 + B2B для invest path. Не часть golden path Platform Core
+          Сводка готовности W2 + B2B только для просмотра. Не часть основного сценария Platform Core
           hub.
         </p>
       </header>

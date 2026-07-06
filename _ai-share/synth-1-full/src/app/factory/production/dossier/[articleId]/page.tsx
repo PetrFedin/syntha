@@ -1,7 +1,4 @@
 import { notFound } from 'next/navigation';
-import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
-import { getWorkshop2Phase1Dossier } from '@/lib/production/workshop2-phase1-dossier-storage';
-import { WORKSHOP2_SYSTEM_COLLECTION_ID } from '@/lib/production/local-collection-inventory';
 import {
   buildWorkshop2FinalTzExportContextFromDossier,
   buildWorkshop2FinalTzSpecDocumentHtml,
@@ -10,43 +7,7 @@ import { buildWorkshop2TechPackFactoryDocumentHtml } from '@/lib/production/work
 import { buildWorkshop2TechPackExportOptions } from '@/lib/production/workshop2-techpack-export-options';
 import { Workshop2InteractiveFactoryPortal } from '@/components/brand/production/Workshop2InteractiveFactoryPortal';
 import { FactoryDossierCoreChrome } from '@/components/platform/FactoryDossierCoreChrome';
-import {
-  PLATFORM_CORE_DEMO_PRESETS,
-  getPlatformCoreDemoByArticleId,
-} from '@/lib/platform-core-hub-matrix';
-import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
-import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-
-async function resolveFactoryDossier(
-  articleId: string
-): Promise<Workshop2DossierPhase1 | null> {
-  const demoCollectionIds = Object.values(PLATFORM_CORE_DEMO_PRESETS).map(
-    (p) => p.collectionId
-  );
-  const preferred = getPlatformCoreDemoByArticleId(articleId).collectionId;
-  const candidates = [
-    preferred,
-    WORKSHOP2_SYSTEM_COLLECTION_ID,
-    ...demoCollectionIds,
-  ].filter((id, idx, arr) => Boolean(id) && arr.indexOf(id) === idx);
-
-  const pgFirst = isPlatformCoreMode();
-
-  for (const collectionId of candidates) {
-    if (pgFirst) {
-      const record = await getWorkshop2ServerDossierRecord(collectionId, articleId);
-      if (record?.dossier) return record.dossier;
-      const local = getWorkshop2Phase1Dossier(collectionId, articleId);
-      if (local) return local;
-    } else {
-      const local = getWorkshop2Phase1Dossier(collectionId, articleId);
-      if (local) return local;
-      const record = await getWorkshop2ServerDossierRecord(collectionId, articleId);
-      if (record?.dossier) return record.dossier;
-    }
-  }
-  return null;
-}
+import { resolveFactoryDossierWithMeta } from '@/lib/production/workshop2-resolve-factory-dossier';
 
 export default async function FactoryDossierPortalPage(props: {
   params: Promise<{ articleId: string }>;
@@ -55,8 +16,11 @@ export default async function FactoryDossierPortalPage(props: {
 
   if (!articleId) return notFound();
 
-  const dossier = await resolveFactoryDossier(articleId);
-  if (!dossier) return notFound();
+  const resolved = await resolveFactoryDossierWithMeta(articleId);
+  if (!resolved) return notFound();
+
+  const dossier = resolved.dossier;
+  const collectionId = resolved.collectionId;
 
   const exportContext = buildWorkshop2FinalTzExportContextFromDossier(dossier, {
     articleId,
@@ -75,11 +39,17 @@ export default async function FactoryDossierPortalPage(props: {
   );
 
   return (
-    <FactoryDossierCoreChrome articleId={articleId} exportArticleSku={exportContext.articleSku}>
+    <FactoryDossierCoreChrome
+      articleId={articleId}
+      exportArticleSku={exportContext.articleSku}
+      dossierSource={resolved.source}
+      dossierCollectionId={collectionId}
+    >
       <Workshop2InteractiveFactoryPortal
         htmlContent={htmlContent}
         factoryPackHtml={factoryPackHtml}
         articleId={articleId}
+        collectionId={collectionId}
       />
     </FactoryDossierCoreChrome>
   );

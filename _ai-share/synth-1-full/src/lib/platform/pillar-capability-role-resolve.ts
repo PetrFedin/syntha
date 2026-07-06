@@ -31,6 +31,7 @@ import {
   ROUTES,
   factorySupplierCalendarB2bOrderContextHref,
   factorySupplierMessagesB2bOrderContextHref,
+  factorySupplierRfqInboxHref,
   shopB2bMatrixPrepackHref,
   shopB2bTrackingOrderHref,
 } from '@/lib/routes';
@@ -67,6 +68,9 @@ function supplierProcurementFeatureHref(
   const collection = demoCollection(ctx);
   const article = demoArticle(ctx);
   const order = demoOrder(ctx);
+  if (featureId === 'rfq') {
+    return factorySupplierRfqInboxHref({ collectionId: collection, articleId: article });
+  }
   const sp = new URLSearchParams({
     collection,
     article,

@@ -17,7 +17,7 @@ import {
   factoryMessagesB2bOrderContextHref,
   factorySupplierMessagesB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+} from '@/lib/platform-core-routes';
 
 export type CommsSectionGroupRow = {
   pillarId: CoreHubPillarId;
@@ -133,6 +133,42 @@ export function buildCommsSectionGroupMessagesHref(input: {
     sectionId: input.sectionId,
     collectionId: input.collectionId,
     orderId,
+  });
+}
+
+/** Nav «Группы» в comms cabinet — первый section-group или inbox messages. */
+export function buildCommsGroupsNavHref(input: {
+  roleId: CoreChainRoleId;
+  orderId: string;
+  collectionId: string;
+}): string {
+  const orderId = input.orderId.trim();
+  if (!orderId) {
+    return input.roleId === 'brand'
+      ? brandMessagesB2bOrderContextHref('')
+      : input.roleId === 'shop'
+        ? shopMessagesB2bOrderContextHref('')
+        : input.roleId === 'supplier'
+          ? factorySupplierMessagesB2bOrderContextHref('')
+          : factoryMessagesB2bOrderContextHref('', { role: 'manufacturer' });
+  }
+  const groups = buildCommsSectionGroupsForRole(input.roleId);
+  const first = groups[0];
+  if (first) {
+    return buildCommsSectionGroupMessagesHref({
+      roleId: input.roleId,
+      orderId,
+      collectionId: input.collectionId,
+      pillarId: first.pillarId,
+      sectionId: first.sectionId,
+    });
+  }
+  return buildCommsSectionGroupMessagesHref({
+    roleId: input.roleId,
+    orderId,
+    collectionId: input.collectionId,
+    pillarId: 'comms',
+    sectionId: `${input.roleId}-cm-section-groups`,
   });
 }
 

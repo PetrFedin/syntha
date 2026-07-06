@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { CommsContextualThreadLink } from '@/components/platform/CommsContextualThreadLink';
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ShopCmOrderContextPeerStrip } from '@/components/platform/ShopCmOrderContextPeerStrip';
 import {
   buildShopOrderCommsSession,
   shopOrderCommsCalendarDeepHref,
   shopOrderCommsMessagesDeepHref,
 } from '@/lib/b2b/shop-order-comms';
+import { WAVE_YN_OPEN_MESSAGES_RU } from '@/lib/platform/wave-yn-comms-contextual-thread';
 import { Calendar, MessageSquare } from 'lucide-react';
 
 type Props = {
@@ -35,25 +38,32 @@ export function ShopOrderCommsChatPanel({ orderId, collectionId }: Props) {
 
   return (
     <div className="space-y-4" data-testid="shop-order-comms-chat-panel">
+      <ShopCmOrderContextPeerStrip collectionId={collectionId ?? ''} orderId={orderId} />
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <MessageSquare className="h-4 w-4" />
-            <CardTitle className="text-base">Order chat</CardTitle>
+            <CardTitle className="text-base">Чат заказа</CardTitle>
           </div>
           <CardDescription>NuOrder collab: messages в контексте заказа {orderId}.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={messagesHref} data-testid="shop-order-comms-messages-deep-link">
-              Open messages
-            </Link>
+            <CommsContextualThreadLink
+              href={messagesHref}
+              orderId={orderId}
+              collectionId={collectionId}
+              contextualSource="order-card"
+              data-testid="shop-order-comms-messages-deep-link"
+            >
+              {WAVE_YN_OPEN_MESSAGES_RU}
+            </CommsContextualThreadLink>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.collaborativeHref}>Collaborative comms</Link>
+            <Link href={session.collaborativeHref}>Совместный заказ comms</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={session.brandOrderChatHref}>Brand order chat</Link>
+            <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
           </Button>
         </CardContent>
       </Card>
@@ -80,11 +90,12 @@ export function ShopOrderCommsCalendarPanel({ orderId, collectionId }: Props) {
 
   return (
     <div className="space-y-4" data-testid="shop-order-comms-calendar-panel">
+      <ShopCmOrderContextPeerStrip collectionId={collectionId ?? ''} orderId={orderId} />
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <CardTitle className="text-base">Order calendar</CardTitle>
+            <CardTitle className="text-base">Календарь заказа</CardTitle>
           </div>
           <CardDescription>Delivery windows · milestones · production sync.</CardDescription>
         </CardHeader>
@@ -95,10 +106,10 @@ export function ShopOrderCommsCalendarPanel({ orderId, collectionId }: Props) {
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.workingOrderHref}>Working order</Link>
+            <Link href={session.workingOrderHref}>Рабочий заказ</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={session.replenishmentAtpHref}>Replenishment · ATP</Link>
+            <Link href={session.replenishmentAtpHref}>Пополнение · ATP</Link>
           </Button>
         </CardContent>
       </Card>

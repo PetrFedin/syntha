@@ -25,6 +25,7 @@ import { summarizeBrandPricelistTierSync } from '@/lib/b2b/brand-pricelist-tier-
 import {
   fetchBrandPricelistVersions,
   patchBrandPricelistVersion,
+  publishBrandPricelist,
   refreshBrandPricelistVersions,
 } from '@/lib/b2b/brand-pricelist-versions-store';
 import { filterBrandPricelistVersions } from '@/lib/b2b/brand-pricelist-versions-feed';
@@ -33,6 +34,7 @@ import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import type { PriceTierId } from '@/lib/b2b/price-tiers';
 import type { BrandPricelistVersionRow } from '@/lib/b2b/brand-pricelist-versions-feed';
 import { DollarSign, Loader2 } from 'lucide-react';
+import { BrandPricelistVersionDiffStrip } from '@/components/brand/b2b/BrandPricelistVersionDiffStrip';
 
 type Props = {
   groupFilter?: string | null;
@@ -49,6 +51,7 @@ export function BrandPricelistVersionsPanel({
   const [summary, setSummary] = useState({ total: 0, active: 0, channels: 0 });
   const [storageMode, setStorageMode] = useState('demo');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [publishBusyId, setPublishBusyId] = useState<string | null>(null);
   const [syncBusy, setSyncBusy] = useState(false);
 
   const filtered = useMemo(
@@ -115,6 +118,16 @@ export function BrandPricelistVersionsPanel({
     }
   };
 
+  const publishVersion = async (row: BrandPricelistVersionRow) => {
+    setPublishBusyId(row.id);
+    try {
+      await publishBrandPricelist({ collectionId, id: row.id });
+      await reload();
+    } finally {
+      setPublishBusyId(null);
+    }
+  };
+
   return (
     <div className="space-y-4" data-testid="brand-pricelist-versions-panel">
       <div className="flex flex-wrap gap-2">
@@ -174,6 +187,7 @@ export function BrandPricelistVersionsPanel({
                   <TableHead>Channel</TableHead>
                   <TableHead>Period</TableHead>
                   <TableHead className="text-right">×</TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -199,6 +213,23 @@ export function BrandPricelistVersionsPanel({
                         'override'
                       )}
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-[10px]"
+                        disabled={publishBusyId != null}
+                        onClick={() => void publishVersion(pl)}
+                        data-testid={`brand-pricelist-publish-${pl.id}`}
+                      >
+                        {publishBusyId === pl.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          'Publish → shop'
+                        )}
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -206,6 +237,7 @@ export function BrandPricelistVersionsPanel({
           </div>
         )}
       </WidgetCard>
+      {filtered.length >= 2 ? <BrandPricelistVersionDiffStrip rows={filtered} /> : null}
     </div>
   );
 }
@@ -309,7 +341,7 @@ export function BrandPricelistShopSyncPanel({
             <TableHeader>
               <TableRow>
                 <TableHead>Tier</TableHead>
-                <TableHead>Pricelist</TableHead>
+                <TableHead>Прайс-лист</TableHead>
                 <TableHead className="text-right">×</TableHead>
                 <TableHead>Shop</TableHead>
                 <TableHead />

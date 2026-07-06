@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback } from 'react';
 import type { LiveProcessStageRuntime } from './types';
 import { getLiveProcessDefinition } from './process-definitions';
 import { getInstancesForProcess } from './mock-contexts';
+import { LIVE_PROCESS_RUNTIME_STORAGE_PREFIX } from '@/lib/live-process/use-live-process-runtime';
+import { shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
 
-const STORAGE_PREFIX = 'live_process_runtime_v1';
+const STORAGE_PREFIX = LIVE_PROCESS_RUNTIME_STORAGE_PREFIX;
 
 function buildInitialRuntimes(stageIds: string[]): Record<string, LiveProcessStageRuntime> {
   const out: Record<string, LiveProcessStageRuntime> = {};
@@ -35,6 +37,7 @@ function readRuntimesFromStorage(
   stageIds: string[]
 ): Record<string, LiveProcessStageRuntime> {
   if (typeof window === 'undefined') return buildInitialRuntimes(stageIds);
+  if (!shouldUseLocalStorageClientFallbackInCore()) return buildInitialRuntimes(stageIds);
   const storageKey = `${STORAGE_PREFIX}__${processId}__${contextId || 'default'}`;
   try {
     const raw = window.localStorage.getItem(storageKey);

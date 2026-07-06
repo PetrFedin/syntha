@@ -33,6 +33,9 @@ import { parseRangePlannerPrefillFromSearchParams } from '@/lib/production/works
 import { commitWorkshop2HubDialogArticleViaApi } from '@/lib/production/workshop2-hub-dialog-create-client';
 import { isPlatformCoreGoldenCollectionId } from '@/lib/platform-core-demo-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
+import { brandDevelopmentDossierCabinetHref } from '@/lib/platform-core-cabinet-workspace';
+import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
+import { getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
 import {
   WORKSHOP2_ART_PARAM,
   WORKSHOP2_COL_PARAM,
@@ -158,6 +161,8 @@ type Props = {
   createdByLabel: string;
   /** Подсветка и скролл к строке после создания артикула. */
   highlightArticleId?: string | null;
+  /** Platform Core embedded hub — компактная шапка и карточки артикулов. */
+  embeddedHub?: boolean;
 };
 
 export function Workshop2TabContent({
@@ -182,6 +187,7 @@ export function Workshop2TabContent({
   onPatchWorkshop2ArticleLine,
   createdByLabel,
   highlightArticleId = null,
+  embeddedHub = false,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -312,14 +318,20 @@ export function Workshop2TabContent({
 
   const openArticle = useCallback(
     (collectionId: string, row: { id: string; internalArticleCode?: string }) => {
-      router.push(
-        workshop2ArticlePath(
-          collectionId,
-          workshop2ArticleUrlSegment(row.internalArticleCode, row.id)
-        )
-      );
+      const segment = workshop2ArticleUrlSegment(row.internalArticleCode, row.id);
+      if (isPlatformCoreMode() && basePath.includes('/brand/core')) {
+        router.push(
+          brandDevelopmentDossierCabinetHref(
+            collectionId,
+            segment,
+            getPlatformCoreDemo(collectionId)
+          )
+        );
+        return;
+      }
+      router.push(workshop2ArticlePath(collectionId, segment));
     },
-    [router]
+    [router, basePath]
   );
 
   const activeCollection = useMemo(
@@ -970,15 +982,22 @@ export function Workshop2TabContent({
   return (
     <TooltipProvider delayDuration={200}>
       <div className="space-y-5">
-        <div className="border-border-default/80 flex flex-col gap-3 border-b pb-4">
-          <div className="min-w-0 space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              {COLLECTION_DEV_HUB_TITLE_RU}
-            </h1>
-            <p className="text-slate-600 line-clamp-1 max-w-2xl text-xs sm:line-clamp-none sm:text-sm">
-              {WORKSHOP2_TAB_CONTENT_PAGE_SUBTITLE}
-            </p>
-          </div>
+        <div
+          className={cn(
+            'border-border-default/80 flex flex-col gap-3 border-b pb-4',
+            embeddedHub && 'border-0 pb-2'
+          )}
+        >
+          {!embeddedHub ? (
+            <div className="min-w-0 space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                {COLLECTION_DEV_HUB_TITLE_RU}
+              </h1>
+              <p className="text-slate-600 line-clamp-1 max-w-2xl text-xs sm:line-clamp-none sm:text-sm">
+                {WORKSHOP2_TAB_CONTENT_PAGE_SUBTITLE}
+              </p>
+            </div>
+          ) : null}
           <div className="flex items-center justify-between gap-2 pt-1 max-md:gap-1.5">
             <div
               className="flex items-center gap-1.5 max-md:gap-1"
@@ -1064,6 +1083,7 @@ export function Workshop2TabContent({
             onEditArticle={openArticleEditFromHub}
             onCreateArticle={openCreateArticle}
             articleStatusFilter={articleHubStatusFilter}
+            embeddedHub={embeddedHub}
           />
         </div>
 
@@ -1866,7 +1886,13 @@ export function Workshop2TabContent({
           onCommit={async (colId, commit) => {
             const r = onCommitWorkshop2Article(colId, commit);
             if (typeof r === 'string' && r) {
-              router.push(workshop2ArticlePath(colId, r));
+              if (isPlatformCoreMode() && basePath.includes('/brand/core')) {
+                router.push(
+                  brandDevelopmentDossierCabinetHref(colId, r, getPlatformCoreDemo(colId))
+                );
+              } else {
+                router.push(workshop2ArticlePath(colId, r));
+              }
               return true;
             }
             if (
@@ -1882,7 +1908,11 @@ export function Workshop2TabContent({
                 comment: commit.comment,
               });
               if (api.ok && api.href) {
-                router.push(api.href);
+                router.push(
+                  isPlatformCoreMode() && basePath.includes('/brand/core')
+                    ? platformCoreUiHref(api.href, getPlatformCoreDemo(colId))
+                    : api.href
+                );
                 return true;
               }
             }

@@ -1,23 +1,23 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState, type ReactNode } from 'react';
-import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Circle } from 'lucide-react';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import { PLATFORM_CORE_ROLE_EMPTY_PILLAR_RU } from '@/lib/platform-core-user-messages';
 import {
   PLATFORM_CORE_PILLARS,
   getDefaultPillarForRole,
-  factoryMaterialsHrefForDemo,
   getRolePillarWorkspaceHref,
   getPlatformCoreHubRow,
   getPlatformCorePillarEntityLabelForDemo,
   isCoreHubPillarId,
+  isPlatformCoreEmptyChainCollection,
   resolvePlatformCoreCollectionId,
 } from '@/lib/platform-core-hub-matrix';
-import { PlatformCoreChromeShell } from '@/components/platform/PlatformCoreChromeShell';
+import { PlatformCoreChromeShell } from '@/components/platform/usePlatformCoreChainOverview';
 import { PlatformCoreContextBar } from '@/components/platform/PlatformCoreContextBar';
 import { PlatformCoreRoleCabinetStrip } from '@/components/platform/PlatformCoreRoleCabinetStrip';
 import {
@@ -34,43 +34,59 @@ import {
 } from '@/lib/platform-core-empty-cell-registry';
 import { prefetchPlatformCoreW2FromHref } from '@/lib/platform-core-w2-prefetch';
 import { prefetchPillarSnapshot } from '@/lib/platform-core-pillar-prefetch';
-import { RoleCabinetHubHeader } from '@/components/platform/RoleCabinetHubChrome';
-import { PlatformCoreCabinetPillarCards } from '@/components/platform/PlatformCoreCabinetPillarCards';
+import { RoleCabinetPillarNavMobile } from '@/components/platform/RoleCabinetPillarNavMobile';
+import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
+import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
-import { hubCabinet, pillarInsight } from '@/lib/platform-core-cabinet-chrome';
-import { hubSectionLabelClassName } from '@/lib/platform-core-hub-layout';
-
-const DevelopmentPillarCard = dynamic(
-  () =>
-    import('@/components/platform/DevelopmentPillarCard').then((m) => ({
-      default: m.DevelopmentPillarCard,
-    })),
-  { ssr: false }
-);
-
-const CollectionOrderPillarCard = dynamic(
-  () =>
-    import('@/components/platform/CollectionOrderPillarCard').then((m) => ({
-      default: m.CollectionOrderPillarCard,
-    })),
-  { ssr: false }
-);
-
-const CommsPillarCard = dynamic(
-  () =>
-    import('@/components/platform/CommsPillarCard').then((m) => ({
-      default: m.CommsPillarCard,
-    })),
-  { ssr: false }
-);
-
-const SupplierProcurementPillarCard = dynamic(
-  () =>
-    import('@/components/platform/SupplierProcurementPillarCard').then((m) => ({
-      default: m.SupplierProcurementPillarCard,
-    })),
-  { ssr: false }
-);
+import { PillarCabinetHeader } from '@/components/platform/PillarCabinetHeader';
+import { PillarCabinetActionRail } from '@/components/platform/PillarCabinetActionRail';
+import { PillarSectionList } from '@/components/platform/PillarSectionList';
+import { PillarCabinetDiagnostics } from '@/components/platform/PillarCabinetDiagnostics';
+import {
+  buildPillarCabinetOverflowSections,
+  buildPillarCabinetRelatedLinks,
+  buildPillarCabinetSectionItems,
+  pillarCabinetUsesEmptySections,
+} from '@/lib/platform-core-ports/legacy/pillar-cabinet-sections';
+import { PillarRelatedLinks } from '@/components/platform/PillarRelatedLinks';
+import { BrandCoRetailersPickerRow } from '@/components/platform/BrandCoRetailersPickerRow';
+import { PillarCabinetProgress } from '@/components/platform/PillarCabinetProgress';
+import { WaveYrReadinessCellDashboardStrip } from '@/components/platform/WaveYrReadinessCellDashboardStrip';
+import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
+import { useBrandCoRetailersSummary } from '@/hooks/use-brand-co-retailers-summary';
+import {
+  shouldShowHubCabinetInvestorReadinessStrip,
+  shouldShowHubCabinetOperatorPillarInsightCard,
+  shouldShowHubCabinetPillarDiagnostics,
+  shouldSuppressHubCabinetChainStatusBadge,
+} from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
+import {
+  buildPillarCabinetActions,
+  countRoleChainProgress,
+} from '@/lib/platform-core-ports/legacy/pillar-cabinet-primary-actions';
+import {
+  buildRoleCoreCabinetQueryString,
+  hasEmbeddedPlatformCoreWorkspace,
+  PLATFORM_CORE_CABINET_DEFAULT_SECTION,
+  resolveCabinetWorkspaceSection,
+} from '@/lib/platform-core-cabinet-workspace';
+import { isPlatformCoreArticleSpineMode } from '@/lib/platform-core-article-spine';
+import { RoleCorePillarInsightCards } from '@/components/platform/RoleCorePillarInsightCards';
+import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
+import {
+  brandB2bOrderHref,
+  brandMessagesB2bOrderContextHref,
+  brandMessagesWorkshop2ArticleContextHref,
+  factoryMessagesB2bOrderContextHref,
+  factorySupplierMessagesB2bOrderContextHref,
+  shopB2bOrderHref,
+  shopMessagesB2bOrderContextHref,
+  shopMessagesWorkshop2ArticleContextHref,
+} from '@/lib/platform-core-routes';
+import {
+  formatWholesaleOrderDisplayId,
+} from '@/lib/integrations/spine/integration-ui-utils';
+import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 
 const PlatformCoreEmptyCellPanels = dynamic(
   () =>
@@ -87,40 +103,18 @@ const PlatformCoreEmptyCellPanels = dynamic(
   }
 );
 
-const BrandSampleCollectionMini = dynamic(
+const SupplierDevPillarMaterialCatalogNav = dynamic(
   () =>
-    import('@/components/platform/BrandSampleCollectionMini').then((m) => ({
-      default: m.BrandSampleCollectionMini,
+    import('@/components/factory/supplier/SupplierDevPillarMaterialCatalogNav').then((m) => ({
+      default: m.SupplierDevPillarMaterialCatalogNav,
     })),
   { ssr: false }
 );
 
-const ShopShowroomMini = dynamic(
+const PlatformCoreRolePillarWorkspace = dynamic(
   () =>
-    import('@/components/platform/ShopShowroomMini').then((m) => ({
-      default: m.ShopShowroomMini,
-    })),
-  { ssr: false }
-);
-
-const SupplierBomPreview = dynamic(
-  () =>
-    import('@/components/platform/SupplierBomPreview').then((m) => ({
-      default: m.SupplierBomPreview,
-    })),
-  { ssr: false }
-);
-const SupplierDevCabinetSpinePeerStrip = dynamic(
-  () =>
-    import('@/components/factory/supplier/SupplierDevCabinetSpinePeerStrip').then((m) => ({
-      default: m.SupplierDevCabinetSpinePeerStrip,
-    })),
-  { ssr: false }
-);
-const OrderProductionPillarCard = dynamic(
-  () =>
-    import('@/components/platform/OrderProductionPillarCard').then((m) => ({
-      default: m.OrderProductionPillarCard,
+    import('@/components/platform/workspaces/PlatformCoreRolePillarWorkspace').then((m) => ({
+      default: m.PlatformCoreRolePillarWorkspace,
     })),
   { ssr: false }
 );
@@ -129,14 +123,41 @@ type Props = {
   roleId: CoreChainRoleId;
 };
 
+function cabinetPathWithQuery(
+  pathname: string,
+  searchParams: URLSearchParams,
+  input: {
+    roleId: CoreChainRoleId;
+    pillarId: CoreHubPillarId;
+    collectionId: string;
+    sectionId?: string | null;
+    orderId?: string | null;
+    articleId?: string | null;
+    hash?: string;
+  }
+): string {
+  const qs = buildRoleCoreCabinetQueryString({
+    roleId: input.roleId,
+    pillarId: input.pillarId,
+    collectionId: input.collectionId,
+    sectionId: input.sectionId,
+    orderId: input.orderId ?? searchParams.get('order'),
+    articleId: input.articleId ?? searchParams.get('article'),
+    baseParams: searchParams,
+  });
+  const hash = input.hash ?? '';
+  return qs ? `${pathname}?${qs}${hash}` : `${pathname}${hash}`;
+}
+
 function RoleCoreCabinetHubInner({ roleId }: Props) {
   const row = getPlatformCoreHubRow(roleId);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const pillarFromUrl = searchParams.get('pillar');
-  const pillarSelectedInUrl =
-    Boolean(pillarFromUrl) && isCoreHubPillarId(pillarFromUrl as string);
+  const developmentArticleId = searchParams.get('article')?.trim() || null;
+  const workspaceSectionFromUrl = searchParams.get('section');
+  const demoOrderIdFromUrl = searchParams.get('order')?.trim() || null;
   const collectionId = resolvePlatformCoreCollectionId(searchParams.get('collection'));
   const { pillarDone } = usePlatformCoreChainOverview(collectionId);
   const demo = usePlatformCoreDemoContext();
@@ -154,26 +175,43 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
     }
     if (p && isCoreHubPillarId(p) && !isRolePillarCabinetSelectable(roleId, p, collectionId)) {
       setSelectedPillar(defaultPillar);
-      const params = new URLSearchParams(searchParams.toString());
-      if (roleId === 'shop' && p === 'order_production') {
-        params.set('pillar', 'collection_order');
-      } else {
-        params.set('pillar', defaultPillar);
-      }
-      if (searchParams.has('collection') || collectionId !== 'SS27') {
-        params.set('collection', collectionId);
-      }
-      const hash =
-        roleId === 'shop' && p === 'order_production' ? '#shop-co-buyer-tracking' : '';
-      router.replace(`${pathname}?${params.toString()}${hash}`, { scroll: false });
+      const hash = roleId === 'shop' && p === 'order_production' ? '#shop-co-buyer-tracking' : '';
+      const target = cabinetPathWithQuery(pathname, searchParams, {
+        roleId,
+        pillarId: roleId === 'shop' && p === 'order_production' ? 'collection_order' : defaultPillar,
+        collectionId,
+        hash,
+      });
+      const current = searchParams.toString()
+        ? `${pathname}?${searchParams.toString()}`
+        : pathname;
+      if (target !== current) router.replace(target, { scroll: false });
       return;
     }
     if (!p) {
-      setSelectedPillar((prev) =>
-        isRolePillarCabinetSelectable(roleId, prev, collectionId) ? prev : defaultPillar
-      );
+      const next = isRolePillarCabinetSelectable(roleId, selectedPillar, collectionId)
+        ? selectedPillar
+        : defaultPillar;
+      setSelectedPillar(next);
+      if (isPlatformCoreMode()) {
+        const defaultSection = PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[next];
+        const sectionId =
+          hasEmbeddedPlatformCoreWorkspace(roleId, next) && defaultSection
+            ? defaultSection
+            : null;
+        const target = cabinetPathWithQuery(pathname, searchParams, {
+          roleId,
+          pillarId: next,
+          collectionId,
+          sectionId,
+        });
+        const current = searchParams.toString()
+          ? `${pathname}?${searchParams.toString()}`
+          : pathname;
+        if (target !== current) router.replace(target, { scroll: false });
+      }
     }
-  }, [searchParams, roleId, collectionId, pathname, router]);
+  }, [searchParams, roleId, collectionId, pathname, router, selectedPillar]);
 
   useEffect(() => {
     if (!isEmptyCellInsightVisibleInUi(roleId, selectedPillar)) return;
@@ -187,17 +225,104 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
 
   function selectPillar(pillarId: CoreHubPillarId) {
     setSelectedPillar(pillarId);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('pillar', pillarId);
-    if (searchParams.has('collection') || collectionId !== 'SS27') {
-      params.set('collection', collectionId);
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const defaultSection = PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[pillarId];
+    const sectionId =
+      hasEmbeddedPlatformCoreWorkspace(roleId, pillarId) && defaultSection
+        ? defaultSection
+        : null;
+    router.replace(
+      cabinetPathWithQuery(pathname, searchParams, {
+        roleId,
+        pillarId,
+        collectionId,
+        sectionId,
+      }),
+      { scroll: false }
+    );
   }
 
-  if (!row) return null;
+  const auditUi = usePlatformCoreAuditUi();
+  const coreMode = isPlatformCoreMode();
+  const { multiBuyer } = useBrandCoRetailersSummary(
+    roleId === 'brand' && selectedPillar === 'collection_order' ? collectionId : null
+  );
+  const cell = row?.pillars[selectedPillar];
+  const showOperatorPillarInsight =
+    cell?.kind === 'active' &&
+    (coreMode ||
+      shouldShowHubCabinetOperatorPillarInsightCard({ auditUi, pillarId: selectedPillar }));
+  const cabinetSections = useMemo(
+    () =>
+      row && cell
+        ? buildPillarCabinetSectionItems(roleId, selectedPillar, collectionId, {
+            emptyCell: pillarCabinetUsesEmptySections(roleId, selectedPillar, cell.kind),
+          })
+        : [],
+    [row, cell, roleId, selectedPillar, collectionId]
+  );
+  const displayCabinetSections = useMemo(() => {
+    if (!(roleId === 'brand' && selectedPillar === 'collection_order' && multiBuyer)) {
+      return cabinetSections;
+    }
+    return cabinetSections.filter((section) => section.id !== 'brand-co-retailers');
+  }, [cabinetSections, roleId, selectedPillar, multiBuyer]);
 
-  const cell = row.pillars[selectedPillar];
+  const orderIdsForPoll =
+    demo.demoOrderId && !demo.demoOrderId.startsWith('__') ? [demo.demoOrderId] : [];
+  const chainPushEnabled = usePlatformCoreChainStatusPushEnabled(roleId);
+  const { sseConnected } = usePlatformCoreChainStatusPoll(
+    coreMode && cell?.kind === 'active' && orderIdsForPoll.length > 0 && chainPushEnabled,
+    orderIdsForPoll
+  );
+
+  const contextChips = useMemo(() => {
+    if (!row || !cell) return undefined;
+    if (!coreMode || isPlatformCoreEmptyChainCollection(collectionId)) return undefined;
+    const orderId = demo.demoOrderId?.trim();
+    if (!orderId || orderId.startsWith('__')) return undefined;
+    const chips: Array<{ label: string; href: string; testId: string }> = [];
+    const orderLabel = formatWholesaleOrderDisplayId(orderId);
+    const orderMessagesHref =
+      roleId === 'shop'
+        ? shopMessagesB2bOrderContextHref(orderId)
+        : roleId === 'brand'
+          ? brandMessagesB2bOrderContextHref(orderId)
+          : roleId === 'supplier'
+            ? factorySupplierMessagesB2bOrderContextHref(orderId)
+            : factoryMessagesB2bOrderContextHref(orderId, { role: 'manufacturer' });
+    if (
+      selectedPillar === 'comms' ||
+      selectedPillar === 'collection_order' ||
+      selectedPillar === 'order_production'
+    ) {
+      chips.push({
+        label: `Заказ · ${orderLabel}`,
+        href: orderMessagesHref,
+        testId: 'platform-core-context-order-chip',
+      });
+    }
+    const articleHref =
+      roleId === 'shop'
+        ? shopMessagesWorkshop2ArticleContextHref(collectionId, demo.demoArticleId)
+        : roleId === 'brand'
+          ? brandMessagesWorkshop2ArticleContextHref(collectionId, demo.demoArticleId)
+          : `/factory/production/dossier/${encodeURIComponent(demo.demoArticleId)}?collection=${encodeURIComponent(collectionId)}`;
+    if (selectedPillar === 'comms' && demo.demoArticleId) {
+      chips.push({
+        label: `Арт. · ${demo.demoArticleId}`,
+        href: articleHref,
+        testId: 'platform-core-context-article-chip',
+      });
+    }
+    return chips.length > 0 ? chips : undefined;
+  }, [coreMode, collectionId, demo, roleId, selectedPillar, row, cell]);
+
+  if (!row || !cell) {
+    return (
+      <PlatformCorePillarInsightSkeleton testId="role-core-cabinet-hub-loading" />
+    );
+  }
+
   const navPillarIds = getRoleCabinetNavPillarIds(roleId, collectionId);
   const workspaceHref = getRolePillarWorkspaceHref(roleId, selectedPillar, demo);
   const pillarMeta = PLATFORM_CORE_PILLARS.find((p) => p.id === selectedPillar);
@@ -205,6 +330,38 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
     cell.kind === 'active'
       ? cell.lead.split(/[.!]/)[0]?.trim() + (cell.lead.includes('.') ? '.' : '')
       : '';
+  const cabinetSectionOpts = {
+    emptyCell: pillarCabinetUsesEmptySections(roleId, selectedPillar, cell.kind),
+  };
+  const relatedLinks = buildPillarCabinetRelatedLinks(
+    roleId,
+    selectedPillar,
+    collectionId,
+    demo,
+    cabinetSectionOpts
+  );
+  const overflowSections = buildPillarCabinetOverflowSections(
+    roleId,
+    selectedPillar,
+    collectionId,
+    cabinetSectionOpts
+  );
+  const cabinetActions = buildPillarCabinetActions(roleId, selectedPillar, demo);
+  const chainProgress = countRoleChainProgress(navPillarIds, pillarDone);
+  const showEmbeddedWorkspace =
+    coreMode &&
+    cell.kind === 'active' &&
+    hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
+  const hidePillarSectionListInSpine =
+    isPlatformCoreArticleSpineMode() &&
+    hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
+  const insightSectionId = resolveCabinetWorkspaceSection(
+    roleId,
+    selectedPillar,
+    workspaceSectionFromUrl
+  );
+  const activeWorkspaceSection = showEmbeddedWorkspace ? insightSectionId : null;
+  const showActionRail = selectedPillar !== 'comms' && !showEmbeddedWorkspace;
 
   function renderPillarAsideButtons() {
     return PLATFORM_CORE_PILLARS.filter((pillar) => navPillarIds.includes(pillar.id)).map(
@@ -241,7 +398,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
               <span className={hubCabinet.pillarBtnTitle}>{pillar.title}</span>
               {isPeerContext ? (
                 <span
-                  className="text-text-muted text-[9px] font-medium uppercase tracking-wide"
+                  className="text-text-muted text-[11px] font-medium uppercase tracking-wide"
                   data-testid={`role-pillar-${pillar.id}-peer-badge`}
                 >
                   контекст
@@ -266,64 +423,91 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
       className={cn(
         hubCabinet.page,
         isPlatformCoreMode() && 'bg-bg-surface pb-safe min-h-[calc(100vh-2.5rem)]',
+        isPlatformCoreMode() && selectedPillar === 'comms' && 'pb-20 md:pb-safe',
         !isPlatformCoreMode() && 'mx-auto max-w-6xl px-4 py-8 md:px-6'
       )}
     >
-      <header className="space-y-2 md:space-y-3">
+      <header className="border-border-subtle sticky top-0 z-20 -mx-4 space-y-2 border-b bg-bg-surface/95 px-4 pb-2 backdrop-blur-sm md:-mx-6 md:space-y-0 md:px-6">
         <PlatformCoreContextBar
           roleId={roleId}
           pillarId={selectedPillar}
           entityLabel={getPlatformCorePillarEntityLabelForDemo(selectedPillar, demo)}
           showDemoIdStrip={false}
+          compactCabinet={coreMode}
+          contextChips={contextChips}
         />
-        {isPlatformCoreMode() ? (
-          <RoleCabinetHubHeader roleId={roleId} collectionId={collectionId} />
-        ) : null}
         {!isPlatformCoreMode() ? (
-          <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
             <PlatformCoreRoleCabinetStrip highlightRole={roleId} />
           </div>
         ) : null}
       </header>
 
-      {isPlatformCoreMode() && !pillarSelectedInUrl ? (
-        <PlatformCoreCabinetPillarCards
-          pillarIds={navPillarIds}
-          selectedPillarId={selectedPillar}
-          onSelect={selectPillar}
-        />
+      {coreMode ? (
+        <div
+          className={cn(
+            'sticky top-10 z-10 -mx-4 bg-bg-surface/95 px-4 py-1 backdrop-blur-sm',
+            showEmbeddedWorkspace
+              ? 'md:static md:mx-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none'
+              : 'md:hidden'
+          )}
+        >
+          <RoleCabinetPillarNavMobile
+            pillarIds={navPillarIds}
+            selectedPillarId={selectedPillar}
+            onSelect={selectPillar}
+            embeddedLayout={showEmbeddedWorkspace}
+          />
+        </div>
       ) : null}
 
-      <div className={cn(hubCabinet.layout, isPlatformCoreMode() && 'flex-col md:flex-col')}>
-        <aside
-          data-testid="role-core-pillar-nav"
-          className={cn(hubCabinet.pillarNav, isPlatformCoreMode() ? 'hidden' : undefined)}
-        >
-          <p className={hubCabinet.pillarNavLabel}>Столпы</p>
-          <nav aria-label="Разделы столпов" className="flex flex-col gap-0.5">
-            {renderPillarAsideButtons()}
-          </nav>
-          {roleId === 'supplier' ? (
-            <div className="border-border-subtle mt-2 border-t px-2 pt-2">
-              <Link
-                href={factoryMaterialsHrefForDemo(demo)}
-                data-testid="supplier-core-material-catalog-nav"
-                className="text-text-secondary hover:text-text-primary hover:bg-bg-surface2 flex w-full min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-semibold transition-colors"
-                onMouseEnter={() =>
-                  prefetchPlatformCoreW2FromHref(factoryMaterialsHrefForDemo(demo))
-                }
-              >
-                Каталог материалов
-                <ArrowRight className="size-3 opacity-60" aria-hidden />
-              </Link>
-            </div>
-          ) : null}
-        </aside>
+      <div
+        className={cn(
+          coreMode
+            ? showEmbeddedWorkspace
+              ? 'flex w-full min-w-0 flex-col gap-3'
+              : hubCabinet.shell
+            : hubCabinet.layout,
+          coreMode &&
+            cell.kind === 'active' &&
+            !showActionRail &&
+            !showEmbeddedWorkspace &&
+            'lg:grid-cols-[11.5rem_minmax(0,1fr)]'
+        )}
+      >
+        {!showEmbeddedWorkspace ? (
+          <aside
+            data-testid="role-core-pillar-nav"
+            className={cn(
+              hubCabinet.pillarNav,
+              coreMode && 'lg:col-start-1 lg:row-start-1'
+            )}
+          >
+            <p className={hubCabinet.pillarNavLabel}>Столпы</p>
+            <nav aria-label="Разделы столпов" className="flex flex-col gap-0.5">
+              {renderPillarAsideButtons()}
+              {roleId === 'supplier' && selectedPillar === 'development' ? (
+                <div className="border-border-subtle mt-1 space-y-1 border-t px-2 pt-2">
+                  <SupplierDevPillarMaterialCatalogNav demo={demo} showPeers />
+                </div>
+              ) : null}
+            </nav>
+          </aside>
+        ) : null}
 
-        {(!isPlatformCoreMode() || pillarSelectedInUrl) && (
         <main
           data-testid="role-core-pillar-panel"
-          className={cn(hubCabinet.pillarPanel, isPlatformCoreMode() && 'w-full max-w-none')}
+          className={cn(
+            hubCabinet.pillarPanel,
+            coreMode &&
+              'w-full max-w-none border-0 bg-transparent p-0 shadow-none',
+            coreMode &&
+              showEmbeddedWorkspace &&
+              'min-w-0 flex-1',
+            coreMode &&
+              !showEmbeddedWorkspace &&
+              'lg:col-start-2 lg:row-start-1'
+          )}
         >
           {cell.kind === 'empty' ? (
             <div className="min-w-0 space-y-4" data-testid="role-pillar-empty-participant">
@@ -351,41 +535,112 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
             <div
               key={selectedPillar}
               className={cn(
-                isPlatformCoreMode() ? 'space-y-3' : 'space-y-3 md:space-y-4',
+                coreMode ? 'space-y-4' : 'space-y-3 md:space-y-4',
                 hubCabinet.pillarPanelEnter
               )}
             >
-              {isPlatformCoreMode() ? (
-                <>
-                  <div className="space-y-1">
-                    <p className={hubSectionLabelClassName()}>{pillarMeta?.title ?? cell.title}</p>
-                    {pillarMeta?.subtitle ? (
-                      <p className="text-text-secondary text-[11px] leading-snug md:text-xs">
-                        {pillarMeta.subtitle}
-                      </p>
-                    ) : null}
-                    {pillarLead ? (
-                      <p className="text-text-secondary pt-0.5 text-xs leading-relaxed">{pillarLead}</p>
-                    ) : null}
-                  </div>
-                  <Link
-                    href={workspaceHref}
-                    data-testid="role-pillar-primary-cta"
-                    className={hubCabinet.primaryCta}
-                    onMouseEnter={() => prefetchPlatformCoreW2FromHref(workspaceHref)}
-                    onFocus={() => prefetchPlatformCoreW2FromHref(workspaceHref)}
-                  >
-                    Открыть рабочий экран
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Link>
-                  <div className={pillarInsight.root}>
-                    <RoleCorePillarInsightCards
-                      roleId={roleId}
-                      pillarId={selectedPillar}
-                      compact
+              {coreMode ? (
+                <div className="min-w-0 space-y-4">
+                  {showEmbeddedWorkspace ? (
+                    <>
+                      <PlatformCoreRolePillarWorkspace
+                        roleId={roleId}
+                        pillarId={selectedPillar}
+                        collectionId={collectionId}
+                        sectionFromUrl={activeWorkspaceSection}
+                        articleId={
+                          roleId === 'brand' && selectedPillar === 'development'
+                            ? developmentArticleId
+                            : developmentArticleId ?? demo.demoArticleId
+                        }
+                        orderId={demoOrderIdFromUrl ?? demo.demoOrderId}
+                        factoryId={demo.factoryId}
+                      />
+                    </>
+                  ) : (
+                    <>
+                  <PillarCabinetHeader
+                    title={pillarMeta?.title ?? cell.title}
+                    subtitle={pillarMeta?.subtitle}
+                    lead={pillarLead || undefined}
+                    progress={
+                      chainProgress.total > 0 ? (
+                        <PillarCabinetProgress
+                          done={chainProgress.done}
+                          total={chainProgress.total}
+                        />
+                      ) : pillarDone(selectedPillar) != null ? (
+                        <p className="text-text-muted text-[11px]">
+                          {pillarDone(selectedPillar)
+                            ? 'Этап цепочки выполнен'
+                            : 'Этап цепочки в работе'}
+                        </p>
+                      ) : null
+                    }
                     />
-                  </div>
-                </>
+                    {showActionRail ? (
+                      <PillarCabinetActionRail
+                        variant="inline"
+                        className="lg:hidden"
+                        primary={cabinetActions.primary}
+                        secondary={cabinetActions.secondary}
+                        workspace={cabinetActions.workspace}
+                        onPrefetch={prefetchPlatformCoreW2FromHref}
+                      />
+                    ) : null}
+                    {shouldShowHubCabinetInvestorReadinessStrip(auditUi) ? (
+                      <WaveYrReadinessCellDashboardStrip
+                        roleId={roleId}
+                        pillarId={selectedPillar}
+                        collectionId={collectionId}
+                        compact
+                      />
+                    ) : null}
+                    {!hidePillarSectionListInSpine ? (
+                    <PillarSectionList
+                      sections={displayCabinetSections}
+                      liveConnected={
+                        orderIdsForPoll.length > 0 &&
+                        chainPushEnabled &&
+                        shouldSuppressHubCabinetChainStatusBadge({ compact: true, auditUi })
+                          ? sseConnected
+                          : undefined
+                      }
+                      appendRow={
+                        !isPlatformCoreArticleSpineMode() &&
+                        roleId === 'brand' &&
+                        selectedPillar === 'collection_order' &&
+                        cell.kind === 'active' ? (
+                          <BrandCoRetailersPickerRow collectionId={collectionId} />
+                        ) : null
+                      }
+                    />
+                    ) : null}
+                    <PillarRelatedLinks related={relatedLinks} overflowSections={overflowSections} />
+                    {showOperatorPillarInsight ? (
+                      shouldShowHubCabinetPillarDiagnostics(auditUi) ? (
+                        <PillarCabinetDiagnostics>
+                          <RoleCorePillarInsightCards
+                            roleId={roleId}
+                            pillarId={selectedPillar}
+                            compact
+                            minimalChrome
+                            sectionId={insightSectionId}
+                          />
+                        </PillarCabinetDiagnostics>
+                      ) : (
+                        <RoleCorePillarInsightCards
+                          roleId={roleId}
+                          pillarId={selectedPillar}
+                          compact
+                          minimalChrome
+                          sectionId={insightSectionId}
+                        />
+                      )
+                    ) : null}
+                    </>
+                  )}
+                </div>
               ) : (
                 <>
                   <div className={hubCabinet.panelHeader}>
@@ -411,6 +666,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
                       roleId={roleId}
                       pillarId={selectedPillar}
                       compact
+                      sectionId={insightSectionId}
                     />
                   </div>
                 </>
@@ -418,7 +674,16 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
             </div>
           )}
         </main>
-        )}
+        {coreMode && cell.kind === 'active' && showActionRail ? (
+          <div className="max-lg:hidden lg:col-start-3 lg:row-start-1">
+            <PillarCabinetActionRail
+              primary={cabinetActions.primary}
+              secondary={cabinetActions.secondary}
+              workspace={cabinetActions.workspace}
+              onPrefetch={prefetchPlatformCoreW2FromHref}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -436,67 +701,5 @@ function RoleCoreCabinetHubWithCollection(props: Props) {
 
 export function RoleCoreCabinetHub(props: Props) {
   return <RoleCoreCabinetHubWithCollection {...props} />;
-}
-
-function RoleCorePillarInsightCards({
-  roleId,
-  pillarId,
-  compact = false,
-}: {
-  roleId: CoreChainRoleId;
-  pillarId: CoreHubPillarId;
-  compact?: boolean;
-}) {
-  const demo = usePlatformCoreDemoContext();
-  if (!isPlatformCoreMode()) return null;
-
-  let card: ReactNode = null;
-
-  if (roleId === 'brand' && pillarId === 'development') {
-    card = <DevelopmentPillarCard variant="brand" compact={compact} />;
-  } else if (roleId === 'brand' && pillarId === 'sample_collection') {
-    card = <BrandSampleCollectionMini demo={demo} compact={compact} />;
-  } else if (roleId === 'brand' && pillarId === 'collection_order') {
-    card = <CollectionOrderPillarCard variant="brand" compact={compact} />;
-  } else if (roleId === 'brand' && pillarId === 'order_production') {
-    card = <OrderProductionPillarCard variant="brand" compact={compact} />;
-  } else if (roleId === 'brand' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="brand" compact={compact} />;
-  } else if (roleId === 'shop' && pillarId === 'collection_order') {
-    card = <CollectionOrderPillarCard variant="shop" compact={compact} />;
-  } else if (roleId === 'shop' && pillarId === 'sample_collection') {
-    card = <ShopShowroomMini demo={demo} compact={compact} />;
-  } else if (roleId === 'shop' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="shop" compact={compact} />;
-  } else if (roleId === 'manufacturer' && pillarId === 'development') {
-    card = <DevelopmentPillarCard variant="manufacturer" compact={compact} />;
-  } else if (roleId === 'manufacturer' && pillarId === 'order_production') {
-    card = <OrderProductionPillarCard variant="manufacturer" compact={compact} />;
-  } else if (roleId === 'manufacturer' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="manufacturer" compact={compact} />;
-  } else if (roleId === 'supplier' && pillarId === 'order_production') {
-    card = <SupplierProcurementPillarCard compact={compact} />;
-  } else if (roleId === 'supplier' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="supplier" compact={compact} />;
-  } else if (roleId === 'supplier' && pillarId === 'development') {
-    card = (
-      <div className="space-y-2">
-        <SupplierDevCabinetSpinePeerStrip
-          collectionId={demo.collectionId}
-          articleId={demo.demoArticleId}
-          orderId={demo.demoOrderId}
-        />
-        <SupplierBomPreview demo={demo} compact />
-      </div>
-    );
-  }
-
-  if (!card) return null;
-
-  return (
-    <div data-testid={`role-pillar-insight-${roleId}-${pillarId}`} className={pillarInsight.root}>
-      {card}
-    </div>
-  );
 }
 
