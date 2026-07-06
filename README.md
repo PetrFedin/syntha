@@ -1,4 +1,8 @@
-# Fashion Platform
+# Syntha — Fashion Platform
+
+**Repository:** https://github.com/PetrFedin/syntha  
+
+Syntha (Fashion OS, Platform Core) — отдельный продукт. **Renova** (ремонт): https://github.com/PetrFedin/renova — другой репозиторий, без общего кода.
 
 ## Local Environment
 

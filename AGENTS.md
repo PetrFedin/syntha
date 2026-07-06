@@ -1,6 +1,9 @@
-# Projects — инструкции для людей и AI-агентов
+# Syntha — инструкции для людей и AI-агентов
 
-Монорепозиторий: бэкенд (Python), фронт и весь Next.js/Playwright **только** в **`_ai-share/synth-1-full`**, субмодуль **`tools/superpowers`** (методология агентов).
+**GitHub (канон):** https://github.com/PetrFedin/syntha  
+**Renova** (ремонт, отдельный продукт): https://github.com/PetrFedin/renova — не часть Syntha.
+
+Монорепозиторий Syntha / Fashion OS: бэкенд (Python), фронт и весь Next.js/Playwright **только** в **`_ai-share/synth-1-full`**, субмодуль **`tools/superpowers`** (методология агентов).
 
 ## Обязательный контур агента (Cursor)
 

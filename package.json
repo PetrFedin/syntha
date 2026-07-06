@@ -1,8 +1,8 @@
 {
-  "name": "projects",
+  "name": "syntha",
   "version": "0.0.0",
   "private": true,
-  "description": "Монорепо. Основной Next.js — _ai-share/synth-1-full. Команды ниже проксируют туда; install — один раз: npm install в synth-1-full или npm run synth-1:install",
+  "description": "Syntha monorepo — Fashion OS / Platform Core. Next.js канон: _ai-share/synth-1-full",
   "scripts": {
     "synth-1:install": "npm install --no-audit --no-fund --prefix _ai-share/synth-1-full",
     "verify": "npm run verify --prefix _ai-share/synth-1-full",
