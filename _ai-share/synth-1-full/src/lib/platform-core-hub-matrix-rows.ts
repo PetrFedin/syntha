@@ -1,5 +1,11 @@
 /**
- * Hub matrix rows «роль × столп» — вынесено из platform-core-hub-matrix.ts.
+ * Platform Core · BASELINE hub rows (brand + shop) — ядро v1.
+ *
+ * Только 2 публичные роли и 5 столпов. Никаких factory/supplier импортов —
+ * extended-роли живут в `platform-core-hub-matrix-rows-extended.ts` за флагом
+ * `NEXT_PUBLIC_PC_EXTENDED_ROLES=1`. Комбинированный список — `platform-core-hub-matrix-rows-all.ts`.
+ *
+ * Цепочка: Article → Sample → Collection → Wholesale Order → Fulfillment → Communication.
  */
 import {
   ROUTES,
@@ -11,14 +17,9 @@ import {
   brandDevelopmentCabinetHref,
   brandMessagesB2bOrderContextHref,
   brandMessagesWorkshop2ArticleContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factoryProductionDossierHref,
-  factoryProductionOrdersOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
   shopB2bOrderHref,
+  shopB2bOrdersProductionRegistryHref,
+  shopB2bTrackingOrderHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
 } from '@/lib/platform-core-routes';
@@ -30,42 +31,27 @@ import type { CoreHubRoleRow } from '@/lib/platform-core-hub-matrix.types';
 import {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
-  factoryHandoffQueueHrefForDemo,
-  factoryMaterialsHrefForDemo,
-  factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
 
-const { collectionId, demoOrderId, demoArticleId, productionOrderId } =
-  PLATFORM_CORE_DEMO;
+const { collectionId, demoOrderId, demoArticleId } = PLATFORM_CORE_DEMO;
 
 const w2ArticleMessagesHref = brandMessagesWorkshop2ArticleContextHref(collectionId, demoArticleId);
-const factoryArticleMessagesHref = factoryMessagesWorkshop2ArticleContextHref(
-  collectionId,
-  demoArticleId
-);
-const factoryArticleMessagesSupplierHref = factorySupplierMessagesWorkshop2ArticleContextHref(
-  collectionId,
-  demoArticleId
-);
-const factoryCalendarManufacturerHref = `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`;
 const brandDevelopmentHref = brandDevelopmentCabinetHref(collectionId);
 const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
 const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
 const brandLinesheetsHref = brandLinesheetsHrefForDemo(PLATFORM_CORE_DEMO);
 const brandShowroomHref = brandShowroomHrefForDemo(PLATFORM_CORE_DEMO);
-const factoryDossierHref = factoryProductionDossierHref(demoArticleId, { collectionId });
 const brandArticleDevelopmentHref = brandDevelopmentArticleHref(collectionId, demoArticleId, {
   section: 'material',
 });
-const factoryMaterialsHref = factoryMaterialsHrefForDemo(PLATFORM_CORE_DEMO);
-const factoryMaterialsProcurementHref = factoryMaterialsProcurementHrefForDemo(PLATFORM_CORE_DEMO);
 const hubCollectionLabel = getPlatformCoreCollectionLabel(collectionId);
 const hubWholesaleOrderLabel = `Оптовый заказ · ${hubCollectionLabel}`;
 const hubDossierLabel = `Досье · ${hubCollectionLabel}`;
 const hubChatOrderLabel = `Чат · заказ · ${hubCollectionLabel}`;
 const hubCalendarOrderLabel = `Календарь · заказ · ${hubCollectionLabel}`;
 
-export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
+/** Публичные роли v1: бренд + магазин. Источник правды hub-матрицы baseline. */
+export const PLATFORM_CORE_BASELINE_ROWS: readonly CoreHubRoleRow[] = [
   {
     id: 'brand',
     label: 'Бренд',
@@ -138,7 +124,7 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
       development: {
         kind: 'empty',
         reason:
-          'Разработку артикула ведёт бренд. Магазин подключается к опубликованной коллекции в витрине.',
+          'Разработку артикула ведёт бренд. Магазин видит опубликованную коллекцию в витрине (read-only).',
       },
       sample_collection: {
         kind: 'active',
@@ -160,9 +146,14 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
         ],
       },
       order_production: {
-        kind: 'empty',
-        reason:
-          'Магазин не ведёт производство. Статус после отправки — в столпе «Коллекция→заказ» (buyer view, по правилам бренда).',
+        kind: 'active',
+        title: 'Отслеживание и приёмка',
+        lead: 'Статус производства, окна отгрузки, документы и задержки по отправленному оптовому заказу — представление байера по правилам бренда.',
+        actions: [
+          { label: 'Трекинг заказа', href: shopB2bTrackingOrderHref(demoOrderId) },
+          { label: 'Заказы в производстве', href: shopB2bOrdersProductionRegistryHref(demoOrderId) },
+          { label: hubCalendarOrderLabel, href: shopCalendarB2bOrderContextHref(demoOrderId) },
+        ],
       },
       comms: {
         kind: 'active',
@@ -171,109 +162,6 @@ export const PLATFORM_CORE_HUB_ROWS: readonly CoreHubRoleRow[] = [
         actions: [
           { label: hubChatOrderLabel, href: shopMessagesB2bOrderContextHref(demoOrderId) },
           { label: hubCalendarOrderLabel, href: shopCalendarB2bOrderContextHref(demoOrderId) },
-        ],
-      },
-    },
-  },
-  {
-    id: 'manufacturer',
-    label: 'Производство',
-    landingHref: ROUTES.factory.productionCoreCabinet,
-    pillars: {
-      development: {
-        kind: 'active',
-        title: 'Исполнение разработки на цехе',
-        lead: 'Очередь образцов и чтение досье — без редактора разработки бренда.',
-        actions: [
-          { label: 'Цех · очередь образцов', href: ROUTES.factory.production },
-          { label: hubDossierLabel, href: factoryDossierHref },
-        ],
-      },
-      sample_collection: {
-        kind: 'empty',
-        reason:
-          'Лайншиты и витрину ведёт бренд — цех видит статус коллекции после одобрения образца.',
-      },
-      collection_order: {
-        kind: 'empty',
-        reason:
-          'Оптовый заказ формируют магазин и бренд. Цех получает производственный заказ после передачи.',
-      },
-      order_production: {
-        kind: 'active',
-        title: 'Выпуск по техзаданию досье',
-        lead: 'Производственный заказ после передачи — серия, спецификация материалов и техзадание из разработки артикула.',
-        actions: [
-          {
-            label: 'Очередь передачи в производство',
-            href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO),
-          },
-          {
-            label: 'Заказы цеха',
-            href: factoryProductionOrdersOrderContextHref(demoOrderId, {
-              factoryId: PLATFORM_CORE_DEMO.factoryId,
-            }),
-          },
-          { label: 'Досье · техзадание артикула', href: factoryDossierHref },
-        ],
-      },
-      comms: {
-        kind: 'active',
-        title: 'Связь по производству и образцам',
-        lead: 'Переписка по артикулу, календарь этапов производства.',
-        actions: [
-          { label: hubChatOrderLabel, href: factoryMessagesB2bOrderContextHref(demoOrderId) },
-          { label: 'Чат · артикул', href: factoryArticleMessagesHref },
-          { label: 'Календарь · производство', href: factoryCalendarManufacturerHref },
-        ],
-      },
-    },
-  },
-  {
-    id: 'supplier',
-    label: 'Поставщик',
-    landingHref: ROUTES.factory.supplierCoreCabinet,
-    pillars: {
-      development: {
-        kind: 'active',
-        title: 'Материалы в контексте артикула',
-        lead: 'Спецификация из досье и уточнение цены через чат по артикулу (без формы запроса цены).',
-        actions: [
-          { label: 'Материалы · разработка', href: factoryMaterialsHref },
-          { label: 'Чат · артикул', href: factoryArticleMessagesSupplierHref },
-        ],
-      },
-      sample_collection: {
-        kind: 'empty',
-        reason:
-          'Документацию коллекции для магазинов ведёт бренд; поставщик подключается через спецификацию образца.',
-      },
-      collection_order: {
-        kind: 'empty',
-        reason:
-          'Оптовый заказ коллекции — между брендом и магазином; поставщик ждёт производственный заказ под закупку.',
-      },
-      order_production: {
-        kind: 'active',
-        title: 'Закупка под выпуск',
-        lead: 'Сырьё и фурнитура для производственного заказа и спецификации артикула из досье.',
-        actions: [
-          { label: 'Закупка под производственный заказ', href: factoryMaterialsProcurementHref },
-          { label: 'Очередь передачи в цех', href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO) },
-          { label: 'Чат · артикул', href: factoryArticleMessagesSupplierHref },
-        ],
-      },
-      comms: {
-        kind: 'active',
-        title: 'Связь по поставкам',
-        lead: 'Переписка и календарь: уточнение через чат и логистика сырья.',
-        actions: [
-          {
-            label: hubChatOrderLabel,
-            href: factoryMessagesB2bOrderContextHref(demoOrderId, { role: 'supplier' }),
-          },
-          { label: 'Чат · артикул', href: factoryArticleMessagesSupplierHref },
-          { label: 'Календарь · логистика', href: factorySupplierCalendarB2bOrderContextHref(demoOrderId) },
         ],
       },
     },

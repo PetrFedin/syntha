@@ -76,7 +76,7 @@ const GOLDEN_CROSS_ROLE_STOP_TEMPLATES: readonly StopTemplate[] = [
     pillarId: 'sample_collection',
     sectionId: 'shop-sc-showroom',
     labelRu: 'Витрина · коллекции',
-    workspaceTestId: 'role-pillar-insight-shop-sample_collection',
+    workspaceTestId: 'role-core-cabinet-shop',
     panelTestId: 'shop-sc-cabinet-panel',
     buildHref: (d) =>
       platformCoreCabinetSectionHref('shop', 'sample_collection', 'shop-sc-showroom', d),

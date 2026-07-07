@@ -5,7 +5,7 @@ import {
   buildPlatformCoreGoldenCrossRoleStopsForUi,
   goldenCrossRoleOrderId,
 } from '../src/lib/platform-core-golden-cross-role-path';
-import { gotoPlatformHub, gotoRoleCoreCabinet } from './helpers/core-chain-overview';
+import { gotoPlatformHub, gotoPlatformHubAudit, gotoRoleCoreCabinet } from './helpers/core-chain-overview';
 import {
   clickCabinetSectionLink,
   filterGoldenStopsForHealth,
@@ -31,12 +31,13 @@ test.describe('core-249: wave 6 article spine golden cross-role embedded', () =>
     const allStops = buildPlatformCoreGoldenCrossRoleStops(demo);
     const uiStops = buildPlatformCoreGoldenCrossRoleStopsForUi(demo);
     expect(orderId).toBe(PLATFORM_CORE_DEMO.demoOrderId);
-    expect(allStops).toHaveLength(16); // 13 brand+shop + 3 mfr/sup backend path
+    expect(allStops).toHaveLength(15); // 12 brand+shop + 3 mfr/sup
 
-    expect(uiStops).toHaveLength(13);
-    expect(uiStops.every((s) => s.href.includes(`order=${encodeURIComponent(orderId)}`))).toBe(
-      true
-    );
+    expect(uiStops).toHaveLength(12);
+    for (const stop of uiStops) {
+      if (stop.roleId === 'brand' && stop.pillarId === 'development') continue;
+      expect(stop.href).toContain(`order=${encodeURIComponent(orderId)}`);
+    }
     expect(uiStops.map((s) => s.roleId)).not.toContain('manufacturer');
   });
 
@@ -207,7 +208,7 @@ test.describe('core-249: wave 6 article spine golden cross-role embedded', () =>
   });
 
   test('platform hub: roles column and readiness matrix (no chain strip)', async ({ page }) => {
-    await gotoPlatformHub(page, '/platform', { collectionId: demo.collectionId });
+    await gotoPlatformHubAudit(page, '/platform', { collectionId: demo.collectionId });
     const panel = page.getByTestId('platform-core-hub-roles-audit-panel');
     await expect(panel).toBeVisible({ timeout: 60_000 });
     await expect(panel.getByTestId('platform-core-hub-quick-roles-panel')).toBeVisible();

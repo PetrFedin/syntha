@@ -159,6 +159,29 @@ hooks/use-platform-core-hub-views.ts                # при hub UX
 
 ---
 
+## Platform Core v1 — физический рефакторинг (2026-07)
+
+Канон в **`_ai-share/synth-1-full/_platform-core-v1/`** (не `docs/` — `.cursorignore`).
+
+| Документ | Зачем |
+|----------|--------|
+| [TWO_ROLE_BASELINE.md](../../_ai-share/synth-1-full/_platform-core-v1/TWO_ROLE_BASELINE.md) | Контракт v1: 2 роли, 12 golden stops, verify |
+| [PLATFORM_CORE_SCOPE.md](../../_ai-share/synth-1-full/_platform-core-v1/PLATFORM_CORE_SCOPE.md) | Scope, столпы, критерий готовности |
+| [PLATFORM_CORE_ARCHIVE_MAP.md](../../_ai-share/synth-1-full/_platform-core-v1/PLATFORM_CORE_ARCHIVE_MAP.md) | Партии 1–10: что куда перенесено |
+| [ADR-PLATFORM-CORE-V1-FREEZE.md](../../_ai-share/synth-1-full/_platform-core-v1/ADR-PLATFORM-CORE-V1-FREEZE.md) | Решение freeze baseline |
+| `_archive/*/MANIFEST.md` | Возврат зоны из архива |
+
+**Verify после архивации:**
+
+```bash
+npm run typecheck:ci
+npm run build
+npm test -- --testPathPattern='platform-core-(strict-routes|hub-matrix|readiness-audit|golden-cross-role)'
+PLAYWRIGHT_SKIP_WEBSERVER=1 npm run test:e2e:core:golden-cross-role  # dev:core :3001
+```
+
+---
+
 ## Пример: shop × collection_order
 
 **Доки:** ACTION-CONTRACTS (matrix, cart, checkout), STAGE-GATES G3–G4, FIELD-MATRIX shop/CO.

@@ -16,7 +16,7 @@ import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
-import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
+import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows-all';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix.types';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {

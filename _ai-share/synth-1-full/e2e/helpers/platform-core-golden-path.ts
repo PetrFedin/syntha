@@ -16,13 +16,17 @@ export async function readPlatformCoreHealth(request: APIRequestContext): Promis
   }
 }
 
-/** Без PG detail-панели зависают на загрузке заказа — пропускаем `-detail` в smoke. */
+/** Без PG: detail и shop showroom зависают на PG seed — smoke только CO matrix/checkout/registry. */
+const PG_DEPENDENT_GOLDEN_SECTIONS = new Set(['shop-sc-showroom']);
+
 export function filterGoldenStopsForHealth(
   stops: GoldenCrossRoleStop[],
   demoSeeded: boolean
 ): GoldenCrossRoleStop[] {
   if (demoSeeded) return stops;
-  return stops.filter((s) => !s.sectionId.endsWith('-detail'));
+  return stops.filter(
+    (s) => !s.sectionId.endsWith('-detail') && !PG_DEPENDENT_GOLDEN_SECTIONS.has(s.sectionId)
+  );
 }
 
 async function expectGoldenPanelVisible(page: Page, stop: GoldenCrossRoleStop): Promise<void> {

@@ -61,7 +61,7 @@ import {
 import { getRolePillarDemoHrefForDemo } from '@/lib/platform-core-hub-matrix-role-pillar-hrefs';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { coercePlatformCoreNativeHref } from '@/lib/platform-core-native-href';
-import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
+import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows-all';
 import { filterPlatformCoreHubRowsForBaseline } from '@/lib/platform-core-article-spine';
 import {
   PLATFORM_CORE_CHAIN_LEAD,
@@ -118,7 +118,11 @@ export {
   factoryMaterialsProcurementHrefForDemo,
   shopShowroomHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs';
-export { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows';
+export {
+  PLATFORM_CORE_HUB_ROWS,
+  PLATFORM_CORE_BASELINE_ROWS,
+  PLATFORM_CORE_EXTENDED_ROWS,
+} from '@/lib/platform-core-hub-matrix-rows-all';
 
 /** Hub UI: brand + shop по умолчанию; 4 роли при `NEXT_PUBLIC_PC_EXTENDED_ROLES=1`. */
 export function getPlatformCoreHubRowsForUi(): readonly CoreHubRoleRow[] {

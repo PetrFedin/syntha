@@ -196,8 +196,8 @@ describe('platform-core-hub-matrix', () => {
   it('counts active and empty pillars per role', () => {
     expect(countActivePillarsForRole('brand')).toBe(5);
     expect(countEmptyPillarsForRole('brand')).toBe(0);
-    expect(countActivePillarsForRole('shop')).toBe(3);
-    expect(countEmptyPillarsForRole('shop')).toBe(2);
+    expect(countActivePillarsForRole('shop')).toBe(4);
+    expect(countEmptyPillarsForRole('shop')).toBe(1);
     expect(countActivePillarsForRole('manufacturer')).toBe(3);
     expect(countEmptyPillarsForRole('manufacturer')).toBe(2);
   });
@@ -258,11 +258,13 @@ describe('platform-core-hub-matrix', () => {
       'development',
       'sample_collection',
       'collection_order',
+      'order_production',
       'comms',
     ]);
     expect(getRoleCabinetNavPillarIds('shop', 'EMPTY27')).toEqual([
       'sample_collection',
       'collection_order',
+      'order_production',
       'comms',
     ]);
     expect(getRoleCabinetNavPillarIds('manufacturer', 'SS27')).toEqual([
@@ -282,7 +284,7 @@ describe('platform-core-hub-matrix', () => {
     expect(getRoleCabinetNavPillarIds('brand', 'SS27')).toHaveLength(5);
     expect(isRolePillarCabinetSelectable('shop', 'development', 'SS27')).toBe(true);
     expect(isRolePillarCabinetSelectable('shop', 'development', 'EMPTY27')).toBe(false);
-    expect(isRolePillarCabinetSelectable('shop', 'order_production', 'SS27')).toBe(false);
+    expect(isRolePillarCabinetSelectable('shop', 'order_production', 'SS27')).toBe(true);
   });
 
   it('cross-role comms peers use merged PG order id', () => {
@@ -315,7 +317,7 @@ describe('platform-core-hub-matrix', () => {
   it('counts active roles per pillar', () => {
     expect(countPillarActiveRoles('sample_collection')).toBe(2);
     expect(countPillarActiveRoles('collection_order')).toBe(2);
-    expect(countPillarActiveRoles('order_production')).toBe(3);
+    expect(countPillarActiveRoles('order_production')).toBe(4);
     expect(countPillarActiveRoles('development')).toBe(3);
     expect(countPillarActiveRoles('comms')).toBe(4);
   });
@@ -352,7 +354,7 @@ describe('platform-core-hub-matrix', () => {
   it('role pillar demo href aligns golden path per role slice', () => {
     expect(getRolePillarDemoHref('brand', 'collection_order')).toContain('B2B-DEMO-SHOP1-SS27');
     expect(getRolePillarDemoHref('shop', 'collection_order')).toContain('matrix');
-    expect(getRolePillarDemoHref('shop', 'order_production')).toBeUndefined();
+    expect(getRolePillarDemoHref('shop', 'order_production')).toContain('tracking');
     expect(getRolePillarDemoHref('manufacturer', 'order_production')).toContain(
       'factory/production'
     );
@@ -411,7 +413,7 @@ describe('platform-core-hub-matrix', () => {
     expect(isRolePillarActive('shop', 'sample_collection')).toBe(true);
     expect(isRolePillarActive('manufacturer', 'sample_collection')).toBe(false);
     expect(isRolePillarActive('supplier', 'collection_order')).toBe(false);
-    expect(getActivePillarIdsForRole('shop').length).toBe(3);
+    expect(getActivePillarIdsForRole('shop').length).toBe(4);
     expect(getActivePillarIdsForRole('manufacturer').length).toBe(3);
     expect(getActivePillarIdsForRole('supplier').length).toBe(3);
   });
