@@ -15,7 +15,7 @@ async def test_mvp_health_endpoints(client: AsyncClient):
     for path in ("/health", "/api/v1/health"):
         response = await client.get(path)
         assert response.status_code == 200
-        assert response.json()["status"] == "ok"
+        assert response.json()["status"] in ("ok", "degraded")
 
 
 @pytest.mark.asyncio

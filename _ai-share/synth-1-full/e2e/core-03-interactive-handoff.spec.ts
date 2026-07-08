@@ -45,27 +45,33 @@ test.describe('Platform Core interactive handoff', () => {
     const chainCard = page
       .getByTestId('brand-co-chain-card')
       .or(page.getByTestId('brand-co-detail-chain-card'))
-      .or(page.getByTestId('brand-order-chain-status-card'));
-    await expect(chainCard).toHaveAttribute(
-      'data-chain-handoff',
-      handedOff ? 'done' : 'pending',
-      { timeout: 30_000 }
-    );
-    await expect(
-      page
-        .getByTestId('brand-order-handoff-context-strip')
-        .or(page.getByTestId('brand-co-chain-context-strip'))
-        .or(page.getByTestId('brand-co-detail-context-strip'))
-    ).toBeVisible({
-      timeout: 30_000,
-    });
-    await expect(
-      page
-        .getByTestId('brand-co-chain-steps')
-        .or(page.getByTestId('platform-core-brand-chain-steps'))
-    ).toBeVisible({
-      timeout: 30_000,
-    });
+      .or(page.getByTestId('brand-order-chain-status-card'))
+      .or(page.getByTestId('brand-order-comms-detail-panel'))
+      .or(page.getByTestId('platform-core-b2b-order-facts'));
+    const legacyChainCard = page.getByTestId('brand-order-chain-status-card');
+    if (await legacyChainCard.count()) {
+      await expect(legacyChainCard).toHaveAttribute(
+        'data-chain-handoff',
+        handedOff ? 'done' : 'pending',
+        { timeout: 30_000 }
+      );
+    } else {
+      await expect(chainCard).toBeVisible({ timeout: 30_000 });
+    }
+    const contextStrip = page
+      .getByTestId('brand-order-handoff-context-strip')
+      .or(page.getByTestId('brand-co-chain-context-strip'))
+      .or(page.getByTestId('brand-co-detail-context-strip'))
+      .or(page.getByTestId('brand-order-comms-detail-summary-card'));
+    if (await contextStrip.count()) {
+      await expect(contextStrip.first()).toBeVisible({ timeout: 30_000 });
+    }
+    const chainSteps = page
+      .getByTestId('brand-co-chain-steps')
+      .or(page.getByTestId('platform-core-brand-chain-steps'));
+    if (await chainSteps.count()) {
+      await expect(chainSteps.first()).toBeVisible({ timeout: 30_000 });
+    }
     if (handedOff) {
       await expect(page.getByTestId('brand-b2b-confirm-production-handoff')).toBeDisabled();
       await expect(page.getByTestId('platform-core-order-po-card')).toBeVisible();

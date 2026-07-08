@@ -144,14 +144,14 @@ const routes = [
   },
   {
     pillar: '2 · Образец → коллекция',
-    name: 'shop b2b catalog chrome',
-    path: '/shop/b2b/catalog',
+    name: 'shop b2b showroom chrome',
+    path: '/shop/b2b/showroom?collection=SS27',
     needle: 'platform-core-list-chrome',
   },
   {
     pillar: '2 · Образец → коллекция',
-    name: 'shop discover legacy chrome',
-    path: '/shop/b2b/discover',
+    name: 'shop partners discover chrome',
+    path: '/shop/b2b/partners/discover',
     needle: 'platform-core-list-chrome',
   },
   {

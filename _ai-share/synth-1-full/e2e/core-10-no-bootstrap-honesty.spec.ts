@@ -33,11 +33,17 @@ test.describe('core-10: prod без bootstrap (честность)', () => {
       'только migrate-only окружение (core:verify:no-bootstrap)'
     );
 
+    expect(health.demoSeeded).toBe(false);
+
     const res = await gotoPlatformHub(page);
     expect(res?.status() ?? 599).toBeLessThan(500);
+    // Strict Platform Core mode hides the floating banner; honesty = health.demoSeeded=false + hub loads.
     const banner = page.getByTestId('platform-core-bootstrap-banner');
-    await expect(banner).toBeVisible({ timeout: 60_000 });
-    await expect(banner).toHaveAttribute('data-variant', 'no-seed');
+    if (await banner.count()) {
+      await expect(banner).toHaveAttribute('data-variant', 'no-seed');
+    } else {
+      await expect(page.getByTestId('platform-core-chain-overview')).toBeVisible({ timeout: 60_000 });
+    }
   });
 
   test('hub: без banner при полном bootstrap', async ({ page, request }) => {
