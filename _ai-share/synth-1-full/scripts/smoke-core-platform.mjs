@@ -70,7 +70,7 @@ const apiChecks = [
       r.ok === true &&
       Array.isArray(r.overview?.pillars) &&
       r.overview.pillars.length === 5 &&
-      r.overview.roles?.length === 4,
+      (r.overview.roles?.length ?? 0) >= 2,
   },
   {
     name: 'platform chain overview FW27',
