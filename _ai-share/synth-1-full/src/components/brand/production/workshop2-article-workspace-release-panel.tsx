@@ -50,7 +50,9 @@ export function Workshop2ArticleReleasePanel({
   const searchParams = useSearchParams();
   const router = useRouter();
   const { bundle, loading, mergeBundle, dataMode, ref } = useArticleWorkspace();
-  const subTab = parseWorkshop2ReleaseSubParam(searchParams?.get(WORKSHOP2_RELEASE_SUB_PARAM) ?? null);
+  const subTab = parseWorkshop2ReleaseSubParam(
+    searchParams?.get(WORKSHOP2_RELEASE_SUB_PARAM) ?? null
+  );
   const articleUrlSegment = String(ref.articleId);
   const [sampleOrders, setSampleOrders] = useState<Workshop2SampleOrderDto[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -130,7 +132,10 @@ export function Workshop2ArticleReleasePanel({
     setSyncDialogOpen(false);
   };
 
-  const releaseRoutingStatus = summarizeWorkshop2ReleaseRoutingPanelDisplay({ dossier, release: rel });
+  const releaseRoutingStatus = summarizeWorkshop2ReleaseRoutingPanelDisplay({
+    dossier,
+    release: rel,
+  });
   const routingBody = (
     <>
       <Workshop2ReleaseStatusCollapsible routingStatus={releaseRoutingStatus} dossier={dossier} />

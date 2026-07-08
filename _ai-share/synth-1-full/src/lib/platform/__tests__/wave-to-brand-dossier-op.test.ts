@@ -45,7 +45,9 @@ describe('wave TO — brand dev dossier factory diff + OP attach TZ PO', () => {
       factoryId: PLATFORM_CORE_DEMO.factoryId,
     });
     expect(session.attachTzPoHref).toContain('w2sec=material');
-    expect(session.attachTzPoHref).toContain(`order=${encodeURIComponent(PLATFORM_CORE_DEMO.demoOrderId)}`);
+    expect(session.attachTzPoHref).toContain(
+      `order=${encodeURIComponent(PLATFORM_CORE_DEMO.demoOrderId)}`
+    );
     expect(session.attachTzPoHref).toContain('po=');
     expect(session.attachTzPoHref).toContain('#w2-tz-export');
     expect(session.poHref).toContain('/factory/production/orders');

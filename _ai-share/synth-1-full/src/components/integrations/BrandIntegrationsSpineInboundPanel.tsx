@@ -60,12 +60,12 @@ export function BrandIntegrationsSpineInboundPanel() {
       <CardContent className="space-y-4">
         <BrandIntegrationsSpineStatusStrip />
         {loadState === 'loading' ? (
-          <p className="text-muted-foreground flex items-center gap-2 text-xs">
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
             Загрузка конфигурации…
           </p>
         ) : hub ? (
-          <div className="space-y-2 rounded-md border border-border-subtle bg-bg-surface2/50 p-3 text-xs">
+          <div className="border-border-subtle bg-bg-surface2/50 space-y-2 rounded-md border p-3 text-xs">
             <p>
               <span className="text-text-muted">POST </span>
               <code className="font-mono text-[11px]">{hub.inboundShipmentWebhookPath}</code>
@@ -79,9 +79,7 @@ export function BrandIntegrationsSpineInboundPanel() {
                 className="text-[9px]"
                 data-testid="brand-spine-webhook-secret-configured-badge"
               >
-                {hub.webhookSecretConfigured
-                  ? 'Секрет webhook задан'
-                  : 'Секрет webhook не задан'}
+                {hub.webhookSecretConfigured ? 'Секрет webhook задан' : 'Секрет webhook не задан'}
               </Badge>
               {hub.webhookFailClosedInProduction && !hub.webhookSecretConfigured ? (
                 <Badge variant="destructive" className="text-[9px]">
@@ -102,7 +100,7 @@ export function BrandIntegrationsSpineInboundPanel() {
                 </Badge>
               ) : null}
             </div>
-            <p className="text-muted-foreground text-[10px]">
+            <p className="text-[10px] text-muted-foreground">
               Env: <code>INTEGRATIONS_SPINE_WEBHOOK_SECRET</code>, credentials каналов — в
               deployment config.
             </p>

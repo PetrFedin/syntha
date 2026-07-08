@@ -83,15 +83,10 @@ export function extractShopMatrixArticleInspectorView(input: {
   return {
     collectionId,
     articleId,
-    name:
-      published?.name?.trim() ||
-      brief?.articleCardOwnerName?.trim() ||
-      articleId,
+    name: published?.name?.trim() || brief?.articleCardOwnerName?.trim() || articleId,
     sku: published?.sku?.trim() || articleId,
     heroImageUrl:
-      published?.heroImageUrl ||
-      resolveWorkshop2B2bArticleHeroImageUrl(dossier) ||
-      undefined,
+      published?.heroImageUrl || resolveWorkshop2B2bArticleHeroImageUrl(dossier) || undefined,
     wholesalePriceRub: published?.wholesalePriceRub ?? brief?.targetFob ?? 0,
     msrpRub: published?.msrpRub ?? brief?.targetRetailPrice,
     moq: published?.moq ?? brief?.moqTargetMaxPieces,
@@ -137,9 +132,8 @@ export async function loadShopMatrixArticleInspectorView(input: {
     };
   }
 
-  const { assessShopMatrixInspectorFactoryPackGate } = await import(
-    '@/lib/production/shop-matrix-inspector-release-gate'
-  );
+  const { assessShopMatrixInspectorFactoryPackGate } =
+    await import('@/lib/production/shop-matrix-inspector-release-gate');
   const releaseGate = assessShopMatrixInspectorFactoryPackGate({
     dossier: record.dossier,
     collectionId,

@@ -39,7 +39,10 @@ export const WAVE_YV_SHOP_CO_GOLDEN_PATH_DEDUP = [
     id: 'replenishment-feature-strip-trimmed',
     file: 'components/shop/b2b/ShopReplenishmentGoldenPathStrip.tsx',
     mustContain: ['shop-replenishment-golden-path-strip', 'stock-atp', 'supplier-forecast'],
-    mustNotContain: ["{ id: 'matrix', label: 'Матрица' }", "{ id: 'checkout', label: 'Оформление' }"],
+    mustNotContain: [
+      "{ id: 'matrix', label: 'Матрица' }",
+      "{ id: 'checkout', label: 'Оформление' }",
+    ],
   },
   {
     id: 'collaborative-co-spine',
@@ -61,7 +64,10 @@ export const WAVE_YV_SHOP_CO_GOLDEN_PATH_DEDUP = [
     id: 'working-order-feature-strip-trimmed',
     file: 'components/shop/b2b/ShopWorkingOrderGoldenPathStrip.tsx',
     mustContain: ['versions', 'bulk', 'handoff'],
-    mustNotContain: ["{ id: 'matrix', label: 'Матрица' }", "{ id: 'checkout', label: 'Оформление' }"],
+    mustNotContain: [
+      "{ id: 'matrix', label: 'Матрица' }",
+      "{ id: 'checkout', label: 'Оформление' }",
+    ],
   },
 ] as const;
 

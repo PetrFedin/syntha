@@ -27,11 +27,7 @@ const STEPS: { id: BrandInventoryOpsGoldenPathStepId; label: string }[] = [
   { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
-export function BrandInventoryOpsGoldenPathStrip({
-  collectionId,
-  orderId,
-  activeStep,
-}: Props) {
+export function BrandInventoryOpsGoldenPathStrip({ collectionId, orderId, activeStep }: Props) {
   const session = buildBrandInventoryOpsSession({ collectionId, orderId });
 
   const hrefFor = (id: BrandInventoryOpsGoldenPathStepId): string => {

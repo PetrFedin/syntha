@@ -5,7 +5,10 @@ describe('canShopAmendOrder', () => {
     expect(
       canShopAmendOrder({
         variant: 'brand',
-        chainSteps: [{ id: 'shop_sent', done: true }, { id: 'brand_confirmed', done: false }],
+        chainSteps: [
+          { id: 'shop_sent', done: true },
+          { id: 'brand_confirmed', done: false },
+        ],
       })
     ).toBe(false);
   });
@@ -14,13 +17,19 @@ describe('canShopAmendOrder', () => {
     expect(
       canShopAmendOrder({
         variant: 'shop',
-        chainSteps: [{ id: 'shop_sent', done: true }, { id: 'brand_confirmed', done: false }],
+        chainSteps: [
+          { id: 'shop_sent', done: true },
+          { id: 'brand_confirmed', done: false },
+        ],
       })
     ).toBe(true);
     expect(
       canShopAmendOrder({
         variant: 'shop',
-        chainSteps: [{ id: 'shop_sent', done: true }, { id: 'brand_confirmed', done: true }],
+        chainSteps: [
+          { id: 'shop_sent', done: true },
+          { id: 'brand_confirmed', done: true },
+        ],
       })
     ).toBe(false);
   });

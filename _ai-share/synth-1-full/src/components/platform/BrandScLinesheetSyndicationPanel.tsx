@@ -111,7 +111,9 @@ export function BrandScLinesheetSyndicationPanel({
         setGateMessageRu(json.messageRu ?? 'Release gate: material passport не завершён.');
         setNotice(json.messageRu ?? 'Syndication заблокирован — material passport.');
       } else {
-        setNotice(json.messageRu ?? (res.ok ? 'Syndication выполнен.' : 'Syndication не выполнен.'));
+        setNotice(
+          json.messageRu ?? (res.ok ? 'Syndication выполнен.' : 'Syndication не выполнен.')
+        );
       }
       if (res.ok) onDone?.();
     } catch {

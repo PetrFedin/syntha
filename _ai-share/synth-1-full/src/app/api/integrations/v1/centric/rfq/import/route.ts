@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
-import { importCentricRfq, acknowledgeCentricRfq } from '@/lib/integrations/spine/centric-rfq-import.service';
+import {
+  importCentricRfq,
+  acknowledgeCentricRfq,
+} from '@/lib/integrations/spine/centric-rfq-import.service';
 import { enqueueSyncJob } from '@/lib/integrations/spine/sync-jobs-persistence.file';
 
 /** POST /api/integrations/v1/centric/rfq/import · Wave D3 F-PROCUREMENT */

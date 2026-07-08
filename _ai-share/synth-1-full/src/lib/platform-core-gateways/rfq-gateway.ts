@@ -175,7 +175,11 @@ function evaluateRfq(snapshot: PlatformCoreRfqSnapshot): PlatformCoreRfqEvaluati
   const { lines, offers } = snapshot;
 
   if (!lines.length) {
-    issues.push({ id: 'rfq.lines.empty', severity: 'blocker', message: 'RFQ без строк материалов.' });
+    issues.push({
+      id: 'rfq.lines.empty',
+      severity: 'blocker',
+      message: 'RFQ без строк материалов.',
+    });
   }
 
   const bestOfferByLineId: Record<string, PlatformCoreSupplierOffer | undefined> = {};

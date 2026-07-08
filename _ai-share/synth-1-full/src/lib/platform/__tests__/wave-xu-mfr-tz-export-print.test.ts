@@ -49,7 +49,10 @@ describe('wave XU — mfr TZ export print route + PO TZ PDF cross-link', () => {
   });
 
   it('buildMfrDossierExportPrintHref carries OP context', () => {
-    const href = buildMfrDossierExportPrintHref(ARTICLE, { collectionId: COLLECTION, orderId: ORDER });
+    const href = buildMfrDossierExportPrintHref(ARTICLE, {
+      collectionId: COLLECTION,
+      orderId: ORDER,
+    });
     expect(href).toContain('/export-print');
     expect(href).toContain('pillar=order_production');
     expect(href).toContain(`collection=${COLLECTION}`);

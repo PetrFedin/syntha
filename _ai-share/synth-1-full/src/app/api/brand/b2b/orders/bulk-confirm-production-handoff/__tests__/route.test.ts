@@ -27,7 +27,10 @@ import { bulkConfirmWorkshop2B2bProductionHandoff } from '@/lib/server/workshop2
 describe('POST /api/brand/b2b/orders/bulk-confirm-production-handoff', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (guardWorkshop2Route as jest.Mock).mockResolvedValue({ ok: true, actor: { actorLabel: 'brand-test' } });
+    (guardWorkshop2Route as jest.Mock).mockResolvedValue({
+      ok: true,
+      actor: { actorLabel: 'brand-test' },
+    });
   });
 
   it('requires guard before bulk handoff', async () => {

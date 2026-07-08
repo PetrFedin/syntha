@@ -1,9 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  factoryMaterialsProcurementHrefForDemo,
-} from '@/lib/platform-core-hub-matrix';
+import { factoryMaterialsProcurementHrefForDemo } from '@/lib/platform-core-hub-matrix';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';

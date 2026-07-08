@@ -173,10 +173,17 @@ describe('wave YK — shop CO golden path 7.6 polish', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27');
     const sections = cells
       .flatMap((c) => c.subItems.map((s) => ({ ...s, roleId: c.roleId })))
-      .filter((s) => s.roleId === 'shop' && WAVE_YK_SHOP_CO_SECTION_IDS_76.includes(s.id as (typeof WAVE_YK_SHOP_CO_SECTION_IDS_76)[number]));
+      .filter(
+        (s) =>
+          s.roleId === 'shop' &&
+          WAVE_YK_SHOP_CO_SECTION_IDS_76.includes(
+            s.id as (typeof WAVE_YK_SHOP_CO_SECTION_IDS_76)[number]
+          )
+      );
     const staticAvg =
       sections.reduce((acc, s) => acc + s.staticScore, 0) / Math.max(sections.length, 1);
-    const liveAvg = sections.reduce((acc, s) => acc + s.liveScore, 0) / Math.max(sections.length, 1);
+    const liveAvg =
+      sections.reduce((acc, s) => acc + s.liveScore, 0) / Math.max(sections.length, 1);
     expect(staticAvg).toBeGreaterThanOrEqual(7.6);
     expect(liveAvg).toBeGreaterThanOrEqual(7.6);
   });

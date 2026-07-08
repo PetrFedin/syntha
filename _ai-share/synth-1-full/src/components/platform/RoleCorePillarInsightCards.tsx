@@ -96,7 +96,9 @@ export function RoleCorePillarInsightCards({
   let card: ReactNode = null;
 
   if (roleId === 'brand' && pillarId === 'development') {
-    card = <DevelopmentPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <DevelopmentPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'brand' && pillarId === 'sample_collection') {
     card = (
       <BrandSampleCollectionMini
@@ -107,13 +109,19 @@ export function RoleCorePillarInsightCards({
       />
     );
   } else if (roleId === 'brand' && pillarId === 'collection_order') {
-    card = <CollectionOrderPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CollectionOrderPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'brand' && pillarId === 'order_production') {
-    card = <OrderProductionPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <OrderProductionPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'brand' && pillarId === 'comms') {
     card = <CommsPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />;
   } else if (roleId === 'shop' && pillarId === 'collection_order') {
-    card = <CollectionOrderPillarCard variant="shop" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CollectionOrderPillarCard variant="shop" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'shop' && pillarId === 'sample_collection') {
     card = (
       <ShopShowroomMini
@@ -128,11 +136,25 @@ export function RoleCorePillarInsightCards({
   } else if (roleId === 'shop' && pillarId === 'order_production') {
     card = <ShopOrderProductionPillarCard compact={compact} minimalChrome={minimalChrome} />;
   } else if (roleId === 'manufacturer' && pillarId === 'development') {
-    card = <DevelopmentPillarCard variant="manufacturer" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <DevelopmentPillarCard
+        variant="manufacturer"
+        compact={compact}
+        minimalChrome={minimalChrome}
+      />
+    );
   } else if (roleId === 'manufacturer' && pillarId === 'order_production') {
-    card = <OrderProductionPillarCard variant="manufacturer" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <OrderProductionPillarCard
+        variant="manufacturer"
+        compact={compact}
+        minimalChrome={minimalChrome}
+      />
+    );
   } else if (roleId === 'manufacturer' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="manufacturer" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CommsPillarCard variant="manufacturer" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'supplier' && pillarId === 'order_production') {
     card = <SupplierProcurementPillarCard compact={compact} minimalChrome={minimalChrome} />;
   } else if (roleId === 'supplier' && pillarId === 'comms') {
@@ -141,7 +163,11 @@ export function RoleCorePillarInsightCards({
     card = <SupplierCollectionOrderForecast demo={demo} hideLead embedCrossRole={false} />;
   } else if (roleId === 'supplier' && pillarId === 'development') {
     card = (
-      <SupplierDevelopmentInsightFallback demo={demo} compact={compact} minimalChrome={minimalChrome} />
+      <SupplierDevelopmentInsightFallback
+        demo={demo}
+        compact={compact}
+        minimalChrome={minimalChrome}
+      />
     );
   }
 

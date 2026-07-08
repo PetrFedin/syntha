@@ -82,7 +82,9 @@ export async function summarizeWorkshop2B2bOrdersByRetailer(
   collectionId?: string
 ): Promise<Workshop2RetailerB2bSummary[]> {
   const cid = collectionId?.trim();
-  const orders = cid ? await listWorkshop2B2bOrdersForCollection(cid) : await listWorkshop2B2bOrdersAll();
+  const orders = cid
+    ? await listWorkshop2B2bOrdersForCollection(cid)
+    : await listWorkshop2B2bOrdersAll();
   const sorted = [...orders].sort(
     (a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? '')
   );

@@ -139,8 +139,7 @@ export async function upsertWorkshop2QcInspection(input: {
   const org = input.organizationId ?? 'org-brand-001';
   const orderId = input.orderId.trim();
   const result = input.result;
-  const blocksShipment =
-    input.blocksShipment ?? (result === 'fail' || result === 'rework');
+  const blocksShipment = input.blocksShipment ?? (result === 'fail' || result === 'rework');
   const inspectedAt = new Date().toISOString();
   const row: Workshop2QcInspectionRecord = {
     id: newInspectionId(),
@@ -190,9 +189,10 @@ function workshop2QcGateBlockedInspections(
   return inspections.filter((i) => i.blocksShipment && i.result !== 'pass');
 }
 
-export async function assertWorkshop2QcGateAllowsOrderShipment(orderId: string): Promise<
-  | { ok: true }
-  | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
+export async function assertWorkshop2QcGateAllowsOrderShipment(
+  orderId: string
+): Promise<
+  { ok: true } | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
 > {
   const inspections = await listWorkshop2QcInspectionsForOrder(orderId);
   const blocking = workshop2QcGateBlockedInspections(inspections);
@@ -208,9 +208,10 @@ export async function assertWorkshop2QcGateAllowsOrderShipment(orderId: string):
 }
 
 /** QC gate перед передачей B2B в цех — та же семантика, что отгрузка. */
-export async function assertWorkshop2QcGateAllowsProductionHandoff(orderId: string): Promise<
-  | { ok: true }
-  | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
+export async function assertWorkshop2QcGateAllowsProductionHandoff(
+  orderId: string
+): Promise<
+  { ok: true } | { ok: false; code: 'qc_gate_blocked'; messageRu: string; blockedCount: number }
 > {
   const inspections = await listWorkshop2QcInspectionsForOrder(orderId);
   const blocking = workshop2QcGateBlockedInspections(inspections);

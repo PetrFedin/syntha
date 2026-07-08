@@ -7,7 +7,9 @@ import type { Workshop2B2bOrderRecord } from '@/lib/production/workshop2-b2b-ord
 
 const DEMO_ORDER = 'B2B-DEMO-SHOP1-SS27';
 
-function orderStub(partial: Partial<Workshop2B2bOrderRecord> & { id: string }): Workshop2B2bOrderRecord {
+function orderStub(
+  partial: Partial<Workshop2B2bOrderRecord> & { id: string }
+): Workshop2B2bOrderRecord {
   return {
     id: partial.id,
     collectionId: partial.collectionId ?? 'SS27',

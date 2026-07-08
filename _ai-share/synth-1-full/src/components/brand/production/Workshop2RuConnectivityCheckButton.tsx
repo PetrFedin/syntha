@@ -29,9 +29,7 @@ export function Workshop2RuConnectivityCheckButton() {
         fetch('/api/workshop2/uat/ss27-checklist', { cache: 'no-store' }),
       ]);
 
-      const probes = probesRes.ok
-        ? ((await probesRes.json()) as Record<string, unknown>)
-        : null;
+      const probes = probesRes.ok ? ((await probesRes.json()) as Record<string, unknown>) : null;
       const readiness = readinessRes.ok
         ? ((await readinessRes.json()) as Record<string, unknown>)
         : null;

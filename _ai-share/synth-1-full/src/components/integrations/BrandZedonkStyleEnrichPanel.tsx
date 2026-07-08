@@ -37,9 +37,7 @@ export function BrandZedonkStyleEnrichPanel() {
         return;
       }
       const s = json.data?.style;
-      setHint(
-        s ? `make $${s.makeCostUsd} · freight $${s.freightUsd} · duty ${s.dutyPct}%` : null
-      );
+      setHint(s ? `make $${s.makeCostUsd} · freight $${s.freightUsd} · duty ${s.dutyPct}%` : null);
       setMsg('Costing hint → досье артикула и thread');
     } catch {
       setMsg('Ошибка сети');
@@ -55,7 +53,9 @@ export function BrandZedonkStyleEnrichPanel() {
           <Layers className="h-4 w-4" aria-hidden />
           Агентская консолидация · costing
         </CardTitle>
-        <CardDescription>Себестоимость make + freight + duty → досье / столп 1 development.</CardDescription>
+        <CardDescription>
+          Себестоимость make + freight + duty → досье / столп 1 development.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -70,12 +70,16 @@ export function BrandZedonkStyleEnrichPanel() {
             Импорт costing hint
           </Button>
           {hint ? (
-            <Badge variant="secondary" className="text-[10px]" data-testid="brand-zedonk-costing-hint">
+            <Badge
+              variant="secondary"
+              className="text-[10px]"
+              data-testid="brand-zedonk-costing-hint"
+            >
               {hint}
             </Badge>
           ) : null}
         </div>
-        {msg ? <p className="text-muted-foreground text-xs">{msg}</p> : null}
+        {msg ? <p className="text-xs text-muted-foreground">{msg}</p> : null}
       </CardContent>
     </Card>
   );

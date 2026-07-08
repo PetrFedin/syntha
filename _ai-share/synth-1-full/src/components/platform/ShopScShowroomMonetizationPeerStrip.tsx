@@ -21,14 +21,25 @@ export function ShopScShowroomMonetizationPeerStrip({ collectionId, orderId }: P
   const partners = buildShopB2bPartnersSession({ collectionId, orderId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_SHOP_SC_SHOWROOM_MONETIZATION_PEER_STRIP_TESTID}>
-      <Link href={session.linesheetHref} data-testid="shop-sc-showroom-linesheet-link" className={hubGadget.goldenLink}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_SHOP_SC_SHOWROOM_MONETIZATION_PEER_STRIP_TESTID}
+    >
+      <Link
+        href={session.linesheetHref}
+        data-testid="shop-sc-showroom-linesheet-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_LINESHEET_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={partners.discoverPageHref} data-testid="shop-sc-showroom-partners-link" className={hubGadget.goldenLink}>
+      <Link
+        href={partners.discoverPageHref}
+        data-testid="shop-sc-showroom-partners-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_PARTNERS_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>

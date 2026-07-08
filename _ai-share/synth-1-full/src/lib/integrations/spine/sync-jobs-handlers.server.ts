@@ -9,10 +9,7 @@ import { getNuOrderConfigFromEnv } from '@/lib/b2b/integrations/archive/nuorder-
 import { nuorderFetchOrders } from '@/lib/b2b/integrations/archive/nuorder-orders';
 import { toSpineImportOrderPayloadList } from './spine-import-payload.utils';
 import { importWholesaleOrdersBatch } from './order-import.service';
-import {
-  isWholesaleImportPlatform,
-  type IntegrationPlatform,
-} from './integration-platform';
+import { isWholesaleImportPlatform, type IntegrationPlatform } from './integration-platform';
 import {
   getImportedOrderRecord,
   listImportedOrdersAsB2B,
@@ -125,9 +122,9 @@ async function runTrackingSyncJob(platform: string): Promise<SyncJobDispatchOutc
   await ensureSpineOperationalStoreReady([...SPINE_HUB_MINIMAL_SCOPES, 'tracking']);
   const plat = platform.trim().toLowerCase();
   const ids =
-    plat === 'syntha' ?
-      listImportedOrdersAsB2B().map((o) => o.order)
-    : wholesaleOrderIdsForPlatform(plat);
+    plat === 'syntha'
+      ? listImportedOrdersAsB2B().map((o) => o.order)
+      : wholesaleOrderIdsForPlatform(plat);
 
   if (ids.length === 0) {
     return {
@@ -150,14 +147,17 @@ async function runTrackingSyncJob(platform: string): Promise<SyncJobDispatchOutc
 
 async function runVendorPoImportJob(): Promise<SyncJobDispatchOutcome> {
   await ensureSpineOperationalStoreReady(SPINE_PROCUREMENT_SCOPES);
-  const candidates = listImportedOrdersAsB2B().map((o) => o.order).slice(0, 20);
+  const candidates = listImportedOrdersAsB2B()
+    .map((o) => o.order)
+    .slice(0, 20);
   let imported = 0;
 
   for (const b2bOrderId of candidates) {
     if (getVendorPoByOrderId(b2bOrderId)) continue;
     if (!getImportedOrderRecord(b2bOrderId)) continue;
     const productionOrderId =
-      PLATFORM_CORE_DEMO.productionOrderId ?? `PO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '').slice(-12)}`;
+      PLATFORM_CORE_DEMO.productionOrderId ??
+      `PO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '').slice(-12)}`;
     const record = await importVendorPoForHandoff(b2bOrderId, productionOrderId);
     if (record) imported += 1;
   }
@@ -169,9 +169,11 @@ async function runAllocationSyncJob(): Promise<SyncJobDispatchOutcome> {
   await ensureSpineOperationalStoreReady(SPINE_ALLOCATION_SCOPES);
   const targets = wholesaleOrderIdsForPlatform('aims360');
   const orderIds =
-    targets.length > 0 ?
-      targets.slice(0, 5)
-    : listImportedOrdersAsB2B().map((o) => o.order).slice(0, 5);
+    targets.length > 0
+      ? targets.slice(0, 5)
+      : listImportedOrdersAsB2B()
+          .map((o) => o.order)
+          .slice(0, 5);
 
   let synced = 0;
   for (const wholesaleOrderId of orderIds) {
@@ -188,9 +190,12 @@ async function runAllocationSyncJob(): Promise<SyncJobDispatchOutcome> {
 async function runWipSyncJob(): Promise<SyncJobDispatchOutcome> {
   await ensureSpineOperationalStoreReady(SPINE_WIP_WRITE_SCOPES);
   let synced = 0;
-  for (const b2bOrderId of listImportedOrdersAsB2B().map((o) => o.order).slice(0, 5)) {
+  for (const b2bOrderId of listImportedOrdersAsB2B()
+    .map((o) => o.order)
+    .slice(0, 5)) {
     const productionOrderId =
-      PLATFORM_CORE_DEMO.productionOrderId ?? `PO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '').slice(-12)}`;
+      PLATFORM_CORE_DEMO.productionOrderId ??
+      `PO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '').slice(-12)}`;
     try {
       syncAims360Wip({ productionOrderId, b2bOrderId, poStage: 'cutting' });
       synced += 1;

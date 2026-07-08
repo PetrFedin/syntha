@@ -36,10 +36,7 @@ type Props = {
 };
 
 /** Comms hub — unified PO inbox: все PO из production handoff queue (не только snapshot ≤3). */
-export function ManufacturerUnifiedPoInboxStrip({
-  compact = false,
-  minimalChrome = false,
-}: Props) {
+export function ManufacturerUnifiedPoInboxStrip({ compact = false, minimalChrome = false }: Props) {
   const demo = usePlatformCoreDemoContext();
   const { collectionId, factoryId, demoOrderId: fallbackOrderId } = demo;
   const w2Fallback = fallbackOrderId.startsWith('__') ? '' : fallbackOrderId;
@@ -56,7 +53,10 @@ export function ManufacturerUnifiedPoInboxStrip({
     getPlatformCoreDemo(collectionId).demoOrderId
   );
 
-  const { tick: handoffTick, sseConnected } = useFactoryHandoffQueueSse(factoryId, Boolean(factoryId));
+  const { tick: handoffTick, sseConnected } = useFactoryHandoffQueueSse(
+    factoryId,
+    Boolean(factoryId)
+  );
 
   const { snapshot } = usePillarSnapshot({
     collectionId,

@@ -68,7 +68,7 @@ export function PlatformCoreShowroomBuyerProfileStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 px-3 py-2"
+      className="border-border-subtle bg-bg-surface2/40 space-y-2 rounded-md border px-3 py-2"
       data-testid={SHOP_EMPTY27_BUYER_PROFILE_STRIP_TESTID}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -88,7 +88,11 @@ export function PlatformCoreShowroomBuyerProfileStrip({
             {storageBadgeRu}
           </Badge>
         ) : storageMode === 'file' ? (
-          <Badge variant="outline" className="text-[9px] uppercase" data-testid="shop-sc-cabinet-buyer-profile-file">
+          <Badge
+            variant="outline"
+            className="text-[9px] uppercase"
+            data-testid="shop-sc-cabinet-buyer-profile-file"
+          >
             file
           </Badge>
         ) : null}
@@ -109,13 +113,25 @@ export function PlatformCoreShowroomBuyerProfileStrip({
         <p className="text-text-secondary text-[11px]">{SHOP_EMPTY27_BUYER_PROFILE_LOADING_RU}</p>
       ) : profile ? (
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="text-[9px]" data-testid="shop-sc-cabinet-buyer-profile-segment">
+          <Badge
+            variant="secondary"
+            className="text-[9px]"
+            data-testid="shop-sc-cabinet-buyer-profile-segment"
+          >
             {profile.segmentNameRu}
           </Badge>
-          <Badge variant="outline" className="text-[9px]" data-testid="shop-sc-cabinet-buyer-profile-tier">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="shop-sc-cabinet-buyer-profile-tier"
+          >
             {profile.priceTier}
           </Badge>
-          <Badge variant="outline" className="text-[9px]" data-testid="shop-sc-cabinet-buyer-profile-net">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="shop-sc-cabinet-buyer-profile-net"
+          >
             Net {profile.netTermDays} дн.
           </Badge>
         </div>
@@ -136,7 +152,12 @@ export function PlatformCoreShowroomBuyerProfileStrip({
 
       {!omitPeerLinks ? (
         <div className="flex flex-wrap gap-2 pt-1">
-          <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-bold uppercase">
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="h-7 text-[10px] font-bold uppercase"
+          >
             <PlatformCoreLink
               href={partnersHref}
               data-testid="shop-sc-cabinet-buyer-profile-partners-link"
@@ -145,7 +166,10 @@ export function PlatformCoreShowroomBuyerProfileStrip({
             </PlatformCoreLink>
           </Button>
           <Button asChild size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase">
-            <PlatformCoreLink href={matrixHref} data-testid="shop-sc-cabinet-buyer-profile-matrix-link">
+            <PlatformCoreLink
+              href={matrixHref}
+              data-testid="shop-sc-cabinet-buyer-profile-matrix-link"
+            >
               Матрица
             </PlatformCoreLink>
           </Button>

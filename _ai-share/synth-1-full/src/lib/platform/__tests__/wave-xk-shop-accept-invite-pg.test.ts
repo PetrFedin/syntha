@@ -32,7 +32,10 @@ describe('wave XK — shop accept-invite PG partner session', () => {
     expect(SHOP_B2B_ACCEPT_INVITE_GOLDEN_PATH_UAT_RU).toMatch(/invite.*PG/i);
     expect(SHOP_B2B_ACCEPT_INVITE_GOLDEN_PATH_UAT_RU).toMatch(/partners catalog/i);
     expect(SHOP_B2B_ACCEPT_INVITE_GOLDEN_PATH_UAT_RU).toMatch(/eligible-for-matrix/i);
-    const discoverHref = shopPartnersAcceptInviteDiscoverHref({ collectionId: 'SS27', buyerId: 'shop1' });
+    const discoverHref = shopPartnersAcceptInviteDiscoverHref({
+      collectionId: 'SS27',
+      buyerId: 'shop1',
+    });
     expect(discoverHref).toContain('/shop/b2b/partners/discover');
     expect(discoverHref).toContain('partnersPeer=accept-invite');
     expect(discoverHref).toContain('collection=SS27');
@@ -62,6 +65,9 @@ describe('wave XK — shop accept-invite PG partner session', () => {
     });
 
     expect(resolveShopCoreBuyerIdFromPartnerSessionIdSync(sessionId)).toBe('shop1');
-    expect(typeof (await import('@/lib/server/shop-core-buyer-partner-session')).resolveShopCoreBuyerIdFromRequestAsync).toBe('function');
+    expect(
+      typeof (await import('@/lib/server/shop-core-buyer-partner-session'))
+        .resolveShopCoreBuyerIdFromRequestAsync
+    ).toBe('function');
   });
 });

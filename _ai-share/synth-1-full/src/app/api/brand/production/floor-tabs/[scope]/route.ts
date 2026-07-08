@@ -26,10 +26,7 @@ function parseScope(raw: string): FloorTabScope | null {
 }
 
 /** GET — floor-tab draft (subcontractor, qc-app, …). */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ scope: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ scope: string }> }) {
   const { scope: rawScope } = await params;
   const scope = parseScope(rawScope);
   if (!scope) {
@@ -47,10 +44,7 @@ export async function GET(
 }
 
 /** PUT — persist floor-tab draft. */
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ scope: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ scope: string }> }) {
   const { scope: rawScope } = await params;
   const scope = parseScope(rawScope);
   if (!scope) {

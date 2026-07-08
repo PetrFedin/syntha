@@ -3,10 +3,7 @@
 import Link from 'next/link';
 import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
 import { buildShopShowroomBuySession } from '@/lib/platform-core-ports/b2b/shop-showroom-buy';
-import {
-  brandLinesheetsHrefForDemo,
-  getPlatformCoreDemo,
-} from '@/lib/platform-core-hub-matrix';
+import { brandLinesheetsHrefForDemo, getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
 import {
   WAVE_YP_LINESHEETS_RU,
   WAVE_YP_SHOP_SHOWROOM_RU,

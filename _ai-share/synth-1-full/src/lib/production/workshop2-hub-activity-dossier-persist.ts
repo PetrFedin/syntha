@@ -104,8 +104,7 @@ export function evaluateWorkshop2HubActivityHandoffGate(
     return {
       id: 'hub.activity.no_server_events',
       severity: 'warning',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') || 'Нет server events в журнале.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'Нет server events в журнале.',
     };
   }
   return null;

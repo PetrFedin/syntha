@@ -18,9 +18,7 @@ export type Workshop2B2bOrderDetailView = Workshop2B2bOrderRecord & {
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
-type FetchOutcome =
-  | { kind: 'ready'; order: Workshop2B2bOrderDetailView }
-  | { kind: 'error' };
+type FetchOutcome = { kind: 'ready'; order: Workshop2B2bOrderDetailView } | { kind: 'error' };
 
 async function fetchWorkshop2B2bOrderDetail(
   id: string,
@@ -46,11 +44,7 @@ async function fetchWorkshop2B2bOrderDetail(
     if (parsed.success) {
       return {
         kind: 'ready',
-        order: mapOperationalOrderToW2DetailView(
-          id,
-          parsed.data.data.order,
-          collectionFallback
-        ),
+        order: mapOperationalOrderToW2DetailView(id, parsed.data.data.order, collectionFallback),
       };
     }
   }

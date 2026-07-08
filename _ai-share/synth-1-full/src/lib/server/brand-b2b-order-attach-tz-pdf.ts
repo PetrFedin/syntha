@@ -37,8 +37,7 @@ export async function attachBrandB2bOrderTzPdfToPo(input: {
     };
   }
 
-  const collectionId =
-    input.collectionId?.trim() || order.collectionId?.trim() || 'SS27';
+  const collectionId = input.collectionId?.trim() || order.collectionId?.trim() || 'SS27';
   const articleId =
     input.articleId?.trim() ||
     order.lines[0]?.articleId?.trim() ||

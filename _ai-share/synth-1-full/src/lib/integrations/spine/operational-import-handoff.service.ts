@@ -51,12 +51,17 @@ import {
 } from './wholesale-export.service';
 import { syncAims360Wip } from './order-tracking.service';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
-import { resolveArticleIdFromProductId, resolveSpineCollectionIdFromLines } from './spine-production-forecast-lines';
+import {
+  resolveArticleIdFromProductId,
+  resolveSpineCollectionIdFromLines,
+} from './spine-production-forecast-lines';
 import { areWorkshop2MaterialRequisitionsConfirmedForArticles } from '@/lib/server/workshop2-material-requisition-repository';
 
 import { isIntegrationImportedWholesaleOrderId } from './integration-ui-utils';
 
-function metaPlatformFromOrder(orderId: string): 'nuorder' | 'joor' | 'syntha' | 'zedonk' | undefined {
+function metaPlatformFromOrder(
+  orderId: string
+): 'nuorder' | 'joor' | 'syntha' | 'zedonk' | undefined {
   const p = getIntegrationMetaForOrder(orderId)?.sourcePlatform;
   if (p === 'nuorder' || p === 'joor' || p === 'zedonk') return p;
   return 'syntha';
@@ -75,9 +80,7 @@ function resolveArticleFromLine(line: B2BOrderLineItem | undefined): string {
   return PLATFORM_CORE_DEMO.demoArticleId;
 }
 
-function resolveArticleIdsFromImport(
-  lineItems: B2BOrderLineItem[]
-): string[] {
+function resolveArticleIdsFromImport(lineItems: B2BOrderLineItem[]): string[] {
   const ids = new Set<string>();
   for (const line of lineItems) {
     const articleId = resolveArticleFromLine(line);
@@ -138,7 +141,12 @@ export async function applyOperationalImportStatusPatch(input: {
   const orderId = input.wholesaleOrderId.trim();
   const status = input.status.trim();
   if (!status) {
-    return { ok: false, code: 'BAD_REQUEST', message: 'status must be a non-empty string', httpStatus: 400 };
+    return {
+      ok: false,
+      code: 'BAD_REQUEST',
+      message: 'status must be a non-empty string',
+      httpStatus: 400,
+    };
   }
 
   if (statusIndicatesBrandConfirm(status)) {
@@ -154,7 +162,12 @@ export async function applyOperationalImportStatusPatch(input: {
       status: status === 'confirmed' ? 'confirmed' : status,
     });
     if (!merge.ok) {
-      return { ok: false, code: merge.code, message: merge.message, httpStatus: merge.code === 'BAD_REQUEST' ? 400 : 409 };
+      return {
+        ok: false,
+        code: merge.code,
+        message: merge.message,
+        httpStatus: merge.code === 'BAD_REQUEST' ? 400 : 409,
+      };
     }
     return {
       ok: true,
@@ -172,7 +185,12 @@ export async function applyOperationalImportStatusPatch(input: {
     status,
   });
   if (!merge.ok) {
-    return { ok: false, code: merge.code, message: merge.message, httpStatus: merge.code === 'BAD_REQUEST' ? 400 : 409 };
+    return {
+      ok: false,
+      code: merge.code,
+      message: merge.message,
+      httpStatus: merge.code === 'BAD_REQUEST' ? 400 : 409,
+    };
   }
   patchImportedOrderStatus(orderId, normalizeImportedSpineStatus(orderId, merge.status));
   bumpPlatformCoreChainStatus([orderId]);
@@ -308,7 +326,13 @@ export async function getOperationalImportChainStatus(
 }
 
 export type OperationalImportConfirmResult =
-  | { ok: true; orderId: string; status: Workshop2B2bOrderStatus; alreadyConfirmed: boolean; messageRu: string }
+  | {
+      ok: true;
+      orderId: string;
+      status: Workshop2B2bOrderStatus;
+      alreadyConfirmed: boolean;
+      messageRu: string;
+    }
   | { ok: false; code: string; messageRu: string };
 
 /** A4: brand confirms imported OO (mirrors confirm-order). */

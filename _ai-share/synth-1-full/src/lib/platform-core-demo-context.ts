@@ -90,9 +90,7 @@ export function resolvePlatformCoreDemoPresetForArticleId(
 /** Коллекции golden path (кроме системной SS27), которые подтягиваются из PG при входе в W2. */
 export const PLATFORM_CORE_W2_HYDRATE_COLLECTION_IDS: readonly string[] = Object.keys(
   PLATFORM_CORE_DEMO_PRESETS
-).filter(
-  (id) => id !== PLATFORM_CORE_DEMO.collectionId && !isPlatformCoreEmptyChainCollection(id)
-);
+).filter((id) => id !== PLATFORM_CORE_DEMO.collectionId && !isPlatformCoreEmptyChainCollection(id));
 
 /** Доступные demo-коллекции на hub (`/platform?collection=`). */
 export const PLATFORM_CORE_COLLECTION_PRESETS: ReadonlyArray<{
@@ -115,9 +113,7 @@ export function getPlatformCoreCollectionLabel(collectionId: string): string {
 }
 
 /** Валидный collectionId для chain-overview; неизвестный → SS27. */
-export function resolvePlatformCoreCollectionId(
-  raw: string | null | undefined
-): string {
+export function resolvePlatformCoreCollectionId(raw: string | null | undefined): string {
   const fallback = PLATFORM_CORE_DEMO.collectionId;
   const id = raw?.trim();
   if (!id) return fallback;
@@ -125,9 +121,7 @@ export function resolvePlatformCoreCollectionId(
   return preset?.id ?? fallback;
 }
 
-export function getPlatformCoreDemo(
-  collectionId?: string | null
-): PlatformCoreDemoContext {
+export function getPlatformCoreDemo(collectionId?: string | null): PlatformCoreDemoContext {
   const id = resolvePlatformCoreCollectionId(collectionId);
   return PLATFORM_CORE_DEMO_PRESETS[id] ?? PLATFORM_CORE_DEMO;
 }
@@ -148,9 +142,7 @@ export function resolvePageCollectionId(
     fallback?: string | null;
   } = {}
 ): string {
-  return resolvePlatformCoreCollectionId(
-    options.collection ?? options.w2col ?? options.fallback
-  );
+  return resolvePlatformCoreCollectionId(options.collection ?? options.w2col ?? options.fallback);
 }
 
 /** Активный wholesale из chain-overview / spine-resolver → href столпов и PO id. */

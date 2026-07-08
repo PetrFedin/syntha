@@ -59,7 +59,9 @@ export function PlatformCorePcTaskAutoEnsure({
         };
         if (cancelled) return;
         if (json.ok) {
-          setMessage(json.messageRu ?? (json.created ? 'Задача PG создана.' : 'Задача PG уже есть.'));
+          setMessage(
+            json.messageRu ?? (json.created ? 'Задача PG создана.' : 'Задача PG уже есть.')
+          );
           onEnsured?.();
         }
       })

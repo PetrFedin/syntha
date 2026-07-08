@@ -4,9 +4,7 @@ import {
   useWorkshop2Phase1DossierRenderPhaseRow,
   type UseWorkshop2Phase1DossierRenderPhaseRowParams,
 } from '@/components/brand/production/workshop2-phase1-dossier-panel-use-render-phase-row';
-import {
-  useWorkshop2Phase1DossierSectionRowsSharedBundle,
-} from '@/components/brand/production/workshop2-phase1-dossier-panel-use-section-rows-shared';
+import { useWorkshop2Phase1DossierSectionRowsSharedBundle } from '@/components/brand/production/workshop2-phase1-dossier-panel-use-section-rows-shared';
 import type { Workshop2DossierSectionRowsSharedBundle } from '@/components/brand/production/workshop2-phase1-dossier-panel-section-rows';
 import type { Workshop2DossierAttributeCardContextProps } from '@/components/brand/production/workshop2-phase1-dossier-panel-attribute-card';
 import type { HandbookCategoryLeaf } from '@/lib/production/category-handbook-leaves';

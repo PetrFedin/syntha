@@ -17,7 +17,11 @@ export function ShopCoreBuyerSwitcher() {
 
   if (!ready) {
     return (
-      <Badge variant="outline" className="text-[10px]" data-testid="shop-b2b-buyer-switcher-loading">
+      <Badge
+        variant="outline"
+        className="text-[10px]"
+        data-testid="shop-b2b-buyer-switcher-loading"
+      >
         Магазин…
       </Badge>
     );

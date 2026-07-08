@@ -132,9 +132,9 @@ export function LiveProcessPageBody({
 
   const [processIdList, setProcessIdList] = useState<string[]>(() => getAllLiveProcessIds());
   const coreMode = isPlatformCoreMode();
-  const [runtimeStorageMode, setRuntimeStorageMode] = useState<'pg' | 'unavailable' | 'file' | null>(
-    null
-  );
+  const [runtimeStorageMode, setRuntimeStorageMode] = useState<
+    'pg' | 'unavailable' | 'file' | null
+  >(null);
   const [workflowPersistenceLabel, setWorkflowPersistenceLabel] = useState(
     coreMode
       ? BRAND_PROCESS_RUNTIME_CORE_HINT_RU

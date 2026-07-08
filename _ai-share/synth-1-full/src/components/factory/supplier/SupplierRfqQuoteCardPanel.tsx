@@ -108,7 +108,7 @@ export function SupplierRfqQuoteCardPanel({
   if (!rfqId && !centricRfq?.rfqId) {
     return (
       <Card className="border-dashed" data-testid="sup-dev-rfq-quote-card-empty">
-        <CardContent className="py-4 text-xs text-text-muted">
+        <CardContent className="text-text-muted py-4 text-xs">
           {supDevRfqQuoteCardEmptyRu(collectionId, articleId)}
         </CardContent>
       </Card>

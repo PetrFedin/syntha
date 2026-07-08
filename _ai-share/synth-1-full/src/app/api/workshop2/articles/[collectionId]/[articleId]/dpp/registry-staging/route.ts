@@ -51,7 +51,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     txMeta: { eventType: 'workshop2_dpp_registry_staging' },
   });
   if (!saved.ok) {
-    return jsonWorkshop2ErrorRu(workshop2DossierPutFailureStatus(saved), workshop2DossierPutFailureMessageRu(saved));
+    return jsonWorkshop2ErrorRu(
+      workshop2DossierPutFailureStatus(saved),
+      workshop2DossierPutFailureMessageRu(saved)
+    );
   }
 
   const postHonesty = evaluateWorkshop2DppRegistryWriteHonesty({

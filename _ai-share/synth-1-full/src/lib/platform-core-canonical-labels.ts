@@ -5,8 +5,7 @@
 import { isPlatformCoreExtendedRolesEnabled } from '@/lib/platform-core-article-spine';
 
 export const PLATFORM_CORE_CABINET_TITLE = 'Мой кабинет';
-export const PLATFORM_CORE_CABINET_LEAD =
-  'Пять столпов цепочки — одна структура у всех ролей.';
+export const PLATFORM_CORE_CABINET_LEAD = 'Пять столпов цепочки — одна структура у всех ролей.';
 
 /** Hub / header — тот же тон, что «Роли · быстрый вход». */
 export const PLATFORM_CORE_HUB_TITLE = 'SYNTHA · Platform Core';
@@ -105,43 +104,41 @@ export { PLATFORM_CORE_WMS_RESERVE_CHECKOUT_RU as SHOP_B2B_CHECKOUT_INVENTORY_HO
 export const SHOP_CANONICAL_CALENDAR_LAYERS = 'orders,logistics';
 
 /** Аббревиатуры: EN + перевод (для tooltip). */
-export const PLATFORM_CORE_TERM_TIPS: Record<
-  string,
-  { en: string; ru: string; labelRu: string }
-> = {
-  W2: {
-    en: 'Workshop 2 — article development workspace',
-    ru: 'Цех разработки — разработка артикулов и хранилище досье',
-    labelRu: 'W2',
-  },
-  B2B: {
-    en: 'Business-to-business wholesale',
-    ru: 'Оптовые заказы между брендом и магазином',
-    labelRu: 'B2B',
-  },
-  PO: {
-    en: 'Production Order',
-    ru: 'Производственный заказ — партия в цехе после передачи',
-    labelRu: 'PO',
-  },
-  BOM: {
-    en: 'Bill of Materials',
-    ru: 'Спецификация материалов и фурнитуры',
-    labelRu: 'BOM',
-  },
-  RFQ: {
-    en: 'Request for Quotation',
-    ru: 'Запрос цены у поставщика',
-    labelRu: 'RFQ',
-  },
-  Handoff: {
-    en: 'Brand confirms order → factory PO queue',
-    ru: 'Передача подтверждённого заказа в производство',
-    labelRu: 'Передача',
-  },
-  PG: {
-    en: 'PostgreSQL — live chain data',
-    ru: 'PostgreSQL — живая цепочка после загрузки данных',
-    labelRu: 'PG',
-  },
-};
+export const PLATFORM_CORE_TERM_TIPS: Record<string, { en: string; ru: string; labelRu: string }> =
+  {
+    W2: {
+      en: 'Workshop 2 — article development workspace',
+      ru: 'Цех разработки — разработка артикулов и хранилище досье',
+      labelRu: 'W2',
+    },
+    B2B: {
+      en: 'Business-to-business wholesale',
+      ru: 'Оптовые заказы между брендом и магазином',
+      labelRu: 'B2B',
+    },
+    PO: {
+      en: 'Production Order',
+      ru: 'Производственный заказ — партия в цехе после передачи',
+      labelRu: 'PO',
+    },
+    BOM: {
+      en: 'Bill of Materials',
+      ru: 'Спецификация материалов и фурнитуры',
+      labelRu: 'BOM',
+    },
+    RFQ: {
+      en: 'Request for Quotation',
+      ru: 'Запрос цены у поставщика',
+      labelRu: 'RFQ',
+    },
+    Handoff: {
+      en: 'Brand confirms order → factory PO queue',
+      ru: 'Передача подтверждённого заказа в производство',
+      labelRu: 'Передача',
+    },
+    PG: {
+      en: 'PostgreSQL — live chain data',
+      ru: 'PostgreSQL — живая цепочка после загрузки данных',
+      labelRu: 'PG',
+    },
+  };

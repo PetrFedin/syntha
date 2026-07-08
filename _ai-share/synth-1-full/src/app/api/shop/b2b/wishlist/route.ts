@@ -15,7 +15,10 @@ import {
 } from '@/lib/server/workshop2-b2b-wishlist-repository';
 
 function resolveBuyerId(req: NextRequest, checkoutBuyerId: string, bodyBuyerId?: string): string {
-  return resolveShopCoreBuyerIdFromRequest(req, bodyBuyerId ?? req.nextUrl.searchParams.get('buyerId') ?? checkoutBuyerId);
+  return resolveShopCoreBuyerIdFromRequest(
+    req,
+    bodyBuyerId ?? req.nextUrl.searchParams.get('buyerId') ?? checkoutBuyerId
+  );
 }
 
 export async function GET(req: NextRequest) {

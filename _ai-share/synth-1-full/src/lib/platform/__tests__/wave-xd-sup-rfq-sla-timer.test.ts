@@ -42,7 +42,9 @@ describe('wave XD — supplier RFQ thread SLA timer + quote card RU + inbox dedu
     const href = supplierRfqInboxHrefForDemo('SS27', 'demo-ss27-01');
     expect(href).toContain('/factory/supplier/rfq-inbox');
     expect(assertSupplierRfqInboxHrefSeparate(href)).toBe(true);
-    expect(assertSupplierRfqInboxHrefSeparate('/factory/supplier/messages?feature=rfq')).toBe(false);
+    expect(assertSupplierRfqInboxHrefSeparate('/factory/supplier/messages?feature=rfq')).toBe(
+      false
+    );
     expect(assertSupplierRfqInboxHrefSeparate('/factory/supplier/messages?pcf=rfq')).toBe(false);
   });
 

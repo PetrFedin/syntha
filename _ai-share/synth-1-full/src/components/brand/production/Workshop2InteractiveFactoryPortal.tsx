@@ -25,9 +25,7 @@ export type FactoryPin = {
 
 type ReviewStatus = 'pending' | 'rejected' | 'accepted';
 
-function mapHandoffToReviewStatus(
-  dossier: Workshop2DossierPhase1 | null
-): ReviewStatus {
+function mapHandoffToReviewStatus(dossier: Workshop2DossierPhase1 | null): ReviewStatus {
   const handoff = dossier ? findLatestWorkshop2FactoryTechPackHandoffForReview(dossier) : null;
   if (!handoff) return 'pending';
   if (handoff.status === 'accepted') return 'accepted';
@@ -200,12 +198,11 @@ export function Workshop2InteractiveFactoryPortal({
     });
   };
 
-  const displayHtml =
-    docView === 'factory-pack' && factoryPackHtml ? factoryPackHtml : htmlContent;
+  const displayHtml = docView === 'factory-pack' && factoryPackHtml ? factoryPackHtml : htmlContent;
 
   return (
     <div
-      className="min-w-0 w-full space-y-4 py-3 md:mx-auto md:max-w-5xl md:space-y-6 md:py-6"
+      className="w-full min-w-0 space-y-4 py-3 md:mx-auto md:max-w-5xl md:space-y-6 md:py-6"
       data-testid="factory-portal-panel"
     >
       <div
@@ -234,7 +231,7 @@ export function Workshop2InteractiveFactoryPortal({
               </>
             )}
           </div>
-          <div className="flex max-md:-mx-1 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:pb-1 max-md:[-webkit-overflow-scrolling:touch] min-w-0 flex-wrap items-center gap-2 md:gap-3 max-md:flex-nowrap">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 max-md:-mx-1 max-md:flex-nowrap max-md:overflow-x-auto max-md:overscroll-x-contain max-md:pb-1 max-md:[-webkit-overflow-scrolling:touch] md:gap-3">
             {factoryPackHtml ? (
               <>
                 <Button
@@ -331,7 +328,7 @@ export function Workshop2InteractiveFactoryPortal({
         onClick={handleContainerClick}
         className={`relative min-w-0 overflow-x-auto rounded-xl border bg-white shadow-sm transition-all duration-200 ${isPinMode ? 'cursor-crosshair ring-2 ring-blue-500 ring-offset-4' : ''}`}
       >
-        <div className="prose prose-sm prose-headings:border-b prose-headings:pb-2 prose-a:text-blue-600 pointer-events-none max-w-none min-w-0 select-none p-4 md:p-8">
+        <div className="prose prose-sm prose-headings:border-b prose-headings:pb-2 prose-a:text-blue-600 pointer-events-none min-w-0 max-w-none select-none p-4 md:p-8">
           <div dangerouslySetInnerHTML={{ __html: displayHtml }} />
         </div>
 

@@ -51,9 +51,7 @@ describe('workshop2-techpack-qty-bridge', () => {
   it('prefers working order over dossier fallback', () => {
     const bridge = buildWorkshop2TechPackQtyBridge({
       dossier: emptyDossier(),
-      workingOrderRows: [
-        { SKU: 'A', Color: 'Black', 'Qty M': '5' },
-      ],
+      workingOrderRows: [{ SKU: 'A', Color: 'Black', 'Qty M': '5' }],
       articleSku: 'A',
     });
     expect(bridge.source).toBe('working_order');

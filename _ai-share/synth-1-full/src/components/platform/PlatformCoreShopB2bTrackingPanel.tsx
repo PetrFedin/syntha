@@ -358,7 +358,11 @@ export function PlatformCoreShopB2bTrackingPanel() {
       className="min-w-0 space-y-3"
     >
       {focusOrderId ? (
-        <div className={hubGadget.goldenPath} data-testid="shop-co-tracking-context-strip" data-audit-legacy="shop-tracking-order-context-strip">
+        <div
+          className={hubGadget.goldenPath}
+          data-testid="shop-co-tracking-context-strip"
+          data-audit-legacy="shop-tracking-order-context-strip"
+        >
           <Link
             href={shopB2bOrderHref(focusOrderId)}
             data-testid="shop-co-tracking-order-detail-link"
@@ -502,8 +506,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
         const totalSteps = chain?.steps?.length ?? 0;
         const reserve = resolveShopTrackingReserveLabel(chain, row);
         const isHubTrackingRow =
-          isPlatformCorePgB2bOrder(row.order) ||
-          isIntegrationImportedWholesaleOrderId(row.order);
+          isPlatformCorePgB2bOrder(row.order) || isIntegrationImportedWholesaleOrderId(row.order);
         const materialsStep = chain?.steps?.find((s) => s.id === 'materials_supplied');
         const materialsDone = chain?.materialsSupplied === true || materialsStep?.done === true;
         const materialsPending =
@@ -581,7 +584,9 @@ export function PlatformCoreShopB2bTrackingPanel() {
                       variant="tracking"
                       label={reserve.text}
                       tone={reserve.tone}
-                      sseLive={Boolean(isHubTrackingRow && sseConnected && chain?.inventoryReserved)}
+                      sseLive={Boolean(
+                        isHubTrackingRow && sseConnected && chain?.inventoryReserved
+                      )}
                       testId={
                         isHubTrackingRow
                           ? `shop-co-tracking-reserve-${row.order}`
@@ -622,9 +627,7 @@ export function PlatformCoreShopB2bTrackingPanel() {
                     contextualSource="tracking"
                     className={trackingRowQuickLinkClass}
                     data-testid={
-                      isHubTrackingRow
-                        ? `shop-co-tracking-row-chat-link-${row.order}`
-                        : undefined
+                      isHubTrackingRow ? `shop-co-tracking-row-chat-link-${row.order}` : undefined
                     }
                   >
                     {WAVE_YN_ORDER_CHAT_SHORT_RU}

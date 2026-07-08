@@ -16,7 +16,10 @@ describe('wave-ah partners + supplier + mfr', () => {
   });
 
   it('supplier dev BOM peer links brand supplier-bom workspace', () => {
-    const session = buildBrandSupplierBomSession({ collectionId: 'SS27', articleId: 'demo-ss27-01' });
+    const session = buildBrandSupplierBomSession({
+      collectionId: 'SS27',
+      articleId: 'demo-ss27-01',
+    });
     expect(session.bomHref).toContain('pcf=bom');
     expect(session.bomHref).toContain('collection=SS27');
   });

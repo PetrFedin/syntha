@@ -9,7 +9,13 @@ import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCor
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { usePlatformCoreDevelopmentStatusPoll } from '@/hooks/use-platform-core-development-status-poll';
 import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/PlatformCoreChainStatusRefreshBadge';
-import { ROUTES, brandDevelopmentCabinetHref, brandDevelopmentArticleHref, brandMessagesWorkshop2ArticleContextHref, factoryProductionDossierHref } from '@/lib/platform-core-routes';
+import {
+  ROUTES,
+  brandDevelopmentCabinetHref,
+  brandDevelopmentArticleHref,
+  brandMessagesWorkshop2ArticleContextHref,
+  factoryProductionDossierHref,
+} from '@/lib/platform-core-routes';
 import { BrandCentricBomConflictPanel } from '@/components/integrations/BrandCentricBomConflictPanel';
 import {
   brandDevelopmentSamplePeerHref,
@@ -98,9 +104,7 @@ export function DevelopmentPillarCard({
   });
 
   const devPayload =
-    snapshot?.pillarId === 'development' && 'development' in snapshot
-      ? snapshot.development
-      : null;
+    snapshot?.pillarId === 'development' && 'development' in snapshot ? snapshot.development : null;
   const status: StatusPayload | null = devPayload
     ? {
         steps: devPayload.status.steps,
@@ -125,15 +129,16 @@ export function DevelopmentPillarCard({
     devSteps.length > 0 ? Math.round((devDoneCount / devSteps.length) * 100) : null;
 
   const sampleStatusRu = formatPlatformCoreSampleStatusLabelRu(sampleStatus);
-  const sampleNeedsFactoryAck =
-    sampleStatus === 'sent' || sampleStatus === 'in_progress';
+  const sampleNeedsFactoryAck = sampleStatus === 'sent' || sampleStatus === 'in_progress';
 
   const w2HubFallback = brandDevelopmentCabinetHref(collectionId);
   const w2HubHref = status?.workshop2Href ?? w2HubFallback;
   const mfrDossierFallback = factoryProductionDossierHref(demo.demoArticleId, {
     collectionId,
   });
-  const rangePlannerHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`);
+  const rangePlannerHref = platformCoreUiHref(
+    `${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`
+  );
   const w2CreateHref = brandDevelopmentCabinetHref(collectionId, undefined, { create: true });
   const brandSampleArticleId = status?.demoArticleId ?? demo.demoArticleId;
   const brandSamplePeerOpts = { sampleStatus };
@@ -145,7 +150,7 @@ export function DevelopmentPillarCard({
   const sampleHandoffHref =
     variant === 'brand'
       ? brandSamplePeerHref
-      : status?.factorySampleHref ?? `${ROUTES.factory.production}#sample-queue`;
+      : (status?.factorySampleHref ?? `${ROUTES.factory.production}#sample-queue`);
   const brandSamplePeerLabelShort = brandDevelopmentSamplePeerLabelShort(brandSamplePeerOpts);
   const brandSamplePeerLabelLong = brandDevelopmentSamplePeerLabelLong(brandSamplePeerOpts);
   const emptyChain = isPlatformCoreEmptyChainCollection(collectionId);
@@ -373,221 +378,236 @@ export function DevelopmentPillarCard({
         data-testid="development-pillar-card"
         className={cn(compact ? hubGadget.pillarCard : 'border-emerald-200/50')}
       >
-      {!compact ? (
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-bold">
-            <Sparkles className="h-4 w-4 text-emerald-600" aria-hidden />
-            ТЗ → образец
-          </CardTitle>
-          <CardDescription className="text-xs">
-            {variant === 'brand'
-              ? 'Досье W2, gates и передача образцов на цех до сборки коллекции.'
-              : 'Очередь образцов и чтение ТЗ из досье бренда.'}
-          </CardDescription>
-        </CardHeader>
-      ) : null}
-      <CardContent className={compact ? hubGadget.pillarBody : 'space-y-3'}>
-        {compact && !minimalChrome ? (
-          <PillarInsightHeader
-            icon={Sparkles}
-            title="ТЗ → образец"
-            subtitle={
-              variant === 'brand'
-                ? 'Досье W2, gates и передача образцов на цех.'
-                : 'Очередь образцов и чтение ТЗ бренда.'
-            }
-          />
+        {!compact ? (
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Sparkles className="h-4 w-4 text-emerald-600" aria-hidden />
+              ТЗ → образец
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {variant === 'brand'
+                ? 'Досье W2, gates и передача образцов на цех до сборки коллекции.'
+                : 'Очередь образцов и чтение ТЗ из досье бренда.'}
+            </CardDescription>
+          </CardHeader>
         ) : null}
-        {compact && !minimalChrome && variant === 'manufacturer' && !suppressChainBadge ? (
-          <PlatformCoreChainStatusRefreshBadge
-            sseConnected={sseConnected}
-            enabled
-            variant="dot"
-            sseTestId="mfr-dev-development-sse-live-badge"
-            pollTestId="mfr-dev-development-poll-badge"
-          />
-        ) : null}
-        {compact && !minimalChrome ? (
-          <PillarInsightSteps
-            steps={
-              variant === 'manufacturer'
+        <CardContent className={compact ? hubGadget.pillarBody : 'space-y-3'}>
+          {compact && !minimalChrome ? (
+            <PillarInsightHeader
+              icon={Sparkles}
+              title="ТЗ → образец"
+              subtitle={
+                variant === 'brand'
+                  ? 'Досье W2, gates и передача образцов на цех.'
+                  : 'Очередь образцов и чтение ТЗ бренда.'
+              }
+            />
+          ) : null}
+          {compact && !minimalChrome && variant === 'manufacturer' && !suppressChainBadge ? (
+            <PlatformCoreChainStatusRefreshBadge
+              sseConnected={sseConnected}
+              enabled
+              variant="dot"
+              sseTestId="mfr-dev-development-sse-live-badge"
+              pollTestId="mfr-dev-development-poll-badge"
+            />
+          ) : null}
+          {compact && !minimalChrome ? (
+            <PillarInsightSteps
+              steps={
+                variant === 'manufacturer'
+                  ? (status?.steps ?? []).filter((step) => step.id === 'factory_samples')
+                  : (status?.steps ?? [])
+              }
+              testId="development-pillar-steps"
+            />
+          ) : !compact ? (
+            <ul className="space-y-1.5">
+              {(variant === 'manufacturer'
                 ? (status?.steps ?? []).filter((step) => step.id === 'factory_samples')
                 : (status?.steps ?? [])
-            }
-            testId="development-pillar-steps"
-          />
-        ) : !compact ? (
-        <ul className="space-y-1.5">
-          {(variant === 'manufacturer'
-            ? (status?.steps ?? []).filter((step) => step.id === 'factory_samples')
-            : (status?.steps ?? [])
-          ).map((step) => (
-            <li key={step.id} className="flex items-start gap-2 text-xs">
-              {step.done ? (
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-              ) : (
-                <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-              )}
-              <span>{step.labelRu}</span>
-            </li>
-          ))}
-        </ul>
-        ) : null}
-        {compact && !minimalChrome ? (
-          <PlatformCorePillarNotificationCenterCompact
-            variant={variant}
-            compact
-            collectionId={collectionId}
-            orderId={demo.demoOrderId}
-            orderScoped
-          />
-        ) : null}
-        {compact && !minimalChrome ? (
-          <div className={hubGadget.statRow}>
-            {variant === 'brand' && devProgressPct != null ? (
-              <span className={hubGadget.stat} data-testid="development-progress-pct">
-                <strong>{devProgressPct}%</strong>
-              </span>
-            ) : null}
-            {variant === 'brand' && bomLineCount != null && bomLineCount > 0 ? (
-              <Badge variant="outline" className={hubGadget.metaBadge} data-testid="development-bom-ready-badge">
-                {WAVE_YF_BOM_BADGE_RU} {bomLineCount}
-              </Badge>
-            ) : null}
-            {variant === 'brand' && sampleStatus ? (
-              <Badge variant="outline" className={hubGadget.metaBadge} data-testid="development-sample-queue-badge">
-                {sampleStatusRu}
-                {sampleQueuePosition != null && sampleQueueTotal != null
-                  ? ` · ${sampleQueuePosition}/${sampleQueueTotal}`
-                  : ''}
-              </Badge>
-            ) : null}
-            {variant === 'manufacturer' && sampleStatus ? (
-              <Badge variant="outline" className={hubGadget.metaBadge} data-testid="mfr-dev-sample-status-badge">
-                {sampleStatusRu}
-              </Badge>
-            ) : null}
-          </div>
-        ) : null}
-        {compact && variant === 'brand' && !minimalChrome ? (
-          <BrandCentricBomConflictPanel
-            collectionId={collectionId}
-            articleId={brandSampleArticleId}
-            compact
-          />
-        ) : null}
-        {!compact ? (
-        <div className="flex flex-wrap items-center gap-1">
-          {variant === 'brand' && devProgressPct != null ? (
-            <Badge
-              variant="outline"
-              data-testid="development-progress-pct"
-              className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] text-sky-900"
-            >
-              Прогресс {devProgressPct}%
-            </Badge>
+              ).map((step) => (
+                <li key={step.id} className="flex items-start gap-2 text-xs">
+                  {step.done ? (
+                    <CheckCircle2
+                      className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                      aria-hidden
+                    />
+                  ) : (
+                    <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                  )}
+                  <span>{step.labelRu}</span>
+                </li>
+              ))}
+            </ul>
           ) : null}
-          {variant === 'brand' && bomLineCount != null && bomLineCount > 0 ? (
-            <Badge
-              variant="outline"
-              data-testid="development-bom-ready-badge"
-              className="h-4 border-emerald-200 bg-emerald-50 px-1.5 text-[9px] text-emerald-800"
-            >
-              BOM · {bomLineCount}{' '}
-              {bomLineCount === 1 ? 'строка' : bomLineCount < 5 ? 'строки' : 'строк'}
-            </Badge>
+          {compact && !minimalChrome ? (
+            <PlatformCorePillarNotificationCenterCompact
+              variant={variant}
+              compact
+              collectionId={collectionId}
+              orderId={demo.demoOrderId}
+              orderScoped
+            />
           ) : null}
-          {variant === 'brand' && sampleStatus ? (
-            <Badge
-              variant="outline"
-              data-testid="development-sample-queue-badge"
-              className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] text-sky-800"
-            >
-              Образец · {sampleStatusRu}
-              {sampleQueuePosition != null && sampleQueueTotal != null
-                ? ` · #${sampleQueuePosition}/${sampleQueueTotal}`
-                : ''}
-            </Badge>
-          ) : null}
-          {variant === 'brand' && sampleQueuePosition != null && sampleQueueTotal != null ? (
-            <Badge
-              variant="outline"
-              data-testid="development-sample-queue-position"
-              className="h-4 border-violet-200 bg-violet-50 px-1.5 text-[9px] text-violet-900"
-            >
-              Очередь {sampleQueuePosition} из {sampleQueueTotal}
-            </Badge>
-          ) : null}
-          {variant === 'manufacturer' && sampleStatus ? (
-            <Badge
-              variant="outline"
-              data-testid="mfr-dev-sample-status-badge"
-              className="h-4 border-amber-200 bg-amber-50 px-1.5 text-[9px] text-amber-900"
-            >
-              Образец · {sampleStatusRu}
-            </Badge>
-          ) : null}
-        </div>
-        ) : null}
-        {!compact ? (
-          <>
-            {variant === 'brand' && readyForCollection && status?.linesheetHref ? (
-              <Button size="sm" variant="default" asChild data-testid="development-linesheet-cta">
-                <Link href={status.linesheetHref}>
-                  → Linesheet · {status.demoArticleId ?? collectionId}
-                </Link>
-              </Button>
-            ) : null}
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {variant === 'brand' ? (
-                <Link
-                  href={status?.workshop2Href ?? w2HubFallback}
-                  className="text-accent-primary text-xs font-medium hover:underline"
-                  {...platformCoreW2PrefetchHandlers}
-                >
-                  Разработка артикулов
-                </Link>
+          {compact && !minimalChrome ? (
+            <div className={hubGadget.statRow}>
+              {variant === 'brand' && devProgressPct != null ? (
+                <span className={hubGadget.stat} data-testid="development-progress-pct">
+                  <strong>{devProgressPct}%</strong>
+                </span>
               ) : null}
-              {variant === 'brand' ? (
-                <Link
-                  href={brandSamplePeerHref}
-                  data-testid="development-sample-handoff-cta"
-                  className="text-accent-primary text-xs font-semibold hover:underline"
+              {variant === 'brand' && bomLineCount != null && bomLineCount > 0 ? (
+                <Badge
+                  variant="outline"
+                  className={hubGadget.metaBadge}
+                  data-testid="development-bom-ready-badge"
                 >
-                  {brandSamplePeerLabelLong}
-                </Link>
+                  {WAVE_YF_BOM_BADGE_RU} {bomLineCount}
+                </Badge>
               ) : null}
-              {variant === 'brand' && status?.factoryDossierHref ? (
-                <Link
-                  href={status.factoryDossierHref}
-                  data-testid="development-factory-dossier-cta"
-                  className="text-accent-primary text-xs font-medium hover:underline"
+              {variant === 'brand' && sampleStatus ? (
+                <Badge
+                  variant="outline"
+                  className={hubGadget.metaBadge}
+                  data-testid="development-sample-queue-badge"
                 >
-                  Досье цеха
-                </Link>
+                  {sampleStatusRu}
+                  {sampleQueuePosition != null && sampleQueueTotal != null
+                    ? ` · ${sampleQueuePosition}/${sampleQueueTotal}`
+                    : ''}
+                </Badge>
               ) : null}
-              {variant === 'brand' && status?.supplierBomHref ? (
-                <Link
-                  href={status.supplierBomHref}
-                  data-testid="development-supplier-bom-cta"
-                  className="text-accent-primary text-xs font-medium hover:underline"
+              {variant === 'manufacturer' && sampleStatus ? (
+                <Badge
+                  variant="outline"
+                  className={hubGadget.metaBadge}
+                  data-testid="mfr-dev-sample-status-badge"
                 >
-                  BOM поставщика
-                </Link>
-              ) : null}
-              {variant === 'manufacturer' ? (
-                <Link
-                  href={status?.factorySampleHref ?? '/factory/production#sample-queue'}
-                  className="text-accent-primary text-xs font-medium hover:underline"
-                >
-                  Очередь образцов
-                </Link>
+                  {sampleStatusRu}
+                </Badge>
               ) : null}
             </div>
-          </>
-        ) : null}
-      </CardContent>
-    </Card>
+          ) : null}
+          {compact && variant === 'brand' && !minimalChrome ? (
+            <BrandCentricBomConflictPanel
+              collectionId={collectionId}
+              articleId={brandSampleArticleId}
+              compact
+            />
+          ) : null}
+          {!compact ? (
+            <div className="flex flex-wrap items-center gap-1">
+              {variant === 'brand' && devProgressPct != null ? (
+                <Badge
+                  variant="outline"
+                  data-testid="development-progress-pct"
+                  className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] text-sky-900"
+                >
+                  Прогресс {devProgressPct}%
+                </Badge>
+              ) : null}
+              {variant === 'brand' && bomLineCount != null && bomLineCount > 0 ? (
+                <Badge
+                  variant="outline"
+                  data-testid="development-bom-ready-badge"
+                  className="h-4 border-emerald-200 bg-emerald-50 px-1.5 text-[9px] text-emerald-800"
+                >
+                  BOM · {bomLineCount}{' '}
+                  {bomLineCount === 1 ? 'строка' : bomLineCount < 5 ? 'строки' : 'строк'}
+                </Badge>
+              ) : null}
+              {variant === 'brand' && sampleStatus ? (
+                <Badge
+                  variant="outline"
+                  data-testid="development-sample-queue-badge"
+                  className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] text-sky-800"
+                >
+                  Образец · {sampleStatusRu}
+                  {sampleQueuePosition != null && sampleQueueTotal != null
+                    ? ` · #${sampleQueuePosition}/${sampleQueueTotal}`
+                    : ''}
+                </Badge>
+              ) : null}
+              {variant === 'brand' && sampleQueuePosition != null && sampleQueueTotal != null ? (
+                <Badge
+                  variant="outline"
+                  data-testid="development-sample-queue-position"
+                  className="h-4 border-violet-200 bg-violet-50 px-1.5 text-[9px] text-violet-900"
+                >
+                  Очередь {sampleQueuePosition} из {sampleQueueTotal}
+                </Badge>
+              ) : null}
+              {variant === 'manufacturer' && sampleStatus ? (
+                <Badge
+                  variant="outline"
+                  data-testid="mfr-dev-sample-status-badge"
+                  className="h-4 border-amber-200 bg-amber-50 px-1.5 text-[9px] text-amber-900"
+                >
+                  Образец · {sampleStatusRu}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
+          {!compact ? (
+            <>
+              {variant === 'brand' && readyForCollection && status?.linesheetHref ? (
+                <Button size="sm" variant="default" asChild data-testid="development-linesheet-cta">
+                  <Link href={status.linesheetHref}>
+                    → Linesheet · {status.demoArticleId ?? collectionId}
+                  </Link>
+                </Button>
+              ) : null}
+              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                {variant === 'brand' ? (
+                  <Link
+                    href={status?.workshop2Href ?? w2HubFallback}
+                    className="text-accent-primary text-xs font-medium hover:underline"
+                    {...platformCoreW2PrefetchHandlers}
+                  >
+                    Разработка артикулов
+                  </Link>
+                ) : null}
+                {variant === 'brand' ? (
+                  <Link
+                    href={brandSamplePeerHref}
+                    data-testid="development-sample-handoff-cta"
+                    className="text-accent-primary text-xs font-semibold hover:underline"
+                  >
+                    {brandSamplePeerLabelLong}
+                  </Link>
+                ) : null}
+                {variant === 'brand' && status?.factoryDossierHref ? (
+                  <Link
+                    href={status.factoryDossierHref}
+                    data-testid="development-factory-dossier-cta"
+                    className="text-accent-primary text-xs font-medium hover:underline"
+                  >
+                    Досье цеха
+                  </Link>
+                ) : null}
+                {variant === 'brand' && status?.supplierBomHref ? (
+                  <Link
+                    href={status.supplierBomHref}
+                    data-testid="development-supplier-bom-cta"
+                    className="text-accent-primary text-xs font-medium hover:underline"
+                  >
+                    BOM поставщика
+                  </Link>
+                ) : null}
+                {variant === 'manufacturer' ? (
+                  <Link
+                    href={status?.factorySampleHref ?? '/factory/production#sample-queue'}
+                    className="text-accent-primary text-xs font-medium hover:underline"
+                  >
+                    Очередь образцов
+                  </Link>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   );
 }

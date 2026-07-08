@@ -13,9 +13,7 @@ import fs from 'fs';
 
 /** PG — единственный SoT (staging/prod); file только hydrate-cache. */
 export function isSpineOperationalPgPrimary(): boolean {
-  return (
-    process.env.SPINE_OPERATIONAL_PG_PRIMARY === '1' && isSpineOperationalPgEnabled()
-  );
+  return process.env.SPINE_OPERATIONAL_PG_PRIMARY === '1' && isSpineOperationalPgEnabled();
 }
 
 /** PG-primary: не писать JSON mirror (import/allocation и т.д.). */

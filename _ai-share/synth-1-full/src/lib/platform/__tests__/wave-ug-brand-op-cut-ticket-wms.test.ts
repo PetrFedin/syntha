@@ -45,12 +45,7 @@ describe('wave UG — brand OP cut ticket PG + inventory ledger WMS', () => {
   });
 
   it('sums WMS reserved qty from balance rows', () => {
-    expect(
-      sumWmsReservedQty([
-        { qtyReserved: 12 },
-        { qty_reserved: 8 },
-      ])
-    ).toBe(20);
+    expect(sumWmsReservedQty([{ qtyReserved: 12 }, { qty_reserved: 8 }])).toBe(20);
   });
 
   it('brand OP inventory ledger strip testids', () => {

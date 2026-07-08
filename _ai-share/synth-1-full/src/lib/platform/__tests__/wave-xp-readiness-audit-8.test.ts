@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getReadinessCell, getPlatformCoreReadinessMatrix } from '@/lib/platform-core-readiness-audit';
+import {
+  getReadinessCell,
+  getPlatformCoreReadinessMatrix,
+} from '@/lib/platform-core-readiness-audit';
 
 const SRC = path.join(__dirname, '..', '..', '..');
 
@@ -75,10 +78,7 @@ export const WAVE_XP_READINESS_AUDIT_CLOSURES = [
     id: 'brand-range-bulk-xg',
     sectionId: 'brand-dev-range',
     was: 'Bulk tier POST без wave xg envelope / EN conflict labels',
-    testids: [
-      'brand-range-planner-conflict-resolver-strip',
-      'range-planner-tier-bulk-assign-btn',
-    ],
+    testids: ['brand-range-planner-conflict-resolver-strip', 'range-planner-tier-bulk-assign-btn'],
     sourceFile: 'lib/platform/__tests__/wave-xg-brand-range-planner-bulk.test.ts',
     sourceMustContain: ['wave XG', 'bulkTierAssignApiPath', 'waveXgBrandRangePlannerContract'],
   },
@@ -157,14 +157,17 @@ describe('wave XP — readiness audit 8.0 closure batch (XA–XH)', () => {
     }
   });
 
-  it.each(WAVE_XP_APPROACHING_8_SECTION_IDS)('%s — staticScore approaching 8.0 (≥7.7)', (sectionId) => {
-    const hit = cells
-      .flatMap((c) => c.subItems.map((s) => ({ ...s, roleId: c.roleId, pillarId: c.pillarId })))
-      .find((s) => s.id === sectionId);
-    expect(hit).toBeDefined();
-    expect(hit!.staticScore).toBeGreaterThanOrEqual(APPROACHING_8_MIN);
-    expect(hit!.summary).toMatch(/~8\.0|8\.0/i);
-  });
+  it.each(WAVE_XP_APPROACHING_8_SECTION_IDS)(
+    '%s — staticScore approaching 8.0 (≥7.7)',
+    (sectionId) => {
+      const hit = cells
+        .flatMap((c) => c.subItems.map((s) => ({ ...s, roleId: c.roleId, pillarId: c.pillarId })))
+        .find((s) => s.id === sectionId);
+      expect(hit).toBeDefined();
+      expect(hit!.staticScore).toBeGreaterThanOrEqual(APPROACHING_8_MIN);
+      expect(hit!.summary).toMatch(/~8\.0|8\.0/i);
+    }
+  );
 
   it('shop sample_collection cell — XA/XH evidence in cell good', () => {
     const cell = getReadinessCell(cells, 'shop', 'sample_collection');
@@ -174,9 +177,11 @@ describe('wave XP — readiness audit 8.0 closure batch (XA–XH)', () => {
 
   it('brand development cell — XE/XF/XG evidence', () => {
     const cell = getReadinessCell(cells, 'brand', 'development');
-    expect(cell?.good.some((g) => g.includes('Wave XF') || g.includes('Wave XG') || g.includes('Wave XE'))).toBe(
-      true
-    );
+    expect(
+      cell?.good.some(
+        (g) => g.includes('Wave XF') || g.includes('Wave XG') || g.includes('Wave XE')
+      )
+    ).toBe(true);
   });
 
   it('manufacturer development cell — XC evidence', () => {

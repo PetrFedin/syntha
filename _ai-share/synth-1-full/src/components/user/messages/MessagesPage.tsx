@@ -165,7 +165,11 @@ export default function MessagesPage({
     return 'brand-cm-thread-search';
   }, [initialRole, currentRole]);
 
-  const entityTemplatePickerVariant = React.useMemo((): 'brand' | 'shop' | 'manufacturer' | 'supplier' => {
+  const entityTemplatePickerVariant = React.useMemo(():
+    | 'brand'
+    | 'shop'
+    | 'manufacturer'
+    | 'supplier' => {
     const role = initialRole ?? currentRole;
     if (role === 'shop' || role === 'b2b') return 'shop';
     if (role === 'supplier') return 'supplier';
@@ -290,7 +294,7 @@ export default function MessagesPage({
             data-testid={slimCore ? 'platform-core-comms-chat-pane' : undefined}
             className={cn(
               'relative flex min-w-0 flex-1 flex-col overflow-hidden border bg-slate-50/30 shadow-inner transition-all',
-              slimCore ? 'rounded-lg border-border-subtle' : 'rounded-2xl border-slate-100',
+              slimCore ? 'border-border-subtle rounded-lg' : 'rounded-2xl border-slate-100',
               slimCore && mobileCommsPane === 'list' && 'max-md:hidden',
               slimCore && 'max-md:w-full'
             )}

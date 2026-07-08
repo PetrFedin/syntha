@@ -280,8 +280,7 @@ export function Workshop2ArticleSamplePanel({
   const floorMesChip = useMemo(() => {
     const mirror = dossier?.floorBridgeMirror;
     const pollRaw =
-      workshop2PgMirrorStr(mirror, 'floorMesPollState') ||
-      String(mirror?.floorMesPollState ?? '');
+      workshop2PgMirrorStr(mirror, 'floorMesPollState') || String(mirror?.floorMesPollState ?? '');
     const pollState = (pollRaw || 'fail_closed') as Workshop2FloorMesPollState;
     const lastPollAt =
       workshop2PgMirrorStr(mirror, 'floorMesLastPollAt') ||

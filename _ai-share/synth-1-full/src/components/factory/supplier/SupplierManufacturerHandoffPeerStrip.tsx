@@ -13,11 +13,7 @@ type Props = {
 };
 
 /** Peer: закупки поставщика → очередь передачи производства (SSE + poll). */
-export function SupplierManufacturerHandoffPeerStrip({
-  factoryId,
-  collectionId,
-  orderId,
-}: Props) {
+export function SupplierManufacturerHandoffPeerStrip({ factoryId, collectionId, orderId }: Props) {
   const { sseConnected } = useFactoryHandoffQueueSse(factoryId, true);
   const handoffHref = manufacturerHandoffFeatureHref('handoff', {
     factoryId,

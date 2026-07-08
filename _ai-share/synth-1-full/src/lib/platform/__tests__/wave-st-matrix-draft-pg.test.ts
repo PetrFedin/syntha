@@ -28,7 +28,16 @@ describe('wave ST — matrix draft PG autosave + hydrate', () => {
         updatedAt: new Date().toISOString(),
         lines: [{ articleId: 'demo-ss27-01', colorCode: 'default', size: 'M', qty: 3 }],
       },
-      [{ id: 'demo-ss27-01', name: 'Coat', sku: 'demo-ss27-01', price: 100, images: [], category: 'apparel' }],
+      [
+        {
+          id: 'demo-ss27-01',
+          name: 'Coat',
+          sku: 'demo-ss27-01',
+          price: 100,
+          images: [],
+          category: 'apparel',
+        },
+      ],
       'SS27'
     );
     expect(items).toHaveLength(1);

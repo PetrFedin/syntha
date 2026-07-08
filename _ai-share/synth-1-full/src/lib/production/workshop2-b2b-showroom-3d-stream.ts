@@ -56,7 +56,9 @@ export function resolveWorkshop2B2bShowroom3dStreamToken(
 }
 
 function resolveEmbedMode(env: Workshop2ProcessEnvLike): Workshop2B2bShowroom3dEmbedMode {
-  const raw = String(env.WORKSHOP2_B2B_3D_EMBED_MODE ?? 'sdk-stub').trim().toLowerCase();
+  const raw = String(env.WORKSHOP2_B2B_3D_EMBED_MODE ?? 'sdk-stub')
+    .trim()
+    .toLowerCase();
   if (raw === 'iframe' || raw === 'sdk' || raw === 'sdk-stub') return raw;
   return 'sdk-stub';
 }

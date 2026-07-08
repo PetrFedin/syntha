@@ -95,7 +95,9 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     const sampleHandoffHref = brandDevelopmentSamplePeerHref(collectionId, articleId);
     const supplierMaterialsHref = factoryMaterialsHrefForDemo(demoCtx);
     const w2Href = brandDevelopmentArticleHref(collectionId, articleId);
-    const investorHref = brandDevelopmentArticleHref(collectionId, articleId, { section: 'overview' });
+    const investorHref = brandDevelopmentArticleHref(collectionId, articleId, {
+      section: 'overview',
+    });
     const productionOpsHref = brandProductionOpsFeatureHref(
       orderId || demo.demoOrderId || PLATFORM_CORE_DEMO.demoOrderId,
       'qc-gate'
@@ -107,13 +109,20 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     return (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1" data-testid={stripTestId}>
         <Link
-          href={platformCoreUiHref(brandMessagesWorkshop2ArticleContextHref(collectionId, articleId), demoCtx)}
+          href={platformCoreUiHref(
+            brandMessagesWorkshop2ArticleContextHref(collectionId, articleId),
+            demoCtx
+          )}
           data-testid="brand-cm-article-chat-link"
           className={linkClass}
         >
           Чат · артикул
         </Link>
-        <Link href={platformCoreUiHref(w2Href, demoCtx)} data-testid="brand-cm-article-w2-link" className={linkClass}>
+        <Link
+          href={platformCoreUiHref(w2Href, demoCtx)}
+          data-testid="brand-cm-article-w2-link"
+          className={linkClass}
+        >
           W2 · карточка
         </Link>
         <Link
@@ -137,15 +146,27 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
         >
           BOM поставщика
         </Link>
-        <Link href={platformCoreUiHref(investorHref, demoCtx)} data-testid="brand-cm-article-investor-summary-link" className={linkClass}>
+        <Link
+          href={platformCoreUiHref(investorHref, demoCtx)}
+          data-testid="brand-cm-article-investor-summary-link"
+          className={linkClass}
+        >
           Сводка для инвестора
         </Link>
         {orderId ? (
-          <Link href={platformCoreUiHref(orderCommsHref, demoCtx)} data-testid="brand-cm-article-order-comms-link" className={linkClass}>
+          <Link
+            href={platformCoreUiHref(orderCommsHref, demoCtx)}
+            data-testid="brand-cm-article-order-comms-link"
+            className={linkClass}
+          >
             Чат по заказу
           </Link>
         ) : null}
-        <Link href={platformCoreUiHref(productionOpsHref, demoCtx)} data-testid="brand-cm-article-production-ops-link" className={linkClass}>
+        <Link
+          href={platformCoreUiHref(productionOpsHref, demoCtx)}
+          data-testid="brand-cm-article-production-ops-link"
+          className={linkClass}
+        >
           Production QC
         </Link>
       </div>
@@ -156,7 +177,10 @@ function PlatformCoreArticleChatContextStripInner({ variant }: Props) {
     return (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1" data-testid={stripTestId}>
         <Link
-          href={platformCoreUiHref(shopMessagesWorkshop2ArticleContextHref(collectionId, articleId), demoCtx)}
+          href={platformCoreUiHref(
+            shopMessagesWorkshop2ArticleContextHref(collectionId, articleId),
+            demoCtx
+          )}
           data-testid="shop-cm-article-chat-link"
           className={linkClass}
         >

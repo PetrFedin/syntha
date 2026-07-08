@@ -51,10 +51,7 @@ export function BrandAttributeSchemaGoldenPathStrip({ collectionId, activeStep }
           ) : null}
           <Link
             href={hrefFor(step.id)}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === step.id && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === step.id && 'font-bold underline')}
             data-testid={`brand-attribute-schema-golden-${step.id}-link`}
           >
             {step.label}

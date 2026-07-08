@@ -39,8 +39,7 @@ export async function POST(req: NextRequest) {
     carrier: body.carrier != null ? String(body.carrier) : undefined,
     status: body.status != null ? String(body.status) : undefined,
     shippedAt: body.shippedAt != null ? String(body.shippedAt) : undefined,
-    estimatedDelivery:
-      body.estimatedDelivery != null ? String(body.estimatedDelivery) : undefined,
+    estimatedDelivery: body.estimatedDelivery != null ? String(body.estimatedDelivery) : undefined,
   });
 
   if (!result) {

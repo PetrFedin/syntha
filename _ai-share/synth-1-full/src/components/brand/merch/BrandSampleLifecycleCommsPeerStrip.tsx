@@ -19,7 +19,7 @@ export function BrandSampleLifecycleCommsPeerStrip({ collectionId }: Props) {
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 rounded-md border border-border-subtle bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="brand-sample-lifecycle-comms-peer-strip"
     >
       <Badge variant="outline" className="text-[9px]">

@@ -13,7 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { buildBrandProductionQcGateSummary, type BrandProductionQcGateRow } from '@/lib/brand-production/qc-gate';
+import {
+  buildBrandProductionQcGateSummary,
+  type BrandProductionQcGateRow,
+} from '@/lib/brand-production/qc-gate';
 import { buildBrandProductionHandoffSession } from '@/lib/brand-production/brand-production-handoff';
 import { buildManufacturerQcGateSession } from '@/lib/production/manufacturer-qc-gate';
 import type { BrandProductionState } from '@/lib/brand-production';

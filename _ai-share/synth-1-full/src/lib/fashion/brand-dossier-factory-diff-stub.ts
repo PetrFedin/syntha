@@ -1,7 +1,4 @@
-import {
-  brandW2ProductionTzHref,
-  factoryProductionDossierContextHref,
-} from '@/lib/routes';
+import { brandW2ProductionTzHref, factoryProductionDossierContextHref } from '@/lib/routes';
 
 export type BrandDossierFactoryDiffRow = {
   id: string;
@@ -51,7 +48,9 @@ export function buildBrandDossierFactoryDiffStubRows(input: {
   ];
 }
 
-export function summarizeBrandDossierFactoryDiffRu(rows: readonly BrandDossierFactoryDiffRow[]): string {
+export function summarizeBrandDossierFactoryDiffRu(
+  rows: readonly BrandDossierFactoryDiffRow[]
+): string {
   const mismatches = rows.filter((r) => !r.matched).length;
   if (mismatches === 0) {
     return `Сверка с досье цеха: ${rows.length} полей совпадают (read-only).`;

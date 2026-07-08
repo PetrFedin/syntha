@@ -197,7 +197,10 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
                     </Badge>
                   }
                   trailing={
-                    <nav className="flex flex-wrap items-center gap-2" aria-label="Переключение хабов">
+                    <nav
+                      className="flex flex-wrap items-center gap-2"
+                      aria-label="Переключение хабов"
+                    >
                       {hubs.map((hub) => {
                         const HubIcon = hub.icon;
                         return (

@@ -18,9 +18,7 @@ export type PlatformCoreShipmentOrderStatus =
   | 'cancelled'
   | string;
 
-export type PlatformCoreShipmentGatewaySource =
-  | 'workshop2_b2b_order'
-  | 'workshop2_dossier_mirror';
+export type PlatformCoreShipmentGatewaySource = 'workshop2_b2b_order' | 'workshop2_dossier_mirror';
 
 export type PlatformCoreAdapterIssue = {
   id: string;
@@ -120,7 +118,9 @@ function cleanString(v: unknown): string | undefined {
   return t || undefined;
 }
 
-function adapterStatus(issues: PlatformCoreAdapterIssue[]): PlatformCoreShipmentEvaluation['status'] {
+function adapterStatus(
+  issues: PlatformCoreAdapterIssue[]
+): PlatformCoreShipmentEvaluation['status'] {
   if (issues.some((i) => i.severity === 'blocker')) return 'blocked';
   if (issues.some((i) => i.severity === 'warning')) return 'warning';
   return 'core_ready';
@@ -134,7 +134,9 @@ function firstLineArticle(order: OrderShape): { collectionId?: string; articleId
   };
 }
 
-function logisticsSnapshot(dossier?: DossierShipmentShape | null): PlatformCoreShipmentLogisticsSnapshot | undefined {
+function logisticsSnapshot(
+  dossier?: DossierShipmentShape | null
+): PlatformCoreShipmentLogisticsSnapshot | undefined {
   const mirror = dossier?.logisticsShipmentMirror;
   if (!mirror) return undefined;
   return {
@@ -320,8 +322,12 @@ export async function getPlatformCoreShipmentForOrder(input: {
 
   const dossier = record?.dossier as DossierShipmentShape | undefined;
   const logistics = logisticsSnapshot(dossier);
-  const qcPassed = Boolean(qcResult?.ok && qcResult.evaluation.passed && !qcResult.evaluation.shipmentBlocked);
-  const documentPacketReady = Boolean(documentsResult?.ok && documentsResult.evaluation.readyForExport);
+  const qcPassed = Boolean(
+    qcResult?.ok && qcResult.evaluation.passed && !qcResult.evaluation.shipmentBlocked
+  );
+  const documentPacketReady = Boolean(
+    documentsResult?.ok && documentsResult.evaluation.readyForExport
+  );
   const dppReady = Boolean(dppResult?.ok && dppResult.evaluation.ready);
   const carrier = logistics?.carrier;
   const trackingNumber = logistics?.trackingNumber;

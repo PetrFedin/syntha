@@ -42,10 +42,7 @@ async function batchWorkshop2DossierMaterialNamesFromPg(
     [collectionId, articleIds]
   );
   const byArticle = new Map(
-    res.rows.map((row) => [
-      row.article_id,
-      previewsForDossier(row.dossier_json, limitPerArticle),
-    ])
+    res.rows.map((row) => [row.article_id, previewsForDossier(row.dossier_json, limitPerArticle)])
   );
   return articleIds.map((articleId) => {
     const materials = byArticle.get(articleId) ?? [];

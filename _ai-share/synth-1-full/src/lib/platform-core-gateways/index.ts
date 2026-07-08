@@ -6,5 +6,8 @@ export { getPlatformCoreDocumentsForArticle } from './documents-gateway';
 export { getPlatformCoreDppForArticle } from './dpp-gateway';
 export { getPlatformCoreCapacityForOrder } from './capacity-gateway';
 export { getPlatformCoreShipmentForOrder } from './shipment-gateway';
-export { getPlatformCoreCommsForArticle, getPlatformCoreCommsForOrder } from './entity-comms-gateway';
+export {
+  getPlatformCoreCommsForArticle,
+  getPlatformCoreCommsForOrder,
+} from './entity-comms-gateway';
 export { getPlatformCoreExceptionForOrder } from './exception-sla-gateway';

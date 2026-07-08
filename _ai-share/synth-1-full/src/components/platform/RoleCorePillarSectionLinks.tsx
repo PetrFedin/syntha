@@ -76,9 +76,7 @@ export function RoleCorePillarSectionLinks({
               onMouseEnter={() => prefetchPlatformCoreW2FromHref(sub.href)}
               onFocus={() => prefetchPlatformCoreW2FromHref(sub.href)}
             >
-              <span>
-                {sub.label}
-              </span>
+              <span>{sub.label}</span>
               {!isPlatformCoreMode() ? (
                 <span className="text-text-muted shrink-0 font-mono text-[11px]">
                   {sub.liveScore.toFixed(1)}

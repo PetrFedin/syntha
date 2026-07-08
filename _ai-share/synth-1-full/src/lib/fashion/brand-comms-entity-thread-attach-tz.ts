@@ -15,8 +15,6 @@ export function brandCommsEntityThreadAttachTzMessage(input: {
   return `TZ из dossier прикреплён к thread «${label}» · ${input.collectionId}:${input.articleId}`;
 }
 
-export function brandCommsEntityThreadSupportsAttachTz(
-  kind: BrandCommsEntityThreadKind
-): boolean {
+export function brandCommsEntityThreadSupportsAttachTz(kind: BrandCommsEntityThreadKind): boolean {
   return kind === 'bom' || kind === 'sample';
 }

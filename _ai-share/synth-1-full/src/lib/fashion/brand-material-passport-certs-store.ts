@@ -9,7 +9,9 @@ export type BrandMaterialPassportCertsResponse = {
   storageMode?: 'pg' | 'file' | 'memory' | 'demo';
 };
 
-export async function fetchBrandMaterialPassportCerts(collectionId?: string): Promise<BrandMaterialPassportCertsResponse> {
+export async function fetchBrandMaterialPassportCerts(
+  collectionId?: string
+): Promise<BrandMaterialPassportCertsResponse> {
   const params = new URLSearchParams();
   if (collectionId?.trim()) params.set('collectionId', collectionId.trim());
   const res = await fetch(`/api/brand/merch/material-passport/certs?${params.toString()}`, {
@@ -32,7 +34,9 @@ export async function patchBrandMaterialPassportCertReady(input: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  const json = (await res.json()) as BrandMaterialPassportCertsResponse & { row?: BrandMaterialPassportCertRow };
+  const json = (await res.json()) as BrandMaterialPassportCertsResponse & {
+    row?: BrandMaterialPassportCertRow;
+  };
   if (!res.ok || !json.ok) {
     return { ok: false };
   }

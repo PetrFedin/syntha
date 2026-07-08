@@ -8,12 +8,9 @@ import {
 import { buildWorkshop2InvestorDemoBrief } from '@/lib/production/workshop2-investor-demo-brief';
 
 describe('workshop2 investor demo mode env', () => {
-  it.each(['true', 'TRUE', '1', 'yes', 'YES'])(
-    'isWorkshop2InvestorDemoMode accepts %s',
-    (flag) => {
-      expect(isWorkshop2InvestorDemoMode({ WORKSHOP2_INVESTOR_DEMO_MODE: flag })).toBe(true);
-    }
-  );
+  it.each(['true', 'TRUE', '1', 'yes', 'YES'])('isWorkshop2InvestorDemoMode accepts %s', (flag) => {
+    expect(isWorkshop2InvestorDemoMode({ WORKSHOP2_INVESTOR_DEMO_MODE: flag })).toBe(true);
+  });
 
   it('isWorkshop2InvestorDemoMode rejects empty and falsey strings', () => {
     expect(isWorkshop2InvestorDemoMode({ WORKSHOP2_INVESTOR_DEMO_MODE: '' })).toBe(false);

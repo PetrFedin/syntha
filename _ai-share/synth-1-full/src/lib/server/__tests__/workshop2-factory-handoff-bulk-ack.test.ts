@@ -16,7 +16,9 @@ describe('workshop2 factory handoff bulk acknowledge', () => {
       return;
     }
 
-    const queue = await listWorkshop2FactoryProductionHandoffQueue({ factoryId: handoff.factoryId });
+    const queue = await listWorkshop2FactoryProductionHandoffQueue({
+      factoryId: handoff.factoryId,
+    });
     const row = queue.items.find((i) => i.b2bOrderId === DEMO_ORDER);
     expect(row).toBeTruthy();
     expect(row!.status).toBe('pending_erp');

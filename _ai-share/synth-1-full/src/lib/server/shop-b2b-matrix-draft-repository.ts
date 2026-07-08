@@ -24,9 +24,7 @@ function scopeKey(sessionId: string): string {
   return sessionId.trim();
 }
 
-export async function getShopB2bMatrixDraftServer(input: {
-  sessionId: string;
-}): Promise<{
+export async function getShopB2bMatrixDraftServer(input: { sessionId: string }): Promise<{
   draft: ShopB2bMatrixDraftDoc | null;
   storageMode: 'postgres' | 'memory';
   updatedAt?: string;
@@ -39,10 +37,9 @@ export async function getShopB2bMatrixDraftServer(input: {
     const res = await getWorkshop2PgPool().query<{
       draft_json: ShopB2bMatrixDraftDoc;
       updated_at: Date | string;
-    }>(
-      `SELECT draft_json, updated_at FROM shop_b2b_matrix_drafts WHERE session_id = $1`,
-      [sessionId]
-    );
+    }>(`SELECT draft_json, updated_at FROM shop_b2b_matrix_drafts WHERE session_id = $1`, [
+      sessionId,
+    ]);
     const row = res.rows[0];
     const draftJson = row?.draft_json;
     if (draftJson && typeof draftJson === 'object' && draftJson.v === 1) {

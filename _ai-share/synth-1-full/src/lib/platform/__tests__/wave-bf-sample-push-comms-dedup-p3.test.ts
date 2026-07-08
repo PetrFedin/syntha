@@ -7,8 +7,7 @@ describe('wave-bf sample push + comms detail dedup p3', () => {
   });
 
   it('sample-order transition API path contract', () => {
-    const path =
-      '/api/workshop2/articles/SS27/demo-ss27-01/sample-order/so-1/transition';
+    const path = '/api/workshop2/articles/SS27/demo-ss27-01/sample-order/so-1/transition';
     expect(path).toContain('sample-order');
     expect(path).toContain('transition');
   });

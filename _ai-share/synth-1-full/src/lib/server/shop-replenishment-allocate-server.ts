@@ -40,7 +40,9 @@ export async function allocateShopReplenishmentFromWmsAtp(input: {
   ]);
 
   const atpBySku = new Map(atpResult.rows.map((row) => [row.sku.trim(), row.atp]));
-  const reorderRows = suggest.rows.filter((row) => row.action === 'reorder' && row.suggestedQty > 0);
+  const reorderRows = suggest.rows.filter(
+    (row) => row.action === 'reorder' && row.suggestedQty > 0
+  );
 
   const atpLines: ShopReplenishmentAtpLine[] = reorderRows.map((row) => ({
     sku: row.sku,

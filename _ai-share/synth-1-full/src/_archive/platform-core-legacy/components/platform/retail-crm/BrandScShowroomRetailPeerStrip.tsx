@@ -25,26 +25,47 @@ export function BrandScShowroomRetailPeerStrip({
   omitMatrixPrefillCta = false,
 }: Props) {
   const linesheetsHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
-  const releaseGateHref = platformCoreUiHref(`${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=checklist&collection=${encodeURIComponent(collectionId)}`);
+  const releaseGateHref = platformCoreUiHref(
+    `${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=checklist&collection=${encodeURIComponent(collectionId)}`
+  );
   const platformHubHref = `${PLATFORM_CORE_B2B_BASE}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=hub`;
-  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
-  const checkoutHref = platformCoreUiHref(`${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(collectionId)}`);
+  const matrixHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
+  );
+  const checkoutHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(collectionId)}`
+  );
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_BRAND_SC_SHOWROOM_RETAIL_PEER_STRIP_TESTID}>
-      <Link href={linesheetsHref} data-testid="brand-sc-showroom-linesheets-link" className={hubGadget.goldenLink}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_BRAND_SC_SHOWROOM_RETAIL_PEER_STRIP_TESTID}
+    >
+      <Link
+        href={linesheetsHref}
+        data-testid="brand-sc-showroom-linesheets-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_LINESHEETS_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={releaseGateHref} data-testid="brand-sc-showroom-release-gate-link" className={hubGadget.goldenLink}>
+      <Link
+        href={releaseGateHref}
+        data-testid="brand-sc-showroom-release-gate-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_RELEASE_GATE_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={platformHubHref} data-testid="brand-sc-showroom-platform-hub-link" className={hubGadget.goldenLink}>
+      <Link
+        href={platformHubHref}
+        data-testid="brand-sc-showroom-platform-hub-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_PLATFORM_B2B_RU}
       </Link>
       {omitMatrixPrefillCta ? null : (
@@ -52,7 +73,11 @@ export function BrandScShowroomRetailPeerStrip({
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={matrixHref} data-testid="brand-sc-showroom-shop-matrix-link" className={hubGadget.goldenLink}>
+          <Link
+            href={matrixHref}
+            data-testid="brand-sc-showroom-shop-matrix-link"
+            className={hubGadget.goldenLink}
+          >
             Матрица магазина
           </Link>
         </>
@@ -60,7 +85,11 @@ export function BrandScShowroomRetailPeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={checkoutHref} data-testid="brand-sc-showroom-shop-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={checkoutHref}
+        data-testid="brand-sc-showroom-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
     </div>

@@ -42,7 +42,8 @@ function normalizePlatform(raw: string | undefined): 'nuorder' | 'joor' | null {
 }
 
 function mapShipment(body: SpineShipmentWebhookBody) {
-  const trackingNumber = String(body.trackingNumber ?? body.tracking_number ?? '').trim() || undefined;
+  const trackingNumber =
+    String(body.trackingNumber ?? body.tracking_number ?? '').trim() || undefined;
   if (!trackingNumber) return undefined;
   return {
     trackingNumber,
@@ -59,7 +60,8 @@ export async function processSpineShipmentWebhook(
   const platform = normalizePlatform(body.platform ?? body.provider);
   if (!platform) return null;
 
-  const wholesaleOrderId = String(body.wholesaleOrderId ?? body.b2bOrderId ?? '').trim() || undefined;
+  const wholesaleOrderId =
+    String(body.wholesaleOrderId ?? body.b2bOrderId ?? '').trim() || undefined;
   const externalOrderId = String(body.externalOrderId ?? body.order_id ?? '').trim() || undefined;
   const shipment = mapShipment(body);
 

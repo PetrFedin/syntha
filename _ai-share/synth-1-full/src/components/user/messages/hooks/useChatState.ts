@@ -120,10 +120,7 @@ export function useChatState(initialRole?: string) {
     return [matrixRow, ...rest];
   }, [withDeepLinkAcademy, spGet, coreMode, pgThreadsOnly]);
 
-  const pgThreadsCabinet = React.useMemo(
-    () => resolvePgThreadsCabinet(currentRole),
-    [currentRole]
-  );
+  const pgThreadsCabinet = React.useMemo(() => resolvePgThreadsCabinet(currentRole), [currentRole]);
 
   const b2bInboxCabinet = React.useMemo((): PlatformCoreB2bInboxCabinet | null => {
     if (!pgThreadsOnly) return null;
@@ -140,7 +137,11 @@ export function useChatState(initialRole?: string) {
     b2bInboxCabinet === 'shop' ? shopInboxBuyerId : undefined
   );
 
-  const pgThreadsReaderCabinet = pgThreadsOnly ? pgThreadsCabinet : currentRole === 'brand' ? 'brand' : null;
+  const pgThreadsReaderCabinet = pgThreadsOnly
+    ? pgThreadsCabinet
+    : currentRole === 'brand'
+      ? 'brand'
+      : null;
   const pgReaderId = usePgContextualActorId(pgThreadsReaderCabinet ?? 'brand');
 
   const refreshPgThreads = React.useCallback(() => {
@@ -316,11 +317,13 @@ export function useChatState(initialRole?: string) {
       const collectionId = parsed.contextId.slice(0, sep).trim();
       const articleId = parsed.contextId.slice(sep + 1).trim();
       if (!collectionId || !articleId) return;
-      void postPlatformCoreCommsContextualThread({ collectionId, articleId, pillarId: 'comms' }).catch(
-        () => {
-          contextualThreadEnsuredRef.current = '';
-        }
-      );
+      void postPlatformCoreCommsContextualThread({
+        collectionId,
+        articleId,
+        pillarId: 'comms',
+      }).catch(() => {
+        contextualThreadEnsuredRef.current = '';
+      });
     }
   }, [activeChatId, coreMode]);
 

@@ -10,7 +10,11 @@ import {
   exportWorkshop2Erp1cJournal,
 } from '@/lib/production/workshop2-erp-1c-stub';
 import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 type RouteCtx = { params: Promise<{ collectionId: string; articleId: string }> };
 

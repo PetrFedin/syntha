@@ -40,7 +40,12 @@ async function persistBrandTasksKanbanRoute(
 
   if (!isBrandTasksPgConfigured()) {
     return NextResponse.json(
-      { ok: false, storageMode: 'unavailable', error: 'postgres_unavailable', messageRu: 'PostgreSQL недоступен — Kanban не сохранён.' },
+      {
+        ok: false,
+        storageMode: 'unavailable',
+        error: 'postgres_unavailable',
+        messageRu: 'PostgreSQL недоступен — Kanban не сохранён.',
+      },
       { status: 503 }
     );
   }

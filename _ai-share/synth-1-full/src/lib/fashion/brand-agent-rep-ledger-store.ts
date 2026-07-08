@@ -1,14 +1,10 @@
 import type { CommissionRecord } from '@/lib/distributor/sub-agent-commission';
 
-export async function fetchBrandAgentRepLedgerRecords(input?: {
-  repId?: string;
-}): Promise<{
+export async function fetchBrandAgentRepLedgerRecords(input?: { repId?: string }): Promise<{
   records: CommissionRecord[];
   mode: 'postgres' | 'file' | 'memory' | 'empty';
 }> {
-  const qs = input?.repId?.trim()
-    ? `?repId=${encodeURIComponent(input.repId.trim())}`
-    : '';
+  const qs = input?.repId?.trim() ? `?repId=${encodeURIComponent(input.repId.trim())}` : '';
   const res = await fetch(`/api/brand/b2b/agent-rep/ledger${qs}`, { cache: 'no-store' });
   const json = (await res.json()) as {
     ok?: boolean;

@@ -32,12 +32,12 @@ export function ShopCoCabinetTrackingEmbed({
   return (
     <div data-testid="shop-co-cabinet-tracking-embed-root">
       <PlatformCoreB2bOrderDetailFacts
-      orderId={orderId}
-      variant="shop"
-      embedSurface="cabinetTracking"
-      operationalStatus={operationalStatus}
-      trackingNumberPreview={trackingNumberPreview}
-    />
+        orderId={orderId}
+        variant="shop"
+        embedSurface="cabinetTracking"
+        operationalStatus={operationalStatus}
+        trackingNumberPreview={trackingNumberPreview}
+      />
     </div>
   );
 }

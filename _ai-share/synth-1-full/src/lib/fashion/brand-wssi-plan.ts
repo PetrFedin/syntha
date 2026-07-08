@@ -84,11 +84,15 @@ export function brandWssiFeatureHref(
   return `${ROUTES.brand.assortmentMixPlanner}?${PILLAR_CAPABILITY_FEATURE_PARAM}=${featureId}&collection=${encodeURIComponent(collectionId)}`;
 }
 
-export function brandWssiShowroomHref(collectionId: string = PLATFORM_CORE_DEMO.collectionId): string {
+export function brandWssiShowroomHref(
+  collectionId: string = PLATFORM_CORE_DEMO.collectionId
+): string {
   return `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
 }
 
-export function brandWssiCheckoutHref(collectionId: string = PLATFORM_CORE_DEMO.collectionId): string {
+export function brandWssiCheckoutHref(
+  collectionId: string = PLATFORM_CORE_DEMO.collectionId
+): string {
   return shopB2bCheckoutCollectionHref(collectionId);
 }
 

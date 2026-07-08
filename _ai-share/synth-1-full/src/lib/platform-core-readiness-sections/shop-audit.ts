@@ -82,8 +82,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 1,
         staticScore: 7.8,
         liveScore: 7.9,
-        summary:
-          'Published-articles + empty onboarding → partners/matrix (~8.0 после wave XH).',
+        summary: 'Published-articles + empty onboarding → partners/matrix (~8.0 после wave XH).',
         good: [
           'PG articles',
           'Shop empty onboarding (`shop-sc-showroom-empty-onboarding`, core-38)',
@@ -175,7 +174,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         ],
         bad: [],
         fix: [],
-        resolveHref: (d) => platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-matrix', d),
+        resolveHref: (d) =>
+          platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-matrix', d),
       },
       {
         id: 'shop-sc-cabinet',
@@ -209,8 +209,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 1,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'Matrix draft autosave PG + unified CO golden path 8.0 (wave XT/YK/YV).',
+        summary: 'Matrix draft autosave PG + unified CO golden path 8.0 (wave XT/YK/YV).',
         good: [
           'PG matrix rows',
           'Panel + context strip (`shop-co-matrix-panel`)',
@@ -278,7 +277,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         ],
         bad: [],
         fix: [],
-        resolveHref: (d) => platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-checkout', d),
+        resolveHref: (d) =>
+          platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-checkout', d),
       },
       {
         id: 'shop-co-registry',
@@ -286,8 +286,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 3,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'Greenfield shop2 full registry PG + CO golden path 8.0 (wave XX/YK/YV).',
+        summary: 'Greenfield shop2 full registry PG + CO golden path 8.0 (wave XX/YK/YV).',
         good: [
           'orders-core',
           'B2bChainPhaseBadge',
@@ -322,7 +321,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         ],
         bad: [],
         fix: [],
-        resolveHref: (d) => platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-registry', d),
+        resolveHref: (d) =>
+          platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-registry', d),
       },
       {
         id: 'shop-co-detail',
@@ -347,7 +347,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         ],
         bad: [],
         fix: [],
-        resolveHref: (d) => platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-detail', d),
+        resolveHref: (d) =>
+          platformCoreCabinetSectionHref('shop', 'collection_order', 'shop-co-detail', d),
       },
       {
         id: 'shop-co-buyer-tracking',
@@ -355,8 +356,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 5,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'Buyer tracking chain + CO golden path tracking step 8.0 (wave YK/YV).',
+        summary: 'Buyer tracking chain + CO golden path tracking step 8.0 (wave YK/YV).',
         good: [
           'shopB2bTrackingOrderHref / #shop-co-buyer-tracking',
           'ShopProductionVisibility none/milestones/full (core-16 e2e)',
@@ -392,8 +392,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 6,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'CO cabinet tracking embed + greenfield registry 8.0 (wave XX/XY/YK/YV).',
+        summary: 'CO cabinet tracking embed + greenfield registry 8.0 (wave XX/XY/YK/YV).',
         good: [
           'Pillar card steps',
           'Panel + CTA groups (`shop-co-cabinet-panel`)',
@@ -427,8 +426,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 7,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'ATP/reorder WMS feed + CO golden path dedup 8.0 (wave WG/YK/YV).',
+        summary: 'ATP/reorder WMS feed + CO golden path dedup 8.0 (wave WG/YK/YV).',
         good: [
           'SmartReplenishment + B2bOrderUrlContextBanner',
           'Golden path strip (`shop-co-golden-path-strip`; legacy `shop-replenishment-golden-path-strip` feature-local only)',
@@ -468,7 +466,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         staticScore: 6.7,
         liveScore: 6.9,
         scoreAliasOf: 'shop-co-checkout',
-        summary: 'Rep portal · commission ledger PG write · matrix · checkout (alias → checkout for hub §6).',
+        summary:
+          'Rep portal · commission ledger PG write · matrix · checkout (alias → checkout for hub §6).',
         good: [
           'shop-agent-rep workspace (portal/commission/matrix)',
           'Golden path strip (`shop-agent-rep-golden-path-strip`)',
@@ -497,7 +496,8 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         staticScore: 7.1,
         liveScore: 7.2,
         scoreAliasOf: 'shop-co-replenishment',
-        summary: 'Hub/rollup/pricelist + tier sync honesty → brand shop sync (alias → replenishment for hub §6).',
+        summary:
+          'Hub/rollup/pricelist + tier sync honesty → brand shop sync (alias → replenishment for hub §6).',
         good: [
           'shop-landed-margin workspace',
           'Golden path strip (`shop-landed-margin-golden-path-strip`)',
@@ -555,8 +555,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         order: 11,
         staticScore: 8.0,
         liveScore: 8.0,
-        summary:
-          'Versions/bulk/handoff + version diff merge 8.0 (wave TP/XL/YV).',
+        summary: 'Versions/bulk/handoff + version diff merge 8.0 (wave TP/XL/YV).',
         good: [
           'shop-working-order workspace',
           'Golden path strip (`shop-co-golden-path-strip` + feature `shop-working-order-golden-path-strip`)',

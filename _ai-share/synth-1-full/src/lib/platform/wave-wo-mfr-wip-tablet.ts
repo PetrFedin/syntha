@@ -4,8 +4,7 @@
 
 export const WAVE_WO_MFR_WIP_STATUS_PG_MIGRATION = '065_wave_wo_mfr_wip_status';
 
-export const WAVE_WO_MFR_WIP_STATUS_PATCH_API =
-  '/api/workshop2/manufacturer/production-orders';
+export const WAVE_WO_MFR_WIP_STATUS_PATCH_API = '/api/workshop2/manufacturer/production-orders';
 
 export const WAVE_WO_MFR_WIP_FLOOR_TABLET_STRIP_TESTID = 'mfr-op-wip-floor-tablet-strip';
 export const WAVE_WO_MFR_WIP_FLOOR_STAGE_BADGE_TESTID = 'mfr-op-wip-floor-stage-badge';
@@ -31,6 +30,5 @@ export const WAVE_WO_MFR_HANDOFF_FLOOR_SOT_RU =
   'Bulk-приёмка — на этой панели. WIP PATCH с планшета —';
 export const WAVE_WO_MFR_HANDOFF_FLOOR_SOT_LINK_RU = 'производственные заказы';
 
-export const WAVE_WO_MFR_GANTT_FLOOR_SOT_RU =
-  'WIP PATCH — в реестре ниже. Гantt — здесь. Bulk —';
+export const WAVE_WO_MFR_GANTT_FLOOR_SOT_RU = 'WIP PATCH — в реестре ниже. Гantt — здесь. Bulk —';
 export const WAVE_WO_MFR_GANTT_FLOOR_SOT_LINK_RU = 'очередь передачи';

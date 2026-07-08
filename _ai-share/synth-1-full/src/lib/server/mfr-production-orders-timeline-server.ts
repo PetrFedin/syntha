@@ -54,9 +54,8 @@ async function resolveProductionWipByPoId(
 ): Promise<ProductionWipRecord | undefined> {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
   if (isPlatformCoreSpinePgPrimary()) {
-    const { getProductionWipByPoIdFromPg } = await import(
-      '@/lib/integrations/spine/spine-operational-persistence.pg'
-    );
+    const { getProductionWipByPoIdFromPg } =
+      await import('@/lib/integrations/spine/spine-operational-persistence.pg');
     const fromPg = await getProductionWipByPoIdFromPg(productionOrderId);
     if (fromPg) return fromPg;
   }

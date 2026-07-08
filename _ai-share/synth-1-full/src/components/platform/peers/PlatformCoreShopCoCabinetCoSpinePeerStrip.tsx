@@ -20,13 +20,21 @@ export function PlatformCoreShopCoCabinetCoSpinePeerStrip({ collectionId, orderI
 
   return (
     <div className={hubGadget.goldenPath} data-testid={WAVE_WZ_SHOP_CO_SPINE_PEER_STRIP_TESTID}>
-      <Link href={approvalsHref} data-testid="shop-co-cabinet-collaborative-link" className={hubGadget.goldenLink}>
+      <Link
+        href={approvalsHref}
+        data-testid="shop-co-cabinet-collaborative-link"
+        className={hubGadget.goldenLink}
+      >
         Согласования
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="shop-co-cabinet-brand-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="shop-co-cabinet-brand-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист бренда
       </Link>
     </div>

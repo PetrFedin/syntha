@@ -1,9 +1,7 @@
 import 'server-only';
 
 import { computeSupplierPriceDeltaAlerts } from '@/lib/fashion/supplier-price-delta-alerts';
-import {
-  extractSupplierMaterialPriceJournalFromDossierEvents,
-} from '@/lib/platform-core-supplier-material-price-journal';
+import { extractSupplierMaterialPriceJournalFromDossierEvents } from '@/lib/platform-core-supplier-material-price-journal';
 import { extractSupplierMaterialPricePoints } from '@/lib/platform-core-supplier-materials-reference';
 import {
   getWorkshop2ServerDossierRecord,

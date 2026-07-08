@@ -85,7 +85,9 @@ describe('shop/b2b API routes smoke', () => {
       name: 'GET /shop/b2b/cart/lines',
       run: () =>
         cartLinesGet(
-          new NextRequest('http://localhost/api/shop/b2b/cart/lines?buyerId=shop1&collectionId=SS27')
+          new NextRequest(
+            'http://localhost/api/shop/b2b/cart/lines?buyerId=shop1&collectionId=SS27'
+          )
         ),
       allowed: [200],
     },
@@ -141,9 +143,7 @@ describe('shop/b2b API routes smoke', () => {
     {
       name: 'GET /shop/b2b/commissions',
       run: () =>
-        commissionsGet(
-          new NextRequest('http://localhost/api/shop/b2b/commissions?repId=rep-demo')
-        ),
+        commissionsGet(new NextRequest('http://localhost/api/shop/b2b/commissions?repId=rep-demo')),
       allowed: [200],
     },
     {

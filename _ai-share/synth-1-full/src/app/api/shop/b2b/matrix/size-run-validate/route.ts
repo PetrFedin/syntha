@@ -37,7 +37,10 @@ async function runValidate(input: {
 }) {
   const validated = await validateShopMatrixSizeRunServer(input);
   if (!validated.ok) {
-    return NextResponse.json({ ok: false, messageRu: validated.messageRu }, { status: validated.status });
+    return NextResponse.json(
+      { ok: false, messageRu: validated.messageRu },
+      { status: validated.status }
+    );
   }
   const { result } = validated;
   return NextResponse.json({
@@ -89,10 +92,7 @@ export async function POST(req: NextRequest) {
 
   const collectionId = body.collectionId?.trim() ?? '';
   if (!collectionId) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'collectionId обязателен.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false, messageRu: 'collectionId обязателен.' }, { status: 400 });
   }
 
   const sessionId = body.sessionId?.trim();

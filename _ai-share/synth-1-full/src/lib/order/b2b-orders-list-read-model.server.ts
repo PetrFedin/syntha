@@ -13,7 +13,10 @@ import { loadB2BOrderSnapshotOrNull } from '@/lib/order/b2b-order-persistence.fi
 import { filterB2BOrdersByOperationalActor } from '@/lib/order/b2b-orders-read-model-shared';
 import { listImportedOrdersAsB2B } from '@/lib/integrations/spine/imported-orders-persistence';
 import { listImportedOrdersForOperationalUi } from '@/lib/integrations/spine/imported-orders-read.server';
-import { mergeOperationalOrderLists, stripSpineImportedFromSnapshot } from '@/lib/integrations/spine/spine-operational-merge';
+import {
+  mergeOperationalOrderLists,
+  stripSpineImportedFromSnapshot,
+} from '@/lib/integrations/spine/spine-operational-merge';
 import {
   mapWorkshop2B2bOrderLinesToOperational,
   mergeOperationalB2bOrderLists,

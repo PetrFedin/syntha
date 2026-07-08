@@ -15,8 +15,7 @@ export const BRAND_SC_CROSS_MATRIX_CARRY_QTY_TOTAL_PARAM = 'carryQtyTotal' as co
 
 export const BRAND_SC_CROSS_MATRIX_PREFILL_APPLY_PARAM = 'linesheetPrefill' as const;
 
-export const BRAND_SC_CROSS_MATRIX_OPEN_SHOP_BTN_RU =
-  'Открыть матрицу магазина · SKU лайншита';
+export const BRAND_SC_CROSS_MATRIX_OPEN_SHOP_BTN_RU = 'Открыть матрицу магазина · SKU лайншита';
 
 export const BRAND_SC_CROSS_MATRIX_MINI_MATRIX_LABEL_RU = 'Матрица магазина';
 

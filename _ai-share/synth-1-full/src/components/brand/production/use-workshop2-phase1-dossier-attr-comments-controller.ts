@@ -9,7 +9,9 @@ import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-
 import type { W2TzBlockCommentMetrics } from '@/lib/production/workshop2-article-tz-block-comments';
 import type { MutableRefObject } from 'react';
 
-type SetDossier = (u: Workshop2DossierPhase1 | ((prev: Workshop2DossierPhase1) => Workshop2DossierPhase1)) => void;
+type SetDossier = (
+  u: Workshop2DossierPhase1 | ((prev: Workshop2DossierPhase1) => Workshop2DossierPhase1)
+) => void;
 
 export type UseWorkshop2Phase1DossierAttrCommentsControllerInput = {
   dossier: Workshop2DossierPhase1;

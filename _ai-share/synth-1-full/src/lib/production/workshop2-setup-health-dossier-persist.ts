@@ -44,10 +44,7 @@ export function evaluateWorkshop2SetupHealthHandoffGate(
       messageRu: 'Health setup не зафиксирован в досье — обновите зеркало перед handoff commit.',
     };
   }
-  if (
-    mirror.blockerHandoff === true ||
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true'
-  ) {
+  if (mirror.blockerHandoff === true || workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true') {
     return {
       id: 'setup.health.pg_down_handoff',
       severity: 'blocker',

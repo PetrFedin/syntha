@@ -37,7 +37,9 @@ export function BrandRetailerDetailCorePage({ retailerId, retailerName }: Props)
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch(`/api/brand/retailers/${encodeURIComponent(retailerId)}/b2b-orders`);
+        const res = await fetch(
+          `/api/brand/retailers/${encodeURIComponent(retailerId)}/b2b-orders`
+        );
         const json = (await res.json()) as { ok?: boolean; orders?: W2OrderRow[] };
         if (!cancelled && json.ok && Array.isArray(json.orders)) {
           setW2Orders(json.orders);
@@ -98,53 +100,53 @@ export function BrandRetailerDetailCorePage({ retailerId, retailerName }: Props)
             </Link>
           ) : null}
         </div>
-      <Card data-testid="brand-co-retailer-detail-orders-card">
-        <CardHeader>
-          <CardTitle className="text-sm">Оптовые заказы</CardTitle>
-          <CardDescription>
-            {w2Orders.length > 0
-              ? `${w2Orders.length} оптовых заказ(ов) по партнёру`
-              : PLATFORM_CORE_RETAILER_NO_ORDERS_RU}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {w2Orders.map((o) => (
+        <Card data-testid="brand-co-retailer-detail-orders-card">
+          <CardHeader>
+            <CardTitle className="text-sm">Оптовые заказы</CardTitle>
+            <CardDescription>
+              {w2Orders.length > 0
+                ? `${w2Orders.length} оптовых заказ(ов) по партнёру`
+                : PLATFORM_CORE_RETAILER_NO_ORDERS_RU}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {w2Orders.map((o) => (
+                <Link
+                  key={o.id}
+                  href={brandB2bOrderHref(o.id)}
+                  data-testid={`brand-co-retailer-detail-order-link-${o.id}`}
+                  data-audit-legacy={`retailer-detail-order-link-${o.id}`}
+                  className="hover:bg-bg-surface2 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Package className="text-text-muted h-4 w-4" />
+                    <span className="font-mono text-sm">{o.id}</span>
+                    {o.createdAt ? (
+                      <span className="text-text-secondary text-[11px]">
+                        {new Date(o.createdAt).toLocaleDateString('ru-RU')}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold">{fmtMoney(o.totalRub)}</span>
+                    <Badge variant="outline" className="text-[9px]">
+                      {o.status}
+                    </Badge>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <Button variant="outline" size="sm" className="mt-3" asChild>
               <Link
-                key={o.id}
-                href={brandB2bOrderHref(o.id)}
-                data-testid={`brand-co-retailer-detail-order-link-${o.id}`}
-                data-audit-legacy={`retailer-detail-order-link-${o.id}`}
-                className="hover:bg-bg-surface2 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                href={brandB2bOrdersRegistryHref({ partner: retailerId })}
+                data-testid="brand-co-retailer-detail-all-orders-link"
               >
-                <div className="flex items-center gap-3">
-                  <Package className="text-text-muted h-4 w-4" />
-                  <span className="font-mono text-sm">{o.id}</span>
-                  {o.createdAt ? (
-                    <span className="text-text-secondary text-[11px]">
-                      {new Date(o.createdAt).toLocaleDateString('ru-RU')}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-bold">{fmtMoney(o.totalRub)}</span>
-                  <Badge variant="outline" className="text-[9px]">
-                    {o.status}
-                  </Badge>
-                </div>
+                Все B2B-заказы
               </Link>
-            ))}
-          </div>
-          <Button variant="outline" size="sm" className="mt-3" asChild>
-            <Link
-              href={brandB2bOrdersRegistryHref({ partner: retailerId })}
-              data-testid="brand-co-retailer-detail-all-orders-link"
-            >
-              Все B2B-заказы
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+            </Button>
+          </CardContent>
+        </Card>
       </PlatformCoreListChrome>
     </CabinetPageContent>
   );

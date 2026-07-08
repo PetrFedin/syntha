@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PlatformCoreThemeBridge } from '@/components/platform/PlatformCoreThemeBridge';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import {
@@ -120,7 +113,11 @@ function useChainOverviewState(
     () => overviewCache.get(collectionId) ?? null
   );
   const [overviewStatus, setOverviewStatus] = useState<PlatformCoreOverviewStatus>(() =>
-    overviewCache.has(collectionId) ? (overviewCache.get(collectionId) ? 'ready' : 'error') : 'loading'
+    overviewCache.has(collectionId)
+      ? overviewCache.get(collectionId)
+        ? 'ready'
+        : 'error'
+      : 'loading'
   );
 
   useEffect(() => {
@@ -172,9 +169,7 @@ export function PlatformCoreChainOverviewProvider({
   collectionId?: string;
 }) {
   const value = useChainOverviewState(collectionId);
-  return (
-    <ChainOverviewContext.Provider value={value}>{children}</ChainOverviewContext.Provider>
-  );
+  return <ChainOverviewContext.Provider value={value}>{children}</ChainOverviewContext.Provider>;
 }
 
 export function usePlatformCoreChainOverview(

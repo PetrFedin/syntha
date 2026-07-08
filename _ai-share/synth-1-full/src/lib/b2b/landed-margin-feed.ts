@@ -54,7 +54,9 @@ export function buildLandedMarginFeedRow(input: {
   };
 }
 
-export function buildLandedMarginRowsFromB2bOrder(order: Workshop2B2bOrderRecord): LandedMarginFeedRow[] {
+export function buildLandedMarginRowsFromB2bOrder(
+  order: Workshop2B2bOrderRecord
+): LandedMarginFeedRow[] {
   const grouped = new Map<
     string,
     { label: string; wholesaleRub: number; landedRub: number; qty: number }
@@ -78,7 +80,9 @@ export function buildLandedMarginRowsFromB2bOrder(order: Workshop2B2bOrderRecord
     existing.wholesaleRub = Math.round(
       (existing.wholesaleRub * existing.qty + wholesale * line.qty) / totalQty
     );
-    existing.landedRub = Math.round((existing.landedRub * existing.qty + landed * line.qty) / totalQty);
+    existing.landedRub = Math.round(
+      (existing.landedRub * existing.qty + landed * line.qty) / totalQty
+    );
     existing.qty = totalQty;
   }
 
@@ -103,8 +107,18 @@ export function buildLandedMarginCatalogSeedRows(input?: {
   const orderId = input?.orderId?.trim() || 'demo';
   const seed = collectionId.length + orderId.length;
   const base = [
-    { sku: 'FW-JKT-01', label: 'FW core · jacket', wholesaleRub: 8900, landedRub: 5200 + (seed % 3) * 120 },
-    { sku: 'FW-TRS-02', label: 'FW core · trouser', wholesaleRub: 5400, landedRub: 3100 + (seed % 2) * 90 },
+    {
+      sku: 'FW-JKT-01',
+      label: 'FW core · jacket',
+      wholesaleRub: 8900,
+      landedRub: 5200 + (seed % 3) * 120,
+    },
+    {
+      sku: 'FW-TRS-02',
+      label: 'FW core · trouser',
+      wholesaleRub: 5400,
+      landedRub: 3100 + (seed % 2) * 90,
+    },
     { sku: 'SS-TEE-03', label: 'SS add-on · tee', wholesaleRub: 2200, landedRub: 1400 },
   ];
   return base.map((row, index) =>
@@ -120,7 +134,10 @@ export function buildLandedMarginCatalogSeedRows(input?: {
   );
 }
 
-export function buildBrandSimulatorFeedRows(products: Product[], limit = 12): LandedMarginFeedRow[] {
+export function buildBrandSimulatorFeedRows(
+  products: Product[],
+  limit = 12
+): LandedMarginFeedRow[] {
   return products.slice(0, limit).map((product, index) => {
     const simulation = simulateMargin(product);
     const wholesaleRub = Math.round(simulation.retailPrice * 0.45);
@@ -164,7 +181,8 @@ export function summarizeLandedMarginFeed(rows: readonly LandedMarginFeedRow[]):
   orderSourced: number;
   pgSourced: number;
 } {
-  if (!rows.length) return { total: 0, onTarget: 0, avgMarginPct: 0, orderSourced: 0, pgSourced: 0 };
+  if (!rows.length)
+    return { total: 0, onTarget: 0, avgMarginPct: 0, orderSourced: 0, pgSourced: 0 };
   const onTarget = rows.filter((r) => r.onTarget).length;
   const avgMarginPct =
     Math.round((rows.reduce((sum, r) => sum + r.marginPct, 0) / rows.length) * 10) / 10;

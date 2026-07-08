@@ -1,7 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { syncAims360Wip, resolveUnifiedOrderTracking, syncZedonkTracking } from '../order-tracking.service';
+import {
+  syncAims360Wip,
+  resolveUnifiedOrderTracking,
+  syncZedonkTracking,
+} from '../order-tracking.service';
 
 describe('order-tracking spine (Wave D)', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'syntha-tracking-'));

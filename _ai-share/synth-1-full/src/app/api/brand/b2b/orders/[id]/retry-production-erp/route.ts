@@ -51,10 +51,7 @@ export async function POST(_req: NextRequest, ctx: RouteCtx) {
 
   if (!result.ok) {
     const { ok: _ok, messageRu, ...rest } = result;
-    return NextResponse.json(
-      { ok: false, orderId, messageRu, ...rest },
-      { status: 409 }
-    );
+    return NextResponse.json({ ok: false, orderId, messageRu, ...rest }, { status: 409 });
   }
 
   const { ok: _ok, productionOrderId: _resultPoId, ...rest } = result;

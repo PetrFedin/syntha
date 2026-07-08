@@ -14,7 +14,9 @@ import {
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
 import type { Workshop2DossierViewProfile } from '@/lib/production/workshop2-dossier-view-infrastructure';
 
-type SetDossier = (u: Workshop2DossierPhase1 | ((prev: Workshop2DossierPhase1) => Workshop2DossierPhase1)) => void;
+type SetDossier = (
+  u: Workshop2DossierPhase1 | ((prev: Workshop2DossierPhase1) => Workshop2DossierPhase1)
+) => void;
 
 export type UseWorkshop2Phase1DossierSketchWorkspaceStateInput = {
   setDossier: SetDossier;

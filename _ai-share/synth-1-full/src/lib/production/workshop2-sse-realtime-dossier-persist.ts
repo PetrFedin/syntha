@@ -7,9 +7,7 @@ import type {
   Workshop2ConnectionStatus,
   Workshop2RealtimeTransport,
 } from '@/lib/production/workshop2-realtime-stub';
-import {
-  workshop2PgMirrorStr,
-} from '@/lib/production/workshop2-dossier-pg-mirror-utils';
+import { workshop2PgMirrorStr } from '@/lib/production/workshop2-dossier-pg-mirror-utils';
 
 export function buildWorkshop2SseRealtimeMirror(input: {
   transport: Workshop2RealtimeTransport;
@@ -101,8 +99,7 @@ export function evaluateWorkshop2SseRealtimeHandoffGate(
     };
   }
   const blockerHandoff =
-    mirror.blockerHandoff === true ||
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true';
+    mirror.blockerHandoff === true || workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true';
   if (blockerHandoff) {
     return {
       id: 'sse.realtime.offline_handoff',

@@ -29,11 +29,7 @@ export function getIntegrationsSpineHubMeta(
   const secret = Boolean(process.env.INTEGRATIONS_SPINE_WEBHOOK_SECRET?.trim());
   const pgPrimary = isSpineOperationalPgPrimary();
   const pgEnabled = isSpineOperationalPgEnabled();
-  const ordersSource = pgPrimary
-    ? 'postgres-primary'
-    : pgEnabled
-      ? 'postgres+file'
-      : 'file+json';
+  const ordersSource = pgPrimary ? 'postgres-primary' : pgEnabled ? 'postgres+file' : 'file+json';
   return {
     inboundShipmentWebhookPath: '/api/integrations/v1/webhooks/shipment',
     webhookSecretHeader: 'x-integrations-spine-secret',

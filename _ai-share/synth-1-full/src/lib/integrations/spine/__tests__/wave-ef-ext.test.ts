@@ -1,5 +1,8 @@
 import { importWholesaleOrder } from '../order-import.service';
-import { generateCollectionLinesheet, getCollectionLinesheetSnapshot } from '../linesheet-gen.service';
+import {
+  generateCollectionLinesheet,
+  getCollectionLinesheetSnapshot,
+} from '../linesheet-gen.service';
 import { importNuOrderShipmentInbound } from '../nuorder-shipment-inbound.service';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 

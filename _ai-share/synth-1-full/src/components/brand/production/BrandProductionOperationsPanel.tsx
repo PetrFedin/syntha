@@ -13,7 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchBrandProductionOpsSnapshot, syncBrandProductionOpsToSpine } from '@/lib/brand-production/brand-production-ops-store';
+import {
+  fetchBrandProductionOpsSnapshot,
+  syncBrandProductionOpsToSpine,
+} from '@/lib/brand-production/brand-production-ops-store';
 import { buildBrandProductionOpsSession } from '@/lib/brand-production/brand-production-ops-session';
 import type { BrandProductionState } from '@/lib/brand-production';
 import { computeProductionAlerts } from '@/lib/brand-production/alerts';
@@ -214,7 +217,7 @@ export function BrandProductionOperationsPanel({
                   <TableRow key={row.id} data-testid={`brand-production-ops-bom-row-${row.id}`}>
                     <TableCell className="font-mono text-xs">{row.sku}</TableCell>
                     <TableCell>{row.materialLabel}</TableCell>
-                    <TableCell className="tabular-nums text-xs">
+                    <TableCell className="text-xs tabular-nums">
                       {row.qty != null ? `${row.qty} ${row.unit ?? ''}`.trim() : '—'}
                     </TableCell>
                     <TableCell>

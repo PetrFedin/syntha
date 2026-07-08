@@ -35,7 +35,9 @@ export type FactorySampleQueueHashTarget = {
 };
 
 /** Parse location hash `#sample-queue` or `#sample-queue-{orderId}`. */
-export function parseFactorySampleQueueHash(raw: string | null | undefined): FactorySampleQueueHashTarget | null {
+export function parseFactorySampleQueueHash(
+  raw: string | null | undefined
+): FactorySampleQueueHashTarget | null {
   const h = (raw ?? '').replace(/^#/, '').trim();
   if (!h) return null;
   if (h === WAVE_XC_FACTORY_SAMPLE_QUEUE_SECTION_HASH) {
@@ -77,5 +79,7 @@ export function formatMfrSampleQueueStatusLabelRu(status: string | null | undefi
 }
 
 export function mfrSampleQueuePollLabelRu(sseConnected: boolean): string {
-  return sseConnected ? WAVE_XC_MFR_SAMPLE_QUEUE_POLL_SSE_RU : WAVE_XC_MFR_SAMPLE_QUEUE_POLL_FALLBACK_RU;
+  return sseConnected
+    ? WAVE_XC_MFR_SAMPLE_QUEUE_POLL_SSE_RU
+    : WAVE_XC_MFR_SAMPLE_QUEUE_POLL_FALLBACK_RU;
 }

@@ -1,8 +1,11 @@
-import { ROUTES, shopB2bOrderHref, calendarHrefForRole, brandB2bOrdersAwaitingHandoffRegistryHref } from '@/lib/routes';
-import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import {
-  PLATFORM_CORE_BRAND_B2B_LEGACY_REDIRECTS,
-} from '@/lib/platform-core-brand-b2b-legacy-redirects';
+  ROUTES,
+  shopB2bOrderHref,
+  calendarHrefForRole,
+  brandB2bOrdersAwaitingHandoffRegistryHref,
+} from '@/lib/routes';
+import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
+import { PLATFORM_CORE_BRAND_B2B_LEGACY_REDIRECTS } from '@/lib/platform-core-brand-b2b-legacy-redirects';
 import {
   PLATFORM_CORE_SHOP_B2B_LEGACY_REDIRECTS,
   resolveShopB2bLegacyRedirect,
@@ -120,7 +123,9 @@ describe('platform-core-hub-matrix', () => {
   });
 
   it('resolves pillar demo entity labels without technical order ids', () => {
-    expect(getPlatformCorePillarEntityLabel('collection_order')).toBe('Оптовый заказ · Весна–лето 2027');
+    expect(getPlatformCorePillarEntityLabel('collection_order')).toBe(
+      'Оптовый заказ · Весна–лето 2027'
+    );
     expect(getPlatformCorePillarEntityLabel('development')).toBe('Разработка · артикулы');
     expect(getPlatformCorePillarEntityLabel('development')).not.toContain('Весна');
     expect(getPlatformCorePillarEntityLabel('comms')).toBe('Связь · Весна–лето 2027');
@@ -146,9 +151,9 @@ describe('platform-core-hub-matrix', () => {
 
   it('chain strip on hub uses demo trail, with role uses workspace', () => {
     process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
-    expect(
-      getChainStripPillarHref('order_production', { primaryHref: '/fallback' })
-    ).toContain('order_production');
+    expect(getChainStripPillarHref('order_production', { primaryHref: '/fallback' })).toContain(
+      'order_production'
+    );
     expect(
       getChainStripPillarHref('collection_order', {
         highlightRole: 'shop',
@@ -164,7 +169,9 @@ describe('platform-core-hub-matrix', () => {
     expect(getRolePillarWorkspaceHref('brand', 'sample_collection')).toContain(
       'pillar=sample_collection'
     );
-    expect(getRolePillarWorkspaceHref('shop', 'collection_order')).toContain('pillar=collection_order');
+    expect(getRolePillarWorkspaceHref('shop', 'collection_order')).toContain(
+      'pillar=collection_order'
+    );
     expect(getRoleAdjacentPillarWorkspaceHref('brand', 'development', 'next')).toContain(
       'pillar=sample_collection'
     );
@@ -196,8 +203,8 @@ describe('platform-core-hub-matrix', () => {
   it('counts active and empty pillars per role', () => {
     expect(countActivePillarsForRole('brand')).toBe(5);
     expect(countEmptyPillarsForRole('brand')).toBe(0);
-    expect(countActivePillarsForRole('shop')).toBe(3);
-    expect(countEmptyPillarsForRole('shop')).toBe(2);
+    expect(countActivePillarsForRole('shop')).toBe(4);
+    expect(countEmptyPillarsForRole('shop')).toBe(1);
     expect(countActivePillarsForRole('manufacturer')).toBe(3);
     expect(countEmptyPillarsForRole('manufacturer')).toBe(2);
   });
@@ -258,11 +265,13 @@ describe('platform-core-hub-matrix', () => {
       'development',
       'sample_collection',
       'collection_order',
+      'order_production',
       'comms',
     ]);
     expect(getRoleCabinetNavPillarIds('shop', 'EMPTY27')).toEqual([
       'sample_collection',
       'collection_order',
+      'order_production',
       'comms',
     ]);
     expect(getRoleCabinetNavPillarIds('manufacturer', 'SS27')).toEqual([
@@ -282,7 +291,7 @@ describe('platform-core-hub-matrix', () => {
     expect(getRoleCabinetNavPillarIds('brand', 'SS27')).toHaveLength(5);
     expect(isRolePillarCabinetSelectable('shop', 'development', 'SS27')).toBe(true);
     expect(isRolePillarCabinetSelectable('shop', 'development', 'EMPTY27')).toBe(false);
-    expect(isRolePillarCabinetSelectable('shop', 'order_production', 'SS27')).toBe(false);
+    expect(isRolePillarCabinetSelectable('shop', 'order_production', 'SS27')).toBe(true);
   });
 
   it('cross-role comms peers use merged PG order id', () => {
@@ -315,7 +324,7 @@ describe('platform-core-hub-matrix', () => {
   it('counts active roles per pillar', () => {
     expect(countPillarActiveRoles('sample_collection')).toBe(2);
     expect(countPillarActiveRoles('collection_order')).toBe(2);
-    expect(countPillarActiveRoles('order_production')).toBe(3);
+    expect(countPillarActiveRoles('order_production')).toBe(4);
     expect(countPillarActiveRoles('development')).toBe(3);
     expect(countPillarActiveRoles('comms')).toBe(4);
   });
@@ -352,7 +361,7 @@ describe('platform-core-hub-matrix', () => {
   it('role pillar demo href aligns golden path per role slice', () => {
     expect(getRolePillarDemoHref('brand', 'collection_order')).toContain('B2B-DEMO-SHOP1-SS27');
     expect(getRolePillarDemoHref('shop', 'collection_order')).toContain('matrix');
-    expect(getRolePillarDemoHref('shop', 'order_production')).toBeUndefined();
+    expect(getRolePillarDemoHref('shop', 'order_production')).toContain('tracking');
     expect(getRolePillarDemoHref('manufacturer', 'order_production')).toContain(
       'factory/production'
     );
@@ -411,7 +420,7 @@ describe('platform-core-hub-matrix', () => {
     expect(isRolePillarActive('shop', 'sample_collection')).toBe(true);
     expect(isRolePillarActive('manufacturer', 'sample_collection')).toBe(false);
     expect(isRolePillarActive('supplier', 'collection_order')).toBe(false);
-    expect(getActivePillarIdsForRole('shop').length).toBe(3);
+    expect(getActivePillarIdsForRole('shop').length).toBe(4);
     expect(getActivePillarIdsForRole('manufacturer').length).toBe(3);
     expect(getActivePillarIdsForRole('supplier').length).toBe(3);
   });
@@ -621,7 +630,9 @@ describe('platform-core-hub-matrix', () => {
     expect(dev.kind).toBe('active');
     expect(prod.kind).toBe('active');
     if (dev.kind === 'active' && prod.kind === 'active') {
-      const materialsActions = dev.actions.filter((a) => a.href.includes('/factory/production/materials'));
+      const materialsActions = dev.actions.filter((a) =>
+        a.href.includes('/factory/production/materials')
+      );
       expect(materialsActions).toHaveLength(1);
       expect(materialsActions[0]?.href).toContain('view=development');
       expect(materialsActions[0]?.href).toContain('article=demo-ss27-01');
@@ -634,7 +645,9 @@ describe('platform-core-hub-matrix', () => {
     const cell = manufacturer.pillars.order_production;
     expect(cell.kind).toBe('active');
     if (cell.kind === 'active') {
-      expect(cell.actions.some((a) => a.label === PLATFORM_CORE_DEMO.productionOrderId)).toBe(false);
+      expect(cell.actions.some((a) => a.label === PLATFORM_CORE_DEMO.productionOrderId)).toBe(
+        false
+      );
       expect(cell.actions.some((a) => a.label.includes('fact-1'))).toBe(false);
       expect(cell.actions.some((a) => a.label === 'Очередь передачи в производство')).toBe(true);
     }
@@ -696,9 +709,12 @@ describe('platform-core-hub-matrix', () => {
       Object.values(PLATFORM_CORE_DEMO_PRESETS).reduce(
         (out, preset) =>
           out
-            .split(preset.demoOrderId).join('')
-            .split(preset.demoArticleId).join('')
-            .split(preset.productionOrderId).join(''),
+            .split(preset.demoOrderId)
+            .join('')
+            .split(preset.demoArticleId)
+            .join('')
+            .split(preset.productionOrderId)
+            .join(''),
         text
       );
     for (const row of PLATFORM_CORE_HUB_ROWS) {
@@ -735,7 +751,9 @@ describe('platform-core-hub-matrix', () => {
       fw27
     );
     expect(fw27Entity).toBe('Осень–зима 2027');
-    expect(getPlatformCorePillarEntityLabelForDemo('sample_collection', fw27)).toBe('Осень–зима 2027');
+    expect(getPlatformCorePillarEntityLabelForDemo('sample_collection', fw27)).toBe(
+      'Осень–зима 2027'
+    );
     expect(getPlatformCorePillarEntityLabelForDemo('sample_collection', fw27)).not.toContain(
       'SS27'
     );
@@ -807,13 +825,17 @@ describe('platform-core-hub-matrix', () => {
     expect(shopShowroomHrefForDemo(demo)).toBe(
       `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`
     );
-    expect(factoryHandoffQueueHrefForDemo(demo)).toContain(`order=${encodeURIComponent(demo.demoOrderId)}`);
+    expect(factoryHandoffQueueHrefForDemo(demo)).toContain(
+      `order=${encodeURIComponent(demo.demoOrderId)}`
+    );
     expect(factoryHandoffQueueHrefForDemo(demo)).toContain(
       `factoryId=${encodeURIComponent(demo.factoryId)}`
     );
     expect(factoryHandoffQueueHrefForDemo(demo)).toContain(
       `collection=${encodeURIComponent(demo.collectionId)}`
     );
-    expect(factoryHandoffQueueHrefForDemo(demo)).toContain(`${PILLAR_CAPABILITY_FEATURE_PARAM}=handoff`);
+    expect(factoryHandoffQueueHrefForDemo(demo)).toContain(
+      `${PILLAR_CAPABILITY_FEATURE_PARAM}=handoff`
+    );
   });
 });

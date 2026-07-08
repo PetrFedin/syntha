@@ -13,9 +13,7 @@ import {
   isWorkshop2OpsAppliedChecklistReady,
   readWorkshop2OpsAppliedStatus,
 } from '@/lib/production/workshop2-wave-ops-applied-status';
-import {
-  buildWorkshop2Wave56PostFreezeReadyProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+import { buildWorkshop2Wave56PostFreezeReadyProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave56PostFreezeReadyProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 
 const root = process.cwd();
@@ -106,34 +104,51 @@ describe('wave56 — post-freeze artifacts on disk', () => {
   });
 
   it('ops applied checklist script exists', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-wave55-ops-applied-checklist.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-wave55-ops-applied-checklist.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('workshop2-wave55-ops-applied-status.json');
   });
 
   it('ack restore drill prod flag + summaryRu', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('--prod');
     expect(mjs).toContain('summaryRu');
   });
 
   it('ack s3 lifecycle documents 7y retention', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-ack-s3-lifecycle-apply.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-ack-s3-lifecycle-apply.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('2555');
     expect(mjs).toContain('7y');
   });
 
   it('migration 022 has invoice_html_url', () => {
-    const sql = fs.readFileSync(path.join(root, 'db/migrations/022_workshop2_b2b_invoice.sql'), 'utf8');
+    const sql = fs.readFileSync(
+      path.join(root, 'db/migrations/022_workshop2_b2b_invoice.sql'),
+      'utf8'
+    );
     expect(sql).toContain('invoice_html_url');
   });
 
   it('multi-brand playbook and v2 roadmap exist', () => {
-    expect(fs.existsSync(path.join(root, '.planning/workshop2-multi-brand-rollout-playbook-RU.md'))).toBe(true);
+    expect(
+      fs.existsSync(path.join(root, '.planning/workshop2-multi-brand-rollout-playbook-RU.md'))
+    ).toBe(true);
     expect(fs.existsSync(path.join(root, '.planning/ROADMAP-V2-POST-FREEZE-RU.md'))).toBe(true);
   });
 
   it('orders export includes invoiceHtmlUrl', () => {
-    const route = fs.readFileSync(path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'), 'utf8');
+    const route = fs.readFileSync(
+      path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'),
+      'utf8'
+    );
     expect(route).toContain('invoiceHtmlUrl');
   });
 

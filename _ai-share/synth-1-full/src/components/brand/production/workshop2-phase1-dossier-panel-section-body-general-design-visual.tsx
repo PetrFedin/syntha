@@ -203,12 +203,9 @@ export function Workshop2DossierGeneralDesignVisualBlock({
                     <LucideIcons.Palette className="h-4 w-4 shrink-0" aria-hidden />
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <h2 className="text-text-primary text-base font-semibold">
-                      Цвет и палитра
-                    </h2>
+                    <h2 className="text-text-primary text-base font-semibold">Цвет и палитра</h2>
                     <p className="text-text-secondary text-[11px] leading-snug">
-                      Основной цвет, референс системы, палитра, градиент
-                      и свои оттенки.
+                      Основной цвет, референс системы, палитра, градиент и свои оттенки.
                     </p>
                   </div>
                 </div>

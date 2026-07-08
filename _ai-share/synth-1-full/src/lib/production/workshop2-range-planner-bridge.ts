@@ -1,7 +1,4 @@
-import {
-  findHandbookLeafById,
-  resolveHandbookLeafId,
-} from '@/lib/production/category-catalog';
+import { findHandbookLeafById, resolveHandbookLeafId } from '@/lib/production/category-catalog';
 import { assembleWorkshop2ArticleFromTaxonomy } from '@/lib/production/workshop2-article-assembler';
 import {
   WORKSHOP2_BUDGET_PARAM,
@@ -48,7 +45,11 @@ export function parseRangePlannerMargin(raw: string | null | undefined): number 
 }
 
 export function buildRangePlannerSku(collectionId: string, tier: RangePlannerTier): string {
-  const col = collectionId.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') || 'SS27';
+  const col =
+    collectionId
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '') || 'SS27';
   const suffix = Date.now().toString(36).toUpperCase().slice(-5);
   return `RP-${col}-${tier.toUpperCase()}-${suffix}`;
 }
@@ -66,8 +67,7 @@ export function buildRangePlannerArticlePrefill(input: {
   const sku = input.sku?.trim() || buildRangePlannerSku(collectionId, tier);
   const budgetLine =
     input.budget != null ? ` · бюджет ${input.budget.toLocaleString('ru-RU')} ₽` : '';
-  const marginLine =
-    input.targetMargin != null ? ` · маржа ${input.targetMargin}%` : '';
+  const marginLine = input.targetMargin != null ? ` · маржа ${input.targetMargin}%` : '';
   return {
     tier,
     budget: input.budget,
@@ -151,9 +151,7 @@ export function assembleWorkshop2HubDialogArticle(input: {
     return { ok: false as const, error: 'assembly_failed' as const };
   }
   const comment = input.comment?.trim();
-  const dossier = comment
-    ? { ...assembly.dossier, plannedLaunchNote: comment }
-    : assembly.dossier;
+  const dossier = comment ? { ...assembly.dossier, plannedLaunchNote: comment } : assembly.dossier;
   return {
     ok: true as const,
     assembly: { ...assembly, dossier },

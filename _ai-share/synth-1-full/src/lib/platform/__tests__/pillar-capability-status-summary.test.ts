@@ -5,9 +5,9 @@ describe('pillar-capability-status-summary', () => {
     const summary = summarizePillarCapabilityPlatformStatus();
     expect(summary.capabilityCount).toBeGreaterThan(20);
     expect(summary.workspaceCount).toBeGreaterThan(30);
-    expect(summary.capabilities.live + summary.capabilities.enhance + summary.capabilities.planned).toBe(
-      summary.capabilityCount
-    );
+    expect(
+      summary.capabilities.live + summary.capabilities.enhance + summary.capabilities.planned
+    ).toBe(summary.capabilityCount);
     expect(
       summary.workspaceFeatures.live +
         summary.workspaceFeatures.stub +

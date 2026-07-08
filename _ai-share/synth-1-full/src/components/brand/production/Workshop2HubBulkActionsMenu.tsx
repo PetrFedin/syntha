@@ -92,8 +92,7 @@ export function Workshop2HubBulkActionsMenu({
       };
 
       let json = await postShowroom(articleIds);
-      const blockedIds =
-        json.blocked?.map((row) => row.articleId).filter(Boolean) ?? [];
+      const blockedIds = json.blocked?.map((row) => row.articleId).filter(Boolean) ?? [];
       let retried = 0;
       if (json.ok && blockedIds.length > 0 && (json.passed ?? 0) > 0) {
         await new Promise((r) => window.setTimeout(r, 400));

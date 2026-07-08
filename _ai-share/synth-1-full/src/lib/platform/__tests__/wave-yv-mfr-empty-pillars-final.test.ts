@@ -56,7 +56,9 @@ describe('wave YV — mfr empty pillars final polish (dedupe VS/SK)', () => {
     expect(badge).toContain('wave-yv-mfr-empty-pillars-final');
     expect(badge).not.toContain('Готово для байеров');
 
-    const scPanel = read('components/platform/empty-cells/manufacturer-sample-collection-status-panel.tsx');
+    const scPanel = read(
+      'components/platform/empty-cells/manufacturer-sample-collection-status-panel.tsx'
+    );
     expect(scPanel).toContain('MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID');
     expect(scPanel).toContain('manufacturer-sample-collection-pg-table');
   });

@@ -73,7 +73,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as PlatformCoreEntityThreadTemplatesConfig[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as PlatformCoreEntityThreadTemplatesConfig[];
     if (Array.isArray(parsed)) {
       for (const row of parsed) {
         if (row.ownerKey) memory.set(row.ownerKey.trim(), row);

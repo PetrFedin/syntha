@@ -65,7 +65,9 @@ function factoryColumnValue(
 ): string {
   if (handoffState === 'acknowledged') {
     if (brandValue === '—') return brandValue;
-    const base = brandValue.replace(/\s*\(read-only\)\s*$/i, '').replace(/\s*· factory-ack\s*$/i, '');
+    const base = brandValue
+      .replace(/\s*\(read-only\)\s*$/i, '')
+      .replace(/\s*· factory-ack\s*$/i, '');
     return `${base} (read-only)`;
   }
   if (handoffState === 'dispatched') return 'ожидает factory-ack';
@@ -141,9 +143,8 @@ export async function resolveBrandDossierFactoryDiff(input: {
   }
 
   const rows = buildLiveRows(record.dossier);
-  const storageMode: BrandDossierFactoryDiffServerResult['storageMode'] = isWorkshop2PostgresEnabled()
-    ? 'pg'
-    : 'file';
+  const storageMode: BrandDossierFactoryDiffServerResult['storageMode'] =
+    isWorkshop2PostgresEnabled() ? 'pg' : 'file';
 
   return {
     ok: true,

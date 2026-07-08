@@ -87,13 +87,21 @@ export function ShopCmCalendarContextPeerStrip({ collectionId, orderId }: Props)
           </span>
         </>
       ) : null}
-      <Link href={orderCommsHref} data-testid="shop-cm-calendar-order-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={orderCommsHref}
+        data-testid="shop-cm-calendar-order-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Связь по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={replenishmentHref} data-testid="shop-cm-calendar-replenishment-link" className={hubGadget.goldenLink}>
+      <Link
+        href={replenishmentHref}
+        data-testid="shop-cm-calendar-replenishment-link"
+        className={hubGadget.goldenLink}
+      >
         Пополнение
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>

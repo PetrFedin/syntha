@@ -18,12 +18,6 @@ export type {
   WorkspaceTabId,
 } from '@/lib/data/b2b-workspace-matrix.types';
 export { WORKSPACE_ITEMS } from '@/lib/data/b2b-workspace-matrix-items';
-export {
-  WORKSPACE_TABS,
-  WORKSPACE_ITEM_PATHS,
-} from '@/lib/data/b2b-workspace-matrix-tabs';
-export {
-  DIGITAL_WORKSPACE_CONNECTIONS,
-  FLOW_CONFIG,
-} from '@/lib/data/b2b-workspace-matrix-flow';
+export { WORKSPACE_TABS, WORKSPACE_ITEM_PATHS } from '@/lib/data/b2b-workspace-matrix-tabs';
+export { DIGITAL_WORKSPACE_CONNECTIONS, FLOW_CONFIG } from '@/lib/data/b2b-workspace-matrix-flow';
 export { ROLE_CONFIG, ROLE_PERMISSIONS } from '@/lib/data/b2b-workspace-matrix-roles';

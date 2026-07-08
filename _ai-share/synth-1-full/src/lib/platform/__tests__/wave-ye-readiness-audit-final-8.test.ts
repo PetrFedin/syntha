@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getReadinessCell, getPlatformCoreReadinessMatrix } from '@/lib/platform-core-readiness-audit';
+import {
+  getReadinessCell,
+  getPlatformCoreReadinessMatrix,
+} from '@/lib/platform-core-readiness-audit';
 
 const SRC = path.join(__dirname, '..', '..', '..');
 
@@ -193,14 +196,17 @@ describe('wave YE — readiness audit 8.0 closure batch (XQ–XZ)', () => {
     }
   });
 
-  it.each(WAVE_YE_APPROACHING_8_SECTION_IDS)('%s — staticScore approaching 8.0 (≥7.7)', (sectionId) => {
-    const hit = cells
-      .flatMap((c) => c.subItems.map((s) => ({ ...s, roleId: c.roleId, pillarId: c.pillarId })))
-      .find((s) => s.id === sectionId);
-    expect(hit).toBeDefined();
-    expect(hit!.staticScore).toBeGreaterThanOrEqual(APPROACHING_8_MIN);
-    expect(hit!.summary).toMatch(/~8\.0|8\.0/i);
-  });
+  it.each(WAVE_YE_APPROACHING_8_SECTION_IDS)(
+    '%s — staticScore approaching 8.0 (≥7.7)',
+    (sectionId) => {
+      const hit = cells
+        .flatMap((c) => c.subItems.map((s) => ({ ...s, roleId: c.roleId, pillarId: c.pillarId })))
+        .find((s) => s.id === sectionId);
+      expect(hit).toBeDefined();
+      expect(hit!.staticScore).toBeGreaterThanOrEqual(APPROACHING_8_MIN);
+      expect(hit!.summary).toMatch(/~8\.0|8\.0/i);
+    }
+  );
 
   it('brand development cell — XQ/XR/XS evidence', () => {
     const cell = getReadinessCell(cells, 'brand', 'development');

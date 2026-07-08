@@ -104,8 +104,7 @@ export function evaluateWorkshop2CadVaultLinkSampleGate(
     return {
       id: 'cad.vault.measures_low',
       severity: 'warning',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') || 'Vault CAD без полного набора measures.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'Vault CAD без полного набора measures.',
     };
   }
   return null;
@@ -150,8 +149,7 @@ export function evaluateWorkshop2CadVaultLinkExportGate(
     return {
       id: 'cad.vault.export_demo_only',
       severity: 'blocker',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') || 'ZIP ТЗ: CAD demo-only заблокирован.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'ZIP ТЗ: CAD demo-only заблокирован.',
     };
   }
   return null;

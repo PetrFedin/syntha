@@ -1,4 +1,7 @@
-import { annotatePillarCrossLink, pillarCrossLinkRequiresOrder } from '@/lib/platform/pillar-cross-link-order-policy';
+import {
+  annotatePillarCrossLink,
+  pillarCrossLinkRequiresOrder,
+} from '@/lib/platform/pillar-cross-link-order-policy';
 import {
   applyShopMatrixTierToCartItem,
   mapPriceTierToWorkshop2CartTier,
@@ -57,7 +60,14 @@ describe('shop-matrix-cart-tier', () => {
   it('maps outlet tier to vip cart session and applies multiplier to cart line', () => {
     expect(mapPriceTierToWorkshop2CartTier('outlet')).toBe('vip');
     const priced = applyShopMatrixTierToCartItem(
-      { id: 'demo-ss27-01', name: 'Demo', price: 1000, quantity: 2, images: [], category: 'apparel' },
+      {
+        id: 'demo-ss27-01',
+        name: 'Demo',
+        price: 1000,
+        quantity: 2,
+        images: [],
+        category: 'apparel',
+      },
       'retail_b',
       [
         {

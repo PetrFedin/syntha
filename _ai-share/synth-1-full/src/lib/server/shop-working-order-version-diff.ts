@@ -170,11 +170,7 @@ export async function diffShopWorkingOrderVersions(input: {
     addedLines,
     removedLines,
     changedLines,
-    changedSkuCount: workingOrderVersionDiffChangedSkuCount(
-      addedLines,
-      removedLines,
-      changedLines
-    ),
+    changedSkuCount: workingOrderVersionDiffChangedSkuCount(addedLines, removedLines, changedLines),
     summaryRu:
       parts.length > 0
         ? `${fromVersion.label} → ${toVersion.label}: ${parts.join(', ')}.`

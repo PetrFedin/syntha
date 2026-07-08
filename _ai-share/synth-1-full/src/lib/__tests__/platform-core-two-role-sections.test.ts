@@ -27,18 +27,16 @@ describe('platform-core-two-role-sections', () => {
   });
 
   it('denylist hides CRM/WSSI and supplier dev sections', () => {
-    expect(
-      isTwoRoleBaselineSectionAllowed('brand', 'collection_order', 'brand-co-wssi-plan')
-    ).toBe(false);
-    expect(
-      isTwoRoleBaselineSectionAllowed('shop', 'collection_order', 'shop-co-matrix')
-    ).toBe(true);
-    expect(
-      isTwoRoleBaselineSectionAllowed('brand', 'development', 'brand-dev-rfq-supplier')
-    ).toBe(false);
-    expect(
-      isTwoRoleBaselineSectionAllowed('brand', 'development', 'brand-dev-range')
-    ).toBe(true);
+    expect(isTwoRoleBaselineSectionAllowed('brand', 'collection_order', 'brand-co-wssi-plan')).toBe(
+      false
+    );
+    expect(isTwoRoleBaselineSectionAllowed('shop', 'collection_order', 'shop-co-matrix')).toBe(
+      true
+    );
+    expect(isTwoRoleBaselineSectionAllowed('brand', 'development', 'brand-dev-rfq-supplier')).toBe(
+      false
+    );
+    expect(isTwoRoleBaselineSectionAllowed('brand', 'development', 'brand-dev-range')).toBe(true);
   });
 
   it('filters only denylisted sections, keeps audit order', () => {

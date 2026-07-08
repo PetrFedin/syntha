@@ -47,8 +47,7 @@ export async function getShopReplenishmentSuggest(input: {
       const atpRow = atpBySku.get(sku);
       const currentStock = atpRow?.atp ?? atpRow?.onHand ?? 0;
       const soldQty = Math.max(0, previousQty - currentStock);
-      const sellThroughRate =
-        previousQty > 0 ? Math.min(1, soldQty / previousQty) : 0;
+      const sellThroughRate = previousQty > 0 ? Math.min(1, soldQty / previousQty) : 0;
       const reorder = currentStock < Math.max(3, Math.ceil(previousQty * 0.25));
       const suggestedQty = reorder
         ? Math.max(1, Math.ceil(previousQty * (sellThroughRate >= 0.7 ? 1.2 : 1)))

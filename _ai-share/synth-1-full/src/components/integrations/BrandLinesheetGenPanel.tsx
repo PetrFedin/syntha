@@ -22,11 +22,7 @@ type LinesheetSnapshot = {
 };
 
 /** Wave D4 · P2-LINESHEET-GEN (pillar 2 sample_collection · brand linesheets). */
-export function BrandLinesheetGenPanel({
-  collectionId,
-  compact = false,
-  reloadNonce = 0,
-}: Props) {
+export function BrandLinesheetGenPanel({ collectionId, compact = false, reloadNonce = 0 }: Props) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<LinesheetSnapshot | null>(null);
 
@@ -72,7 +68,10 @@ export function BrandLinesheetGenPanel({
 
   if (compact) {
     return (
-      <div className="flex flex-wrap items-center gap-2 text-xs" data-testid="brand-sc-linesheet-gen-strip">
+      <div
+        className="flex flex-wrap items-center gap-2 text-xs"
+        data-testid="brand-sc-linesheet-gen-strip"
+      >
         <Button
           type="button"
           variant="ghost"
@@ -95,7 +94,7 @@ export function BrandLinesheetGenPanel({
           </Link>
         ) : null}
         {result?.generatedAt ? (
-          <span className="text-muted-foreground text-[9px]">
+          <span className="text-[9px] text-muted-foreground">
             {new Date(result.generatedAt).toLocaleDateString('ru-RU')}
           </span>
         ) : null}
@@ -117,7 +116,7 @@ export function BrandLinesheetGenPanel({
           Generate from published + PXM
         </Button>
         {result ? (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             {result.articleCount} articles · PXM overlay {result.pxmOverlayCount} ·{' '}
             <Link href={result.pdfHref} className="text-accent-primary hover:underline">
               PDF

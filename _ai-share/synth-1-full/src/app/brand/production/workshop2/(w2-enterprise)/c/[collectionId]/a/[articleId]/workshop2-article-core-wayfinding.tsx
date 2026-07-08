@@ -21,11 +21,7 @@ export function Workshop2ArticleCoreWayfinding({ collectionId, articleId }: Prop
   );
 
   return (
-    <div
-      data-testid="brand-dev-dossier-panel"
-      className="min-w-0 pb-1"
-      data-article-id={articleId}
-    >
+    <div data-testid="brand-dev-dossier-panel" className="min-w-0 pb-1" data-article-id={articleId}>
       <Link
         href={backHref}
         data-testid="platform-core-workspace-back"

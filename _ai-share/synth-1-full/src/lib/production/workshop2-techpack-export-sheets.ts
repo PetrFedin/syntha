@@ -11,7 +11,10 @@ import {
   type Workshop2FinalTzSpecExportContext,
 } from '@/lib/production/workshop2-final-tz-spec-export';
 import { parseMatRowsFromDossier } from '@/lib/production/workshop2-material-mat-rows';
-import { SKETCH_SHEET_VIEW_LABELS, normalizeSketchSheets } from '@/lib/production/workshop2-sketch-sheets';
+import {
+  SKETCH_SHEET_VIEW_LABELS,
+  normalizeSketchSheets,
+} from '@/lib/production/workshop2-sketch-sheets';
 import type {
   Workshop2DossierPhase1,
   Workshop2Phase1CategorySketchAnnotation,
@@ -96,7 +99,12 @@ export const W2_TECHPACK_CONSTRUCTION_NOTE_PRESETS: readonly Workshop2TechPackCo
     { id: 'shoulder-pads', labelRu: 'Плечевые', labelEn: 'Shoulder pads', icon: '▭' },
     { id: 'seam-1_5', labelRu: 'Припуск шва 1,5 см', labelEn: 'Seam allowance 1.5 cm', icon: '↔' },
     { id: 'topstitch-1', labelRu: 'Отстрочка 1 см', labelEn: 'Topstitch 1 cm', icon: '—' },
-    { id: 'interfaced-collar', labelRu: 'Воротник на клеевом', labelEn: 'Interfaced collar', icon: '⌒' },
+    {
+      id: 'interfaced-collar',
+      labelRu: 'Воротник на клеевом',
+      labelEn: 'Interfaced collar',
+      icon: '⌒',
+    },
     { id: 'hidden-zip', labelRu: 'Молния потайная', labelEn: 'Hidden zip', icon: '⫸' },
   ] as const;
 
@@ -128,7 +136,11 @@ function escHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-function bilingual(ru: string, en: string, lang?: Workshop2FinalTzSpecExportContext['exportLanguage']): string {
+function bilingual(
+  ru: string,
+  en: string,
+  lang?: Workshop2FinalTzSpecExportContext['exportLanguage']
+): string {
   if (lang === 'ru') return escHtml(ru);
   if (lang === 'ru_zh') return `${escHtml(ru)} / ${escHtml(en.replace(/[a-z]/gi, (c) => c))}`;
   return `${escHtml(ru)} <span class="muted-en">/ ${escHtml(en)}</span>`;
@@ -330,7 +342,11 @@ function labelsHotspotsHtml(
     .map((id) => W2_COMPOSITION_LABEL_CARE_SYMBOL_CATALOG.find((c) => c.id === id)?.label ?? id)
     .join(', ');
   const hotspots = [
-    { zone: 'Brand label', ru: 'Бренд', detail: s.brandFaceLines?.trim() || s.brandLogoPlacementNote?.trim() || '—' },
+    {
+      zone: 'Brand label',
+      ru: 'Бренд',
+      detail: s.brandFaceLines?.trim() || s.brandLogoPlacementNote?.trim() || '—',
+    },
     { zone: 'Size label', ru: 'Размер', detail: sampleSizeLabel(dossier) },
     { zone: 'Care label', ru: 'Уход', detail: careLabels || '—' },
     {
@@ -450,7 +466,8 @@ function buildCoverSheetHtml(
         .map((r) => `<tr><td>${escHtml(r.role)}</td><td>${escHtml(r.detail || '—')}</td></tr>`)
         .join('')}</tbody></table>`
     : `<p class="muted">${bilingual('BOM не заполнен', 'BOM empty', ctx.exportLanguage)}</p>`;
-  const qtyHtml = qtyTableFromDossier(dossier) || `<p class="muted">Qty по размерам — см. matrix / PO.</p>`;
+  const qtyHtml =
+    qtyTableFromDossier(dossier) || `<p class="muted">Qty по размерам — см. matrix / PO.</p>`;
   const body = `
     <h1>${bilingual('Tech pack · cover', 'Tech pack · cover', ctx.exportLanguage)}</h1>
     <p><strong>Style #:</strong> ${escHtml(ctx.articleSku)} · <strong>${bilingual('Season', 'Season', ctx.exportLanguage)}:</strong> ${escHtml(

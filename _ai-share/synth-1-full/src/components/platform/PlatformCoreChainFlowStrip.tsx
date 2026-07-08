@@ -43,7 +43,11 @@ export function PlatformCoreChainFlowStrip({
           demo,
         });
         return (
-          <div key={pillar.id} id={`pillar-${pillarId}`} className="flex items-center gap-1.5 scroll-mt-24">
+          <div
+            key={pillar.id}
+            id={`pillar-${pillarId}`}
+            className="flex scroll-mt-24 items-center gap-1.5"
+          >
             <Link
               href={href}
               data-testid={`chain-pillar-${pillar.id}`}

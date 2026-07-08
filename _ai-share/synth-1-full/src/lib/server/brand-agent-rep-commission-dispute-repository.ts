@@ -24,7 +24,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as BrandAgentRepCommissionDisputeRecord[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as BrandAgentRepCommissionDisputeRecord[];
     if (Array.isArray(parsed)) memory.push(...parsed);
   } catch {
     /* ignore */
@@ -59,7 +61,9 @@ function mapPgRow(row: {
   };
 }
 
-async function listFromPg(organizationId: string): Promise<BrandAgentRepCommissionDisputeRecord[] | null> {
+async function listFromPg(
+  organizationId: string
+): Promise<BrandAgentRepCommissionDisputeRecord[] | null> {
   if (!isWorkshop2PostgresEnabled()) return null;
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query<{

@@ -36,11 +36,10 @@ export function ShopReplenishmentMatrixAutoLinesStrip({
   const linkLabel = formatShopReplenishmentMatrixAutoLinesLinkRu(lineCount);
 
   return (
-    <div
-      className={hubGadget.goldenPath}
-      data-testid="shop-replenishment-matrix-auto-lines-strip"
-    >
-      <span className="text-text-muted text-[10px]">{SHOP_REPLENISHMENT_MATRIX_AUTO_LINES_STRIP_RU}</span>
+    <div className={hubGadget.goldenPath} data-testid="shop-replenishment-matrix-auto-lines-strip">
+      <span className="text-text-muted text-[10px]">
+        {SHOP_REPLENISHMENT_MATRIX_AUTO_LINES_STRIP_RU}
+      </span>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>

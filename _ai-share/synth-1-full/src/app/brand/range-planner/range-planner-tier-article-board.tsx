@@ -125,7 +125,8 @@ export function RangePlannerTierArticleBoard({
       <div>
         <p className="text-sm font-semibold">Состав по уровням ассортимента</p>
         <p className="text-text-secondary text-xs">
-          Перетащите артикул между колонками или внутри колонки — tier и порядок сохраняются в PostgreSQL.
+          Перетащите артикул между колонками или внутри колонки — tier и порядок сохраняются в
+          PostgreSQL.
         </p>
       </div>
       <div

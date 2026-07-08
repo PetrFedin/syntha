@@ -34,8 +34,7 @@ export async function attachManufacturerSamplePhotoDamStub(
   const assetId = `dam-sample-${randomUUID().slice(0, 10)}`;
   const filename = input.filename?.trim() || 'sample-photo-front.jpg';
   const urlBase =
-    options?.assetUrlBase?.trim() ||
-    '/api/workshop2/manufacturer/sample-photo/dam-stub';
+    options?.assetUrlBase?.trim() || '/api/workshop2/manufacturer/sample-photo/dam-stub';
   const url = `${urlBase}/${encodeURIComponent(assetId)}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}&file=${encodeURIComponent(filename)}`;
 
   return {

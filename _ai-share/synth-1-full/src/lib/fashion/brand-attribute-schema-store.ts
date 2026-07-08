@@ -69,7 +69,9 @@ export async function patchBrandSizeChartGradeFeed(input: {
   return { ok: true, ...json };
 }
 
-export async function refreshBrandAttributeSchemaFeed(collectionId: string): Promise<{ ok: boolean }> {
+export async function refreshBrandAttributeSchemaFeed(
+  collectionId: string
+): Promise<{ ok: boolean }> {
   const res = await fetch('/api/brand/merch/attribute-schema', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

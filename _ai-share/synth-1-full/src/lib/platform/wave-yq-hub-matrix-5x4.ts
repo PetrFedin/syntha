@@ -83,12 +83,15 @@ function buildHubMatrixCell(
   };
 }
 
-export const WAVE_YQ_HUB_MATRIX_CELLS: readonly WaveYqHubMatrixCell[] = PLATFORM_CORE_HUB_ROWS.flatMap(
-  (row) => PLATFORM_CORE_PILLARS.map((pillar) => buildHubMatrixCell(row.id, pillar.id))
-);
+export const WAVE_YQ_HUB_MATRIX_CELLS: readonly WaveYqHubMatrixCell[] =
+  PLATFORM_CORE_HUB_ROWS.flatMap((row) =>
+    PLATFORM_CORE_PILLARS.map((pillar) => buildHubMatrixCell(row.id, pillar.id))
+  );
 
 export const WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS = WAVE_YQ_HUB_MATRIX_CELLS.filter((c) => c.active);
-export const WAVE_YQ_HUB_MATRIX_INACTIVE_HUB_CELLS = WAVE_YQ_HUB_MATRIX_CELLS.filter((c) => !c.active);
+export const WAVE_YQ_HUB_MATRIX_INACTIVE_HUB_CELLS = WAVE_YQ_HUB_MATRIX_CELLS.filter(
+  (c) => !c.active
+);
 
 export function waveYqCoreE2eSpecGlob(basename = WAVE_YQ_CORE_E2E_SPEC): string {
   return `**/${basename}`;

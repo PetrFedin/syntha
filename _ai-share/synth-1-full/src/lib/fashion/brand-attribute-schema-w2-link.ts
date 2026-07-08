@@ -17,8 +17,7 @@ export function brandAttributeMissingFixHref(input: {
   articleId?: string;
 }): string {
   const collectionId = input.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
-  const articleId =
-    input.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
+  const articleId = input.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
   const section = getAttributeDossierSection(input.attributeId) ?? 'general';
   const w2sec = SECTION_TO_W2SEC[section] ?? 'general';
   return workshop2ArticleHref(collectionId, articleId, { w2pane: 'tz', w2sec });

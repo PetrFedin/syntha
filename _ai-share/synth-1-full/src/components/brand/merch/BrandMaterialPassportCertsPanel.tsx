@@ -45,7 +45,9 @@ export function BrandMaterialPassportCertsPanel({ collectionId = 'SS27' }: Props
   const summary = useMemo(() => summarizeBrandMaterialPassportCerts(rows), [rows]);
 
   const downloadCsv = () => {
-    const blob = new Blob([brandMaterialPassportCertsToCsv(rows)], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([brandMaterialPassportCertsToCsv(rows)], {
+      type: 'text/csv;charset=utf-8',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -80,7 +82,10 @@ export function BrandMaterialPassportCertsPanel({ collectionId = 'SS27' }: Props
         </Button>
         <Badge variant="secondary">Ready: {summary.ready}</Badge>
         <Badge variant="outline">Blocked: {summary.blocked}</Badge>
-        <Badge variant="outline" data-testid={`brand-material-passport-certs-source-${storageMode}`}>
+        <Badge
+          variant="outline"
+          data-testid={`brand-material-passport-certs-source-${storageMode}`}
+        >
           {storageMode === 'pg' ? 'PG certs' : `${storageMode} certs`}
         </Badge>
         <Button variant="outline" size="sm" type="button" onClick={() => void reload()}>

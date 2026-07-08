@@ -11,7 +11,9 @@ describe('wave SO — P1 shop CO replenishment→matrix apply + greenfield empty
   });
 
   it('empty greenfield registry PG onboarding strip', () => {
-    expect('shop-co-registry-empty-greenfield-monetization-strip').toContain('greenfield-monetization');
+    expect('shop-co-registry-empty-greenfield-monetization-strip').toContain(
+      'greenfield-monetization'
+    );
     expect('shop-co-registry-greenfield-onboarding-strip').toContain('onboarding-strip');
     expect('shop-co-registry-greenfield-onboarding-matrix-seed-link').toContain('matrix-seed');
   });

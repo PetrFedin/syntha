@@ -1,8 +1,6 @@
 import { brandOrderCommsFeatureHref } from '@/lib/b2b/brand-order-comms';
 import { appendSupplierOpPoContextToHref } from '@/lib/b2b/supplier-op-po-context-hrefs';
-import {
-  brandOrderCommsTabHref,
-} from '@/lib/b2b/brand-collection-order-hrefs';
+import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import { buildShopInventoryOpsSession } from '@/lib/b2b/shop-inventory-ops';
 import {
   shopLandedMarginTabHref,
@@ -52,7 +50,8 @@ export function buildSupplierOrderCommsSession(input?: {
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
-  const productionOrderId = input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
+  const productionOrderId =
+    input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
   const poCtx = { orderId, productionOrderId };
   const base = appendSupplierOpPoContextToHref(
     `${ROUTES.factory.supplierMessages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,

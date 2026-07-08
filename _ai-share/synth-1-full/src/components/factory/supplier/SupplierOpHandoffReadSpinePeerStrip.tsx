@@ -42,25 +42,41 @@ export function SupplierOpHandoffReadSpinePeerStrip({
 
   return (
     <div className={hubGadget.goldenPath} data-testid="sup-op-handoff-read-spine-peer-strip">
-      <Link href={mfrHandoffHref} data-testid="sup-op-handoff-read-mfr-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={mfrHandoffHref}
+        data-testid="sup-op-handoff-read-mfr-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь производства
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={forecastHref} data-testid="sup-op-handoff-read-forecast-link" className={hubGadget.goldenLink}>
+      <Link
+        href={forecastHref}
+        data-testid="sup-op-handoff-read-forecast-link"
+        className={hubGadget.goldenLink}
+      >
         Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={shopTrackingHref} data-testid="sup-op-handoff-read-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={shopTrackingHref}
+        data-testid="sup-op-handoff-read-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={orderTabHref} data-testid="sup-op-handoff-read-order-tab-link" className={hubGadget.goldenLink}>
+      <Link
+        href={orderTabHref}
+        data-testid="sup-op-handoff-read-order-tab-link"
+        className={hubGadget.goldenLink}
+      >
         Вкладка заказа
       </Link>
     </div>

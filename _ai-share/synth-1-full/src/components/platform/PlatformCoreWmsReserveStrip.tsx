@@ -88,7 +88,9 @@ export function PlatformCoreWmsReserveStrip(props: Props) {
         <Badge variant="outline" className="text-[9px]">
           WMS reserve
         </Badge>
-        <span className="text-text-secondary">{PLATFORM_CORE_WMS_RESERVE_SUPPLIER_PROCUREMENT_RU}</span>
+        <span className="text-text-secondary">
+          {PLATFORM_CORE_WMS_RESERVE_SUPPLIER_PROCUREMENT_RU}
+        </span>
         <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
           <Link href={props.brandHandoffHref} data-testid={`${testId}-brand-handoff-link`}>
             Передача бренда

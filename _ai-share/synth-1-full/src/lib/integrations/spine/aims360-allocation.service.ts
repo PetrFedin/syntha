@@ -19,9 +19,7 @@ import {
 } from './allocation-queue-persistence.file';
 import { getMatrixInventoryForPlatform } from './inventory-adapters';
 
-export function buildAllocationLinesFromOrderItems(
-  items: B2BOrderLineItem[]
-): AllocationLine[] {
+export function buildAllocationLinesFromOrderItems(items: B2BOrderLineItem[]): AllocationLine[] {
   return items.map((line) => {
     const sku = line.productId?.trim() || 'unknown';
     const qty = line.quantity ?? 1;
@@ -69,9 +67,8 @@ export async function syncAims360Allocation(input: {
       updatedAt: new Date().toISOString(),
     });
 
-  const lines: AllocationLine[] =
-    input.locations?.length ?
-      existing.lines.map((line) => {
+  const lines: AllocationLine[] = input.locations?.length
+    ? existing.lines.map((line) => {
         const hit = input.locations!.find((l) => l.sku === line.sku);
         if (!hit) return line;
         return {
@@ -100,7 +97,11 @@ export async function syncAims360Allocation(input: {
   const record = upsertAllocationQueue({
     wholesaleOrderId: id,
     collectionId: existing.collectionId,
-    status: allAllocated ? 'allocated' : lines.some((l) => l.qtyAllocated > 0) ? 'partial' : 'in_progress',
+    status: allAllocated
+      ? 'allocated'
+      : lines.some((l) => l.qtyAllocated > 0)
+        ? 'partial'
+        : 'in_progress',
     platform: 'aims360',
     lines,
     updatedAt: new Date().toISOString(),

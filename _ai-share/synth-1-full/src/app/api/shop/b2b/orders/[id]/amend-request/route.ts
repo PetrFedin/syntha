@@ -33,8 +33,7 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
   });
 
   if (!result.ok) {
-    const status =
-      result.code === 'not_found' ? 404 : result.code === 'amend_locked' ? 409 : 400;
+    const status = result.code === 'not_found' ? 404 : result.code === 'amend_locked' ? 409 : 400;
     return NextResponse.json(result, { status });
   }
 

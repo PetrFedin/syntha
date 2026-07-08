@@ -28,16 +28,18 @@ export default function Workshop2InvestorBriefPage() {
   return (
     <div className={W2_OPERATIONAL_PANEL_ROOT} data-testid="workshop2-investor-brief-page">
       <header className="space-y-1">
-        <h1 className="text-text-primary text-lg font-semibold">Бриф для инвестора — Workshop2 + B2B</h1>
+        <h1 className="text-text-primary text-lg font-semibold">
+          Бриф для инвестора — Workshop2 + B2B
+        </h1>
         <p className="text-text-secondary text-xs">
           Read-only сводка для показа. Demo ≠ live — см. таблицу demo vs live.
         </p>
       </header>
 
       {errorRu ? (
-        <p className="text-destructive text-sm">{errorRu}</p>
+        <p className="text-sm text-destructive">{errorRu}</p>
       ) : !brief ? (
-        <p className="text-muted-foreground text-sm">Загрузка brief…</p>
+        <p className="text-sm text-muted-foreground">Загрузка brief…</p>
       ) : (
         <div className="space-y-4 text-sm">
           <div className="flex flex-wrap gap-2">
@@ -48,9 +50,7 @@ export default function Workshop2InvestorBriefPage() {
             <Badge variant="outline">
               keys {brief.keysConfiguredCount}/{brief.keysTotal}
             </Badge>
-            <Badge variant="outline">
-              unit {brief.unitTests.passing ? 'PASS' : 'FAIL'}
-            </Badge>
+            <Badge variant="outline">unit {brief.unitTests.passing ? 'PASS' : 'FAIL'}</Badge>
           </div>
 
           <p className="text-text-secondary">{brief.labelRu}</p>
@@ -68,7 +68,7 @@ export default function Workshop2InvestorBriefPage() {
 
           {brief.blockingGatesRu.length > 0 && (
             <section>
-              <h2 className="text-destructive mb-1 font-medium">Blocking gates (RU)</h2>
+              <h2 className="mb-1 font-medium text-destructive">Blocking gates (RU)</h2>
               <ul className="list-disc pl-5 text-xs">
                 {brief.blockingGatesRu.map((g) => (
                   <li key={g}>{g}</li>
@@ -79,8 +79,8 @@ export default function Workshop2InvestorBriefPage() {
 
           {brief.warningsRu.length > 0 && (
             <section>
-              <h2 className="text-amber-600 mb-1 font-medium">Warnings (demo / live prod)</h2>
-              <ul className="list-disc pl-5 text-xs text-text-secondary">
+              <h2 className="mb-1 font-medium text-amber-600">Warnings (demo / live prod)</h2>
+              <ul className="text-text-secondary list-disc pl-5 text-xs">
                 {brief.warningsRu.map((g) => (
                   <li key={g}>{g}</li>
                 ))}
@@ -96,7 +96,7 @@ export default function Workshop2InvestorBriefPage() {
                   <Link href={p.path} className="text-accent-primary underline">
                     {p.labelRu}
                   </Link>
-                  <span className="text-muted-foreground ml-2 text-[10px]">{p.path}</span>
+                  <span className="ml-2 text-[10px] text-muted-foreground">{p.path}</span>
                 </li>
               ))}
             </ul>
@@ -113,7 +113,10 @@ export default function Workshop2InvestorBriefPage() {
               </a>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/brand/production/workshop2/investor-summary" data-testid="workshop2-investor-brief-summary-link">
+              <Link
+                href="/brand/production/workshop2/investor-summary"
+                data-testid="workshop2-investor-brief-summary-link"
+              >
                 Сводка для инвестора
               </Link>
             </Button>

@@ -53,7 +53,7 @@ export function ManufacturerCalendarGanttBridgeStrip({
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="mfr-cm-calendar-gantt-bridge-strip"
     >
       <Badge variant="outline" className="text-[9px] uppercase">
@@ -93,7 +93,10 @@ export function ManufacturerCalendarGanttBridgeStrip({
             </Link>
           </Button>
           <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-            <Link href={session.productionOpsCutTicketHref} data-testid="mfr-cm-calendar-gantt-cut-ticket-link">
+            <Link
+              href={session.productionOpsCutTicketHref}
+              data-testid="mfr-cm-calendar-gantt-cut-ticket-link"
+            >
               Техкарта раскроя
             </Link>
           </Button>

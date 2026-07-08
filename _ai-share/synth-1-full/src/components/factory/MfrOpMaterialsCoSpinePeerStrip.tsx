@@ -41,7 +41,11 @@ export function MfrOpMaterialsCoSpinePeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.handoffHref} data-testid="mfr-op-materials-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="mfr-op-materials-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь
       </Link>
       {dossierHref ? (
@@ -49,7 +53,11 @@ export function MfrOpMaterialsCoSpinePeerStrip({
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={dossierHref} data-testid="mfr-op-materials-dossier-link" className={hubGadget.goldenLink}>
+          <Link
+            href={dossierHref}
+            data-testid="mfr-op-materials-dossier-link"
+            className={hubGadget.goldenLink}
+          >
             Досье
           </Link>
         </>

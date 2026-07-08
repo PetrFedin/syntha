@@ -116,11 +116,17 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
     setLoading(true);
     void fetch(`/api/shop/b2b/replenishment/stock-atp?${qs.toString()}`)
       .then((res) => res.json())
-      .then((json: { ok?: boolean; rows?: ReplenishmentStockRow[]; source?: ReplenishmentStockAtpSource }) => {
-        if (cancelled || json.ok !== true || !Array.isArray(json.rows)) return;
-        setRows(json.rows);
-        setSource(json.source ?? 'demo');
-      })
+      .then(
+        (json: {
+          ok?: boolean;
+          rows?: ReplenishmentStockRow[];
+          source?: ReplenishmentStockAtpSource;
+        }) => {
+          if (cancelled || json.ok !== true || !Array.isArray(json.rows)) return;
+          setRows(json.rows);
+          setSource(json.source ?? 'demo');
+        }
+      )
       .catch(() => {
         if (!cancelled) {
           setRows(demoRows);
@@ -237,161 +243,176 @@ export function ShopReplenishmentStockAtpPanel({ collectionId, orderId }: Props)
           }
         />
         <div className="min-w-0 flex-1 space-y-4">
-      <ShopReplenishmentMatrixAutoLinesStrip
-        collectionId={collectionId}
-        orderId={orderId}
-        lineCount={matrixReorderCount}
-        atpQtyTotal={matrixAtpQtyTotal}
-        hintRu={matrixLinesHint}
-        buyerId="shop1"
-      />
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="secondary">SKU: {rows.length}</Badge>
-        <Badge variant="outline">{slice.labelRu}</Badge>
-        <ShopReplenishmentWmsAtpBadge collectionId={collectionId} buyerId="shop1" />
-        {loading ? (
-          <Badge variant="outline" className="animate-pulse">
-            Загрузка ATP…
-          </Badge>
-        ) : null}
-        <Badge variant="outline" className="border-amber-500/40 text-amber-700">
-          ATP &lt; 5: {lowAtp}
-        </Badge>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={session.inventoryOverviewHref}>Ритейл · inventory</Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={session.rulesHref}>Правила</Link>
-        </Button>
-        <Button size="sm" asChild data-testid="shop-replenishment-stock-atp-matrix-link">
-          <Link href={session.matrixHref}>Дозаказ · матрица</Link>
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          type="button"
-          disabled={matrixApplying || loading || !collectionId?.trim()}
-          onClick={runMatrixApply}
-          data-testid="shop-replenishment-matrix-lines-apply"
-        >
-          {matrixApplying
-            ? 'Перенос…'
-            : matrixReorderCount > 0
-              ? `В матрицу · ${matrixReorderCount} SKU${matrixAtpQtyTotal > 0 ? ` · ATP ${matrixAtpQtyTotal}` : ''}`
-              : 'В матрицу · ATP'}
-        </Button>
-        {matrixApplyMessage ? (
-          <span className="text-destructive text-[10px]" data-testid="shop-replenishment-matrix-apply-error">
-            {matrixApplyMessage}
-          </span>
-        ) : null}
-        <Button
-          variant="secondary"
-          size="sm"
-          type="button"
-          disabled={allocating || loading}
-          onClick={runIntakeAllocate}
-          data-testid="shop-replenishment-intake-allocate-run"
-        >
-          {allocating ? 'Аллокация…' : 'Приёмка · распределение'}
-        </Button>
-        <Button variant="outline" size="sm" asChild data-testid="shop-replenishment-supplier-forecast-link">
-          <Link href={session.supplierForecastHref}>Поставщик · прогноз</Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={session.prepackHref}>Препак</Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={session.workingOrderHref}>Рабочий заказ · пакетно</Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={session.orderCommsHref}>Трекинг заказа</Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={session.collaborativeApprovalsHref}>Согласования совместного заказа</Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
-        </Button>
-      </div>
+          <ShopReplenishmentMatrixAutoLinesStrip
+            collectionId={collectionId}
+            orderId={orderId}
+            lineCount={matrixReorderCount}
+            atpQtyTotal={matrixAtpQtyTotal}
+            hintRu={matrixLinesHint}
+            buyerId="shop1"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">SKU: {rows.length}</Badge>
+            <Badge variant="outline">{slice.labelRu}</Badge>
+            <ShopReplenishmentWmsAtpBadge collectionId={collectionId} buyerId="shop1" />
+            {loading ? (
+              <Badge variant="outline" className="animate-pulse">
+                Загрузка ATP…
+              </Badge>
+            ) : null}
+            <Badge variant="outline" className="border-amber-500/40 text-amber-700">
+              ATP &lt; 5: {lowAtp}
+            </Badge>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={session.inventoryOverviewHref}>Ритейл · inventory</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={session.rulesHref}>Правила</Link>
+            </Button>
+            <Button size="sm" asChild data-testid="shop-replenishment-stock-atp-matrix-link">
+              <Link href={session.matrixHref}>Дозаказ · матрица</Link>
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              disabled={matrixApplying || loading || !collectionId?.trim()}
+              onClick={runMatrixApply}
+              data-testid="shop-replenishment-matrix-lines-apply"
+            >
+              {matrixApplying
+                ? 'Перенос…'
+                : matrixReorderCount > 0
+                  ? `В матрицу · ${matrixReorderCount} SKU${matrixAtpQtyTotal > 0 ? ` · ATP ${matrixAtpQtyTotal}` : ''}`
+                  : 'В матрицу · ATP'}
+            </Button>
+            {matrixApplyMessage ? (
+              <span
+                className="text-[10px] text-destructive"
+                data-testid="shop-replenishment-matrix-apply-error"
+              >
+                {matrixApplyMessage}
+              </span>
+            ) : null}
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              disabled={allocating || loading}
+              onClick={runIntakeAllocate}
+              data-testid="shop-replenishment-intake-allocate-run"
+            >
+              {allocating ? 'Аллокация…' : 'Приёмка · распределение'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              data-testid="shop-replenishment-supplier-forecast-link"
+            >
+              <Link href={session.supplierForecastHref}>Поставщик · прогноз</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={session.prepackHref}>Препак</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={session.workingOrderHref}>Рабочий заказ · пакетно</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={session.landedMarginHref}>Маржа с доставкой</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={session.orderCommsHref}>Трекинг заказа</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={session.collaborativeApprovalsHref}>Согласования совместного заказа</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={session.brandOrderChatHref}>Чат заказа бренда</Link>
+            </Button>
+          </div>
 
-      {allocateResult?.planId ? (
-        <Card
-          className="border-emerald-200/60 bg-emerald-50/40"
-          data-testid="shop-replenishment-intake-allocate-result"
-        >
-          <CardContent className="py-3 text-sm">
-            <p className="font-medium text-emerald-900">
-              {allocateResult.messageRu ?? `План ${allocateResult.planId} сохранён.`}
+          {allocateResult?.planId ? (
+            <Card
+              className="border-emerald-200/60 bg-emerald-50/40"
+              data-testid="shop-replenishment-intake-allocate-result"
+            >
+              <CardContent className="py-3 text-sm">
+                <p className="font-medium text-emerald-900">
+                  {allocateResult.messageRu ?? `План ${allocateResult.planId} сохранён.`}
+                </p>
+                <p className="text-text-muted mt-1 text-xs">
+                  Распределено: {allocateResult.allocations?.length ?? 0} · Нераспределено:{' '}
+                  {allocateResult.unallocated?.length ?? 0}
+                  {allocateResult.persistMode ? ` · ${allocateResult.persistMode}` : ''}
+                </p>
+              </CardContent>
+            </Card>
+          ) : null}
+          {allocateError ? (
+            <p
+              className="text-sm text-destructive"
+              data-testid="shop-replenishment-intake-allocate-error"
+            >
+              {allocateError}
             </p>
-            <p className="text-text-muted mt-1 text-xs">
-              Распределено: {allocateResult.allocations?.length ?? 0} · Нераспределено:{' '}
-              {allocateResult.unallocated?.length ?? 0}
-              {allocateResult.persistMode ? ` · ${allocateResult.persistMode}` : ''}
-            </p>
-          </CardContent>
-        </Card>
-      ) : null}
-      {allocateError ? (
-        <p className="text-destructive text-sm" data-testid="shop-replenishment-intake-allocate-error">
-          {allocateError}
-        </p>
-      ) : null}
+          ) : null}
 
-      <Card className="border-border-subtle">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Остатки и ATP</CardTitle>
-          <CardDescription>
-            На руках, резерв, ATP — зёрна ledger
-            {source === 'pg'
-              ? ' из PostgreSQL'
-              : source === 'pg+wms'
-                ? ' · PG + WMS'
-                : source === 'wms'
-                  ? ' · WMS'
-                  : source === 'demo'
-                    ? ' (демо)'
-                    : ''}
-            .
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>SKU</TableHead>
-                <TableHead className="text-right">На складе</TableHead>
-                <TableHead className="text-right">Резерв</TableHead>
-                <TableHead className="text-right">ATP</TableHead>
-                <TableHead className="text-right">В пути</TableHead>
-                <TableHead className="text-right">Не подтв.</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((r) => (
-                <TableRow key={r.sku} data-testid={`shop-replenishment-stock-row-${r.sku}`}>
-                  <TableCell>
-                    <span className="font-mono text-xs">{r.sku}</span>
-                    <p className="text-text-muted line-clamp-1 max-w-[180px] text-[10px]">{r.name}</p>
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">{r.onHand}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{r.reserved}</TableCell>
-                  <TableCell
-                    className={`text-right font-mono text-sm ${r.atp < 5 ? 'text-amber-600' : ''}`}
-                  >
-                    {r.atp}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm">{r.inTransit}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{r.unconfirmed}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+          <Card className="border-border-subtle">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Остатки и ATP</CardTitle>
+              <CardDescription>
+                На руках, резерв, ATP — зёрна ledger
+                {source === 'pg'
+                  ? ' из PostgreSQL'
+                  : source === 'pg+wms'
+                    ? ' · PG + WMS'
+                    : source === 'wms'
+                      ? ' · WMS'
+                      : source === 'demo'
+                        ? ' (демо)'
+                        : ''}
+                .
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>SKU</TableHead>
+                    <TableHead className="text-right">На складе</TableHead>
+                    <TableHead className="text-right">Резерв</TableHead>
+                    <TableHead className="text-right">ATP</TableHead>
+                    <TableHead className="text-right">В пути</TableHead>
+                    <TableHead className="text-right">Не подтв.</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((r) => (
+                    <TableRow key={r.sku} data-testid={`shop-replenishment-stock-row-${r.sku}`}>
+                      <TableCell>
+                        <span className="font-mono text-xs">{r.sku}</span>
+                        <p className="text-text-muted line-clamp-1 max-w-[180px] text-[10px]">
+                          {r.name}
+                        </p>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">{r.onHand}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">{r.reserved}</TableCell>
+                      <TableCell
+                        className={`text-right font-mono text-sm ${r.atp < 5 ? 'text-amber-600' : ''}`}
+                      >
+                        {r.atp}
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm">{r.inTransit}</TableCell>
+                      <TableCell className="text-right font-mono text-sm">
+                        {r.unconfirmed}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

@@ -1,8 +1,5 @@
 import { ROUTES } from '@/lib/platform-core-routes';
-import {
-  resolvePageCollectionId,
-  type CoreHubPillarId,
-} from '@/lib/platform-core-hub-matrix';
+import { resolvePageCollectionId, type CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 
 export type ShopB2bLegacyRedirectTarget =
   | 'showroom'

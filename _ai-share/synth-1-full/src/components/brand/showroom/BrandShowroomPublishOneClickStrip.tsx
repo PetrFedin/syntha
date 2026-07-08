@@ -44,7 +44,7 @@ export function BrandShowroomPublishOneClickStrip({ collectionId }: Props) {
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/60 px-3 py-3"
+      className="border-border-subtle bg-bg-surface2/60 space-y-2 rounded-md border px-3 py-3"
       data-testid="brand-showroom-publish-one-click-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -55,7 +55,10 @@ export function BrandShowroomPublishOneClickStrip({ collectionId }: Props) {
           Checklist gate → bulk-showroom-publish · {articleIds.length} SKU
         </span>
         <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-          <Link href={session.launchReadinessHref} data-testid="brand-showroom-publish-one-click-checklist-link">
+          <Link
+            href={session.launchReadinessHref}
+            data-testid="brand-showroom-publish-one-click-checklist-link"
+          >
             Release checklist
           </Link>
         </Button>
@@ -68,7 +71,10 @@ export function BrandShowroomPublishOneClickStrip({ collectionId }: Props) {
         onMessage={setMessage}
       />
       {message ? (
-        <p className="text-text-muted text-[10px]" data-testid="brand-showroom-publish-one-click-message">
+        <p
+          className="text-text-muted text-[10px]"
+          data-testid="brand-showroom-publish-one-click-message"
+        >
           {message}
         </p>
       ) : null}

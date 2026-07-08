@@ -78,7 +78,9 @@ describe('wave YA — mfr factory dossier PG SoT in core', () => {
     expect(WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_RU).toMatch(/PostgreSQL/i);
     expect(WAVE_YA_MFR_DOSSIER_READ_ONLY_BADGE_RU).toMatch(/read-only/i);
     expect(labelMfrDossierSourceBadgeRu('postgres')).toBe(WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_RU);
-    expect(mfrDossierSourceBadgeTestId('postgres')).toBe(WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_TESTID);
+    expect(mfrDossierSourceBadgeTestId('postgres')).toBe(
+      WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_TESTID
+    );
   });
 
   it('brand diff peer cross-link from mfr dossier', () => {

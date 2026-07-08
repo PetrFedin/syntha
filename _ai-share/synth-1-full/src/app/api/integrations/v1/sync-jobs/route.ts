@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
-import {
-  enqueueSyncJob,
-  listSyncJobs,
-} from '@/lib/integrations/spine/sync-jobs-persistence.file';
+import { enqueueSyncJob, listSyncJobs } from '@/lib/integrations/spine/sync-jobs-persistence.file';
 import {
   processQueuedSyncJobsServer,
   retrySyncJobServer,
@@ -29,8 +26,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const requestId = getOrCreateRequestId(req);
   const mode = getApiContractMode();
-  let body: { platform?: string; kind?: string; retryJobId?: string; process?: boolean; limit?: number } =
-    {};
+  let body: {
+    platform?: string;
+    kind?: string;
+    retryJobId?: string;
+    process?: boolean;
+    limit?: number;
+  } = {};
   try {
     body = (await req.json()) as typeof body;
   } catch {

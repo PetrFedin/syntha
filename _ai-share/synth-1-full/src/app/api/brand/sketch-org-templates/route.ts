@@ -7,7 +7,11 @@ import {
   listBrandSketchOrgTemplatesServer,
   replaceBrandSketchOrgTemplatesServer,
 } from '@/lib/server/brand-sketch-org-templates-repository';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 /** GET — sketch pin templates org-level для коллекции. */
 export async function GET(req: NextRequest) {
@@ -46,7 +50,10 @@ export async function PUT(req: NextRequest) {
 
   const collectionId = body.collectionId?.trim() ?? '';
   if (!collectionId || !Array.isArray(body.templates)) {
-    return NextResponse.json({ ok: false, messageRu: 'Нужны collectionId и templates.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Нужны collectionId и templates.' },
+      { status: 400 }
+    );
   }
 
   const result = await replaceBrandSketchOrgTemplatesServer({

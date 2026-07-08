@@ -61,7 +61,7 @@ export function MfrOpMaterialsSupplierPatchStrip({
             ·
           </span>
           <span
-            className="font-mono text-[10px] text-text-muted"
+            className="text-text-muted font-mono text-[10px]"
             data-testid={WAVE_WU_MFR_MATERIALS_SUPPLIER_PO_BADGE_TESTID}
           >
             PO {productionOrderId}

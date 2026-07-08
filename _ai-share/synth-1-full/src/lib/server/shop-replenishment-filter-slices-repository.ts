@@ -90,7 +90,9 @@ function resolveActiveFromRows(
   return rows.find((r) => r.isActive) ?? rows[0] ?? presetRecords('shop1')[0]!;
 }
 
-async function loadRowsFromPg(buyerId: string): Promise<ShopReplenishmentFilterSliceRecord[] | null> {
+async function loadRowsFromPg(
+  buyerId: string
+): Promise<ShopReplenishmentFilterSliceRecord[] | null> {
   if (!isWorkshop2PostgresEnabled()) return null;
   try {
     await ensureWorkshop2PgSchema();

@@ -1,4 +1,7 @@
-import type { BrandWssiCapacityFeedRow, BrandWssiMixFeedRow } from '@/lib/fashion/brand-wssi-otb-feed';
+import type {
+  BrandWssiCapacityFeedRow,
+  BrandWssiMixFeedRow,
+} from '@/lib/fashion/brand-wssi-otb-feed';
 
 export type BrandWssiOtbResponse = {
   ok: boolean;

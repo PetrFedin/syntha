@@ -17,27 +17,55 @@ export function ShopOpRegistrySpinePeerStrip({ collectionId, orderId }: Props) {
 
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-op-registry-spine-peer-strip">
-      <Link href={shopB2bTrackingOrderHref(resolvedOrderId || undefined)} data-testid="shop-op-registry-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={shopB2bTrackingOrderHref(resolvedOrderId || undefined)}
+        data-testid="shop-op-registry-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг
       </Link>
       {resolvedOrderId ? (
         <>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
-          <Link href={session.brandOrderHandoffHref} data-testid="shop-op-registry-brand-handoff-link" className={hubGadget.goldenLink}>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <Link
+            href={session.brandOrderHandoffHref}
+            data-testid="shop-op-registry-brand-handoff-link"
+            className={hubGadget.goldenLink}
+          >
             Передача бренда
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
-          <Link href={session.inventoryOverviewHref} data-testid="shop-op-registry-inventory-link" className={hubGadget.goldenLink}>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <Link
+            href={session.inventoryOverviewHref}
+            data-testid="shop-op-registry-inventory-link"
+            className={hubGadget.goldenLink}
+          >
             Остатки
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
-          <Link href={session.landedMarginHref} data-testid="shop-op-registry-margin-link" className={hubGadget.goldenLink}>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <Link
+            href={session.landedMarginHref}
+            data-testid="shop-op-registry-margin-link"
+            className={hubGadget.goldenLink}
+          >
             Маржа
           </Link>
         </>
       ) : null}
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={session.matrixHref} data-testid="shop-op-registry-matrix-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={session.matrixHref}
+        data-testid="shop-op-registry-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица
       </Link>
     </div>

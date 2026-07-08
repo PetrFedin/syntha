@@ -94,7 +94,7 @@ export function PlatformB2bMarketroomPublishedArticlesFeedStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/50 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/50 space-y-2 rounded-md border px-3 py-2 text-xs"
       data-testid="platform-b2b-marketroom-published-articles-feed-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -130,13 +130,16 @@ export function PlatformB2bMarketroomPublishedArticlesFeedStrip({
         </Button>
       </div>
       {!loading && rows.length > 0 ? (
-        <ul className="flex flex-wrap gap-1.5" data-testid="platform-b2b-marketroom-published-articles-feed-list">
+        <ul
+          className="flex flex-wrap gap-1.5"
+          data-testid="platform-b2b-marketroom-published-articles-feed-list"
+        >
           {rows.map((row) => (
             <li key={row.articleId}>
               <Link
                 href={shopMatrixArticleHref(collectionId, row.articleId)}
                 data-testid={`platform-b2b-marketroom-feed-article-${row.articleId}`}
-                className="border-border-subtle inline-flex items-center gap-1 rounded-md border bg-white px-2 py-1 text-[10px] font-medium hover:bg-bg-surface2/80"
+                className="border-border-subtle hover:bg-bg-surface2/80 inline-flex items-center gap-1 rounded-md border bg-white px-2 py-1 text-[10px] font-medium"
               >
                 <span className="max-w-[120px] truncate">{row.title}</span>
                 <span className="text-text-muted">→ matrix</span>
@@ -153,7 +156,10 @@ export function PlatformB2bMarketroomPublishedArticlesFeedStrip({
         </ul>
       ) : null}
       {!loading && total === 0 ? (
-        <p className="text-text-muted text-[10px]" data-testid="platform-b2b-marketroom-published-articles-feed-empty">
+        <p
+          className="text-text-muted text-[10px]"
+          data-testid="platform-b2b-marketroom-published-articles-feed-empty"
+        >
           Нет опубликованных артикулов — brand publish → shop showroom.
         </p>
       ) : null}

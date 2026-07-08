@@ -23,55 +23,91 @@ export function BrandCmOrderContextPeerStrip({ collectionId, orderId }: Props) {
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="brand-cm-order-context-strip"
     >
-      <Link href={session.registryHref} data-testid="brand-cm-order-registry-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.registryHref}
+        data-testid="brand-cm-order-registry-link"
+        className={hubGadget.goldenLink}
+      >
         Реестр
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.handoffHref} data-testid="brand-cm-order-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="brand-cm-order-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopMatrixHref} data-testid="brand-cm-order-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopMatrixHref}
+        data-testid="brand-cm-order-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopCheckoutHref} data-testid="brand-cm-order-shop-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopCheckoutHref}
+        data-testid="brand-cm-order-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="brand-cm-order-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="brand-cm-order-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.calendarHref} data-testid="brand-cm-order-calendar-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.calendarHref}
+        data-testid="brand-cm-order-calendar-link"
+        className={hubGadget.goldenLink}
+      >
         Календарь
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crmHref} data-testid="brand-cm-order-crm-segments-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="brand-cm-order-crm-segments-link"
+        className={hubGadget.goldenLink}
+      >
         Сегменты CRM
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="brand-cm-order-crm-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="brand-cm-order-crm-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.productionOpsHref} data-testid="brand-cm-order-production-ops-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.productionOpsHref}
+        data-testid="brand-cm-order-production-ops-link"
+        className={hubGadget.goldenLink}
+      >
         Операции цеха
       </Link>
     </div>

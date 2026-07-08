@@ -71,7 +71,9 @@ describe('wave XG — brand range planner bulk tier + conflict polish', () => {
 
   it('bulk tier assign POST API extends wave UM (wave XG contract)', () => {
     const contract = waveXgBrandRangePlannerContract();
-    expect(contract.bulkTierAssignApiPath).toBe(WORKSHOP2_RANGE_PLANNER_BULK_TIER_ASSIGN_API_WAVE_XG);
+    expect(contract.bulkTierAssignApiPath).toBe(
+      WORKSHOP2_RANGE_PLANNER_BULK_TIER_ASSIGN_API_WAVE_XG
+    );
     expect(WORKSHOP2_RANGE_PLANNER_BULK_TIER_ASSIGN_API_WAVE_XG).toBe(
       WORKSHOP2_RANGE_PLANNER_BULK_TIER_ASSIGN_API
     );

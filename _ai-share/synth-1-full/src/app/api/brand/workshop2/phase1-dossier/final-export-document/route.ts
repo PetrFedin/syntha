@@ -64,7 +64,11 @@ export async function POST(req: NextRequest) {
   const ctx = buildCtxFromSnapshot(cx);
   let html: string;
   if (format === 'factory_pack') {
-    const session = buildBrandTechPackExportSession({ articleId, collectionId, sku: ctx.articleSku });
+    const session = buildBrandTechPackExportSession({
+      articleId,
+      collectionId,
+      sku: ctx.articleSku,
+    });
     const exportOptions = buildWorkshop2TechPackExportOptions({
       dossier: snap.dossierSnapshot,
       articleSku: ctx.articleSku,

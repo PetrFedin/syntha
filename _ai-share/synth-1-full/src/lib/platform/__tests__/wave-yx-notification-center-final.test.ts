@@ -20,7 +20,9 @@ describe('wave YX — notification center compact all roles final (S4)', () => {
   it('notification detail href targets comms pillar with pcNotification=detail', () => {
     const href = platformCoreCommsNotificationDetailHref('shop', 'SS27', 'B2B-SS27-DEMO-001');
     expect(href).toContain('pillar=comms');
-    expect(href).toContain(`${WAVE_YX_PC_NOTIFICATION_PARAM}=${WAVE_YX_PC_NOTIFICATION_DETAIL_VALUE}`);
+    expect(href).toContain(
+      `${WAVE_YX_PC_NOTIFICATION_PARAM}=${WAVE_YX_PC_NOTIFICATION_DETAIL_VALUE}`
+    );
     expect(href).toContain('collection=SS27');
     expect(href).toContain('order=B2B-SS27-DEMO-001');
   });
@@ -46,21 +48,24 @@ describe('wave YX — notification center compact all roles final (S4)', () => {
     );
   });
 
-  it.each(WAVE_YX_PILLAR_NOTIFICATION_COMPACT_WIRES)('$id — pillar card wires compact strip', (wire) => {
-    const text = read(wire.file);
-    if (wire.variant === 'all') {
-      expect(text).toContain('CommsNotificationCenterStrip');
-      expect(text).toContain('compact');
-    } else {
-      expect(text).toContain('PlatformCorePillarNotificationCenterCompact');
-      const hasLiteralVariant = text.includes(`variant="${wire.variant}"`);
-      const hasDynamicVariant =
-        text.includes('variant={variant}') &&
-        (wire.file.includes('DevelopmentPillarCard.tsx') ||
-          wire.file.includes('OrderProductionPillarCard.tsx'));
-      expect(hasLiteralVariant || hasDynamicVariant).toBe(true);
+  it.each(WAVE_YX_PILLAR_NOTIFICATION_COMPACT_WIRES)(
+    '$id — pillar card wires compact strip',
+    (wire) => {
+      const text = read(wire.file);
+      if (wire.variant === 'all') {
+        expect(text).toContain('CommsNotificationCenterStrip');
+        expect(text).toContain('compact');
+      } else {
+        expect(text).toContain('PlatformCorePillarNotificationCenterCompact');
+        const hasLiteralVariant = text.includes(`variant="${wire.variant}"`);
+        const hasDynamicVariant =
+          text.includes('variant={variant}') &&
+          (wire.file.includes('DevelopmentPillarCard.tsx') ||
+            wire.file.includes('OrderProductionPillarCard.tsx'));
+        expect(hasLiteralVariant || hasDynamicVariant).toBe(true);
+      }
     }
-  });
+  );
 
   it('prefs dedup — only inside CommsNotificationCenterStrip (wave VK/WZ)', () => {
     const center = read('components/platform/CommsNotificationCenterStrip.tsx');

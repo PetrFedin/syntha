@@ -29,9 +29,7 @@ export function SupOpChainWorkspacePeerStrip({
     orderId,
     productionOrderId,
   });
-  const poCtx = orderId?.trim()
-    ? { orderId: orderId.trim(), productionOrderId }
-    : undefined;
+  const poCtx = orderId?.trim() ? { orderId: orderId.trim(), productionOrderId } : undefined;
   const brandChatHref = poCtx
     ? buildSupOpCommsTailHref({
         orderId: poCtx.orderId,
@@ -40,9 +38,7 @@ export function SupOpChainWorkspacePeerStrip({
         productionOrderId: poCtx.productionOrderId,
       })
     : session.entitiesHref;
-  const trackingHref = poCtx
-    ? buildSupOpTrackingTailHref(poCtx)
-    : session.shopTrackingHref;
+  const trackingHref = poCtx ? buildSupOpTrackingTailHref(poCtx) : session.shopTrackingHref;
   const forecastHref = poCtx
     ? appendSupplierOpPoContextToHref(session.forecastHref, poCtx)
     : session.forecastHref;

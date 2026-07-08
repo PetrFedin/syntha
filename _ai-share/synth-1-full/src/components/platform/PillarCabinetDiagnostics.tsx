@@ -34,7 +34,7 @@ export function PillarCabinetDiagnostics({ children, className }: Props) {
       data-testid="pillar-cabinet-diagnostics"
       data-audit-expanded={auditUi ? '1' : '0'}
       className={cn(
-        'border-border-subtle/70 group rounded-xl border border-dashed bg-bg-surface/50',
+        'border-border-subtle/70 bg-bg-surface/50 group rounded-xl border border-dashed',
         className
       )}
     >

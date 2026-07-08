@@ -156,7 +156,11 @@ export async function persistShopMatrixDraftToServer(input: {
     };
   } catch {
     markShopMatrixDraftAutosaveFail(sessionId);
-    return { mode: 'error', outcome: 'error', messageRu: 'Сеть недоступна — черновик не сохранён.' };
+    return {
+      mode: 'error',
+      outcome: 'error',
+      messageRu: 'Сеть недоступна — черновик не сохранён.',
+    };
   }
 }
 
@@ -235,7 +239,12 @@ export async function validateShopMatrixCartSizeRunsViaApi(input: {
       ok?: boolean;
       messageRu?: string;
       firstFailedArticleId?: string;
-      results?: Array<{ articleId: string; ok?: boolean; messageRu?: string; violations?: string[] }>;
+      results?: Array<{
+        articleId: string;
+        ok?: boolean;
+        messageRu?: string;
+        violations?: string[];
+      }>;
     };
     return {
       ok: json.ok === true,

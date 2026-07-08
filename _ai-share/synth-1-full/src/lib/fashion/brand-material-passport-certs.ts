@@ -54,7 +54,9 @@ function hasExplicitCare(p: Product): boolean {
   return false;
 }
 
-export function buildBrandMaterialPassportCertRows(products: Product[]): BrandMaterialPassportCertRow[] {
+export function buildBrandMaterialPassportCertRows(
+  products: Product[]
+): BrandMaterialPassportCertRow[] {
   return products.map((p) => {
     const hasComposition = parseComposition(p).length > 0 || Boolean(p.material?.trim());
     const hasCare = hasExplicitCare(p);

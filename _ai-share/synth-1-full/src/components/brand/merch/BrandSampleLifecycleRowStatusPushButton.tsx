@@ -82,7 +82,10 @@ export function BrandSampleLifecycleRowStatusPushButton({
 
   if (loading) {
     return (
-      <span className="text-text-muted text-[10px]" data-testid={`brand-sample-lifecycle-push-${sku}-loading`}>
+      <span
+        className="text-text-muted text-[10px]"
+        data-testid={`brand-sample-lifecycle-push-${sku}-loading`}
+      >
         …
       </span>
     );

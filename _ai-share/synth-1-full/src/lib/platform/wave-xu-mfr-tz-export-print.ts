@@ -120,7 +120,10 @@ export function buildMfrOpDossierAttachTzPdfPoSession(input: {
   };
 }
 
-export function mfrOpPoTzPdfPeerHrefCarriesPoContext(href: string, productionOrderId: string): boolean {
+export function mfrOpPoTzPdfPeerHrefCarriesPoContext(
+  href: string,
+  productionOrderId: string
+): boolean {
   return href.includes(`po=${encodeURIComponent(productionOrderId)}`) && href.includes('tzPdf=1');
 }
 

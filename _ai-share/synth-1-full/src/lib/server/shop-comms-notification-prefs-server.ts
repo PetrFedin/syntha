@@ -11,9 +11,10 @@ export function shopCommsNotificationPrefsStorageMode(): 'postgres' | 'file' | '
   return platformCoreCommsNotificationPrefsStorageMode();
 }
 
-export async function getShopCommsNotificationPrefsServer(
-  buyerId: string
-): Promise<{ prefs: PlatformCoreCommsNotificationPrefs; storageMode: 'postgres' | 'file' | 'memory' }> {
+export async function getShopCommsNotificationPrefsServer(buyerId: string): Promise<{
+  prefs: PlatformCoreCommsNotificationPrefs;
+  storageMode: 'postgres' | 'file' | 'memory';
+}> {
   return getPlatformCoreCommsNotificationPrefsServer({
     role: 'shop',
     scopeKey: buyerId.trim() || 'shop1',

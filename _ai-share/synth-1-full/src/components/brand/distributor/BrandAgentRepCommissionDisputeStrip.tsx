@@ -72,7 +72,10 @@ export function BrandAgentRepCommissionDisputeStrip({
         </Badge>
       ) : null}
       {messageRu ? (
-        <span className="text-text-muted text-[10px]" data-testid="brand-agent-rep-commission-dispute-message">
+        <span
+          className="text-text-muted text-[10px]"
+          data-testid="brand-agent-rep-commission-dispute-message"
+        >
           {messageRu}
         </span>
       ) : null}

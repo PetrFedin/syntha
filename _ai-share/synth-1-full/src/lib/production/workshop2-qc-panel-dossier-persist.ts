@@ -135,7 +135,9 @@ export function evaluateWorkshop2QcPanelSampleGate(
     return {
       id: 'qc.panel.partial',
       severity: 'warning',
-      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'ОТК частично готов — проверьте партии и scorecard.',
+      messageRu:
+        workshop2PgMirrorStr(mirror, 'hintRu') ||
+        'ОТК частично готов — проверьте партии и scorecard.',
     };
   }
   return null;

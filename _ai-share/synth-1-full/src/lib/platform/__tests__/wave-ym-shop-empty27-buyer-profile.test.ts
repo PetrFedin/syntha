@@ -38,17 +38,23 @@ describe('wave YM — EMPTY27 shop SC buyer profile PG read/write', () => {
   });
 
   it('onboarding API paths for EMPTY27 + buyer profile read', () => {
-    expect(shopEmpty27GreenfieldOnboardingApiPath('shop1', SHOP_EMPTY27_ONBOARDING_COLLECTION_ID)).toContain(
-      'collectionId=EMPTY27'
-    );
+    expect(
+      shopEmpty27GreenfieldOnboardingApiPath('shop1', SHOP_EMPTY27_ONBOARDING_COLLECTION_ID)
+    ).toContain('collectionId=EMPTY27');
     expect(shopEmpty27BuyerProfileApiPath('shop1')).toContain('buyerId=shop1');
-    expect(shopEmpty27MatrixSeedHref({ buyerId: 'shop1', state: null })).toContain('/shop/b2b/matrix');
+    expect(shopEmpty27MatrixSeedHref({ buyerId: 'shop1', state: null })).toContain(
+      '/shop/b2b/matrix'
+    );
     expect(shopEmpty27MatrixSeedHref({ buyerId: 'shop1', state: null })).toContain('SS27');
   });
 
   it('RU strip helpers + storage badge testids', () => {
-    expect(shopEmpty27OnboardingStorageBadgeTestId('postgres')).toBe(SHOP_EMPTY27_ONBOARDING_PG_TESTID);
-    expect(shopEmpty27OnboardingStorageBadgeTestId('memory')).toBe(SHOP_EMPTY27_ONBOARDING_MEMORY_TESTID);
+    expect(shopEmpty27OnboardingStorageBadgeTestId('postgres')).toBe(
+      SHOP_EMPTY27_ONBOARDING_PG_TESTID
+    );
+    expect(shopEmpty27OnboardingStorageBadgeTestId('memory')).toBe(
+      SHOP_EMPTY27_ONBOARDING_MEMORY_TESTID
+    );
     expect(shopEmpty27GreenfieldHintRu(null)).toMatch(/CRM|партн/i);
     expect(shopEmpty27GreenfieldHintRu({ crmReady: true, pricelistReady: true })).toMatch(/готов/i);
     expect(shopEmpty27BuyerProfileSeedNoteRu('shop2')).toMatch(/EMPTY27|SS27/i);

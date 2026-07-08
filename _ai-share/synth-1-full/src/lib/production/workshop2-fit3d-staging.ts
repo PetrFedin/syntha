@@ -202,8 +202,7 @@ export function evaluateWorkshop2Fit3dStagingExportGate(input: {
     return {
       id: 'fit3d.staging.probe_failed',
       severity: 'warning',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') || 'Fit3D pipeline probe failed.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'Fit3D pipeline probe failed.',
     };
   }
   return null;

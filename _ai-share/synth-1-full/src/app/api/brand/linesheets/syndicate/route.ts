@@ -44,7 +44,9 @@ export async function POST(req: NextRequest) {
   const runPublish = body.publish !== false;
 
   if (runPublish && articleIds.length > 0) {
-    const releaseGate = await evaluateBrandMaterialPassportReleaseGateForCollection({ collectionId });
+    const releaseGate = await evaluateBrandMaterialPassportReleaseGateForCollection({
+      collectionId,
+    });
     if (releaseGate.blocked) {
       return NextResponse.json(
         {

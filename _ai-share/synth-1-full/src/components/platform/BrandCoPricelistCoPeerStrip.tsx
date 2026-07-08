@@ -11,23 +11,51 @@ export function BrandCoPricelistCoPeerStrip({ collectionId, orderId }: Props) {
 
   return (
     <div className={hubGadget.goldenPath} data-testid="brand-co-pricelist-co-peer-strip">
-      <Link href={s.shopMatrixHref} data-testid="brand-co-pricelist-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={s.shopMatrixHref}
+        data-testid="brand-co-pricelist-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.shopCheckoutHref} data-testid="brand-co-pricelist-shop-checkout-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.shopCheckoutHref}
+        data-testid="brand-co-pricelist-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.brandCrmSegmentsHref} data-testid="brand-co-pricelist-crm-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.brandCrmSegmentsHref}
+        data-testid="brand-co-pricelist-crm-link"
+        className={hubGadget.goldenLink}
+      >
         CRM
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.shopOrderCommsHref} data-testid="brand-co-pricelist-shop-comms-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.shopOrderCommsHref}
+        data-testid="brand-co-pricelist-shop-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Shop comms
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.brandLandedMarginHref} data-testid="brand-co-pricelist-margin-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.brandLandedMarginHref}
+        data-testid="brand-co-pricelist-margin-link"
+        className={hubGadget.goldenLink}
+      >
         Landed margin
       </Link>
     </div>

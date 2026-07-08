@@ -190,11 +190,14 @@ describe('workshop2 critical path file-store (Wave R)', () => {
       expect(reserve.status).toBe(503);
 
       const grn = await grnPost(
-        new NextRequest('http://localhost/api/workshop2/articles/SS27/demo-ss27-01/wms/grn-receipt', {
-          method: 'POST',
-          headers: W2_HEADERS,
-          body: JSON.stringify({ supplyLineId: 'line-1', qty: 1 }),
-        }),
+        new NextRequest(
+          'http://localhost/api/workshop2/articles/SS27/demo-ss27-01/wms/grn-receipt',
+          {
+            method: 'POST',
+            headers: W2_HEADERS,
+            body: JSON.stringify({ supplyLineId: 'line-1', qty: 1 }),
+          }
+        ),
         routeCtx('SS27', 'demo-ss27-01')
       );
       expect(grn.status).toBe(503);

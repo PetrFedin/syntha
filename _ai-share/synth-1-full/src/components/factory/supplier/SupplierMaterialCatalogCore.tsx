@@ -63,7 +63,11 @@ const emptyDraft = (): DraftListing => ({
   status: 'review',
 });
 
-export function SupplierMaterialCatalogCore({ supplierId = 'supplier-demo' }: { supplierId?: string }) {
+export function SupplierMaterialCatalogCore({
+  supplierId = 'supplier-demo',
+}: {
+  supplierId?: string;
+}) {
   const coreMode = isPlatformCoreMode();
   const [listings, setListings] = useState<SupplierMaterialCatalogListing[]>(
     coreMode ? [] : DEMO_LISTINGS
@@ -82,7 +86,10 @@ export function SupplierMaterialCatalogCore({ supplierId = 'supplier-demo' }: { 
       const res = await fetch(
         `/api/workshop2/supplier/material-catalog?supplierId=${encodeURIComponent(supplierId)}`
       );
-      const json = (await res.json()) as { listings?: SupplierMaterialCatalogListing[]; error?: string };
+      const json = (await res.json()) as {
+        listings?: SupplierMaterialCatalogListing[];
+        error?: string;
+      };
       if (!res.ok) throw new Error(json.error ?? 'load_failed');
       setListings(json.listings ?? []);
     } catch (err) {

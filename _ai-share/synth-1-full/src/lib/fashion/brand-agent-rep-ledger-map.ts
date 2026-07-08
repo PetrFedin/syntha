@@ -19,7 +19,9 @@ export function mapWorkshop2PayoutStatusToCommissionStatus(
   return 'pending';
 }
 
-export function workshop2B2bCommissionLineToRecord(line: Workshop2B2bCommissionLine): CommissionRecord {
+export function workshop2B2bCommissionLineToRecord(
+  line: Workshop2B2bCommissionLine
+): CommissionRecord {
   const d = new Date(line.attributedAt);
   const period = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
 

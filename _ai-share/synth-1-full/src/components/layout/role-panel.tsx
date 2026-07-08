@@ -114,9 +114,7 @@ function RolePanelContent() {
   };
 
   const coreMode = isPlatformCoreMode();
-  const visibleRoles = coreMode
-    ? roles.filter((r) => CORE_CHAIN_ROLE_KEYS.has(r.roleKey))
-    : roles;
+  const visibleRoles = coreMode ? roles.filter((r) => CORE_CHAIN_ROLE_KEYS.has(r.roleKey)) : roles;
 
   const panel = (
     <aside

@@ -59,7 +59,8 @@ export function buildSupplierProcurementSession(input?: {
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const factoryId = input?.factoryId?.trim() || PLATFORM_CORE_DEMO.factoryId;
-  const productionOrderId = input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
+  const productionOrderId =
+    input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
   const poCtx = { orderId, productionOrderId };
 
   return {

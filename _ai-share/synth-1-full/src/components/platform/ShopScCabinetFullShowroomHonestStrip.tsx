@@ -11,13 +11,12 @@ type Props = {
 
 /** Hub mini vs full showroom — honest alias + CTA to PG cart path. */
 export function ShopScCabinetFullShowroomHonestStrip({ collectionId }: Props) {
-  const fullHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
+  const fullHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+  );
 
   return (
-    <div
-      className={hubGadget.goldenPath}
-      data-testid="shop-sc-cabinet-full-showroom-honest-strip"
-    >
+    <div className={hubGadget.goldenPath} data-testid="shop-sc-cabinet-full-showroom-honest-strip">
       <span className={hubGadget.muted} data-testid="shop-sc-cabinet-mini-honest-hint">
         Hub mini — size/qty/cart PG на полной витрине
       </span>

@@ -35,7 +35,9 @@ export type BrandShowroomBuySession = {
   shopMatrixHref: string;
 };
 
-export function buildBrandShowroomBuySession(input?: { collectionId?: string }): BrandShowroomBuySession {
+export function buildBrandShowroomBuySession(input?: {
+  collectionId?: string;
+}): BrandShowroomBuySession {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const orderId = PLATFORM_CORE_DEMO.demoOrderId;
   const base = `${ROUTES.brand.showroom}?collection=${encodeURIComponent(collectionId)}`;

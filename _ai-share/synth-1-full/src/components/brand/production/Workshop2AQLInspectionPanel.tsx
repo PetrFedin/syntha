@@ -266,12 +266,13 @@ export function Workshop2AQLInspectionPanel({
             {workshop2PgMirrorStr(dossier?.qcAqlMirror, 'recordedAt') ? (
               <span className="text-text-muted font-mono text-[10px]">
                 mirror{' '}
-                {new Date(
-                  workshop2PgMirrorStr(dossier?.qcAqlMirror, 'recordedAt')!
-                ).toLocaleString('ru-RU', {
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                })}
+                {new Date(workshop2PgMirrorStr(dossier?.qcAqlMirror, 'recordedAt')!).toLocaleString(
+                  'ru-RU',
+                  {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  }
+                )}
               </span>
             ) : null}
             {batches.length > 0 && (

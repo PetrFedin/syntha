@@ -29,9 +29,14 @@ const BUYER_LABELS: Record<string, string> = {
   shop2: 'Магазин 2',
 };
 
-export function resolveBrandCoOtbReplenishmentPresetTitle(activePresetId: string | null): string | null {
+export function resolveBrandCoOtbReplenishmentPresetTitle(
+  activePresetId: string | null
+): string | null {
   if (!activePresetId) return null;
-  return REPLENISHMENT_RULE_PRESETS.find((preset) => preset.id === activePresetId)?.titleRu ?? activePresetId;
+  return (
+    REPLENISHMENT_RULE_PRESETS.find((preset) => preset.id === activePresetId)?.titleRu ??
+    activePresetId
+  );
 }
 
 export function evaluateBrandCoOtbReplenishmentSync(input: {

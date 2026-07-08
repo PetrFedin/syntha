@@ -79,7 +79,10 @@ export function ShopBuyerDeliveryBatchAckPanel({
             Batch · подтверждение получения
           </span>
           {pendingOrderIds.length > 0 ? (
-            <Badge variant="outline" className="border-amber-200 bg-amber-50 text-[10px] text-amber-950">
+            <Badge
+              variant="outline"
+              className="border-amber-200 bg-amber-50 text-[10px] text-amber-950"
+            >
               {pendingOrderIds.length} shipped без ack
             </Badge>
           ) : null}
@@ -106,7 +109,10 @@ export function ShopBuyerDeliveryBatchAckPanel({
         </Button>
       </div>
       {message ? (
-        <p className="text-text-secondary text-[10px]" data-testid="shop-co-buyer-delivery-batch-ack-msg">
+        <p
+          className="text-text-secondary text-[10px]"
+          data-testid="shop-co-buyer-delivery-batch-ack-msg"
+        >
           {message}
         </p>
       ) : null}

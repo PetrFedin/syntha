@@ -39,13 +39,13 @@ describe('platform-core-brand-b2b-legacy-redirects', () => {
     expect(live?.href).toBe(ROUTES.brand.b2bOrders);
     expect(live?.testId).toBe('platform-core-brand-b2b-live-legacy-redirect');
 
-    const approval = resolveBrandB2bLegacyRedirect(
-      `${ROUTES.brand.b2bOrders}/approval-live`
-    );
+    const approval = resolveBrandB2bLegacyRedirect(`${ROUTES.brand.b2bOrders}/approval-live`);
     expect(approval?.href).toBe(ROUTES.brand.b2bOrders);
 
     expect(resolveBrandB2bLegacyRedirect(ROUTES.brand.b2bOrders)).toBeNull();
-    expect(resolveBrandB2bLegacyRedirect(`${ROUTES.brand.b2bOrders}/B2B-DEMO-SHOP1-SS27`)).toBeNull();
+    expect(
+      resolveBrandB2bLegacyRedirect(`${ROUTES.brand.b2bOrders}/B2B-DEMO-SHOP1-SS27`)
+    ).toBeNull();
   });
 
   it('redirects trade-shows and showroom legacy tabs with collection context', () => {

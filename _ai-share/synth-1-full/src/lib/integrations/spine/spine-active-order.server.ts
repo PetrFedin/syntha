@@ -31,11 +31,7 @@ export async function resolveSpineActiveWholesaleOrderIdServer(input: {
   const w2Fallback = normalizeSpineFallbackOrderId(input.fallbackOrderId);
   const resolveFromIncludesRegistry = input.resolveFrom.includes('w2_registry');
 
-  if (
-    isPlatformCoreMode() &&
-    w2Fallback.startsWith('B2B-DEMO-') &&
-    !resolveFromIncludesRegistry
-  ) {
+  if (isPlatformCoreMode() && w2Fallback.startsWith('B2B-DEMO-') && !resolveFromIncludesRegistry) {
     return w2Fallback;
   }
 

@@ -22,9 +22,7 @@ describe('platform-core-chain-peer-mirror', () => {
   it('formatBrandPeerStatusSummaryRu: confirmed awaiting handoff', () => {
     expect(
       formatBrandPeerStatusSummaryRu({
-        steps: baseSteps.map((s) =>
-          s.id === 'brand_confirmed' ? { ...s, done: true } : s
-        ),
+        steps: baseSteps.map((s) => (s.id === 'brand_confirmed' ? { ...s, done: true } : s)),
         handedOff: false,
       })
     ).toBe('подтвердил · ожидает передачи в цех');
@@ -43,10 +41,7 @@ describe('platform-core-chain-peer-mirror', () => {
   it('buildShopBuyerMirrorHeadline filters steps by milestones policy', () => {
     const headline = buildShopBuyerMirrorHeadline(
       {
-        steps: [
-          ...baseSteps,
-          { id: 'materials_supplied', labelRu: 'Материалы', done: false },
-        ],
+        steps: [...baseSteps, { id: 'materials_supplied', labelRu: 'Материалы', done: false }],
         handedOff: true,
       },
       'milestones'

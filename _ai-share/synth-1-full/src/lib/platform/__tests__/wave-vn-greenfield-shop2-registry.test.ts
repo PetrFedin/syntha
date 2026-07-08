@@ -1,7 +1,5 @@
 import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
-import {
-  SHOP_SC_CABINET_BUYER_PROFILE_NO_SEGMENT_RU,
-} from '@/lib/b2b/shop-sc-cabinet-buyer-profile-honesty';
+import { SHOP_SC_CABINET_BUYER_PROFILE_NO_SEGMENT_RU } from '@/lib/b2b/shop-sc-cabinet-buyer-profile-honesty';
 
 describe('wave VN — shop2 greenfield CO registry polish', () => {
   it('cabinet CO greenfield registry strip testids', () => {

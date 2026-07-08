@@ -1,6 +1,4 @@
-import {
-  brandAgentRepShopPortalReadOnlyHref,
-} from '@/lib/fashion/brand-agent-rep-oversight';
+import { brandAgentRepShopPortalReadOnlyHref } from '@/lib/fashion/brand-agent-rep-oversight';
 import { SHOP_AGENT_REP_COMMISSION_PAYOUT_API } from '@/lib/b2b/shop-agent-rep-wave-ws';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { ROUTES } from '@/lib/routes';
@@ -17,10 +15,8 @@ export const BRAND_AGENT_REP_SHOP_REP_PAYOUT_PEER_LINK_TESTID =
 export const BRAND_AGENT_REP_COMMISSION_DISPUTE_STORAGE_BADGE_TESTID =
   'brand-agent-rep-commission-dispute-storage-badge';
 
-export const BRAND_AGENT_REP_SHOP_PORTAL_READONLY_RU_LABEL =
-  'Портал магазина · только просмотр';
-export const BRAND_AGENT_REP_SHOP_REP_PAYOUT_PEER_RU_LABEL =
-  'Выплата rep · shop ledger (WS)';
+export const BRAND_AGENT_REP_SHOP_PORTAL_READONLY_RU_LABEL = 'Портал магазина · только просмотр';
+export const BRAND_AGENT_REP_SHOP_REP_PAYOUT_PEER_RU_LABEL = 'Выплата rep · shop ledger (WS)';
 
 export function brandAgentRepShopRepPayoutPeerHref(input?: {
   collectionId?: string;

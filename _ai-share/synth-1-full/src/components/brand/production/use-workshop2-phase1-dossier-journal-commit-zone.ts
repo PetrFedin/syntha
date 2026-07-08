@@ -1,6 +1,12 @@
 'use client';
 
-import { useCallback, useMemo, type Dispatch, type MutableRefObject, type SetStateAction } from 'react';
+import {
+  useCallback,
+  useMemo,
+  type Dispatch,
+  type MutableRefObject,
+  type SetStateAction,
+} from 'react';
 import {
   commitDossierEditJournalViaBrowser,
   commitTzActionJournalViaBrowser,
@@ -21,11 +27,7 @@ export type UseWorkshop2Phase1DossierJournalCommitZoneInput = {
   w2DossierMetricsCtx: Workshop2DossierMetricsFlushContext;
   setDossierMetricsTick: Dispatch<SetStateAction<number>>;
   setSaveError: Dispatch<SetStateAction<string | null>>;
-  toast: (p: {
-    title: string;
-    description?: string;
-    variant?: 'default' | 'destructive';
-  }) => void;
+  toast: (p: { title: string; description?: string; variant?: 'default' | 'destructive' }) => void;
   updatedByLabel: string;
   tzWriteDisabled: boolean;
   setDossierInternal: Dispatch<SetStateAction<Workshop2DossierPhase1>>;

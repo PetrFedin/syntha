@@ -1,7 +1,4 @@
-import {
-  brandB2bOrdersCollectionRegistryHref,
-  shopB2bTrackingOrderHref,
-} from '@/lib/routes';
+import { brandB2bOrdersCollectionRegistryHref, shopB2bTrackingOrderHref } from '@/lib/routes';
 import { shopB2bOperationalStatusApiPath } from '@/lib/order/shop-b2b-operational-status';
 import { formatBrandCoPartnerCountLabelRu } from '@/lib/platform/wave-ze-hub-diagnostics-ru';
 
@@ -40,19 +37,13 @@ export function summarizeBrandCoPartnerCountPg(rows: BrandCoPartnerCountRow[]): 
 
 /** Wave YG · cross-link brand CO registry ↔ shop tracking. */
 export const BRAND_CO_REGISTRY_TRACKING_LINK_TESTID = 'brand-co-registry-tracking-link';
-export const BRAND_CO_REGISTRY_SHOP_TRACKING_LINK_TESTID =
-  'brand-co-registry-shop-tracking-link';
-export const SHOP_CO_TRACKING_BRAND_REGISTRY_LINK_TESTID =
-  'shop-co-tracking-brand-registry-link';
+export const BRAND_CO_REGISTRY_SHOP_TRACKING_LINK_TESTID = 'brand-co-registry-shop-tracking-link';
+export const SHOP_CO_TRACKING_BRAND_REGISTRY_LINK_TESTID = 'shop-co-tracking-brand-registry-link';
 export const SHOP_CO_REGISTRY_TRACKING_LINK_TESTID = 'shop-co-registry-tracking-link';
 
-export const BRAND_CO_CABINET_SHOP_TRACKING_LINK_TESTID =
-  'brand-co-cabinet-shop-tracking-link';
+export const BRAND_CO_CABINET_SHOP_TRACKING_LINK_TESTID = 'brand-co-cabinet-shop-tracking-link';
 
-export function brandCoRegistryShopTrackingHref(
-  orderId: string,
-  collectionId: string
-): string {
+export function brandCoRegistryShopTrackingHref(orderId: string, collectionId: string): string {
   const sp = new URLSearchParams({ order: orderId.trim(), collection: collectionId.trim() });
   return `${shopB2bTrackingOrderHref(orderId)}?${sp.toString()}`;
 }

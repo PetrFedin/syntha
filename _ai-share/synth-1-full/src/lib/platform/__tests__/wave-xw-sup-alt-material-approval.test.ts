@@ -30,7 +30,9 @@ import {
 
 describe('wave XW — supplier alt-material approval PG + brand strip link', () => {
   it('API paths + PG contract', () => {
-    expect(WAVE_XW_SUP_ALT_MATERIAL_APPROVAL_API).toBe('/api/workshop2/supplier/alt-material-approval');
+    expect(WAVE_XW_SUP_ALT_MATERIAL_APPROVAL_API).toBe(
+      '/api/workshop2/supplier/alt-material-approval'
+    );
     expect(WAVE_XW_BRAND_ALT_MATERIAL_APPROVAL_API).toBe(BRAND_ALT_MATERIAL_APPROVAL_API_PATH);
     expect('storageMode').toContain('storage');
     expect('pg_only_blocked').toContain('blocked');
@@ -75,9 +77,9 @@ describe('wave XW — supplier alt-material approval PG + brand strip link', () 
     expect(supplierCanActAltMaterialApproval({ action: 'reject', currentStatus: 'approved' })).toBe(
       true
     );
-    expect(supplierCanActAltMaterialApproval({ action: 'approve', currentStatus: 'approved' })).toBe(
-      false
-    );
+    expect(
+      supplierCanActAltMaterialApproval({ action: 'approve', currentStatus: 'approved' })
+    ).toBe(false);
   });
 
   it('RU labels without English noise', () => {
@@ -93,15 +95,15 @@ describe('wave XW — supplier alt-material approval PG + brand strip link', () 
   });
 
   it('brand notification titles for supplier decisions', () => {
-    expect(
-      brandAltMaterialNotificationTitleRu({ actor: 'supplier', status: 'pending' })
-    ).toMatch(/Поставщик отправил/);
-    expect(
-      brandAltMaterialNotificationTitleRu({ actor: 'supplier', status: 'approved' })
-    ).toMatch(/согласовано/i);
-    expect(
-      brandAltMaterialNotificationTitleRu({ actor: 'brand', status: 'rejected' })
-    ).toMatch(/бренда/i);
+    expect(brandAltMaterialNotificationTitleRu({ actor: 'supplier', status: 'pending' })).toMatch(
+      /Поставщик отправил/
+    );
+    expect(brandAltMaterialNotificationTitleRu({ actor: 'supplier', status: 'approved' })).toMatch(
+      /согласовано/i
+    );
+    expect(brandAltMaterialNotificationTitleRu({ actor: 'brand', status: 'rejected' })).toMatch(
+      /бренда/i
+    );
   });
 
   it('counts substitute pairs for cabinet strip', () => {

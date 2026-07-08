@@ -10,7 +10,12 @@ import {
   type PillarCapabilityEntry,
 } from '@/lib/platform/pillar-capability-registry';
 import { annotatePillarCrossLink } from '@/lib/platform/pillar-cross-link-order-policy';
-import { ROUTES, shopB2bMatrixOrderContextHref, shopB2bMatrixPrepackHref, shopB2bMatrixReorderHref } from '@/lib/routes';
+import {
+  ROUTES,
+  shopB2bMatrixOrderContextHref,
+  shopB2bMatrixPrepackHref,
+  shopB2bMatrixReorderHref,
+} from '@/lib/routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 
 function entryToLink(entry: PillarCapabilityEntry, ctx: PillarCapabilityContext): EntityLink {

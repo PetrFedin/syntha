@@ -25,9 +25,11 @@ describe('platform-core tech-debt closure (волна 52–53)', () => {
     const policy = read('lib/server/platform-core-pg-primary-file-policy.ts');
     expect(policy).toContain('shouldWorkshop2PersistAuxiliaryJsonToFile');
     expect(policy).toContain('isWorkshop2PgOnlyMode');
-    expect(fs.existsSync(path.join(SRC, 'lib/server/__tests__/platform-core-pg-primary-file-policy.test.ts'))).toBe(
-      true
-    );
+    expect(
+      fs.existsSync(
+        path.join(SRC, 'lib/server/__tests__/platform-core-pg-primary-file-policy.test.ts')
+      )
+    ).toBe(true);
   });
 
   it('comms inbox: пустые order-треды без synthetic placeholder merge', () => {
@@ -41,7 +43,9 @@ describe('platform-core tech-debt closure (волна 52–53)', () => {
   });
 
   it('placeholder surfaces: disclaimer registry + analytics badge', () => {
-    expect(PLATFORM_CORE_PLACEHOLDER_SURFACES.some((s) => s.route === '/brand/analytics')).toBe(true);
+    expect(PLATFORM_CORE_PLACEHOLDER_SURFACES.some((s) => s.route === '/brand/analytics')).toBe(
+      true
+    );
     const analytics = read('app/brand/analytics/page.tsx');
     expect(analytics).toContain('PlatformCorePlaceholderSurfaceDisclaimer');
     expect(analytics).toContain('PlatformCoreDemoDataBadge');

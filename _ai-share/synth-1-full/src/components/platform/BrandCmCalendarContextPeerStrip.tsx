@@ -40,19 +40,31 @@ export function BrandCmCalendarContextPeerStrip({ collectionId, orderId }: Props
     >
       {resolvedOrderId ? (
         <>
-          <Link href={session.handoffHref} data-testid="brand-cm-calendar-handoff-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.handoffHref}
+            data-testid="brand-cm-calendar-handoff-link"
+            className={hubGadget.goldenLink}
+          >
             Передача
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.registryHref} data-testid="brand-cm-calendar-registry-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.registryHref}
+            data-testid="brand-cm-calendar-registry-link"
+            className={hubGadget.goldenLink}
+          >
             Реестр
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.shopTrackingHref} data-testid="brand-cm-calendar-shop-tracking-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.shopTrackingHref}
+            data-testid="brand-cm-calendar-shop-tracking-link"
+            className={hubGadget.goldenLink}
+          >
             Трекинг магазина
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
@@ -83,19 +95,31 @@ export function BrandCmCalendarContextPeerStrip({ collectionId, orderId }: Props
           </span>
         </>
       ) : null}
-      <Link href={crmHref} data-testid="brand-cm-calendar-crm-segments-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="brand-cm-calendar-crm-segments-link"
+        className={hubGadget.goldenLink}
+      >
         Сегменты CRM
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="brand-cm-calendar-crm-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="brand-cm-calendar-crm-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.factoryQueueHref} data-testid="brand-cm-calendar-factory-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.factoryQueueHref}
+        data-testid="brand-cm-calendar-factory-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь цеха
       </Link>
     </div>

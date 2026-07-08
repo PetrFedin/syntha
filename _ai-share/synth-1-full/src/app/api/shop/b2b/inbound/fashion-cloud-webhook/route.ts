@@ -17,14 +17,16 @@ import { enqueueWorkshop2DomainEvent } from '@/lib/server/workshop2-domain-event
 export async function POST(req: NextRequest) {
   if (!isWorkshop2B2bFashionCloudWebhookEnabled()) {
     return jsonWorkshop2ErrorRu(503, 'feature_disabled', {
-      messageRu: 'Fashion Cloud webhook отключён (WORKSHOP2_B2B_FASHION_CLOUD_WEBHOOK_ENABLED=false).',
+      messageRu:
+        'Fashion Cloud webhook отключён (WORKSHOP2_B2B_FASHION_CLOUD_WEBHOOK_ENABLED=false).',
     });
   }
 
   const rawBody = await req.text();
   const verify = verifyWorkshop2B2bFashionCloudWebhookHmac({
     rawBody,
-    signatureHeader: req.headers.get('x-fc-signature') ?? req.headers.get('x-fashion-cloud-signature'),
+    signatureHeader:
+      req.headers.get('x-fc-signature') ?? req.headers.get('x-fashion-cloud-signature'),
   });
   if (!verify.ok) {
     return jsonWorkshop2ErrorRu(verify.status ?? 401, 'unauthorized', {

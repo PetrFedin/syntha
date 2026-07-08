@@ -57,11 +57,17 @@ export function SupEmptyCoExpectedPoDateStrip({
         <span className="text-text-muted text-[10px]">· PO {productionOrderId}</span>
       ) : null}
       {dateRu ? (
-        <span className="text-text-primary font-medium" data-testid="sup-empty-co-expected-po-date-value">
+        <span
+          className="text-text-primary font-medium"
+          data-testid="sup-empty-co-expected-po-date-value"
+        >
           {dateRu}
         </span>
       ) : (
-        <span className="text-text-muted text-[11px]" data-testid="sup-empty-co-expected-po-date-empty">
+        <span
+          className="text-text-muted text-[11px]"
+          data-testid="sup-empty-co-expected-po-date-empty"
+        >
           Дата появится после передачи в очередь производства
         </span>
       )}

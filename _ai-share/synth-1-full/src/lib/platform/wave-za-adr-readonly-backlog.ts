@@ -47,7 +47,10 @@ export const WAVE_ZA_ADR_READONLY_BACKLOG: readonly WaveZaAdrReadonlyBacklogItem
     wasBad: 'Read-only publish status panel — без B2B checkout UI в empty SC cell',
     testids: [MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID, 'manufacturer-sample-collection-pg-table'],
     sourceFile: 'components/platform/empty-cells/manufacturer-sample-collection-status-panel.tsx',
-    sourceMustContain: ['MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID', 'manufacturer-sample-collection-pg-table'],
+    sourceMustContain: [
+      'MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID',
+      'manufacturer-sample-collection-pg-table',
+    ],
   },
   {
     id: 'za-mfr-empty-co-po',

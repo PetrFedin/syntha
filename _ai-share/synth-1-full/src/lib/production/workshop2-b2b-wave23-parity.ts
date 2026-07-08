@@ -232,7 +232,9 @@ export function collectWorkshop2B2bCartMoqViolations(
   return violations;
 }
 
-export function collectWorkshop2B2bOrderLineMoqViolations(lines: Workshop2B2bOrderLine[]): string[] {
+export function collectWorkshop2B2bOrderLineMoqViolations(
+  lines: Workshop2B2bOrderLine[]
+): string[] {
   return collectWorkshop2B2bCartMoqViolations({ lines });
 }
 

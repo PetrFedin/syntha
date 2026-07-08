@@ -54,7 +54,10 @@ export function BrandCentricMediaImportPanel({
 
   if (compact) {
     return (
-      <div className="flex flex-wrap items-center gap-2 px-1 text-xs" data-testid="brand-sc-centric-pxm-strip">
+      <div
+        className="flex flex-wrap items-center gap-2 px-1 text-xs"
+        data-testid="brand-sc-centric-pxm-strip"
+      >
         <Badge variant="outline" className="text-[9px]">
           PLM · медиа
         </Badge>
@@ -70,7 +73,11 @@ export function BrandCentricMediaImportPanel({
           {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Синх. медиа'}
         </Button>
         {assetCount > 0 ? (
-          <Badge variant="secondary" className="text-[9px]" data-testid="brand-sc-centric-pxm-count">
+          <Badge
+            variant="secondary"
+            className="text-[9px]"
+            data-testid="brand-sc-centric-pxm-count"
+          >
             {assetCount} assets
           </Badge>
         ) : null}
@@ -85,9 +92,7 @@ export function BrandCentricMediaImportPanel({
           <ImageIcon className="h-4 w-4" aria-hidden />
           PLM · медиа
         </CardTitle>
-        <CardDescription>
-          Asset → hero на linesheet и витрине магазина.
-        </CardDescription>
+        <CardDescription>Asset → hero на linesheet и витрине магазина.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <Button
@@ -100,7 +105,7 @@ export function BrandCentricMediaImportPanel({
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Импорт PXM media
         </Button>
-        {msg ? <p className="text-muted-foreground text-xs">{msg}</p> : null}
+        {msg ? <p className="text-xs text-muted-foreground">{msg}</p> : null}
       </CardContent>
     </Card>
   );

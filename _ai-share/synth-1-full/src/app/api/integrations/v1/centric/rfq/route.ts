@@ -11,6 +11,8 @@ export async function GET() {
     ok: true,
     rows,
     count: rows.length,
-    messageRu: rows.length ? `${rows.length} RFQ в реестре.` : 'RFQ пока нет — импортируйте из Centric.',
+    messageRu: rows.length
+      ? `${rows.length} RFQ в реестре.`
+      : 'RFQ пока нет — импортируйте из Centric.',
   });
 }

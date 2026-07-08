@@ -28,12 +28,7 @@ export function buildWorkshop2PoBundlePdfBytes(payload: Workshop2PoBundlePayload
   doc.setFontSize(10);
   let y = MARGIN_MM + 2;
 
-  y = writeln(
-    doc,
-    `PO bundle · ${payload.collectionId} / ${payload.articleId}`,
-    y,
-    { bold: true }
-  );
+  y = writeln(doc, `PO bundle · ${payload.collectionId} / ${payload.articleId}`, y, { bold: true });
   y = writeln(doc, `Generated: ${new Date(payload.generatedAt).toLocaleString('ru-RU')}`, y);
   y += 1;
   y = writeln(

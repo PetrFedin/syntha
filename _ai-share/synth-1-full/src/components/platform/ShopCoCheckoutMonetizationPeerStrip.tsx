@@ -22,7 +22,12 @@ export function ShopCoCheckoutMonetizationPeerStrip({ collectionId, orderId }: P
 
   return (
     <div
-      className={cn(hubGadget.goldenPath, 'mb-3', hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
+      className={cn(
+        hubGadget.goldenPath,
+        'mb-3',
+        hubCabinet.workspaceTableScroll,
+        'max-md:flex-nowrap'
+      )}
       data-testid="shop-co-checkout-monetization-peer-strip"
     >
       <Link
@@ -55,7 +60,11 @@ export function ShopCoCheckoutMonetizationPeerStrip({ collectionId, orderId }: P
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={orderCommsHref} data-testid="shop-co-checkout-order-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={orderCommsHref}
+        data-testid="shop-co-checkout-order-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат по заказу
       </Link>
     </div>

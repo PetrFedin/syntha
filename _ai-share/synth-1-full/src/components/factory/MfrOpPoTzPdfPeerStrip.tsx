@@ -50,7 +50,7 @@ export function MfrOpPoTzPdfPeerStrip({
       className={cn(
         hubGadget.goldenPath,
         hubCabinet.workspaceTableScroll,
-        'border-border-subtle max-md:flex-nowrap rounded-md border bg-bg-surface2/50 px-3 py-2'
+        'border-border-subtle bg-bg-surface2/50 rounded-md border px-3 py-2 max-md:flex-nowrap'
       )}
       data-testid={MFR_OP_PO_TZ_PDF_PEER_STRIP_TESTID}
     >
@@ -58,7 +58,9 @@ export function MfrOpPoTzPdfPeerStrip({
         {WAVE_XU_MFR_PO_TZ_PDF_PEER_BADGE_RU}
       </Badge>
       <span className="text-text-muted text-[9px]">{WAVE_XU_MFR_PO_TZ_PDF_PEER_HINT_RU}</span>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
       <Link
         href={dossierHref}
         data-testid={MFR_OP_PO_TZ_PDF_PEER_LINK_TESTID}
@@ -66,7 +68,9 @@ export function MfrOpPoTzPdfPeerStrip({
       >
         PO {productionOrderId}
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
       <a
         href={tzPdfHref}
         data-testid={MFR_OP_PO_TZ_PDF_DOWNLOAD_LINK_TESTID}
@@ -74,7 +78,9 @@ export function MfrOpPoTzPdfPeerStrip({
       >
         {WAVE_XU_MFR_PO_TZ_PDF_DOWNLOAD_LABEL_RU}
       </a>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
       <Link
         href={exportPrintHref}
         data-testid={MFR_OP_PO_TZ_PDF_DOSSIER_PRINT_LINK_TESTID}

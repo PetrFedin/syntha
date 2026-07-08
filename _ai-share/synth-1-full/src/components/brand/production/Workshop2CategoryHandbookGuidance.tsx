@@ -117,11 +117,7 @@ function HandbookGuidanceBody({
 /**
  * Подсказки по листу справочника — по умолчанию компактно (popover по иконке).
  */
-export function Workshop2CategoryHandbookGuidance({
-  leaf,
-  className,
-  variant = 'popover',
-}: Props) {
+export function Workshop2CategoryHandbookGuidance({ leaf, className, variant = 'popover' }: Props) {
   const g = useMemo(() => (leaf ? getLeafHandbookGuidance(leaf) : null), [leaf]);
 
   if (!g || !leaf) return null;

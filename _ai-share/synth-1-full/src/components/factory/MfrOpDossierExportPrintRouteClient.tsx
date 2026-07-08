@@ -33,11 +33,19 @@ export function MfrOpDossierExportPrintRouteClient({ htmlContent, backHref, auto
     >
       <div className="flex flex-wrap items-center justify-between gap-2 print:hidden">
         <div>
-          <h1 className="text-text-primary text-sm font-bold">{WAVE_XU_MFR_EXPORT_PRINT_ROUTE_TITLE_RU}</h1>
+          <h1 className="text-text-primary text-sm font-bold">
+            {WAVE_XU_MFR_EXPORT_PRINT_ROUTE_TITLE_RU}
+          </h1>
           <p className="text-text-muted text-xs">{WAVE_XU_MFR_EXPORT_PRINT_ROUTE_HINT_RU}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => window.print()}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-8 text-xs"
+            onClick={() => window.print()}
+          >
             <Printer className="mr-1.5 h-3.5 w-3.5" aria-hidden />
             {WAVE_XU_MFR_EXPORT_PRINT_LABEL_RU}
           </Button>

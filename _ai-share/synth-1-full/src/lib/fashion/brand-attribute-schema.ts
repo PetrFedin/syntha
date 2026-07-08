@@ -1,8 +1,5 @@
 import type { Product } from '@/lib/types';
-import {
-  getAttributeById,
-  resolveAttributeIdsForLeaf,
-} from '@/lib/production/attribute-catalog';
+import { getAttributeById, resolveAttributeIdsForLeaf } from '@/lib/production/attribute-catalog';
 import { getHandbookCategoryLeaves } from '@/lib/production/category-handbook-leaves';
 
 export type BrandAttributeSchemaRow = {

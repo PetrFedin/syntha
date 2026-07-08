@@ -33,43 +33,71 @@ export function BrandCoWssiCoPeerStrip({ collectionId, orderId: _orderId }: Prop
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crmHref} data-testid="brand-co-wssi-crm-segments-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="brand-co-wssi-crm-segments-link"
+        className={hubGadget.goldenLink}
+      >
         Сегменты CRM
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={comms.registryHref} data-testid="brand-co-wssi-registry-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.registryHref}
+        data-testid="brand-co-wssi-registry-link"
+        className={hubGadget.goldenLink}
+      >
         Реестр заказов
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={matrixHref} data-testid="brand-co-wssi-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={matrixHref}
+        data-testid="brand-co-wssi-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={showroomHref} data-testid="brand-co-wssi-shop-showroom-link" className={hubGadget.goldenLink}>
+      <Link
+        href={showroomHref}
+        data-testid="brand-co-wssi-shop-showroom-link"
+        className={hubGadget.goldenLink}
+      >
         Шоурум магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={checkoutHref} data-testid="brand-co-wssi-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={checkoutHref}
+        data-testid="brand-co-wssi-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={comms.handoffHref} data-testid="brand-co-wssi-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.handoffHref}
+        data-testid="brand-co-wssi-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача в цех
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={comms.shopTrackingHref} data-testid="brand-co-wssi-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.shopTrackingHref}
+        data-testid="brand-co-wssi-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
     </div>

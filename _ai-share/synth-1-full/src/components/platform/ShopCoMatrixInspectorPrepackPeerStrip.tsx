@@ -53,7 +53,11 @@ export function ShopCoMatrixInspectorPrepackPeerStrip({
 
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-co-matrix-inspector-prepack-peer-strip">
-      <Link href={matrixHref} data-testid="shop-co-matrix-tab-matrix-link" className={linkClass('matrix')}>
+      <Link
+        href={matrixHref}
+        data-testid="shop-co-matrix-tab-matrix-link"
+        className={linkClass('matrix')}
+      >
         Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -69,31 +73,35 @@ export function ShopCoMatrixInspectorPrepackPeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={prepackHref} data-testid="shop-co-matrix-tab-prepack-link" className={linkClass('prepack')}>
+      <Link
+        href={prepackHref}
+        data-testid="shop-co-matrix-tab-prepack-link"
+        className={linkClass('prepack')}
+      >
         Препак
       </Link>
       {!embedded ? (
         <>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link
-        href={session.brandPackRulesShopPrepackHref}
-        data-testid="shop-co-matrix-brand-pack-rules-link"
-        className={hubGadget.goldenLink}
-      >
-        Правила упаковки бренда
-      </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>
-        ·
-      </span>
-      <Link
-        href={brandPricelist.versionsHref}
-        data-testid="shop-co-matrix-brand-pricelist-link"
-        className={hubGadget.goldenLink}
-      >
-        Прайс-лист бренда
-      </Link>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <Link
+            href={session.brandPackRulesShopPrepackHref}
+            data-testid="shop-co-matrix-brand-pack-rules-link"
+            className={hubGadget.goldenLink}
+          >
+            Правила упаковки бренда
+          </Link>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
+          <Link
+            href={brandPricelist.versionsHref}
+            data-testid="shop-co-matrix-brand-pricelist-link"
+            className={hubGadget.goldenLink}
+          >
+            Прайс-лист бренда
+          </Link>
         </>
       ) : null}
     </div>

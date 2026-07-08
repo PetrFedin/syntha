@@ -14,8 +14,7 @@ export function useShopOrderDetailLegacyPillarRedirect(orderId: string): void {
     const hashRaw = typeof window !== 'undefined' ? window.location.hash : '';
     const legacyHash = hashRaw === '#order-production';
     if (pillarParam !== 'order_production' && !legacyHash) return;
-    const hash =
-      !hashRaw || legacyHash ? '#shop-co-buyer-tracking' : hashRaw;
+    const hash = !hashRaw || legacyHash ? '#shop-co-buyer-tracking' : hashRaw;
     const sp = new URLSearchParams(searchParams.toString());
     sp.delete('pillar');
     const qs = sp.toString();

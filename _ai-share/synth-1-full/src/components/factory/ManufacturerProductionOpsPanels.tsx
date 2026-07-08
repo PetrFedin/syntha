@@ -58,7 +58,11 @@ export function ManufacturerProductionWipPanel({
         </CardHeader>
         <CardContent className="space-y-3">
           {orderId ? (
-            <IntegrationProductionWipStrip wholesaleOrderId={orderId} variant="factory" allowAdvance />
+            <IntegrationProductionWipStrip
+              wholesaleOrderId={orderId}
+              variant="factory"
+              allowAdvance
+            />
           ) : null}
           <div className="flex flex-wrap gap-2">
             <Button size="sm" asChild>
@@ -90,9 +94,9 @@ export function ManufacturerProductionCutTicketPanel({
   });
   const cid = collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const oid = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
-  const [rows, setRows] = useState<Awaited<ReturnType<typeof fetchBrandProductionCutTickets>>['rows']>(
-    []
-  );
+  const [rows, setRows] = useState<
+    Awaited<ReturnType<typeof fetchBrandProductionCutTickets>>['rows']
+  >([]);
   const [storageMode, setStorageMode] = useState<'pg' | 'file' | 'empty'>('empty');
 
   useEffect(() => {
@@ -106,7 +110,11 @@ export function ManufacturerProductionCutTicketPanel({
 
   return (
     <div className="space-y-4" data-testid="manufacturer-production-cut-ticket-panel">
-      <ManufacturerProductionAttachTzStrip collectionId={cid} articleId={articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01'} orderId={oid} />
+      <ManufacturerProductionAttachTzStrip
+        collectionId={cid}
+        articleId={articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01'}
+        orderId={oid}
+      />
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -116,7 +124,9 @@ export function ManufacturerProductionCutTicketPanel({
               {rows.length ? `Brand PG · ${storageMode}` : 'Links only'}
             </Badge>
           </div>
-          <CardDescription>Столп 4 · brand cut ticket ↔ factory dossier ↔ tracking.</CardDescription>
+          <CardDescription>
+            Столп 4 · brand cut ticket ↔ factory dossier ↔ tracking.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {rows.length > 0 ? (
@@ -155,7 +165,10 @@ export function ManufacturerProductionCutTicketPanel({
           )}
           <div className="flex flex-wrap gap-2">
             <Button size="sm" asChild>
-              <Link href={session.brandCutTicketHref} data-testid="manufacturer-cut-ticket-brand-link">
+              <Link
+                href={session.brandCutTicketHref}
+                data-testid="manufacturer-cut-ticket-brand-link"
+              >
                 Техкарта раскроя бренда
               </Link>
             </Button>

@@ -8,7 +8,10 @@ import { ROUTES, shopB2bCheckoutCollectionHref } from '@/lib/routes';
 function hrefHasCollection(href: string, collectionId: string): boolean {
   try {
     const url = new URL(href, 'http://local');
-    return url.searchParams.get('collection') === collectionId || href.includes(`collection=${encodeURIComponent(collectionId)}`);
+    return (
+      url.searchParams.get('collection') === collectionId ||
+      href.includes(`collection=${encodeURIComponent(collectionId)}`)
+    );
   } catch {
     return href.includes(collectionId);
   }
@@ -35,7 +38,14 @@ export function BrandScCrossRoleAuditUatStrip({
   const auditOk = useMemo(() => {
     const hrefs = [linesheetHref, showroomHref, shopShowroomHref, shopMatrixHref, shopCheckoutHref];
     return hrefs.every((href) => hrefHasCollection(href, collectionId));
-  }, [collectionId, linesheetHref, showroomHref, shopShowroomHref, shopMatrixHref, shopCheckoutHref]);
+  }, [
+    collectionId,
+    linesheetHref,
+    showroomHref,
+    shopShowroomHref,
+    shopMatrixHref,
+    shopCheckoutHref,
+  ]);
 
   const matrixReady = publishedCount > 0;
 
@@ -70,7 +80,11 @@ export function BrandScCrossRoleAuditUatStrip({
             {publishedCount} арт. → matrix
           </Badge>
         ) : (
-          <Badge variant="secondary" className="text-[10px]" data-testid="brand-sc-cross-role-audit-uat-matrix-empty">
+          <Badge
+            variant="secondary"
+            className="text-[10px]"
+            data-testid="brand-sc-cross-role-audit-uat-matrix-empty"
+          >
             Витрина пуста — matrix после publish
           </Badge>
         )}

@@ -71,7 +71,11 @@ export function BrandPackRulesTablePanel({ collectionId = 'SS27', orderId }: Pro
     URL.revokeObjectURL(url);
   };
 
-  const saveField = async (row: BrandPackRulesFeedRow, field: 'moq' | 'casePack', value: string) => {
+  const saveField = async (
+    row: BrandPackRulesFeedRow,
+    field: 'moq' | 'casePack',
+    value: string
+  ) => {
     const parsed = value.trim() === '' ? null : Number(value);
     if (parsed != null && !Number.isFinite(parsed)) return;
     setBusySku(row.sku);
@@ -244,7 +248,9 @@ export function BrandPackRulesShopPrepackPanel({ collectionId, orderId }: Props)
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Прекпак магазина</CardTitle>
-          <CardDescription>Brand curve → shop matrix tab prepack · batch cart apply.</CardDescription>
+          <CardDescription>
+            Brand curve → shop matrix tab prepack · batch cart apply.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>

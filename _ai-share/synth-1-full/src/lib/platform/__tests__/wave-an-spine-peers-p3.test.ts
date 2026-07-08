@@ -15,22 +15,34 @@ describe('wave-an spine peers p3', () => {
   });
 
   it('brand op handoff inventory session hrefs', () => {
-    const handoff = buildBrandProductionHandoffSession({ orderId: 'B2B-DEMO-1', collectionId: 'SS27' });
-    const inventory = buildBrandInventoryOpsSession({ orderId: 'B2B-DEMO-1', collectionId: 'SS27' });
+    const handoff = buildBrandProductionHandoffSession({
+      orderId: 'B2B-DEMO-1',
+      collectionId: 'SS27',
+    });
+    const inventory = buildBrandInventoryOpsSession({
+      orderId: 'B2B-DEMO-1',
+      collectionId: 'SS27',
+    });
     expect(handoff.brandOrderCommsChatHref).toContain('chat');
     expect(inventory.overviewHref).toContain('pcf=overview');
     expect(handoff.shopReplenishmentAtpHref).toContain('replenishment');
   });
 
   it('shop matrix spine session hrefs', () => {
-    const session = buildShopCollaborativeOrderSession({ orderId: 'B2B-DEMO-1', collectionId: 'SS27' });
+    const session = buildShopCollaborativeOrderSession({
+      orderId: 'B2B-DEMO-1',
+      collectionId: 'SS27',
+    });
     expect(session.sessionHref).toContain('collaborative');
     expect(session.replenishmentHref).toContain('replenishment');
     expect(session.workingOrderHref).toContain('working-order');
   });
 
   it('shop checkout monetization hrefs', () => {
-    const session = buildShopCollaborativeOrderSession({ orderId: 'B2B-DEMO-1', collectionId: 'SS27' });
+    const session = buildShopCollaborativeOrderSession({
+      orderId: 'B2B-DEMO-1',
+      collectionId: 'SS27',
+    });
     expect(brandCrmSegmentationFeatureHref('segments', 'SS27')).toContain('pcf=segments');
     expect(session.approvalsHref).toContain('approvals');
     expect(shopOrderCommsFeatureHref('B2B-DEMO-1', 'chat', 'SS27')).toContain('pcf=chat');

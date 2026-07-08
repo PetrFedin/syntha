@@ -28,11 +28,7 @@ const STEPS: { id: BrandLandedMarginGoldenPathStepId; label: string }[] = [
   { id: 'price-lists', label: 'Price lists' },
 ];
 
-export function BrandLandedMarginGoldenPathStrip({
-  collectionId,
-  orderId,
-  activeStep,
-}: Props) {
+export function BrandLandedMarginGoldenPathStrip({ collectionId, orderId, activeStep }: Props) {
   const session = buildBrandLandedMarginSession({ collectionId, orderId });
 
   const hrefFor = (id: BrandLandedMarginGoldenPathStepId): string => {
@@ -55,10 +51,7 @@ export function BrandLandedMarginGoldenPathStrip({
           ) : null}
           <Link
             href={hrefFor(step.id)}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === step.id && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === step.id && 'font-bold underline')}
             data-testid={`brand-landed-margin-golden-${step.id}-link`}
           >
             {step.label}

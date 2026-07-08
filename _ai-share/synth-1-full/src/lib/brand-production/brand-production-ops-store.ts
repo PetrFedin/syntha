@@ -20,11 +20,13 @@ export async function fetchBrandProductionOpsSnapshot(input: {
   };
 }
 
-export async function syncBrandProductionOpsToSpine(payload: BrandProductionOpsLocalSyncPayload): Promise<
+export async function syncBrandProductionOpsToSpine(
+  payload: BrandProductionOpsLocalSyncPayload
+): Promise<
   { ok: boolean; messageRu?: string } & BrandProductionOpsSnapshot & {
-    poSynced?: number;
-    bomSynced?: number;
-  }
+      poSynced?: number;
+      bomSynced?: number;
+    }
 > {
   const res = await fetch('/api/brand/production/ops', {
     method: 'POST',

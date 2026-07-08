@@ -383,8 +383,7 @@ const CELL_AUDIT: Partial<
     order_production: {
       staticScore: 8.0,
       liveScore: 8.0,
-      summary:
-        'Procurement chain 8.0 — YJ/YI/WP/WI closure + wave YU spot e2e (core-236).',
+      summary: 'Procurement chain 8.0 — YJ/YI/WP/WI closure + wave YU spot e2e (core-236).',
       good: [
         'materials-procurement-view + PATCH material-request',
         'SupplierProcurementPillarCard progress + chain steps',

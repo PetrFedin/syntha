@@ -24,7 +24,9 @@ function computeTotalRub(lines: Workshop2B2bOrderLine[]): number {
   return lines.reduce((sum, line) => sum + line.qty * line.wholesalePriceRub, 0);
 }
 
-function normalizeLines(lines: Workshop2B2bOrderLine[] | undefined): Workshop2B2bOrderLine[] | undefined {
+function normalizeLines(
+  lines: Workshop2B2bOrderLine[] | undefined
+): Workshop2B2bOrderLine[] | undefined {
   if (!lines?.length) return undefined;
   const out = lines
     .map((line) => ({
@@ -135,7 +137,11 @@ export async function approveBrandWorkshop2B2bAmendment(input: {
 
   const amendment = await getWorkshop2B2bAmendmentById(orderId, amendmentId);
   if (!amendment || amendment.status !== 'pending') {
-    return { ok: false, code: 'not_pending', messageRu: 'Активная заявка на изменение не найдена.' };
+    return {
+      ok: false,
+      code: 'not_pending',
+      messageRu: 'Активная заявка на изменение не найдена.',
+    };
   }
 
   let orderUpdated = false;
@@ -187,9 +193,7 @@ export async function approveBrandWorkshop2B2bAmendment(input: {
     ok: true,
     amendment: patched,
     orderUpdated,
-    messageRu: orderUpdated
-      ? 'Заявка одобрена · строки заказа обновлены.'
-      : 'Заявка одобрена.',
+    messageRu: orderUpdated ? 'Заявка одобрена · строки заказа обновлены.' : 'Заявка одобрена.',
   };
 }
 
@@ -206,7 +210,11 @@ export async function rejectBrandWorkshop2B2bAmendment(input: {
   const amendmentId = input.amendmentId.trim();
   const amendment = await getWorkshop2B2bAmendmentById(orderId, amendmentId);
   if (!amendment || amendment.status !== 'pending') {
-    return { ok: false, code: 'not_pending', messageRu: 'Активная заявка на изменение не найдена.' };
+    return {
+      ok: false,
+      code: 'not_pending',
+      messageRu: 'Активная заявка на изменение не найдена.',
+    };
   }
 
   const patched = await patchWorkshop2B2bAmendment({

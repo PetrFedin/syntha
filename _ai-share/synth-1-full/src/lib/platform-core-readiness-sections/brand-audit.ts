@@ -129,8 +129,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 3,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'Tier, бюджет, маржа из PG — bulk tier XG + conflict RU (~8.0 после wave XG).',
+      summary: 'Tier, бюджет, маржа из PG — bulk tier XG + conflict RU (~8.0 после wave XG).',
       good: [
         'brand-dev-range-panel + context strip (W2/dossier/factory/showroom/linesheets)',
         'budgetFromPg на SS27/FW27 e2e',
@@ -204,8 +203,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 5,
       staticScore: 7.7,
       liveScore: 7.8,
-      summary:
-        'DevelopmentPillarCard dashboard strips — Kanban dedup (~8.0 после wave XF).',
+      summary: 'DevelopmentPillarCard dashboard strips — Kanban dedup (~8.0 после wave XF).',
       good: [
         'brand-dev-cabinet-panel + context/cross strips',
         'Wave VF dashboard strips wrapper (`brand-dev-dashboard-strips`)',
@@ -523,7 +521,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) => platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-registry', d),
+      resolveHref: (d) =>
+        platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-registry', d),
     },
     {
       id: 'brand-co-detail',
@@ -558,7 +557,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) => platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-detail', d),
+      resolveHref: (d) =>
+        platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-detail', d),
     },
     {
       id: 'brand-co-retailers',
@@ -582,7 +582,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) => platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-retailers', d),
+      resolveHref: (d) =>
+        platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-retailers', d),
     },
     {
       id: 'brand-co-chain',
@@ -608,7 +609,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) => platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-chain', d),
+      resolveHref: (d) =>
+        platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-chain', d),
     },
     {
       id: 'brand-co-cabinet',
@@ -633,7 +635,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) => platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-cabinet', d),
+      resolveHref: (d) =>
+        platformCoreCabinetSectionHref('brand', 'collection_order', 'brand-co-cabinet', d),
     },
     {
       id: 'brand-co-wssi-plan',
@@ -641,8 +644,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 6,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'OTB plan-sync × shop replenishment rules deduped (~8.0 после wave XV).',
+      summary: 'OTB plan-sync × shop replenishment rules deduped (~8.0 после wave XV).',
       good: [
         'brand-wssi-plan workspace (otb/mix/capacity tabs)',
         'Golden path strip (`brand-wssi-golden-path-strip`)',
@@ -666,8 +668,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 7,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'PG segments + auto linesheet visibility (~8.0 после wave XB).',
+      summary: 'PG segments + auto linesheet visibility (~8.0 после wave XB).',
       good: [
         'brand-crm-segmentation workspace',
         'Golden path strip (`brand-crm-golden-path-strip`)',
@@ -936,8 +937,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 1,
       staticScore: 7.7,
       liveScore: 7.8,
-      summary:
-        'Контекстный тред B2B — PG message templates S1 final (~8.0 после wave XZ).',
+      summary: 'Контекстный тред B2B — PG message templates S1 final (~8.0 после wave XZ).',
       good: [
         'contextType b2b_order',
         'slim messages core',
@@ -1025,7 +1025,8 @@ export const BRAND_SECTION_AUDIT: Partial<
       order: 3.5,
       staticScore: 7.2,
       liveScore: 7.2,
-      summary: 'Единый inbox заметок столпа «Связь»: назначение, срок, уведомление, вложение, статус.',
+      summary:
+        'Единый inbox заметок столпа «Связь»: назначение, срок, уведомление, вложение, статус.',
       good: [
         'CommsPlatformNotesPanel (`brand-cm-notes-panel`)',
         'createPlatformCoreNote + local inbox store',
@@ -1113,13 +1114,13 @@ export const BRAND_SECTION_AUDIT: Partial<
         'Cabinet spine peer registry→checkout→CRM (`brand-cm-cabinet-spine-peer-strip`)',
         'Poll fallback if SSE down (`brand-cm-cabinet-poll-badge`, `comms-pillar-sse-live-badge`)',
         'S4 PG notification_events push (`/api/platform-core/notification-events`, `brand-cm-notification-pg-events-list`)',
-          'PG unread-summary + prefs postgres (`/api/platform-core/comms/unread-summary`, fail-closed LS, `brand-cm-notification-pref-chain-push`, `usePlatformCoreChainStatusPushEnabled`)',
-          'Wave VK S2: CommsPillarCard chain badge gated by PG `chainStatusPush` + PUT hub bump',
-          'Wave UP: entity-thread-templates PG (`/api/platform-core/comms/entity-thread-templates`)',
-          'Wave UP: POST calendar-events chain step + contextual-thread order/article',
-          'Wave UP: compact notification strip без placeholder push-events',
-          'Wave XZ: entity-thread-templates PG round-trip + storageModeLabelRu (core-215)',
-          'Wave XZ: B2B + entity templates S1 final — fail-closed LS in core comms hub',
+        'PG unread-summary + prefs postgres (`/api/platform-core/comms/unread-summary`, fail-closed LS, `brand-cm-notification-pref-chain-push`, `usePlatformCoreChainStatusPushEnabled`)',
+        'Wave VK S2: CommsPillarCard chain badge gated by PG `chainStatusPush` + PUT hub bump',
+        'Wave UP: entity-thread-templates PG (`/api/platform-core/comms/entity-thread-templates`)',
+        'Wave UP: POST calendar-events chain step + contextual-thread order/article',
+        'Wave UP: compact notification strip без placeholder push-events',
+        'Wave XZ: entity-thread-templates PG round-trip + storageModeLabelRu (core-215)',
+        'Wave XZ: B2B + entity templates S1 final — fail-closed LS in core comms hub',
       ],
       bad: [],
       fix: [],

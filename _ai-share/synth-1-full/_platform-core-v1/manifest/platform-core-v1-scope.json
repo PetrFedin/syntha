@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-07",
+  "chain": ["article", "sample", "collection", "wholesale_order", "fulfillment", "communication"],
+  "baselineRoles": ["brand", "shop"],
+  "extendedRoles": ["manufacturer", "supplier"],
+  "archivedRoles": ["distributor"],
+  "pillars": ["development", "sample_collection", "collection_order", "order_production", "comms"],
+  "activeCells": {
+    "brand": ["development", "sample_collection", "collection_order", "order_production", "comms"],
+    "shop": ["sample_collection", "collection_order", "order_production", "comms"]
+  },
+  "readOnlyCells": { "shop": ["development"] },
+  "flags": {
+    "NEXT_PUBLIC_PLATFORM_CORE_MODE": "включает Platform Core",
+    "NEXT_PUBLIC_PC_EXTENDED_ROLES": "1 → показывает manufacturer/supplier в hub"
+  },
+  "sot": {
+    "baselineRows": "src/lib/platform-core-hub-matrix-rows.ts",
+    "extendedRows": "src/lib/platform-core-hub-matrix-rows-extended.ts",
+    "allRows": "src/lib/platform-core-hub-matrix-rows-all.ts",
+    "baselineRoutes": "src/lib/platform-core-routes.ts",
+    "extendedRoutes": "src/lib/platform-core-extended-routes.ts",
+    "legacyRoutes": "src/lib/platform-core-legacy-routes.ts",
+    "spine": "src/lib/platform-core-article-spine.ts",
+    "audit": "src/lib/platform-core-readiness-audit.ts"
+  },
+  "docs": [
+    "_platform-core-v1/PLATFORM_CORE_SCOPE.md",
+    "_platform-core-v1/CURSOR_PLATFORM_CORE_ALLOWLIST.md",
+    "_platform-core-v1/CURSOR_PLATFORM_CORE_DENYLIST.md",
+    "_platform-core-v1/PLATFORM_CORE_ARCHIVE_MAP.md"
+  ]
+}

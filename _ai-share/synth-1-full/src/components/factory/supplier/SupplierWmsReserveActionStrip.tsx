@@ -153,13 +153,19 @@ export function SupplierWmsReserveActionStrip({
           </Button>
         ) : null}
         {b2bOrderId?.trim() ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="sup-op-procurement-b2b-inventory-reserve-scope">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="sup-op-procurement-b2b-inventory-reserve-scope"
+          >
             PO · {b2bOrderId}
           </Badge>
         ) : null}
         {reserveMessage ? (
           <span
-            className={reserveOk ? 'text-text-secondary text-[10px]' : 'text-destructive text-[10px]'}
+            className={
+              reserveOk ? 'text-text-secondary text-[10px]' : 'text-[10px] text-destructive'
+            }
             data-testid={`${testId}-post-reserve-message`}
           >
             {reserveMessage}
@@ -167,7 +173,9 @@ export function SupplierWmsReserveActionStrip({
         ) : null}
         {b2bReserveMessage ? (
           <span
-            className={b2bReserveOk ? 'text-text-secondary text-[10px]' : 'text-destructive text-[10px]'}
+            className={
+              b2bReserveOk ? 'text-text-secondary text-[10px]' : 'text-[10px] text-destructive'
+            }
             data-testid="sup-op-procurement-b2b-inventory-reserve-message"
           >
             {b2bReserveMessage}

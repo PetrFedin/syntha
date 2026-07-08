@@ -99,9 +99,7 @@ export function processQueuedSyncJobs(limit = 10): IntegrationSyncJob[] {
 }
 
 /** Server FIFO worker — supports async upstream handlers. */
-export async function processQueuedSyncJobsAsync(
-  limit = 10
-): Promise<IntegrationSyncJob[]> {
+export async function processQueuedSyncJobsAsync(limit = 10): Promise<IntegrationSyncJob[]> {
   const cap = Math.max(1, Math.min(limit, 25));
   const queued = listSyncJobs(100)
     .filter((j) => j.status === 'queued')

@@ -26,9 +26,9 @@ export function buildWorkshop2Phase1DossierHandbookWarnings({
   const warnings: string[] = [];
   const hasVisuals = Boolean(
     dossier.categorySketchImageDataUrl ||
-      dossier.categorySketchAnnotations?.length ||
-      dossier.visualReferences?.length ||
-      dossier.brandNotes?.trim()
+    dossier.categorySketchAnnotations?.length ||
+    dossier.visualReferences?.length ||
+    dossier.brandNotes?.trim()
   );
   if (!hasVisuals) {
     warnings.push(
@@ -76,9 +76,7 @@ export function buildWorkshop2Phase1DossierHandbookWarnings({
   if (reqM && !dossier.isVerifiedByManager) warnings.push('Нет цифровой подписи менеджера.');
   for (const ex of workshopTzExtraRowsRequiringTzSignoff(dossier.tzSignatoryBindings)) {
     if (!dossier.extraTzSignoffsByRowId?.[ex.rowId]) {
-      warnings.push(
-        `Нет цифровой подписи для роли «${ex.roleTitle?.trim() || 'Роль'}» (этап ТЗ).`
-      );
+      warnings.push(`Нет цифровой подписи для роли «${ex.roleTitle?.trim() || 'Роль'}» (этап ТЗ).`);
     }
   }
   const cap = effectiveMoqTargetMaxPieces(dossier.passportProductionBrief);

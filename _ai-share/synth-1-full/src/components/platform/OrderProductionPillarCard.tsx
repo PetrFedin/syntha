@@ -48,9 +48,7 @@ import {
 } from '@/lib/platform-core-wms-reserve-copy';
 import { BrandOpCabinetSpinePeerStrip } from '@/components/platform/BrandOpCabinetSpinePeerStrip';
 import { BrandOpChainSseDedupStrip } from '@/components/platform/BrandOpChainSseDedupStrip';
-import {
-  BRAND_OP_CABINET_SSE_DEDUP_STRIP_TESTID,
-} from '@/lib/platform-core-ports/fashion/brand-op-wave-vq';
+import { BRAND_OP_CABINET_SSE_DEDUP_STRIP_TESTID } from '@/lib/platform-core-ports/fashion/brand-op-wave-vq';
 import { buildBrandOpChainMaterialsSupplierPatchHref } from '@/lib/platform-core-ports/fashion/brand-op-wave-xm';
 import { MfrOpCabinetSpinePeerStrip } from '@/components/factory/MfrOpCabinetSpinePeerStrip';
 import { MfrOpErpRetryDashboardStrip } from '@/components/factory/manufacturer/MfrOpErpRetryDashboardStrip';
@@ -235,65 +233,63 @@ export function OrderProductionPillarCard({
           )
         ) : null}
         {!(compact && minimalChrome) ? (
-        <ul
-          className="space-y-1.5"
-          data-testid={
-            variant === 'brand' ? 'brand-op-cabinet-chain-steps' : 'mfr-op-cabinet-chain-steps'
-          }
-          data-audit-legacy={variant === 'brand' ? 'brand-op-chain-steps' : undefined}
-        >
-          {!hasActiveOrder && steps.length === 0 ? (
-            <li className="text-[10px] text-muted-foreground">
-              {compact
-                ? 'Нет активного заказа.'
-                : WAVE_WZ_OP_NO_ORDER_RU}
-            </li>
-          ) : null}
-          {steps.map((step) => (
-            <li
-              key={step.id}
-              className="flex flex-wrap items-start gap-x-2 gap-y-0.5 text-xs"
-              data-testid={`platform-core-chain-step-${step.id}`}
-              data-done={step.done ? 'true' : 'false'}
-            >
-              {step.done ? (
-                <CheckCircle2
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
-                  aria-hidden
-                />
-              ) : (
-                <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-              )}
-              <span>{step.labelRu}</span>
-              {step.id === 'materials_supplied' && variant === 'brand' && !twoRoleBaseline ? (
-                <Link
-                  href={buildBrandOpChainMaterialsSupplierPatchHref({
-                    orderId: cabinetOrderId,
-                    productionOrderId: productionOrderId ?? undefined,
-                    collectionId: demoWithOrder.collectionId,
-                    articleId: demoWithOrder.demoArticleId,
-                  })}
-                  data-testid={
-                    step.done
-                      ? 'brand-op-cabinet-materials-step-link'
-                      : 'brand-op-cabinet-materials-pending-link'
-                  }
-                  className="text-accent-primary text-[10px] font-medium hover:underline"
-                >
-                  {step.done ? 'Закупка' : 'Закупка →'}
-                </Link>
-              ) : step.id === 'materials_supplied' && step.done ? (
-                <Link
-                  href={factoryMaterialsProcurementHrefForDemo(demoWithOrder)}
-                  data-testid="mfr-op-cabinet-materials-step-link"
-                  className="text-accent-primary text-[10px] font-medium hover:underline"
-                >
-                  Материалы
-                </Link>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+          <ul
+            className="space-y-1.5"
+            data-testid={
+              variant === 'brand' ? 'brand-op-cabinet-chain-steps' : 'mfr-op-cabinet-chain-steps'
+            }
+            data-audit-legacy={variant === 'brand' ? 'brand-op-chain-steps' : undefined}
+          >
+            {!hasActiveOrder && steps.length === 0 ? (
+              <li className="text-[10px] text-muted-foreground">
+                {compact ? 'Нет активного заказа.' : WAVE_WZ_OP_NO_ORDER_RU}
+              </li>
+            ) : null}
+            {steps.map((step) => (
+              <li
+                key={step.id}
+                className="flex flex-wrap items-start gap-x-2 gap-y-0.5 text-xs"
+                data-testid={`platform-core-chain-step-${step.id}`}
+                data-done={step.done ? 'true' : 'false'}
+              >
+                {step.done ? (
+                  <CheckCircle2
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                    aria-hidden
+                  />
+                ) : (
+                  <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                )}
+                <span>{step.labelRu}</span>
+                {step.id === 'materials_supplied' && variant === 'brand' && !twoRoleBaseline ? (
+                  <Link
+                    href={buildBrandOpChainMaterialsSupplierPatchHref({
+                      orderId: cabinetOrderId,
+                      productionOrderId: productionOrderId ?? undefined,
+                      collectionId: demoWithOrder.collectionId,
+                      articleId: demoWithOrder.demoArticleId,
+                    })}
+                    data-testid={
+                      step.done
+                        ? 'brand-op-cabinet-materials-step-link'
+                        : 'brand-op-cabinet-materials-pending-link'
+                    }
+                    className="text-accent-primary text-[10px] font-medium hover:underline"
+                  >
+                    {step.done ? 'Закупка' : 'Закупка →'}
+                  </Link>
+                ) : step.id === 'materials_supplied' && step.done ? (
+                  <Link
+                    href={factoryMaterialsProcurementHrefForDemo(demoWithOrder)}
+                    data-testid="mfr-op-cabinet-materials-step-link"
+                    className="text-accent-primary text-[10px] font-medium hover:underline"
+                  >
+                    Материалы
+                  </Link>
+                ) : null}
+              </li>
+            ))}
+          </ul>
         ) : null}
         {variant === 'brand' && hasActiveOrder && compact ? (
           <p className="text-text-muted text-[10px]" data-testid="brand-op-cabinet-sot-strip">
@@ -540,7 +536,10 @@ export function OrderProductionPillarCard({
           {hasActiveOrder && !minimalChrome ? (
             variant === 'brand' ? (
               <div data-testid="brand-op-cabinet-cta-strip">
-                <BrandOpCabinetSpinePeerStrip orderId={cabinetOrderId} collectionId={collectionId} />
+                <BrandOpCabinetSpinePeerStrip
+                  orderId={cabinetOrderId}
+                  collectionId={collectionId}
+                />
               </div>
             ) : (
               <div data-testid="mfr-op-cabinet-cta-strip">

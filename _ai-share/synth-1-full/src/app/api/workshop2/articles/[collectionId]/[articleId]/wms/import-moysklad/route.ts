@@ -58,7 +58,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
         messageRu:
           'МойСклад не настроен: задайте MOYSKLAD_TOKEN (см. docs). Импорт не блокирует заказ образца.',
         dryRunSupported: true,
-        mappedHints: mapWorkshop2MoySkladStockToWmsHints({ stockRows: [], supplyLines: supplyLinesForHints }),
+        mappedHints: mapWorkshop2MoySkladStockToWmsHints({
+          stockRows: [],
+          supplyLines: supplyLinesForHints,
+        }),
         importedCount: 0,
       },
       { status: 501 }

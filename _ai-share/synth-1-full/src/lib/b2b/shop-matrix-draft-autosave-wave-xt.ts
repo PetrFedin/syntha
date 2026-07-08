@@ -20,20 +20,14 @@ export const SHOP_MATRIX_DRAFT_CONFLICT_HINT_RU =
 export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU =
   'Не удалось сохранить черновик матрицы в PG — данные на checkout могут отличаться.';
 
-export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_LINK_RU =
-  'Проверить корзину на checkout';
+export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_LINK_RU = 'Проверить корзину на checkout';
 
-export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_RU =
-  'Вернуться в матрицу и пересохранить';
+export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_RU = 'Вернуться в матрицу и пересохранить';
 
 export const SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_SESSION_KEY =
   'syntha_shop_matrix_draft_autosave_fail' as const;
 
-export type ShopMatrixDraftAutosaveOutcome =
-  | 'saved'
-  | 'conflict'
-  | 'error'
-  | 'validation';
+export type ShopMatrixDraftAutosaveOutcome = 'saved' | 'conflict' | 'error' | 'validation';
 
 export function isShopMatrixDraftUpdatedAtConflict(
   expectedUpdatedAt: string | undefined,

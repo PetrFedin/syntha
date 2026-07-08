@@ -47,7 +47,6 @@ export const PLATFORM_CORE_CABINET_DEFAULT_SECTION: Partial<
   },
 };
 
-
 export const BRAND_DEV_W2_HUB_SECTION = 'brand-dev-w2-hub';
 export const BRAND_DEV_DOSSIER_SECTION = 'brand-dev-dossier';
 
@@ -140,7 +139,9 @@ export function roleCoreCabinetHref(input: {
   articleId?: string | null;
 }): string {
   const qs = buildRoleCoreCabinetQueryString(input);
-  return qs ? `${roleCoreCabinetBasePath(input.roleId)}?${qs}` : roleCoreCabinetBasePath(input.roleId);
+  return qs
+    ? `${roleCoreCabinetBasePath(input.roleId)}?${qs}`
+    : roleCoreCabinetBasePath(input.roleId);
 }
 
 export function platformCoreCabinetSectionHref(

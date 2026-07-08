@@ -9,9 +9,7 @@ import {
   listWorkshop2BrandTenantRegistry,
   validateWorkshop2B2bCheckoutBrandTenant,
 } from '@/lib/production/workshop2-brand-tenant-registry';
-import {
-  buildWorkshop2Wave52ProdLiveReadyProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+import { buildWorkshop2Wave52ProdLiveReadyProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave52ProdLiveReadyProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 
 const root = process.cwd();
@@ -51,19 +49,27 @@ describe('wave52 — brand tenant registry', () => {
 
 describe('wave52 — routes and scripts on disk', () => {
   it('cutover dashboard API exists', () => {
-    expect(fs.existsSync(path.join(root, 'src/app/api/workshop2/cutover-dashboard/route.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/app/api/workshop2/cutover-dashboard/route.ts'))).toBe(
+      true
+    );
   });
 
   it('brand registry API exists', () => {
-    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/brand-registry/route.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/brand-registry/route.ts'))).toBe(
+      true
+    );
   });
 
   it('B2bRepBrandSwitcher component exists', () => {
-    expect(fs.existsSync(path.join(root, 'src/components/shop/b2b/B2bRepBrandSwitcher.tsx'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/components/shop/b2b/B2bRepBrandSwitcher.tsx'))).toBe(
+      true
+    );
   });
 
   it('production keys checklist script exists', () => {
-    expect(fs.existsSync(path.join(root, 'scripts/workshop2-production-keys-checklist.mjs'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'scripts/workshop2-production-keys-checklist.mjs'))).toBe(
+      true
+    );
   });
 
   it('merge assist script has gh pr create without git commit', () => {
@@ -88,7 +94,9 @@ describe('wave52 — routes and scripts on disk', () => {
   });
 
   it('merge assist checklist RU doc exists', () => {
-    expect(fs.existsSync(path.join(root, '.planning/workshop2-merge-assist-checklist.md'))).toBe(true);
+    expect(fs.existsSync(path.join(root, '.planning/workshop2-merge-assist-checklist.md'))).toBe(
+      true
+    );
   });
 
   it('hub cutover panel mounted in enterprise hub inner', () => {
@@ -100,7 +108,10 @@ describe('wave52 — routes and scripts on disk', () => {
   });
 
   it('cutover dashboard references wave45 in probes', () => {
-    const src = fs.readFileSync(path.join(root, 'src/lib/production/workshop2-cutover-dashboard.ts'), 'utf8');
+    const src = fs.readFileSync(
+      path.join(root, 'src/lib/production/workshop2-cutover-dashboard.ts'),
+      'utf8'
+    );
     expect(src).toContain('wave45_staging_prod');
     expect(src).toContain('buildWorkshop2Wave45StagingProdReadyProbe');
   });

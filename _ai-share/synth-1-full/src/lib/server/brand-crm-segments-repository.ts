@@ -3,7 +3,10 @@ import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type { BrandCrmSegmentObject, BrandCrmSegmentQuery } from '@/lib/b2b/brand-crm-segment-object';
+import type {
+  BrandCrmSegmentObject,
+  BrandCrmSegmentQuery,
+} from '@/lib/b2b/brand-crm-segment-object';
 import { sortBrandCrmSegments } from '@/lib/b2b/brand-crm-segment-object';
 import type { CustomerGroup } from '@/lib/b2b/customer-groups';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
@@ -202,7 +205,9 @@ export async function listBrandCrmSegmentsServer(input?: {
       );
     }
     return {
-      segments: sortBrandCrmSegments(res.rows.map((row) => mapPgRow(row as Parameters<typeof mapPgRow>[0]))),
+      segments: sortBrandCrmSegments(
+        res.rows.map((row) => mapPgRow(row as Parameters<typeof mapPgRow>[0]))
+      ),
       storageMode: 'pg',
     };
   }
@@ -231,7 +236,10 @@ export async function patchBrandCrmSegmentServer(input: {
   defaultNetTermDays?: number;
   firstOrderDiscountPct?: number | null;
   organizationId?: string;
-}): Promise<{ segment: BrandCrmSegmentObject | null; storageMode: 'pg' | 'file' | 'memory' | 'demo' }> {
+}): Promise<{
+  segment: BrandCrmSegmentObject | null;
+  storageMode: 'pg' | 'file' | 'memory' | 'demo';
+}> {
   const org = input.organizationId ?? 'org-brand-001';
   const key = input.segmentKey.trim();
   const listed = await listBrandCrmSegmentsServer({ organizationId: org });
@@ -241,10 +249,12 @@ export async function patchBrandCrmSegmentServer(input: {
   const next: BrandCrmSegmentObject = {
     ...existing,
     defaultNetTermDays:
-      input.defaultNetTermDays !== undefined ? input.defaultNetTermDays : existing.defaultNetTermDays,
+      input.defaultNetTermDays !== undefined
+        ? input.defaultNetTermDays
+        : existing.defaultNetTermDays,
     firstOrderDiscountPct:
       input.firstOrderDiscountPct !== undefined
-        ? input.firstOrderDiscountPct ?? undefined
+        ? (input.firstOrderDiscountPct ?? undefined)
         : existing.firstOrderDiscountPct,
     updatedAt: new Date().toISOString(),
   };

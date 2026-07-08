@@ -709,9 +709,7 @@ export function useRunwayExperienceOrchestration(
 
   const showDemoChrome = isDemoMode;
   const hasDemoAssets = Boolean(
-    product.scrollSwitcherSections?.some((s) =>
-      s.sectionImageUrl?.includes('/images/demo/runway/')
-    )
+    product.scrollSwitcherSections?.some((s) => s.sectionImageUrl?.includes('/images/demo/runway/'))
   );
 
   return {

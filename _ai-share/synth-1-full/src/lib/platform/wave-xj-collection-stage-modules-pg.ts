@@ -11,8 +11,7 @@ export const BRAND_COLLECTION_STAGE_MODULES_SYNC_RU = 'Синхрон с мод�
 export const BRAND_COLLECTION_STAGE_MODULES_DRAFT_FILLED_RU = 'Черновик заполнен';
 export const BRAND_COLLECTION_STAGE_MODULES_ACTOR_PLACEHOLDER_RU = 'ФИО или роль';
 export const BRAND_COLLECTION_STAGE_MODULES_ACTOR_LABEL_RU = 'Кто вносит изменения';
-export const BRAND_COLLECTION_STAGE_MODULES_ATTACHMENTS_BTN_RU =
-  'Вложения, история, согласование';
+export const BRAND_COLLECTION_STAGE_MODULES_ATTACHMENTS_BTN_RU = 'Вложения, история, согласование';
 
 export const BRAND_COLLECTION_STAGE_MODULES_PG_BADGE_TESTID =
   'brand-collection-stage-modules-storage-pg';

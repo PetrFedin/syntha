@@ -86,7 +86,10 @@ export function BrandScLinesheetShowroomDiffPanel({
 
   if (loadState === 'loading') {
     return (
-      <p className="text-text-muted text-[10px]" data-testid="brand-sc-linesheet-showroom-diff-loading">
+      <p
+        className="text-text-muted text-[10px]"
+        data-testid="brand-sc-linesheet-showroom-diff-loading"
+      >
         UAT linesheet→showroom: загрузка…
       </p>
     );
@@ -94,7 +97,10 @@ export function BrandScLinesheetShowroomDiffPanel({
 
   if (loadState === 'error' || !diff) {
     return (
-      <p className="text-destructive text-[10px]" data-testid="brand-sc-linesheet-showroom-diff-error">
+      <p
+        className="text-[10px] text-destructive"
+        data-testid="brand-sc-linesheet-showroom-diff-error"
+      >
         UAT diff недоступен — проверьте API workshop2.
       </p>
     );
@@ -122,7 +128,11 @@ export function BrandScLinesheetShowroomDiffPanel({
         >
           {inSync ? 'Синхронно' : 'Есть расхождения'}
         </Badge>
-        <Badge variant="secondary" className="text-[10px] tabular-nums" data-testid="brand-sc-linesheet-showroom-diff-counts">
+        <Badge
+          variant="secondary"
+          className="text-[10px] tabular-nums"
+          data-testid="brand-sc-linesheet-showroom-diff-counts"
+        >
           W2 {diff.w2Count} · витрина {diff.publishedCount} · совпало {diff.syncedCount}
         </Badge>
       </div>
@@ -133,7 +143,7 @@ export function BrandScLinesheetShowroomDiffPanel({
           </p>
           <div className="flex flex-wrap gap-1">
             {diff.onlyInW2.slice(0, 12).map((id) => (
-              <Badge key={id} variant="outline" className="text-[9px] font-mono">
+              <Badge key={id} variant="outline" className="font-mono text-[9px]">
                 {id}
               </Badge>
             ))}
@@ -157,7 +167,7 @@ export function BrandScLinesheetShowroomDiffPanel({
           </p>
           <div className="flex flex-wrap gap-1">
             {diff.onlyPublished.slice(0, 8).map((id) => (
-              <Badge key={id} variant="outline" className="text-[9px] font-mono">
+              <Badge key={id} variant="outline" className="font-mono text-[9px]">
                 {id}
               </Badge>
             ))}

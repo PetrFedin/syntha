@@ -16,8 +16,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, messageRu: 'Некорректный JSON.' }, { status: 400 });
   }
 
-  const collectionId =
-    String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
+  const collectionId = String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
   const action = String(body.action ?? 'unpublish').trim();
   const shopBuyerId = String(body.shopBuyerId ?? 'shop1').trim();
   const snapshotId = String(body.snapshotId ?? '').trim() || undefined;

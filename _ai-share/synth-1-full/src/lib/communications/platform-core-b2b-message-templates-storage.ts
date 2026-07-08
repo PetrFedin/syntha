@@ -12,8 +12,7 @@ export type SavedPlatformCoreB2bMessageTemplate = {
   createdAt: string;
 };
 
-export const PLATFORM_CORE_B2B_MESSAGE_TEMPLATES_LS_KEY =
-  'platform_core_b2b_message_templates_v1';
+export const PLATFORM_CORE_B2B_MESSAGE_TEMPLATES_LS_KEY = 'platform_core_b2b_message_templates_v1';
 
 const MAX_SAVED = 24;
 

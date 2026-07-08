@@ -41,13 +41,14 @@ export function PlatformB2bMarketroomDiscoverPanel({ collectionId }: Props) {
               </Badge>
             ) : null}
           </div>
-          <CardDescription>
-            Хаб платформы → шоурум магазина → превью бренда.
-          </CardDescription>
+          <CardDescription>Хаб платформы → шоурум магазина → превью бренда.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.shopShowroomHref} data-testid="platform-marketroom-shop-showroom-link">
+            <Link
+              href={session.shopShowroomHref}
+              data-testid="platform-marketroom-shop-showroom-link"
+            >
               Шоурум магазина
             </Link>
           </Button>
@@ -73,7 +74,10 @@ export function PlatformB2bMarketroomBuyPathPanel({ collectionId }: Props) {
 
   return (
     <div className="space-y-4 px-4 pb-8" data-testid="platform-b2b-marketroom-buy-path-panel">
-      <PlatformB2bMarketroomPublishedArticlesFeedStrip collectionId={session.collectionId} maxRows={4} />
+      <PlatformB2bMarketroomPublishedArticlesFeedStrip
+        collectionId={session.collectionId}
+        maxRows={4}
+      />
       <Card>
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-center gap-2">

@@ -32,8 +32,7 @@ export function resolveShopShowroomPartnerLogoBadgeKind(input: {
   dossierHeroUsed?: boolean;
 }): ShopShowroomPartnerLogoBadgeKind {
   const logoUrl = input.partnerLogoUrl?.trim();
-  const dossierWins =
-    input.dossierHeroUsed === true || input.coverHeroSource === 'dossier';
+  const dossierWins = input.dossierHeroUsed === true || input.coverHeroSource === 'dossier';
 
   if (dossierWins) return 'dossier-fallback';
   if (!logoUrl && input.partnersSource === 'fallback') return 'catalog-fallback';

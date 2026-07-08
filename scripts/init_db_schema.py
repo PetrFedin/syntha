@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import asyncio
 
+from sqlalchemy.ext.asyncio import create_async_engine
+
 from app.core.config import settings
 from app.db.models import base  # noqa: F401 — register models
-from sqlalchemy.ext.asyncio import create_async_engine
 
 
 async def main() -> None:

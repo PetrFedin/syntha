@@ -18,16 +18,7 @@ export const WAVE_YW_CHECKOUT_E2E_SPEC = 'core-238-wave-yw-checkout.spec.ts' as 
 export const WAVE_YW_BATTLE_READY_SHELL = 'scripts/agent-battle-ready.sh' as const;
 
 /** Closed wave letter codes YI … YP (core-224 … core-231). */
-export const WAVE_YW_CLOSED_WAVE_CODES = [
-  'YI',
-  'YJ',
-  'YK',
-  'YL',
-  'YM',
-  'YN',
-  'YO',
-  'YP',
-] as const;
+export const WAVE_YW_CLOSED_WAVE_CODES = ['YI', 'YJ', 'YK', 'YL', 'YM', 'YN', 'YO', 'YP'] as const;
 
 export type WaveYwBattleReadyProbeLayer = 'platform_core' | 'planner' | 'payment' | 'spine';
 
@@ -154,10 +145,7 @@ export function waveYwE2eSafeProbePaths(): string[] {
 
 export function waveYwPlannerSyncTargetIds(state: PlannerRuntimeState): string[] {
   return [
-    ...new Set([
-      ...waveYsPlannerSyncTargetIds(state),
-      ...WAVE_YW_BATTLE_READY_PLANNER_ITEM_IDS,
-    ]),
+    ...new Set([...waveYsPlannerSyncTargetIds(state), ...WAVE_YW_BATTLE_READY_PLANNER_ITEM_IDS]),
   ];
 }
 

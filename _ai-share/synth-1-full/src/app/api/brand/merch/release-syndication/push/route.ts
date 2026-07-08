@@ -31,8 +31,7 @@ export async function POST(req: NextRequest) {
     body = {};
   }
 
-  const collectionId =
-    String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
+  const collectionId = String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
   const rows = await buildBrandReleaseSyndicationRowsWithServerTechPack({
     products,
     collectionId,
@@ -40,10 +39,14 @@ export async function POST(req: NextRequest) {
   const articleIds = mapSyndicationReadyRowsToArticleIds(rows, products);
 
   if (articleIds.length === 0) {
-    return NextResponse.json({
-      ok: false,
-      messageRu: 'Нет SKU с release gate ready (launch + attrs + factory pack) для syndication push.',
-    }, { status: 422 });
+    return NextResponse.json(
+      {
+        ok: false,
+        messageRu:
+          'Нет SKU с release gate ready (launch + attrs + factory pack) для syndication push.',
+      },
+      { status: 422 }
+    );
   }
 
   let publishMessageRu: string | undefined;
@@ -62,10 +65,13 @@ export async function POST(req: NextRequest) {
     const json = (await res.json()) as { messageRu?: string; publishedCount?: number };
     publishMessageRu = json.messageRu;
     if (!res.ok) {
-      return NextResponse.json({
-        ok: false,
-        messageRu: publishMessageRu ?? 'Showroom bulk publish не выполнен.',
-      }, { status: res.status });
+      return NextResponse.json(
+        {
+          ok: false,
+          messageRu: publishMessageRu ?? 'Showroom bulk publish не выполнен.',
+        },
+        { status: res.status }
+      );
     }
   } catch {
     publishMessageRu = 'Журнал записан; showroom publish недоступен (offline).';

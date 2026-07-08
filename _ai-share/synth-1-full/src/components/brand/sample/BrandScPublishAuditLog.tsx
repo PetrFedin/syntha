@@ -14,12 +14,15 @@ type Props = {
 function formatPublishEventRu(event: Workshop2DomainEventEnvelope): string {
   const campaign = String(event.payload.campaignName ?? '').trim();
   const source = String(event.payload.source ?? '').trim();
-  const eventLabel = brandScSyndicationWdAuditEventLabelRu(String(event.type ?? 'showroom.published'));
+  const eventLabel = brandScSyndicationWdAuditEventLabelRu(
+    String(event.type ?? 'showroom.published')
+  );
   const parts = [`${event.articleId}`];
   if (eventLabel !== 'publish') parts.push(eventLabel);
   if (campaign) parts.push(campaign);
   if (source === 'bulk_showroom_publish') parts.push('batch');
-  if (source === 'linesheet_syndicate' || source === 'release_syndication') parts.push('syndication');
+  if (source === 'linesheet_syndicate' || source === 'release_syndication')
+    parts.push('syndication');
   if (source === 'batch_unpublish') parts.push('unpublish');
   if (source === 'batch_unpublish_rollback') parts.push('rollback');
   return parts.join(' · ');
@@ -94,11 +97,13 @@ export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props)
           >
             {storageMode === 'postgres' ? 'PG' : 'local'}
           </span>
-          {loading ? <Loader2 className="text-text-muted h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
+          {loading ? (
+            <Loader2 className="text-text-muted h-3.5 w-3.5 animate-spin" aria-hidden />
+          ) : null}
         </span>
       </div>
       {error ? (
-        <p className="text-destructive text-[10px]" role="alert">
+        <p className="text-[10px] text-destructive" role="alert">
           {error}
         </p>
       ) : null}
@@ -108,14 +113,19 @@ export function BrandScPublishAuditLog({ collectionId, reloadNonce = 0 }: Props)
         </p>
       ) : null}
       {events.length > 0 ? (
-        <ul className="max-h-36 space-y-1 overflow-y-auto" data-testid="brand-sc-publish-audit-list">
+        <ul
+          className="max-h-36 space-y-1 overflow-y-auto"
+          data-testid="brand-sc-publish-audit-list"
+        >
           {events.map((ev) => (
             <li
               key={ev.id}
               className="text-text-secondary flex flex-wrap items-baseline gap-x-2 text-[10px]"
               data-testid={`brand-sc-publish-audit-row-${ev.articleId}`}
             >
-              <time className="text-text-muted shrink-0 tabular-nums">{formatWhen(ev.createdAt)}</time>
+              <time className="text-text-muted shrink-0 tabular-nums">
+                {formatWhen(ev.createdAt)}
+              </time>
               <span className="text-text-primary font-medium">{formatPublishEventRu(ev)}</span>
             </li>
           ))}

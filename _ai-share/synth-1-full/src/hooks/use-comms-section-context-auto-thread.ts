@@ -76,7 +76,14 @@ export function useCommsSectionContextAutoThread({
   }, [enabled, disabled, orderId, pillarId, sectionId, variant, collectionId]);
 
   useEffect(() => {
-    if (!enabled || disabled || !orderId || !isPlatformCorePgB2bOrder(orderId) || !pillarId || !sectionId) {
+    if (
+      !enabled ||
+      disabled ||
+      !orderId ||
+      !isPlatformCorePgB2bOrder(orderId) ||
+      !pillarId ||
+      !sectionId
+    ) {
       return;
     }
 

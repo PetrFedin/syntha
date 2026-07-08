@@ -5,10 +5,7 @@ import { B2BPriorityStrategy } from '@/lib/b2b/allocation/allocation-engine';
 import { persistB2bIntakeAllocationPlan } from '@/lib/server/b2b-intake-allocation-repository';
 import { bumpPlatformCoreB2bRegistry } from '@/lib/server/platform-core-b2b-registry-hub';
 import { bumpPlatformCoreCommsInbox } from '@/lib/server/platform-core-comms-inbox-hub';
-import {
-  guardWorkshop2Route,
-  WORKSHOP2_WRITE_ROLES,
-} from '@/lib/server/workshop2-route-auth';
+import { guardWorkshop2Route, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
 
 const itemSchema = z.object({
   articleId: z.string(),
@@ -74,10 +71,9 @@ export async function POST(req: NextRequest) {
       planId: persisted.planId,
       persistMode: persisted.mode,
       idempotent: persisted.idempotent === true,
-      messageRu:
-        persisted.idempotent
-          ? `План аллокации ${persisted.planId} уже существует (идемпотентно).`
-          : persisted.mode === 'postgres'
+      messageRu: persisted.idempotent
+        ? `План аллокации ${persisted.planId} уже существует (идемпотентно).`
+        : persisted.mode === 'postgres'
           ? `План аллокации ${persisted.planId} сохранён в PG.`
           : persisted.mode === 'pg_only_blocked'
             ? 'PG-only: план рассчитан, persist заблокирован без PostgreSQL.'

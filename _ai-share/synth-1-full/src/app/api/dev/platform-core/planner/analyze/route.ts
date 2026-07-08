@@ -127,7 +127,10 @@ export async function POST(request: Request) {
       total: localTotal,
     },
     skippedDuplicates: analysis.skippedDuplicates,
-    items: localTotal > 0 ? { development: analysis.development, techDebt: analysis.techDebt } : undefined,
+    items:
+      localTotal > 0
+        ? { development: analysis.development, techDebt: analysis.techDebt }
+        : undefined,
     counts: snapshot.counts,
     scan: useAgent
       ? {

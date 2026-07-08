@@ -42,9 +42,7 @@ export function Workshop2HubCutoverDashboardPanel() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
-        {error && (
-          <p className="text-destructive">Не удалось загрузить cutover dashboard.</p>
-        )}
+        {error && <p className="text-destructive">Не удалось загрузить cutover dashboard.</p>}
         {payload && (
           <>
             <div className="flex flex-wrap gap-2">

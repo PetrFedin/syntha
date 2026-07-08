@@ -98,8 +98,9 @@ export async function patchBrandCreateArticleWizardDraftServer(input: {
     return { ok: true, draft: null, storageMode: 'memory' };
   }
 
-  const current = (await getBrandCreateArticleWizardDraftServer({ collectionId, organizationId: orgId }))
-    .draft;
+  const current = (
+    await getBrandCreateArticleWizardDraftServer({ collectionId, organizationId: orgId })
+  ).draft;
   if (!current || !input.patch) {
     return { ok: false, draft: current, storageMode: brandCreateArticleWizardDraftStorageMode() };
   }

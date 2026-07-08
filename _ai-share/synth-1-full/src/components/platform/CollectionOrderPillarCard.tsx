@@ -152,8 +152,7 @@ export function CollectionOrderPillarCard({
     resolveFrom: SPINE_RESOLVE_FROM,
     actorRole: variant,
     buyerId: variant === 'shop' ? buyerId : undefined,
-    partnerId:
-      variant === 'brand' && brandPartnerFilter !== 'all' ? brandPartnerFilter : undefined,
+    partnerId: variant === 'brand' && brandPartnerFilter !== 'all' ? brandPartnerFilter : undefined,
     reloadNonce: importReloadNonce,
   });
 
@@ -273,8 +272,14 @@ export function CollectionOrderPillarCard({
         ) : null}
         {compact && variant === 'shop' && !hasActiveOrder && !resolving && !minimalChrome ? (
           <>
-            <PlatformCoreShopCoGreenfieldRegistryStrip buyerId={buyerId} collectionId={collectionId} />
-            <PlatformCoreShopCoCabinetGreenfieldEmptyPeerStrip buyerId={buyerId} collectionId={collectionId} />
+            <PlatformCoreShopCoGreenfieldRegistryStrip
+              buyerId={buyerId}
+              collectionId={collectionId}
+            />
+            <PlatformCoreShopCoCabinetGreenfieldEmptyPeerStrip
+              buyerId={buyerId}
+              collectionId={collectionId}
+            />
           </>
         ) : null}
         {hasActiveOrder && isSpineActive && !(compact && minimalChrome) ? (
@@ -411,7 +416,11 @@ export function CollectionOrderPillarCard({
             {WAVE_ZE_PARTNER_COUNT_LOADING_RU}
           </Badge>
         ) : null}
-        {compact && variant === 'brand' && !minimalChrome && !partnerCountLoading && activePartnerCount > 0 ? (
+        {compact &&
+        variant === 'brand' &&
+        !minimalChrome &&
+        !partnerCountLoading &&
+        activePartnerCount > 0 ? (
           <div className="flex flex-wrap items-center gap-1.5">
             <Badge
               variant="outline"
@@ -540,7 +549,10 @@ export function CollectionOrderPillarCard({
           />
         ) : null}
         {showNavStrips && variant === 'shop' && hasActiveOrder ? (
-          <PlatformCoreShopCoCabinetCoSpinePeerStrip collectionId={collectionId} orderId={resolvedOrderId} />
+          <PlatformCoreShopCoCabinetCoSpinePeerStrip
+            collectionId={collectionId}
+            orderId={resolvedOrderId}
+          />
         ) : null}
         {compact && variant === 'shop' && !minimalChrome && brandConfirmedDone && hasActiveOrder ? (
           <ShopCoCabinetTrackingEmbed

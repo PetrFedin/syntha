@@ -4,7 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { BrandCentricRfqQuoteCard } from '@/lib/fashion/brand-centric-rfq-quotes';
-import { getCentricRfqByArticle, getCentricRfqById } from '@/lib/integrations/spine/centric-rfq-persistence.file';
+import {
+  getCentricRfqByArticle,
+  getCentricRfqById,
+} from '@/lib/integrations/spine/centric-rfq-persistence.file';
 import { acknowledgeCentricRfq } from '@/lib/integrations/spine/centric-rfq-import.service';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
@@ -283,7 +286,11 @@ export async function awardBrandCentricRfqQuoteServer(input: {
   const org = input.organizationId ?? DEFAULT_ORG;
   const rfqId = input.rfqId.trim();
   const quoteId = input.quoteId.trim();
-  const listed = await listBrandCentricRfqQuotesServer({ rfqId, organizationId: org, seedIfEmpty: false });
+  const listed = await listBrandCentricRfqQuotesServer({
+    rfqId,
+    organizationId: org,
+    seedIfEmpty: false,
+  });
   const target = listed.quotes.find((q) => q.quoteId === quoteId);
   if (!target) throw new Error('QUOTE_NOT_FOUND');
 

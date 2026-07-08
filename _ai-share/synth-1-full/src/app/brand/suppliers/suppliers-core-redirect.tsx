@@ -27,9 +27,7 @@ function BrandSuppliersCoreRedirectInner() {
 /** Core: mock suppliers hub → factory materials BOM (PG). */
 export function BrandSuppliersCoreRedirect() {
   return (
-    <Suspense
-      fallback={<div className="text-text-secondary p-6 text-sm">Загрузка…</div>}
-    >
+    <Suspense fallback={<div className="text-text-secondary p-6 text-sm">Загрузка…</div>}>
       <BrandSuppliersCoreRedirectInner />
     </Suspense>
   );

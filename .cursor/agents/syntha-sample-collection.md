@@ -24,7 +24,7 @@ OUT: W2 article development (syntha-w2-development), wholesale checkout (syntha-
 
 <verify>
 ```bash
-cd /Users/petr/Projects/_ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
+cd _ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
 npx playwright test e2e/core-02-demo-golden-path.spec.ts -g "linesheet|showroom" --project=chromium
 ```
 </verify>

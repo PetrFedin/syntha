@@ -11,9 +11,7 @@ import {
   shopB2bMatrixArticleHref,
   shopB2bOrdersCollectionRegistryHref,
 } from '@/lib/routes';
-import {
-  SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU,
-} from '@/lib/b2b/shop-matrix-size-run-cart-validation';
+import { SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU } from '@/lib/b2b/shop-matrix-size-run-cart-validation';
 import {
   SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_TESTID,
   SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU,
@@ -77,8 +75,7 @@ export function ShopB2bCheckoutCorePage() {
   useEffect(() => {
     setCartSessionFromCookie(readB2bCartSessionCookie());
   }, []);
-  const cartSession =
-    searchParams.get('cartSession')?.trim() || cartSessionFromCookie || undefined;
+  const cartSession = searchParams.get('cartSession')?.trim() || cartSessionFromCookie || undefined;
   const { b2bCart = [] } = useB2BState();
   const { cartTier, tierLabel, applyToCartItem } = useShopMatrixTierPricing(collectionId);
   const matrixHref = `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`;
@@ -110,7 +107,7 @@ export function ShopB2bCheckoutCorePage() {
       setPreflightDetail(result.ready ? null : result.messageRu);
       setSizeRunArticleId(
         result.sizeRunViolations.length > 0
-          ? result.firstFailedSizeRunArticleId ?? result.sizeRunViolations[0]?.articleId ?? null
+          ? (result.firstFailedSizeRunArticleId ?? result.sizeRunViolations[0]?.articleId ?? null)
           : null
       );
     });
@@ -121,13 +118,10 @@ export function ShopB2bCheckoutCorePage() {
 
   const canConfirm =
     (b2bCart.length > 0 || Boolean(cartSession)) && preflightReady === true && !checkingOut;
-  const total = b2bCart.reduce(
-    (acc: number, item: { price?: number; quantity?: number }) => {
-      const priced = applyToCartItem(item as Parameters<typeof applyToCartItem>[0]);
-      return acc + (priced.price ?? 0) * (priced.quantity ?? 1);
-    },
-    0
-  );
+  const total = b2bCart.reduce((acc: number, item: { price?: number; quantity?: number }) => {
+    const priced = applyToCartItem(item as Parameters<typeof applyToCartItem>[0]);
+    return acc + (priced.price ?? 0) * (priced.quantity ?? 1);
+  }, 0);
 
   const handleConfirm = () => {
     if (!canConfirm || checkingOut) return;
@@ -142,9 +136,9 @@ export function ShopB2bCheckoutCorePage() {
           setPreflightDetail(preflight.messageRu);
           setSizeRunArticleId(
             preflight.sizeRunViolations.length > 0
-              ? preflight.firstFailedSizeRunArticleId ??
+              ? (preflight.firstFailedSizeRunArticleId ??
                   preflight.sizeRunViolations[0]?.articleId ??
-                  null
+                  null)
               : null
           );
           return;
@@ -205,204 +199,233 @@ export function ShopB2bCheckoutCorePage() {
       data-testid={tid.page('shop-b2b-checkout')}
     >
       <PlatformCoreListChrome highlightRole="shop" pillarId="collection_order">
-      <div className="min-w-0" data-testid="shop-co-checkout-panel">
-      {embeddedCoWorkspace ? (
-        <PlatformCoreShopCoGoldenPathStrip
-          collectionId={collectionId}
-          orderId={spineOrderId || undefined}
-          activeStep="checkout"
-          className="mb-3"
-        />
-      ) : (
-        <ShopCoGoldenPathStrip
-          collectionId={collectionId}
-          orderId={spineOrderId || undefined}
-          activeStep="checkout"
-          stripTestId={SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.strip}
-          className="mb-3"
-          legacyLinkTestIds={{
-            matrix: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.matrix,
-            registry: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.registry,
-          }}
-        />
-      )}
-      <ShopCoCheckoutMonetizationPeerStrip collectionId={collectionId} orderId={spineOrderId || undefined} />
-      <section
-        className="mb-3 space-y-2"
-        data-testid="shop-co-checkout-step-partner"
-        aria-label="Партнёр и условия"
-      >
-        <p className="text-text-muted max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
-          1 · Партнёр и условия
-        </p>
-      {isShopGreenfieldBuyer(buyerId) ? (
-        <ShopCoCheckoutGreenfieldReadinessStrip buyerId={buyerId} collectionId={collectionId} />
-      ) : null}
-      <div
-        className="flex min-h-11 flex-wrap items-center gap-2"
-        data-testid="shop-co-checkout-buyer-picker"
-      >
-        <span className="text-text-muted text-xs" data-testid="shop-co-checkout-buyer-label">
-          Партнёр · оформление:
-        </span>
-        <ShopCoreBuyerSwitcher />
-        <span
-          className="border-border-subtle bg-bg-surface2 text-text-muted rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase"
-          data-testid={`shop-co-checkout-cart-tier-${cartTier}`}
-        >
-          {tierLabel} · корзина {cartTier}
-        </span>
-      </div>
-      </section>
-      <section
-        className="mb-6"
-        data-testid="shop-co-checkout-step-cart"
-        aria-label="Состав заказа"
-      >
-        <p className="text-text-muted mb-2 max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
-          2 · Состав заказа
-        </p>
-      <Card
-        data-testid="shop-co-checkout-form"
-        data-audit-legacy="shop-b2b-checkout-form"
-      >
-        <CardContent className="pt-6">
-          {b2bCart.length === 0 ? (
-            <p className="text-text-secondary text-sm">
-              {cartSession ? (
-                <>
-                  Корзина синхронизирована с матрицы (сессия W2). Подтвердите заказ или вернитесь в{' '}
-                  <Link
-                    href={matrixHref}
-                    data-testid="shop-co-checkout-empty-matrix-link"
-                    className="text-accent-primary hover:underline"
-                  >
-                    матрицу
-                  </Link>
-                  .
-                </>
-              ) : (
-                <>
-                  Корзина пуста. Добавьте товары в{' '}
-                  <Link
-                    href={matrixHref}
-                    data-testid="shop-co-checkout-empty-matrix-link"
-                    className="text-accent-primary hover:underline"
-                  >
-                    матрице заказа
-                  </Link>
-                  .
-                </>
-              )}
-            </p>
+        <div className="min-w-0" data-testid="shop-co-checkout-panel">
+          {embeddedCoWorkspace ? (
+            <PlatformCoreShopCoGoldenPathStrip
+              collectionId={collectionId}
+              orderId={spineOrderId || undefined}
+              activeStep="checkout"
+              className="mb-3"
+            />
           ) : (
-            <ul className="space-y-2">
-              {b2bCart.map((item: { id?: string; name?: string; sku?: string; quantity?: number; price?: number }, i: number) => {
-                const priced = applyToCartItem(item as Parameters<typeof applyToCartItem>[0]);
-                return (
-                <li
-                  key={`${item.id ?? item.sku}-${i}`}
-                  className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2"
-                >
-                  <span className="text-text-primary min-w-0 text-sm leading-snug">
-                    {item.name ?? item.sku} × {priced.quantity ?? 1}
-                  </span>
-                  <span className="text-text-primary shrink-0 text-sm font-medium tabular-nums sm:text-right">
-                    {((priced.price ?? 0) * (priced.quantity ?? 1)).toLocaleString('ru-RU')} ₽
-                  </span>
-                </li>
-                );
-              })}
-            </ul>
+            <ShopCoGoldenPathStrip
+              collectionId={collectionId}
+              orderId={spineOrderId || undefined}
+              activeStep="checkout"
+              stripTestId={SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.strip}
+              className="mb-3"
+              legacyLinkTestIds={{
+                matrix: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.matrix,
+                registry: SHOP_CO_GOLDEN_PATH_LEGACY_BY_SURFACE.checkout.registry,
+              }}
+            />
           )}
-          <p className="mt-3 font-semibold">Итого: {total.toLocaleString('ru-RU')} ₽</p>
-          <ShopCoCheckoutPaymentIntentStrip
-            amountRub={total}
-            orderId={spineOrderId || createdOrderId || undefined}
+          <ShopCoCheckoutMonetizationPeerStrip
             collectionId={collectionId}
+            orderId={spineOrderId || undefined}
           />
-          {createdOrderId ? (
-            <ShopCoCheckoutPostPaymentStrip orderId={createdOrderId} collectionId={collectionId} />
+          <section
+            className="mb-3 space-y-2"
+            data-testid="shop-co-checkout-step-partner"
+            aria-label="Партнёр и условия"
+          >
+            <p className="text-text-muted max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
+              1 · Партнёр и условия
+            </p>
+            {isShopGreenfieldBuyer(buyerId) ? (
+              <ShopCoCheckoutGreenfieldReadinessStrip
+                buyerId={buyerId}
+                collectionId={collectionId}
+              />
+            ) : null}
+            <div
+              className="flex min-h-11 flex-wrap items-center gap-2"
+              data-testid="shop-co-checkout-buyer-picker"
+            >
+              <span className="text-text-muted text-xs" data-testid="shop-co-checkout-buyer-label">
+                Партнёр · оформление:
+              </span>
+              <ShopCoreBuyerSwitcher />
+              <span
+                className="border-border-subtle bg-bg-surface2 text-text-muted rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase"
+                data-testid={`shop-co-checkout-cart-tier-${cartTier}`}
+              >
+                {tierLabel} · корзина {cartTier}
+              </span>
+            </div>
+          </section>
+          <section
+            className="mb-6"
+            data-testid="shop-co-checkout-step-cart"
+            aria-label="Состав заказа"
+          >
+            <p className="text-text-muted mb-2 max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
+              2 · Состав заказа
+            </p>
+            <Card data-testid="shop-co-checkout-form" data-audit-legacy="shop-b2b-checkout-form">
+              <CardContent className="pt-6">
+                {b2bCart.length === 0 ? (
+                  <p className="text-text-secondary text-sm">
+                    {cartSession ? (
+                      <>
+                        Корзина синхронизирована с матрицы (сессия W2). Подтвердите заказ или
+                        вернитесь в{' '}
+                        <Link
+                          href={matrixHref}
+                          data-testid="shop-co-checkout-empty-matrix-link"
+                          className="text-accent-primary hover:underline"
+                        >
+                          матрицу
+                        </Link>
+                        .
+                      </>
+                    ) : (
+                      <>
+                        Корзина пуста. Добавьте товары в{' '}
+                        <Link
+                          href={matrixHref}
+                          data-testid="shop-co-checkout-empty-matrix-link"
+                          className="text-accent-primary hover:underline"
+                        >
+                          матрице заказа
+                        </Link>
+                        .
+                      </>
+                    )}
+                  </p>
+                ) : (
+                  <ul className="space-y-2">
+                    {b2bCart.map(
+                      (
+                        item: {
+                          id?: string;
+                          name?: string;
+                          sku?: string;
+                          quantity?: number;
+                          price?: number;
+                        },
+                        i: number
+                      ) => {
+                        const priced = applyToCartItem(
+                          item as Parameters<typeof applyToCartItem>[0]
+                        );
+                        return (
+                          <li
+                            key={`${item.id ?? item.sku}-${i}`}
+                            className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2"
+                          >
+                            <span className="text-text-primary min-w-0 text-sm leading-snug">
+                              {item.name ?? item.sku} × {priced.quantity ?? 1}
+                            </span>
+                            <span className="text-text-primary shrink-0 text-sm font-medium tabular-nums sm:text-right">
+                              {((priced.price ?? 0) * (priced.quantity ?? 1)).toLocaleString(
+                                'ru-RU'
+                              )}{' '}
+                              ₽
+                            </span>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                )}
+                <p className="mt-3 font-semibold">Итого: {total.toLocaleString('ru-RU')} ₽</p>
+                <ShopCoCheckoutPaymentIntentStrip
+                  amountRub={total}
+                  orderId={spineOrderId || createdOrderId || undefined}
+                  collectionId={collectionId}
+                />
+                {createdOrderId ? (
+                  <ShopCoCheckoutPostPaymentStrip
+                    orderId={createdOrderId}
+                    collectionId={collectionId}
+                  />
+                ) : null}
+                <ShopCoCheckoutInventoryReserveBadge
+                  collectionId={collectionId}
+                  buyerId={buyerId}
+                />
+              </CardContent>
+            </Card>
+          </section>
+          {sizeRunArticleId && preflightDetail ? (
+            <div
+              className="rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-sm text-amber-900"
+              role="status"
+              data-testid="shop-co-checkout-size-run-hint"
+            >
+              <p>{preflightDetail}</p>
+              <Link
+                href={shopB2bMatrixArticleHref(collectionId, sizeRunArticleId)}
+                data-testid="shop-co-checkout-size-run-matrix-link"
+                className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
+              >
+                {SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU}: {sizeRunArticleId}
+              </Link>
+            </div>
+          ) : preflightDetail && !checkoutMsg ? (
+            <p
+              className="text-sm text-amber-900"
+              role="status"
+              data-testid="shop-co-checkout-preflight-block"
+            >
+              {preflightDetail}
+            </p>
           ) : null}
-          <ShopCoCheckoutInventoryReserveBadge collectionId={collectionId} buyerId={buyerId} />
-        </CardContent>
-      </Card>
-      </section>
-      {sizeRunArticleId && preflightDetail ? (
-        <div
-          className="rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-sm text-amber-900"
-          role="status"
-          data-testid="shop-co-checkout-size-run-hint"
-        >
-          <p>{preflightDetail}</p>
-          <Link
-            href={shopB2bMatrixArticleHref(collectionId, sizeRunArticleId)}
-            data-testid="shop-co-checkout-size-run-matrix-link"
-            className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
+          {draftAutosaveFail ? (
+            <div
+              className="rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-sm text-amber-900"
+              role="alert"
+              data-testid={SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_TESTID}
+            >
+              <p>{SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU}</p>
+              <Link
+                href={shopMatrixDraftAutosaveFailMatrixHref(
+                  collectionId,
+                  sizeRunArticleId ?? undefined
+                )}
+                data-testid={SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_TESTID}
+                className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
+              >
+                {SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_RU}
+              </Link>
+            </div>
+          ) : null}
+          {checkoutMsg ? (
+            <p
+              className="text-text-secondary text-sm"
+              role="status"
+              data-testid="shop-co-checkout-message"
+            >
+              {checkoutMsg}
+            </p>
+          ) : null}
+          <section
+            className={cn('mt-6', hubCabinet.workspaceStickyActions)}
+            data-testid="shop-co-checkout-step-confirm"
+            aria-label="Подтверждение"
           >
-            {SHOP_MATRIX_SIZE_RUN_FIX_MATRIX_LINK_RU}: {sizeRunArticleId}
-          </Link>
+            <p className="text-text-muted mb-2 w-full max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
+              3 · Подтверждение
+            </p>
+            <div data-testid="shop-co-checkout-actions" className="contents">
+              <Button
+                disabled={!canConfirm || checkingOut}
+                onClick={handleConfirm}
+                data-testid="shop-co-checkout-confirm"
+                data-audit-legacy="shop-b2b-checkout-confirm"
+                className={hubCabinet.workspacePrimaryBtn}
+              >
+                {checkingOut ? 'Оформление…' : 'Подтвердить заказ'}
+              </Button>
+              <Button variant="outline" asChild className={hubCabinet.workspacePrimaryBtn}>
+                <Link href={matrixHref} data-testid="shop-co-checkout-back-matrix-link">
+                  В матрицу
+                </Link>
+              </Button>
+            </div>
+          </section>
         </div>
-      ) : preflightDetail && !checkoutMsg ? (
-        <p
-          className="text-sm text-amber-900"
-          role="status"
-          data-testid="shop-co-checkout-preflight-block"
-        >
-          {preflightDetail}
-        </p>
-      ) : null}
-      {draftAutosaveFail ? (
-        <div
-          className="rounded-lg border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-sm text-amber-900"
-          role="alert"
-          data-testid={SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_CHECKOUT_TESTID}
-        >
-          <p>{SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_HINT_RU}</p>
-          <Link
-            href={shopMatrixDraftAutosaveFailMatrixHref(collectionId, sizeRunArticleId ?? undefined)}
-            data-testid={SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_TESTID}
-            className="text-accent-primary mt-1 inline-block font-semibold hover:underline"
-          >
-            {SHOP_MATRIX_DRAFT_AUTOSAVE_FAIL_MATRIX_LINK_RU}
-          </Link>
-        </div>
-      ) : null}
-      {checkoutMsg ? (
-        <p
-          className="text-text-secondary text-sm"
-          role="status"
-          data-testid="shop-co-checkout-message"
-        >
-          {checkoutMsg}
-        </p>
-      ) : null}
-      <section
-        className={cn('mt-6', hubCabinet.workspaceStickyActions)}
-        data-testid="shop-co-checkout-step-confirm"
-        aria-label="Подтверждение"
-      >
-        <p className="text-text-muted mb-2 w-full max-md:text-[10px] max-md:font-bold max-md:uppercase max-md:tracking-widest md:hidden">
-          3 · Подтверждение
-        </p>
-      <div data-testid="shop-co-checkout-actions" className="contents">
-        <Button
-          disabled={!canConfirm || checkingOut}
-          onClick={handleConfirm}
-          data-testid="shop-co-checkout-confirm"
-          data-audit-legacy="shop-b2b-checkout-confirm"
-          className={hubCabinet.workspacePrimaryBtn}
-        >
-          {checkingOut ? 'Оформление…' : 'Подтвердить заказ'}
-        </Button>
-        <Button variant="outline" asChild className={hubCabinet.workspacePrimaryBtn}>
-          <Link href={matrixHref} data-testid="shop-co-checkout-back-matrix-link">
-            В матрицу
-          </Link>
-        </Button>
-      </div>
-      </section>
-      </div>
       </PlatformCoreListChrome>
     </CabinetPageContent>
   );

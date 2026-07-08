@@ -93,7 +93,10 @@ function severityFromIssue(
   return 'high';
 }
 
-function ownerFromSource(source: PlatformCoreExceptionGatewaySource, issueId: string): CoreChainRoleId {
+function ownerFromSource(
+  source: PlatformCoreExceptionGatewaySource,
+  issueId: string
+): CoreChainRoleId {
   if (source === 'shipment_gateway' && /dpp|document/.test(issueId)) return 'brand';
   if (source === 'shipment_gateway' && /qc/.test(issueId)) return 'manufacturer';
   if (source === 'capacity_gateway') return 'manufacturer';
@@ -101,9 +104,12 @@ function ownerFromSource(source: PlatformCoreExceptionGatewaySource, issueId: st
 }
 
 function recoveryAction(source: PlatformCoreExceptionGatewaySource): string {
-  if (source === 'capacity_gateway') return 'Уточнить линию, доступные минуты и дату старта производства.';
-  if (source === 'shipment_gateway') return 'Закрыть shipment blockers: QC, документы, DPP, ASN или ETA.';
-  if (source === 'comms_gateway') return 'Зафиксировать решение в entity-chat и поставить срок в календаре.';
+  if (source === 'capacity_gateway')
+    return 'Уточнить линию, доступные минуты и дату старта производства.';
+  if (source === 'shipment_gateway')
+    return 'Закрыть shipment blockers: QC, документы, DPP, ASN или ETA.';
+  if (source === 'comms_gateway')
+    return 'Зафиксировать решение в entity-chat и поставить срок в календаре.';
   return 'Закрыть blocker и назначить owner.';
 }
 
@@ -123,7 +129,9 @@ function blockersFromIssues(input: {
     }));
 }
 
-function topBlocker(blockers: PlatformCoreExceptionBlocker[]): PlatformCoreExceptionBlocker | undefined {
+function topBlocker(
+  blockers: PlatformCoreExceptionBlocker[]
+): PlatformCoreExceptionBlocker | undefined {
   return [...blockers].sort((a, b) => SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity])[0];
 }
 
@@ -242,9 +250,15 @@ export async function getPlatformCoreExceptionForOrder(input: {
   }
 
   const blockers: PlatformCoreExceptionBlocker[] = [
-    ...(capacity.ok ? blockersFromIssues({ source: 'capacity_gateway', issues: capacity.evaluation.issues }) : []),
-    ...(shipment.ok ? blockersFromIssues({ source: 'shipment_gateway', issues: shipment.evaluation.issues }) : []),
-    ...(comms.ok ? blockersFromIssues({ source: 'comms_gateway', issues: comms.evaluation.issues }) : []),
+    ...(capacity.ok
+      ? blockersFromIssues({ source: 'capacity_gateway', issues: capacity.evaluation.issues })
+      : []),
+    ...(shipment.ok
+      ? blockersFromIssues({ source: 'shipment_gateway', issues: shipment.evaluation.issues })
+      : []),
+    ...(comms.ok
+      ? blockersFromIssues({ source: 'comms_gateway', issues: comms.evaluation.issues })
+      : []),
   ];
 
   const defaultDueAt = comms.ok ? comms.calendar.nextDeadlineAt : undefined;

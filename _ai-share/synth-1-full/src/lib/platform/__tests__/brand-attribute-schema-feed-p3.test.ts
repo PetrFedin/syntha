@@ -33,10 +33,7 @@ describe('brand-attribute-schema-feed', () => {
     const merged = mergeBrandSizeChartGradeFeedRows(
       catalog,
       new Map([
-        [
-          catalog[0]!.sku,
-          { ...catalog[0]!, gradeState: 'ready' as const, source: 'pg' as const },
-        ],
+        [catalog[0]!.sku, { ...catalog[0]!, gradeState: 'ready' as const, source: 'pg' as const }],
       ])
     );
     expect(merged[0]?.gradeState).toBe('ready');
@@ -85,7 +82,16 @@ describe('brand-supplier-bom-feed', () => {
 
   it('prefers snapshot lines in merge helper', () => {
     const snapshot = mergeBrandSupplierBomFeedRows(
-      [{ lineId: 's1', materialName: 'Fabric', qty: 2, unit: 'm', filled: true, source: 'snapshot' }],
+      [
+        {
+          lineId: 's1',
+          materialName: 'Fabric',
+          qty: 2,
+          unit: 'm',
+          filled: true,
+          source: 'snapshot',
+        },
+      ],
       []
     );
     expect(snapshot[0]?.materialName).toBe('Fabric');

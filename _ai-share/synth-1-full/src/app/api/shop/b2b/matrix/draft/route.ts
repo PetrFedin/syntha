@@ -114,7 +114,10 @@ export async function PUT(req: NextRequest) {
 
   return NextResponse.json({
     ok: result.ok,
-    storageMode: result.storageMode === 'pg_only_blocked' ? shopB2bMatrixDraftStorageMode() : result.storageMode,
+    storageMode:
+      result.storageMode === 'pg_only_blocked'
+        ? shopB2bMatrixDraftStorageMode()
+        : result.storageMode,
     validationOk,
     validationHintsRu,
     sizeRunOk: sizeRunValidated.ok,

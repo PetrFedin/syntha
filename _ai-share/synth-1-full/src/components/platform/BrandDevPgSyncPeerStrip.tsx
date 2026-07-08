@@ -29,7 +29,9 @@ export function BrandDevPgSyncPeerStrip({ collectionId, articleId, showLiveBadge
     showLiveBadge && Boolean(collectionId),
     [collectionId]
   );
-  const rangeHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`);
+  const rangeHref = platformCoreUiHref(
+    `${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`
+  );
   const w2ArticleHref = brandDevelopmentArticleHref(collectionId, articleId);
 
   return (
@@ -48,7 +50,11 @@ export function BrandDevPgSyncPeerStrip({ collectionId, articleId, showLiveBadge
           sseLegacyTestId="brand-dev-pg-sync-sse-live-badge"
         />
       ) : null}
-      <Link href={rangeHref} data-testid="brand-dev-pg-sync-range-link" className={hubGadget.goldenLink}>
+      <Link
+        href={rangeHref}
+        data-testid="brand-dev-pg-sync-range-link"
+        className={hubGadget.goldenLink}
+      >
         План
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -94,7 +100,11 @@ export function BrandDevPgSyncPeerStrip({ collectionId, articleId, showLiveBadge
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={w2ArticleHref} data-testid="brand-dev-pg-sync-w2-article-link" className={hubGadget.goldenLink}>
+      <Link
+        href={w2ArticleHref}
+        data-testid="brand-dev-pg-sync-w2-article-link"
+        className={hubGadget.goldenLink}
+      >
         Артикул W2
       </Link>
     </div>

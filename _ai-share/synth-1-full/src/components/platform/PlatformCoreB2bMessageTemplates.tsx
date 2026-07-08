@@ -89,9 +89,7 @@ function PlatformCoreB2bMessageTemplatesInner({ onInsert, draftText = '' }: Prop
   const handleSaveDraft = useCallback(async () => {
     const body = draftText.trim();
     if (!body || !context) return;
-    const label =
-      window.prompt('Название шаблона', body.slice(0, 32))?.trim() ||
-      body.slice(0, 32);
+    const label = window.prompt('Название шаблона', body.slice(0, 32))?.trim() || body.slice(0, 32);
     if (!label) return;
     if (coreMode) {
       const savedRemote = await savePlatformCoreB2bMessageTemplateRemote({
@@ -125,8 +123,7 @@ function PlatformCoreB2bMessageTemplatesInner({ onInsert, draftText = '' }: Prop
 
   if (builtIn.length === 0 && saved.length === 0) return null;
 
-  const templatesPg =
-    templatesStorageMode === 'postgres' || templatesStorageMode === 'pg';
+  const templatesPg = templatesStorageMode === 'postgres' || templatesStorageMode === 'pg';
 
   return (
     <div

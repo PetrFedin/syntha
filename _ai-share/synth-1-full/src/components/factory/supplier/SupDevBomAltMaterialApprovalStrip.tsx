@@ -77,14 +77,18 @@ export function SupDevBomAltMaterialApprovalStrip({
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="sup-dev-bom-alt-material-approval-strip"
     >
       <Badge variant="outline" className="text-[9px] uppercase">
         {WAVE_XW_SUP_BOM_ALT_STRIP_LABEL_RU}
       </Badge>
       {storageMode === 'postgres' ? (
-        <Badge variant="secondary" className="text-[9px]" data-testid="sup-dev-bom-alt-material-storage-pg">
+        <Badge
+          variant="secondary"
+          className="text-[9px]"
+          data-testid="sup-dev-bom-alt-material-storage-pg"
+        >
           PG
         </Badge>
       ) : null}
@@ -107,7 +111,11 @@ export function SupDevBomAltMaterialApprovalStrip({
             </Badge>
           ) : null}
           {summary.rejected > 0 ? (
-            <Badge variant="outline" className="text-rose-700" data-testid="sup-dev-bom-alt-material-rejected">
+            <Badge
+              variant="outline"
+              className="text-rose-700"
+              data-testid="sup-dev-bom-alt-material-rejected"
+            >
               {summary.rejected} {formatSupplierAltMaterialApprovalStatusRu('rejected')}
             </Badge>
           ) : null}

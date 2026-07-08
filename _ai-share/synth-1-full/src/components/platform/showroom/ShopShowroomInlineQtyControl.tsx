@@ -82,7 +82,8 @@ export function ShopShowroomInlineQtyControl({
     setQtyRaw(String(cartQty > 0 ? cartQty : minQty));
   }, [cartQty, minQty]);
 
-  const resolvedQty = parseShopShowroomInlineQty(qtyRaw, minQty) ?? (cartQty > 0 ? cartQty : minQty);
+  const resolvedQty =
+    parseShopShowroomInlineQty(qtyRaw, minQty) ?? (cartQty > 0 ? cartQty : minQty);
   const matrixHref = buildMatrixHref(resolvedQty, selectedSize);
 
   const applyQty = async () => {
@@ -110,7 +111,7 @@ export function ShopShowroomInlineQtyControl({
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-3"
+      className="border-border-subtle flex flex-wrap items-center gap-2 border-t pt-3"
       data-testid={`shop-sc-showroom-inline-qty-${article.articleId}`}
     >
       <span className="text-text-muted text-[10px] font-semibold uppercase">Size</span>

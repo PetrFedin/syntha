@@ -51,7 +51,10 @@ export function evaluateWorkshop2ReferencesSampleGate(
         'Справочники на static — PG недоступен, заказ образца заблокирован.',
     };
   }
-  if (workshop2PgMirrorNum(mirror, 'staticDirectoryCount') > 0 && mirror.postgresDirectoryCount === 0) {
+  if (
+    workshop2PgMirrorNum(mirror, 'staticDirectoryCount') > 0 &&
+    mirror.postgresDirectoryCount === 0
+  ) {
     return {
       id: 'references.static_only',
       severity: 'warning',
@@ -91,7 +94,10 @@ export function evaluateWorkshop2ReferencesHandoffGate(
         'Справочники на static seeds — PG недоступен, handoff commit заблокирован.',
     };
   }
-  if (workshop2PgMirrorNum(mirror, 'staticDirectoryCount') > 0 && mirror.postgresDirectoryCount === 0) {
+  if (
+    workshop2PgMirrorNum(mirror, 'staticDirectoryCount') > 0 &&
+    mirror.postgresDirectoryCount === 0
+  ) {
     return {
       id: 'references.static_only',
       severity: 'warning',

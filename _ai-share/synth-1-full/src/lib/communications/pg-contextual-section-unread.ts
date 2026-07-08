@@ -27,9 +27,7 @@ export function findPgB2bOrderThread(
   orderId: string
 ): BrandPgThreadRow | null {
   const contextId = workshop2B2bOrderContextId(orderId.trim());
-  return (
-    threads.find((t) => t.contextType === 'b2b_order' && t.contextId === contextId) ?? null
-  );
+  return threads.find((t) => t.contextType === 'b2b_order' && t.contextId === contextId) ?? null;
 }
 
 /** Unread count for a section-group chip (order chat = full; others = section-tagged preview). */

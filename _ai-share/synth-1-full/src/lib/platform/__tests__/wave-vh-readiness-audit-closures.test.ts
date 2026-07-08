@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getReadinessCell, getPlatformCoreReadinessMatrix } from '@/lib/platform-core-readiness-audit';
+import {
+  getReadinessCell,
+  getPlatformCoreReadinessMatrix,
+} from '@/lib/platform-core-readiness-audit';
 
 const SRC = path.join(__dirname, '..', '..', '..');
 
@@ -100,30 +103,34 @@ describe('wave VH — readiness audit closures', () => {
     expect(WAVE_VH_READINESS_AUDIT_CLOSURES.length).toBeLessThanOrEqual(12);
   });
 
-  it.each(
-    WAVE_VH_READINESS_AUDIT_CLOSURES.filter((c) => 'cell' in c && c.cell)
-  )('$id — cell bad/fix cleared', (closure) => {
-    const cell = getReadinessCell(cells, closure.cell!.role, closure.cell!.pillar);
-    expect(cell?.bad ?? []).toEqual([]);
-    expect(cell?.fix ?? []).toEqual([]);
-    expect(cell?.good.some((g) => g.includes('wave VH') || g.includes('Wave VH') || g.includes('Wave VG'))).toBe(
-      true
-    );
-  });
+  it.each(WAVE_VH_READINESS_AUDIT_CLOSURES.filter((c) => 'cell' in c && c.cell))(
+    '$id — cell bad/fix cleared',
+    (closure) => {
+      const cell = getReadinessCell(cells, closure.cell!.role, closure.cell!.pillar);
+      expect(cell?.bad ?? []).toEqual([]);
+      expect(cell?.fix ?? []).toEqual([]);
+      expect(
+        cell?.good.some(
+          (g) => g.includes('wave VH') || g.includes('Wave VH') || g.includes('Wave VG')
+        )
+      ).toBe(true);
+    }
+  );
 
-  it.each(
-    WAVE_VH_READINESS_AUDIT_CLOSURES.filter((c) => 'sectionId' in c && c.sectionId)
-  )('$id — section bad/fix cleared', (closure) => {
-    const sectionClosure = closure as (typeof WAVE_VH_READINESS_AUDIT_CLOSURES)[number] & {
-      sectionId: string;
-    };
-    const hit = cells
-      .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
-      .find((s) => s.id === sectionClosure.sectionId);
-    expect(hit).toBeDefined();
-    expect(hit?.bad ?? []).toEqual([]);
-    expect(hit?.fix ?? []).toEqual([]);
-  });
+  it.each(WAVE_VH_READINESS_AUDIT_CLOSURES.filter((c) => 'sectionId' in c && c.sectionId))(
+    '$id — section bad/fix cleared',
+    (closure) => {
+      const sectionClosure = closure as (typeof WAVE_VH_READINESS_AUDIT_CLOSURES)[number] & {
+        sectionId: string;
+      };
+      const hit = cells
+        .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
+        .find((s) => s.id === sectionClosure.sectionId);
+      expect(hit).toBeDefined();
+      expect(hit?.bad ?? []).toEqual([]);
+      expect(hit?.fix ?? []).toEqual([]);
+    }
+  );
 
   it.each(WAVE_VH_READINESS_AUDIT_CLOSURES)('$id — closure testids wired in source', (closure) => {
     for (const tid of closure.testids) {

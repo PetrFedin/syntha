@@ -276,9 +276,9 @@ describe('workshop2-range-planner-overlay', () => {
     expect(
       getRangePlannerOverlayForCollection('FW27', { authoritativeOnly: true })
     ).toBeUndefined();
-    expect(isRangePlannerOverlayAuthoritative(getRangePlannerOverlayForCollection('SS27'), 'SS27')).toBe(
-      true
-    );
+    expect(
+      isRangePlannerOverlayAuthoritative(getRangePlannerOverlayForCollection('SS27'), 'SS27')
+    ).toBe(true);
   });
 
   it('detectRangePlannerOverlayConflict compares tier sku counts', () => {

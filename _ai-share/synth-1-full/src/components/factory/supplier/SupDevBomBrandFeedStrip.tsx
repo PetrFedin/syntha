@@ -59,7 +59,7 @@ export function SupDevBomBrandFeedStrip({ collectionId, articleId }: Props) {
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="sup-dev-bom-brand-feed-strip"
     >
       <Badge variant="outline" className="text-[9px] uppercase">
@@ -73,7 +73,11 @@ export function SupDevBomBrandFeedStrip({ collectionId, articleId }: Props) {
             {lineCount} lines
           </Badge>
           {storageMode ? (
-            <Badge variant="outline" className="text-[9px]" data-testid="sup-dev-bom-brand-feed-source">
+            <Badge
+              variant="outline"
+              className="text-[9px]"
+              data-testid="sup-dev-bom-brand-feed-source"
+            >
               {storageMode}
             </Badge>
           ) : null}

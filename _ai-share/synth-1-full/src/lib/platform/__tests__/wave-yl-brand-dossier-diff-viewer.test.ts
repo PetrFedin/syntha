@@ -57,10 +57,7 @@ export const WAVE_YL_BRAND_DOSSIER_DIFF_FIXES = [
   {
     id: 'brand-op-omit-attach-tz-dedup',
     file: 'components/platform/BrandDossierFactoryDiffPanel.tsx',
-    mustContain: [
-      'brand-dossier-factory-diff-peer-strip',
-      'omitAttachTzCrossStrip',
-    ],
+    mustContain: ['brand-dossier-factory-diff-peer-strip', 'omitAttachTzCrossStrip'],
     mustNotContain: [],
   },
   {

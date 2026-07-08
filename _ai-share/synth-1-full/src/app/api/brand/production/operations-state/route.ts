@@ -7,7 +7,11 @@ import {
   getBrandProductionOpsStateServer,
   putBrandProductionOpsStateServer,
 } from '@/lib/server/brand-production-ops-repository';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 /** GET — brand production ops state (Wave S PG). */
 export async function GET(req: NextRequest) {

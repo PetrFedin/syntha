@@ -141,7 +141,10 @@ export function CalendarHeader({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className={cn('min-w-[140px] font-bold', slimCore && 'max-md:min-h-11 max-md:text-xs')}
+                  className={cn(
+                    'min-w-[140px] font-bold',
+                    slimCore && 'max-md:min-h-11 max-md:text-xs'
+                  )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {format(currentDate, slimCore ? 'LLL yyyy' : 'LLLL yyyy', { locale: ru })}
@@ -250,81 +253,85 @@ export function CalendarHeader({
       </div>
 
       {!slimCore ? (
-      <div className="bg-bg-surface2 border-border-subtle flex flex-wrap items-center justify-between gap-2 rounded-xl border p-2">
-        <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-          {user?.roles && user.roles.length > 1 && (
-            <Select value={currentRole} onValueChange={(v: any) => setCurrentRole(v)}>
-              <SelectTrigger className="h-8 w-[140px] bg-white text-xs">
-                <SelectValue placeholder="Роль" />
-              </SelectTrigger>
-              <SelectContent>
-                {user.roles.map((role: string) => (
-                  <SelectItem key={role} value={role} className="text-xs font-bold uppercase">
-                    {role}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-
-          <div className="bg-border-subtle mx-1 h-6 w-px" />
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              'h-8 gap-1.5 text-xs',
-              mysteryEnabled ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-secondary'
+        <div className="bg-bg-surface2 border-border-subtle flex flex-wrap items-center justify-between gap-2 rounded-xl border p-2">
+          <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+            {user?.roles && user.roles.length > 1 && (
+              <Select value={currentRole} onValueChange={(v: any) => setCurrentRole(v)}>
+                <SelectTrigger className="h-8 w-[140px] bg-white text-xs">
+                  <SelectValue placeholder="Роль" />
+                </SelectTrigger>
+                <SelectContent>
+                  {user.roles.map((role: string) => (
+                    <SelectItem key={role} value={role} className="text-xs font-bold uppercase">
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
-            onClick={() => setMysteryEnabled(!mysteryEnabled)}
-          >
-            {mysteryEnabled ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-            Mystery Mode
-          </Button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              'h-8 gap-1.5 text-xs',
-              aiAutomationEnabled ? 'bg-emerald-100 text-emerald-700' : 'text-text-secondary'
-            )}
-            onClick={() => setAiAutomationEnabled(!aiAutomationEnabled)}
-          >
-            {aiAutomationEnabled ? (
-              <Zap className="h-3.5 w-3.5" />
-            ) : (
-              <ZapOff className="h-3.5 w-3.5" />
-            )}
-            AI Auto
-          </Button>
+            <div className="bg-border-subtle mx-1 h-6 w-px" />
 
-          {currentRole === 'brand' && (
             <Button
               variant="ghost"
               size="sm"
               className={cn(
                 'h-8 gap-1.5 text-xs',
-                isInvestorMode ? 'bg-amber-100 text-amber-700' : 'text-text-secondary'
+                mysteryEnabled ? 'bg-accent-primary/15 text-accent-primary' : 'text-text-secondary'
               )}
-              onClick={() => setIsInvestorMode(!isInvestorMode)}
+              onClick={() => setMysteryEnabled(!mysteryEnabled)}
             >
-              {isInvestorMode ? (
-                <ShieldCheck className="h-3.5 w-3.5" />
+              {mysteryEnabled ? (
+                <Eye className="h-3.5 w-3.5" />
               ) : (
-                <ShieldAlert className="h-3.5 w-3.5" />
+                <EyeOff className="h-3.5 w-3.5" />
               )}
-              Investor View
+              Mystery Mode
             </Button>
-          )}
-        </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <Settings className="text-text-muted h-4 w-4" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'h-8 gap-1.5 text-xs',
+                aiAutomationEnabled ? 'bg-emerald-100 text-emerald-700' : 'text-text-secondary'
+              )}
+              onClick={() => setAiAutomationEnabled(!aiAutomationEnabled)}
+            >
+              {aiAutomationEnabled ? (
+                <Zap className="h-3.5 w-3.5" />
+              ) : (
+                <ZapOff className="h-3.5 w-3.5" />
+              )}
+              AI Auto
+            </Button>
+
+            {currentRole === 'brand' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'h-8 gap-1.5 text-xs',
+                  isInvestorMode ? 'bg-amber-100 text-amber-700' : 'text-text-secondary'
+                )}
+                onClick={() => setIsInvestorMode(!isInvestorMode)}
+              >
+                {isInvestorMode ? (
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                ) : (
+                  <ShieldAlert className="h-3.5 w-3.5" />
+                )}
+                Investor View
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Settings className="text-text-muted h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </div>
       ) : null}
     </div>
   );

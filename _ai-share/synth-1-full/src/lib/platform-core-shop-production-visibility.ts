@@ -72,9 +72,7 @@ export function parseShopProductionVisibilityFromMetadata(
   return raw && isShopProductionVisibility(raw) ? raw : undefined;
 }
 
-function resolveVisibility(
-  override?: ShopProductionVisibility
-): ShopProductionVisibility {
+function resolveVisibility(override?: ShopProductionVisibility): ShopProductionVisibility {
   const raw =
     override ??
     (typeof process !== 'undefined'

@@ -47,10 +47,7 @@ export async function patchWorkshop2CollectionRangePlannerTier(input: {
   if (!tier) {
     return { ok: false, error: 'invalid_tier', messageRu: 'Уровень: core, trend или novelty.' };
   }
-  if (
-    input.budget == null &&
-    input.targetMargin == null
-  ) {
+  if (input.budget == null && input.targetMargin == null) {
     return { ok: false, error: 'empty_patch', messageRu: 'Укажите бюджет или маржу.' };
   }
   if (!isWorkshop2PostgresEnabled()) {
@@ -91,7 +88,11 @@ export async function patchWorkshop2CollectionRangePlannerTier(input: {
     row.budget = Math.round(input.budget);
   }
   if (typeof input.targetMargin === 'number') {
-    if (!Number.isFinite(input.targetMargin) || input.targetMargin <= 0 || input.targetMargin > 100) {
+    if (
+      !Number.isFinite(input.targetMargin) ||
+      input.targetMargin <= 0 ||
+      input.targetMargin > 100
+    ) {
       return {
         ok: false,
         error: 'invalid_margin',
@@ -186,8 +187,7 @@ export async function bulkAssignWorkshop2ArticleRangePlannerTier(input: {
   articleIds: string[];
   tier: string;
 }): Promise<
-  | { ok: true; assigned: number; failed: number }
-  | { ok: false; error: string; messageRu?: string }
+  { ok: true; assigned: number; failed: number } | { ok: false; error: string; messageRu?: string }
 > {
   const collectionId = input.collectionId.trim();
   const tier = input.tier.trim();

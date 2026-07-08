@@ -33,7 +33,7 @@ export function PlatformCorePublishedCountSyncBadge({
       variant="outline"
       className={
         inSync
-          ? 'border-border-subtle bg-bg-surface2 text-[9px] text-text-secondary'
+          ? 'border-border-subtle bg-bg-surface2 text-text-secondary text-[9px]'
           : 'border-amber-200 bg-amber-50 text-[9px] text-amber-950'
       }
       data-testid={testId}

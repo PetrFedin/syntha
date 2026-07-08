@@ -25,7 +25,8 @@ export function Workshop2TechPackConstructionNotesPanel({
   const togglePreset = (presetId: string) => {
     if (readOnly || !setDossier) return;
     setDossier((prev) => {
-      const base = prev.techPackConstructionNotePresetIds ?? resolved.filter((r) => r.active).map((r) => r.id);
+      const base =
+        prev.techPackConstructionNotePresetIds ?? resolved.filter((r) => r.active).map((r) => r.id);
       const cur = new Set(base);
       if (cur.has(presetId)) cur.delete(presetId);
       else cur.add(presetId);
@@ -65,11 +66,13 @@ export function Workshop2TechPackConstructionNotesPanel({
           })}
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
-          {resolved.filter((n) => n.active).map((n) => (
-            <Badge key={n.id} variant="secondary" className="text-[10px]">
-              {n.labelRu}
-            </Badge>
-          ))}
+          {resolved
+            .filter((n) => n.active)
+            .map((n) => (
+              <Badge key={n.id} variant="secondary" className="text-[10px]">
+                {n.labelRu}
+              </Badge>
+            ))}
         </div>
       </CardContent>
     </Card>

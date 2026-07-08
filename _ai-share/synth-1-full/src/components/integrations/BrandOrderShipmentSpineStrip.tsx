@@ -27,7 +27,9 @@ export function BrandOrderShipmentSpineStrip({ orderId, sourcePlatform }: Props)
 
   const platform =
     resolveWholesaleOrderSourcePlatform(orderId) ??
-    (sourcePlatform?.trim().toLowerCase() as ReturnType<typeof resolveWholesaleOrderSourcePlatform>);
+    (sourcePlatform?.trim().toLowerCase() as ReturnType<
+      typeof resolveWholesaleOrderSourcePlatform
+    >);
   const apiBase = wholesaleTrackingApiBase(orderId, sourcePlatform);
 
   if (!platform || !apiBase || (platform !== 'joor' && platform !== 'nuorder')) return null;
@@ -147,7 +149,7 @@ export function BrandOrderShipmentSpineStrip({ orderId, sourcePlatform }: Props)
           Загрузить из канала
         </Button>
       </div>
-      {msg ? <p className="text-muted-foreground text-[10px]">{msg}</p> : null}
+      {msg ? <p className="text-[10px] text-muted-foreground">{msg}</p> : null}
     </div>
   );
 }

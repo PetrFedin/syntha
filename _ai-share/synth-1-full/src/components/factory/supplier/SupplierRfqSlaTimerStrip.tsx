@@ -91,13 +91,15 @@ export function SupplierRfqSlaTimerStrip({
   const rfqHref = factorySupplierRfqInboxHref({ collectionId, articleId });
   const testIdSuffix = timer.overdue ? 'overdue' : timer.warnWindow ? 'warn' : 'ok';
   const stripTestId =
-    context === 'thread' ? SUP_DEV_RFQ_SLA_TIMER_THREAD_STRIP_TESTID : 'sup-dev-rfq-sla-timer-strip';
+    context === 'thread'
+      ? SUP_DEV_RFQ_SLA_TIMER_THREAD_STRIP_TESTID
+      : 'sup-dev-rfq-sla-timer-strip';
 
   if (variant === 'inline') {
     return (
       <Badge
         variant={timer.overdue ? 'destructive' : timer.warnWindow ? 'secondary' : 'outline'}
-        className="text-[9px] font-mono tabular-nums"
+        className="font-mono text-[9px] tabular-nums"
         data-testid={
           context === 'thread'
             ? `${SUP_DEV_RFQ_SLA_TIMER_THREAD_BADGE_TESTID}-${testIdSuffix}`
@@ -112,7 +114,7 @@ export function SupplierRfqSlaTimerStrip({
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid={stripTestId}
     >
       <Badge

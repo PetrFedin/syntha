@@ -28,7 +28,7 @@ export function CommsCabinetNav({ tabs, className }: Props) {
       data-testid="comms-cabinet-nav"
       aria-label="Связь · навигация"
       className={cn(
-        'border-border-subtle hidden gap-1 rounded-xl border bg-bg-surface p-1 md:flex',
+        'border-border-subtle bg-bg-surface hidden gap-1 rounded-xl border p-1 md:flex',
         className
       )}
     >
@@ -55,19 +55,12 @@ export function CommsCabinetNav({ tabs, className }: Props) {
 }
 
 /** Sticky bottom bar — только iPhone. */
-export function CommsCabinetBottomBar({
-  tabs,
-  className,
-}: Props) {
+export function CommsCabinetBottomBar({ tabs, className }: Props) {
   return (
     <nav
       data-testid="comms-cabinet-bottom-bar"
       aria-label="Связь · быстрый вход"
-      className={cn(
-        hubCabinet.commsBottomBar,
-        'flex md:hidden',
-        className
-      )}
+      className={cn(hubCabinet.commsBottomBar, 'flex md:hidden', className)}
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;

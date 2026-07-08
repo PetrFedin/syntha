@@ -125,9 +125,11 @@ export function CollectionStageModuleHubCard({
 
   const refresh = useCallback(async () => {
     setModulesLoading(true);
-    const { doc: d, persistMode, pgUnavailable } = await loadCollectionStageModulesWithMode(
-      collectionFlowKey
-    );
+    const {
+      doc: d,
+      persistMode,
+      pgUnavailable,
+    } = await loadCollectionStageModulesWithMode(collectionFlowKey);
     setModulesStoragePg(persistMode === 'postgres' && !pgUnavailable);
     setModulesPgUnavailable(persistMode === 'postgres' && pgUnavailable);
     applyDocToDraft(d);

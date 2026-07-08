@@ -49,11 +49,7 @@ export async function POST(req: NextRequest) {
   }
 
   const orderId = String(body.orderId ?? '').trim();
-  const result = String(body.result ?? 'fail').trim() as
-    | 'pass'
-    | 'fail'
-    | 'rework'
-    | 'pending';
+  const result = String(body.result ?? 'fail').trim() as 'pass' | 'fail' | 'rework' | 'pending';
   if (!orderId) {
     return NextResponse.json({ ok: false, messageRu: 'Укажите orderId.' }, { status: 400 });
   }

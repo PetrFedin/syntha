@@ -25,9 +25,7 @@ type Props = {
 };
 
 export function BrandCoOtbReplenishmentSyncStrip({ collectionId, orderId: _orderId }: Props) {
-  const [rows, setRows] = useState<
-    Awaited<ReturnType<typeof fetchBrandCoOtbPlanSync>>['rows']
-  >([]);
+  const [rows, setRows] = useState<Awaited<ReturnType<typeof fetchBrandCoOtbPlanSync>>['rows']>([]);
   const [summary, setSummary] = useState({ buyers: 0, aligned: 0, review: 0, pending: 0 });
   const [otbStorageMode, setOtbStorageMode] = useState('demo');
   const [rulesStorageMode, setRulesStorageMode] = useState('demo');
@@ -44,7 +42,10 @@ export function BrandCoOtbReplenishmentSyncStrip({ collectionId, orderId: _order
   }, [collectionId]);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={BRAND_CO_OTB_REPLENISHMENT_SYNC_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={BRAND_CO_OTB_REPLENISHMENT_SYNC_STRIP_TESTID}
+    >
       <Badge variant="outline" data-testid={BRAND_CO_OTB_REPLENISHMENT_SYNC_SUMMARY_BADGE_TESTID}>
         {BRAND_CO_OTB_REPLENISHMENT_SYNC_SUMMARY_RU}: {summary.aligned}/{summary.buyers}
       </Badge>
@@ -82,7 +83,10 @@ export function BrandCoOtbReplenishmentSyncStrip({ collectionId, orderId: _order
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <span className="text-text-muted text-[10px]" data-testid="brand-co-otb-plan-sync-message">
+          <span
+            className="text-text-muted text-[10px]"
+            data-testid="brand-co-otb-plan-sync-message"
+          >
             {messageRu}
           </span>
         </>

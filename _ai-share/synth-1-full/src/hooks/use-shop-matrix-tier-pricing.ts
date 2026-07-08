@@ -25,8 +25,9 @@ export function useShopMatrixTierPricing(collectionId: string) {
   }, [collectionId]);
 
   const resolveUnitPrice = useMemo(
-    () => (basePrice: number, tierId: PriceTierId = tier) =>
-      resolveShopMatrixUnitPrice(basePrice, tierId, rows),
+    () =>
+      (basePrice: number, tierId: PriceTierId = tier) =>
+        resolveShopMatrixUnitPrice(basePrice, tierId, rows),
     [rows, tier]
   );
 

@@ -6,9 +6,7 @@ import type {
   Workshop2FactoryErpAuditEntry,
   Workshop2FactoryErpAuditMirror,
 } from '@/lib/production/workshop2-dossier-phase1.types';
-import {
-  buildWorkshop2PurchaseOrderErpMirror,
-} from '@/lib/production/workshop2-purchase-order-erp-dossier-persist';
+import { buildWorkshop2PurchaseOrderErpMirror } from '@/lib/production/workshop2-purchase-order-erp-dossier-persist';
 import type { Workshop2PurchaseOrderErpRow } from '@/lib/production/workshop2-purchase-order-erp-dossier-persist';
 import { resolveWorkshop2PurchaseOrderErpDisplayStatus } from '@/lib/production/workshop2-purchase-order-erp-display';
 import { workshop2PgMirrorNum } from '@/lib/production/workshop2-dossier-pg-mirror-utils';

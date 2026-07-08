@@ -7,7 +7,10 @@ import { Input } from '@/components/ui/input';
 import type { BrandPgThreadRow } from '@/lib/platform-core-ports/brand/brand-messages-pg-threads';
 import { WORKSHOP2_B2B_ORDER_CONTEXT_TYPE } from '@/lib/platform-core-ports/b2b-order-lifecycle';
 import { commsHubThreadLabel } from '@/lib/platform-core-ports/communications/comms-hub-inbox-rows';
-import { commsCabinetThreadRowKey, COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY } from '@/lib/platform-core-ports/communications/comms-cabinet-thread-keys';
+import {
+  commsCabinetThreadRowKey,
+  COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY,
+} from '@/lib/platform-core-ports/communications/comms-cabinet-thread-keys';
 import {
   commsCabinetInboxAllHref,
   commsCabinetRolePrefix,
@@ -212,7 +215,9 @@ export function CommsPillarThreadStrip({
               const href = threadWorkspaceHref(variant, t);
               const rowKey = commsCabinetThreadRowKey(t);
               const orderThreadId =
-                t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE ? (t.contextId?.trim() ?? '') : '';
+                t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE
+                  ? (t.contextId?.trim() ?? '')
+                  : '';
               const unread = pgOrderUnreadEnabled
                 ? t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE
                   ? resolveOrderUnread(orderThreadId)
@@ -360,7 +365,7 @@ export function CommsPillarThreadStrip({
                     {unread > 0 ? (
                       universalInbox ? (
                         <span
-                          className="bg-accent-primary text-text-inverse ml-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold leading-none align-middle"
+                          className="bg-accent-primary text-text-inverse ml-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 align-middle text-[11px] font-semibold leading-none"
                           data-testid={`${prefix}-universal-inbox-order-unread-${orderId}`}
                           aria-label={`${unread} непрочитанных`}
                         >

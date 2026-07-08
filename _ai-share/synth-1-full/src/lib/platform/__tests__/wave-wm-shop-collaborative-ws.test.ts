@@ -8,19 +8,21 @@ import { fingerprintShopCollaborativeSession } from '@/lib/server/shop-collabora
 
 describe('wave WM — P1 shop CO collaborative WS + brand co-approve PG session', () => {
   it('live badge RU labels + testids (SSE vs poll)', () => {
-    expect(formatShopCollaborativeSessionLiveBadgeRu({ sseConnected: true, pushEnabled: true })).toBe(
-      'Сессия · push'
-    );
-    expect(formatShopCollaborativeSessionLiveBadgeRu({ sseConnected: false, pushEnabled: true })).toBe(
-      'Сессия · опрос'
-    );
     expect(
-      shopCollaborativeSessionLiveBadgeTestId({ sseConnected: true, pushEnabled: true })
-    ).toBe('shop-collaborative-session-sse-badge');
+      formatShopCollaborativeSessionLiveBadgeRu({ sseConnected: true, pushEnabled: true })
+    ).toBe('Сессия · push');
+    expect(
+      formatShopCollaborativeSessionLiveBadgeRu({ sseConnected: false, pushEnabled: true })
+    ).toBe('Сессия · опрос');
+    expect(shopCollaborativeSessionLiveBadgeTestId({ sseConnected: true, pushEnabled: true })).toBe(
+      'shop-collaborative-session-sse-badge'
+    );
     expect(
       shopCollaborativeSessionLiveBadgeTestId({ sseConnected: false, pushEnabled: false })
     ).toBe('shop-collaborative-session-poll-badge');
-    expect(shopCollaborativeSessionStorageBadgeTestId('pg')).toBe('shop-collaborative-session-storage-pg');
+    expect(shopCollaborativeSessionStorageBadgeTestId('pg')).toBe(
+      'shop-collaborative-session-storage-pg'
+    );
   });
 
   it('shared live badges component + hook', () => {

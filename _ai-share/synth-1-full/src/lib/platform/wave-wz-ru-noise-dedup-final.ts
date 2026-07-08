@@ -42,9 +42,7 @@ const SAMPLE_STATUS_RU: Record<string, string> = {
 };
 
 /** Map W2/sample queue status codes to RU labels for hub pillar badges. */
-export function formatPlatformCoreSampleStatusLabelRu(
-  status: string | null | undefined
-): string {
+export function formatPlatformCoreSampleStatusLabelRu(status: string | null | undefined): string {
   const raw = status?.trim() ?? '';
   if (!raw) return '';
   const mapped = SAMPLE_STATUS_RU[raw.toLowerCase()];

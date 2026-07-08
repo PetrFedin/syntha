@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
 import { syncAims360Allocation } from '@/lib/integrations/spine/aims360-allocation.service';
-import { ensureSpineOperationalStoreReady, SPINE_ALLOCATION_SCOPES } from '@/lib/integrations/spine/spine-operational-store';
+import {
+  ensureSpineOperationalStoreReady,
+  SPINE_ALLOCATION_SCOPES,
+} from '@/lib/integrations/spine/spine-operational-store';
 import { enqueueSyncJob } from '@/lib/integrations/spine/sync-jobs-persistence.file';
 
 /** POST /api/integrations/v1/aims360/allocation/sync · Wave D6 P3-AIMS-ALLOC */

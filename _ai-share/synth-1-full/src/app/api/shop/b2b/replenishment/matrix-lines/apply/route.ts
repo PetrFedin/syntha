@@ -16,10 +16,7 @@ export async function POST(req: NextRequest) {
     body = {};
   }
 
-  const buyerId = resolveShopCoreBuyerIdFromRequest(
-    req,
-    body.buyerId ?? checkoutAuth.buyerId
-  );
+  const buyerId = resolveShopCoreBuyerIdFromRequest(req, body.buyerId ?? checkoutAuth.buyerId);
   const collectionId = body.collectionId?.trim() || 'SS27';
   const orderId = body.orderId?.trim() || '';
   const sessionId =

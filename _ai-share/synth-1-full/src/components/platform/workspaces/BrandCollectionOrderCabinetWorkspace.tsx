@@ -47,11 +47,7 @@ type Props = {
 };
 
 /** Столп collection_order · brand: реестр, карточка заказа, ритейлеры, overview. */
-export function BrandCollectionOrderCabinetWorkspace({
-  collectionId,
-  sectionId,
-  orderId,
-}: Props) {
+export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, orderId }: Props) {
   const resolvedOrder = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const peerActiveSection: BrandCoEmbeddedSectionId | undefined =
     sectionId === 'brand-co-registry'

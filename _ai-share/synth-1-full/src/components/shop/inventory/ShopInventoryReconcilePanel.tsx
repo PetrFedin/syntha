@@ -49,27 +49,30 @@ export function ShopInventoryReconcilePanel({ collectionId }: Props) {
     setAdjustments(rows);
   }, []);
 
-  const reloadRows = useCallback(async (cycleSessions: CycleCountSession[]) => {
-    const res = await fetch('/api/shop/inventory/reconcile/rows', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        shopId: 'shop1',
-        collectionId,
-        limit: 12,
-        cycleSessions,
-      }),
-    });
-    const json = (await res.json()) as {
-      ok?: boolean;
-      rows?: ShopInventoryReconcileRow[];
-      ledgerSource?: ReplenishmentStockAtpSource;
-    };
-    if (json.ok && Array.isArray(json.rows)) {
-      setBaseRows(json.rows);
-      setLedgerSource(json.ledgerSource ?? 'demo');
-    }
-  }, [collectionId]);
+  const reloadRows = useCallback(
+    async (cycleSessions: CycleCountSession[]) => {
+      const res = await fetch('/api/shop/inventory/reconcile/rows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shopId: 'shop1',
+          collectionId,
+          limit: 12,
+          cycleSessions,
+        }),
+      });
+      const json = (await res.json()) as {
+        ok?: boolean;
+        rows?: ShopInventoryReconcileRow[];
+        ledgerSource?: ReplenishmentStockAtpSource;
+      };
+      if (json.ok && Array.isArray(json.rows)) {
+        setBaseRows(json.rows);
+        setLedgerSource(json.ledgerSource ?? 'demo');
+      }
+    },
+    [collectionId]
+  );
 
   useEffect(() => {
     void listCycleCountSessions().then(async (sess) => {
@@ -103,7 +106,9 @@ export function ShopInventoryReconcilePanel({ collectionId }: Props) {
         return;
       }
       if (res.storageMode) setStorageMode(res.storageMode);
-      setNotice(res.result.diffAfter === 0 ? `Ledger ${row.sku} выровнен.` : `Adjust ${row.sku} записан.`);
+      setNotice(
+        res.result.diffAfter === 0 ? `Ledger ${row.sku} выровнен.` : `Adjust ${row.sku} записан.`
+      );
       await reloadAdjustments();
       await reloadRows(sessions);
     } finally {
@@ -194,7 +199,9 @@ export function ShopInventoryReconcilePanel({ collectionId }: Props) {
                     </p>
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm">{row.ledgerAtp}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{row.physicalOnHand}</TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {row.physicalOnHand}
+                  </TableCell>
                   <TableCell
                     className={`text-right font-mono text-sm ${row.diff !== 0 ? 'text-amber-700' : ''}`}
                   >

@@ -96,73 +96,73 @@ export const MessagesHeader: React.FC<MessagesHeaderProps> = ({
           )}
 
           {!slimCore ? (
-          <div className="h-6.5 bg-text-primary border-text-primary/30 flex items-center gap-1 rounded-lg border px-2 shadow-md">
-            <Shield className="text-accent-primary h-2.5 w-2.5" />
-            <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white">
-              SCOPED
-            </span>
-          </div>
-          ) : null}
-
-          {!slimCore ? (
-          <div className="border-border-default h-6.5 group/status hover:border-accent-primary/30 flex shrink-0 items-center gap-1.5 rounded-lg border bg-white px-2 shadow-sm transition-all">
-            <div
-              className={cn(
-                'h-1.5 w-1.5 shrink-0 rounded-full',
-                USER_STATUSES.find((s) => s.id === userStatus)?.color || 'bg-border-default'
-              )}
-            />
-            <select
-              className="text-text-secondary hover:text-accent-primary cursor-pointer bg-transparent text-[9px] font-bold uppercase tracking-widest outline-none transition-colors"
-              value={userStatus}
-              onChange={(e) => setUserStatus(e.target.value)}
-            >
-              {USER_STATUSES.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          ) : null}
-
-          {!slimCore ? (
-          <div
-            className="h-6.5 bg-bg-surface2 border-border-default hover:border-accent-primary/30 group/risk hidden cursor-pointer items-center gap-3 rounded-lg border px-3 transition-all hover:bg-white sm:flex"
-            onClick={onOpenTeam}
-          >
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-              <span className="text-text-muted group-hover:text-accent-primary text-[9px] font-bold uppercase tracking-widest transition-colors">
-                TEAM: 12
+            <div className="h-6.5 bg-text-primary border-text-primary/30 flex items-center gap-1 rounded-lg border px-2 shadow-md">
+              <Shield className="text-accent-primary h-2.5 w-2.5" />
+              <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white">
+                SCOPED
               </span>
             </div>
-            <div className="bg-border-subtle h-3 w-px" />
-            <div
-              className="flex items-center gap-2"
-              title="Supply Chain Risk Index"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenRiskDetails();
-              }}
-            >
-              <AlertTriangle
+          ) : null}
+
+          {!slimCore ? (
+            <div className="border-border-default h-6.5 group/status hover:border-accent-primary/30 flex shrink-0 items-center gap-1.5 rounded-lg border bg-white px-2 shadow-sm transition-all">
+              <div
                 className={cn(
-                  'h-3 w-3 transition-transform group-hover/risk:scale-110',
-                  riskLevel > 50 ? 'text-rose-500' : 'text-amber-500'
+                  'h-1.5 w-1.5 shrink-0 rounded-full',
+                  USER_STATUSES.find((s) => s.id === userStatus)?.color || 'bg-border-default'
                 )}
               />
-              <div className="bg-border-subtle h-1 w-12 overflow-hidden rounded-full shadow-inner">
-                <div
+              <select
+                className="text-text-secondary hover:text-accent-primary cursor-pointer bg-transparent text-[9px] font-bold uppercase tracking-widest outline-none transition-colors"
+                value={userStatus}
+                onChange={(e) => setUserStatus(e.target.value)}
+              >
+                {USER_STATUSES.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+
+          {!slimCore ? (
+            <div
+              className="h-6.5 bg-bg-surface2 border-border-default hover:border-accent-primary/30 group/risk hidden cursor-pointer items-center gap-3 rounded-lg border px-3 transition-all hover:bg-white sm:flex"
+              onClick={onOpenTeam}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                <span className="text-text-muted group-hover:text-accent-primary text-[9px] font-bold uppercase tracking-widest transition-colors">
+                  TEAM: 12
+                </span>
+              </div>
+              <div className="bg-border-subtle h-3 w-px" />
+              <div
+                className="flex items-center gap-2"
+                title="Supply Chain Risk Index"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenRiskDetails();
+                }}
+              >
+                <AlertTriangle
                   className={cn(
-                    'h-full transition-all',
-                    riskLevel > 50 ? 'bg-rose-500' : 'bg-amber-500'
+                    'h-3 w-3 transition-transform group-hover/risk:scale-110',
+                    riskLevel > 50 ? 'text-rose-500' : 'text-amber-500'
                   )}
-                  style={{ width: `${riskLevel}%` }}
                 />
+                <div className="bg-border-subtle h-1 w-12 overflow-hidden rounded-full shadow-inner">
+                  <div
+                    className={cn(
+                      'h-full transition-all',
+                      riskLevel > 50 ? 'bg-rose-500' : 'bg-amber-500'
+                    )}
+                    style={{ width: `${riskLevel}%` }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
           ) : null}
         </div>
       </div>

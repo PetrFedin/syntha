@@ -66,7 +66,11 @@ export function MfrDevDevelopmentStatusMirrorStrip({
             className="text-[9px]"
             data-testid="mfr-dev-development-status-mirror-badge"
           >
-            {loading ? '…' : progressPct != null ? `${progressPct}% · ${doneCount}/${steps.length}` : '—'}
+            {loading
+              ? '…'
+              : progressPct != null
+                ? `${progressPct}% · ${doneCount}/${steps.length}`
+                : '—'}
           </Badge>
         ) : null}
         <span className={hubGadget.muted} data-testid="mfr-dev-development-status-mirror-meta">

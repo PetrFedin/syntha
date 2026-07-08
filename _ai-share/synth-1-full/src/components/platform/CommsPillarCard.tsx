@@ -59,7 +59,10 @@ import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/Platf
 import { ShopCmCabinetSpinePeerStrip } from '@/components/platform/ShopCmCabinetSpinePeerStrip';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
-import { pickCommsSnapshot, pickOrderProductionSnapshot } from '@/lib/platform-core-pillar-snapshot.types';
+import {
+  pickCommsSnapshot,
+  pickOrderProductionSnapshot,
+} from '@/lib/platform-core-pillar-snapshot.types';
 import {
   formatWholesaleOrderDisplayId,
   isIntegrationImportedWholesaleOrderId,
@@ -94,11 +97,7 @@ type Props = {
 const linkClass =
   'border-border-subtle hover:bg-bg-surface2 inline-flex min-h-11 items-center gap-1 rounded-md border px-3 py-2 text-[13px] font-medium md:min-h-0 md:px-2 md:py-1 md:text-[11px]';
 
-export function CommsPillarCard({
-  variant,
-  compact = false,
-  minimalChrome = false,
-}: Props) {
+export function CommsPillarCard({ variant, compact = false, minimalChrome = false }: Props) {
   const demo = usePlatformCoreDemoContext();
   const searchParams = useSearchParams();
   const sectionFromUrl = searchParams.get('section');
@@ -281,7 +280,7 @@ export function CommsPillarCard({
   const notesNavBadge =
     notesOpenCount > 0 ? (
       <span
-        className="bg-amber-500 ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[11px] font-bold text-white"
+        className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[11px] font-bold text-white"
         data-testid="comms-pillar-notes-open-badge"
       >
         {notesOpenCount}
@@ -353,12 +352,12 @@ export function CommsPillarCard({
               mainPanel={notesView ? notesPanel : undefined}
               threadPreview={
                 notesView ? null : (
-                <CommsCabinetThreadPreview
-                  variant={variant}
-                  collectionId={collectionId}
-                  orderId={cabinetOrderId}
-                  disabled={emptyChain || commsMemoryBlocked}
-                />
+                  <CommsCabinetThreadPreview
+                    variant={variant}
+                    collectionId={collectionId}
+                    orderId={cabinetOrderId}
+                    disabled={emptyChain || commsMemoryBlocked}
+                  />
                 )
               }
               groupsPanel={null}
@@ -522,10 +521,7 @@ export function CommsPillarCard({
           />
         ) : null}
         {showNavStrips && variant === 'shop' && !emptyChain ? (
-          <ShopCmCabinetSpinePeerStrip
-            collectionId={collectionId}
-            orderId={orderId || undefined}
-          />
+          <ShopCmCabinetSpinePeerStrip collectionId={collectionId} orderId={orderId || undefined} />
         ) : null}
         {showNavStrips && variant === 'supplier' && !emptyChain ? (
           <SupCmCabinetSpinePeerStrip
@@ -544,122 +540,126 @@ export function CommsPillarCard({
           />
         ) : null}
         {!minimalChrome ? (
-        <div className={hubGadget.ctaRow}>
-          {compact ? (
-            <>
-              <Link href={messagesHref} className={hubGadget.ctaLink} data-testid={orderChatTestId}>
-                <MessageSquare className="h-3 w-3" aria-hidden />
-                Чат
-              </Link>
-              <Link
-                href={calendarHref}
-                className={hubGadget.ctaLink}
-                data-testid={calendarTestId}
-                data-audit-legacy="comms-pillar-calendar"
-              >
-                <Calendar className="h-3 w-3" aria-hidden />
-                Календарь
-                {calendarEventCount != null && calendarEventCount > 0 ? (
-                  <span
-                    className="ml-0.5 font-mono text-[10px] tabular-nums opacity-80"
-                    data-testid={`${calendarTestId.replace('-link', '')}-events-count`}
-                  >
-                    ·{calendarEventCount}
-                  </span>
-                ) : null}
-              </Link>
-              <Link
-                href={notesHref}
-                className={hubGadget.ctaLink}
-                data-testid={notesTestId}
-              >
-                <StickyNote className="h-3 w-3" aria-hidden />
-                Заметки
-                {notesOpenCount > 0 ? (
-                  <span className="ml-0.5 font-mono text-[10px] tabular-nums opacity-80">
-                    ·{notesOpenCount}
-                  </span>
-                ) : null}
-              </Link>
-              <Link
-                href={inboxAllHref}
-                data-testid="comms-pillar-inbox-all"
-                className={hubGadget.ctaLink}
-              >
-                Все сообщения
-                {unreadBadge}
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href={messagesHref} className={hubGadget.ctaLink} data-testid={orderChatTestId}>
-                <MessageSquare className="h-3 w-3" aria-hidden />
-                Чат
-              </Link>
-              <Link
-                href={calendarHref}
-                className={hubGadget.ctaLink}
-                data-testid={calendarTestId}
-                data-audit-legacy="comms-pillar-calendar"
-              >
-                <Calendar className="h-3 w-3" aria-hidden />
-                Календарь
-                {calendarEventCount != null && calendarEventCount > 0 ? (
-                  <span
-                    className="ml-0.5 font-mono text-[9px] tabular-nums opacity-80"
-                    data-testid={`${calendarTestId.replace('-link', '')}-events-count`}
-                  >
-                    ·{calendarEventCount}
-                  </span>
-                ) : null}
-              </Link>
-              <Link href={notesHref} className={linkClass} data-testid={notesTestId}>
-                <StickyNote className="h-3 w-3" aria-hidden />
-                Заметки
-              </Link>
-              {!compact && !emptyChain ? (
+          <div className={hubGadget.ctaRow}>
+            {compact ? (
+              <>
                 <Link
-                  href={articleChatHref}
-                  data-testid={articleChatTestId}
-                  data-audit-legacy="comms-pillar-article-chat-compact"
-                  className={linkClass}
+                  href={messagesHref}
+                  className={hubGadget.ctaLink}
+                  data-testid={orderChatTestId}
                 >
                   <MessageSquare className="h-3 w-3" aria-hidden />
-                  Чат · артикул
+                  Чат
                 </Link>
-              ) : null}
-              {!compact && variant === 'manufacturer' ? (
                 <Link
-                  href={factorySupplierMessagesB2bOrderContextHref(orderId)}
-                  data-testid="comms-pillar-supplier-thread-compact"
-                  className={linkClass}
+                  href={calendarHref}
+                  className={hubGadget.ctaLink}
+                  data-testid={calendarTestId}
+                  data-audit-legacy="comms-pillar-calendar"
                 >
-                  Поставщик
+                  <Calendar className="h-3 w-3" aria-hidden />
+                  Календарь
+                  {calendarEventCount != null && calendarEventCount > 0 ? (
+                    <span
+                      className="ml-0.5 font-mono text-[10px] tabular-nums opacity-80"
+                      data-testid={`${calendarTestId.replace('-link', '')}-events-count`}
+                    >
+                      ·{calendarEventCount}
+                    </span>
+                  ) : null}
                 </Link>
-              ) : null}
-              {!compact && isFactory ? (
-                <Link
-                  href={poHref}
-                  data-testid="comms-pillar-handoff-queue-compact"
-                  className={linkClass}
-                >
-                  <ClipboardList className="h-3 w-3" aria-hidden />
-                  Очередь передачи
+                <Link href={notesHref} className={hubGadget.ctaLink} data-testid={notesTestId}>
+                  <StickyNote className="h-3 w-3" aria-hidden />
+                  Заметки
+                  {notesOpenCount > 0 ? (
+                    <span className="ml-0.5 font-mono text-[10px] tabular-nums opacity-80">
+                      ·{notesOpenCount}
+                    </span>
+                  ) : null}
                 </Link>
-              ) : null}
-              {!compact ? (
                 <Link
                   href={inboxAllHref}
                   data-testid="comms-pillar-inbox-all"
-                  className={linkClass}
+                  className={hubGadget.ctaLink}
                 >
-                  Все треды
+                  Все сообщения
                   {unreadBadge}
                 </Link>
-              ) : null}
-            </>
-          )}
-        </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={messagesHref}
+                  className={hubGadget.ctaLink}
+                  data-testid={orderChatTestId}
+                >
+                  <MessageSquare className="h-3 w-3" aria-hidden />
+                  Чат
+                </Link>
+                <Link
+                  href={calendarHref}
+                  className={hubGadget.ctaLink}
+                  data-testid={calendarTestId}
+                  data-audit-legacy="comms-pillar-calendar"
+                >
+                  <Calendar className="h-3 w-3" aria-hidden />
+                  Календарь
+                  {calendarEventCount != null && calendarEventCount > 0 ? (
+                    <span
+                      className="ml-0.5 font-mono text-[9px] tabular-nums opacity-80"
+                      data-testid={`${calendarTestId.replace('-link', '')}-events-count`}
+                    >
+                      ·{calendarEventCount}
+                    </span>
+                  ) : null}
+                </Link>
+                <Link href={notesHref} className={linkClass} data-testid={notesTestId}>
+                  <StickyNote className="h-3 w-3" aria-hidden />
+                  Заметки
+                </Link>
+                {!compact && !emptyChain ? (
+                  <Link
+                    href={articleChatHref}
+                    data-testid={articleChatTestId}
+                    data-audit-legacy="comms-pillar-article-chat-compact"
+                    className={linkClass}
+                  >
+                    <MessageSquare className="h-3 w-3" aria-hidden />
+                    Чат · артикул
+                  </Link>
+                ) : null}
+                {!compact && variant === 'manufacturer' ? (
+                  <Link
+                    href={factorySupplierMessagesB2bOrderContextHref(orderId)}
+                    data-testid="comms-pillar-supplier-thread-compact"
+                    className={linkClass}
+                  >
+                    Поставщик
+                  </Link>
+                ) : null}
+                {!compact && isFactory ? (
+                  <Link
+                    href={poHref}
+                    data-testid="comms-pillar-handoff-queue-compact"
+                    className={linkClass}
+                  >
+                    <ClipboardList className="h-3 w-3" aria-hidden />
+                    Очередь передачи
+                  </Link>
+                ) : null}
+                {!compact ? (
+                  <Link
+                    href={inboxAllHref}
+                    data-testid="comms-pillar-inbox-all"
+                    className={linkClass}
+                  >
+                    Все треды
+                    {unreadBadge}
+                  </Link>
+                ) : null}
+              </>
+            )}
+          </div>
         ) : null}
       </CardContent>
     </Card>

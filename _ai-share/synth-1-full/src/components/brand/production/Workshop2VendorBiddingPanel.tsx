@@ -106,8 +106,7 @@ export function Workshop2VendorBiddingPanel({
         <div className="min-w-0 flex-1">
           <h2 className="text-text-primary text-base font-semibold">Аукцион / тендер</h2>
           <p className="text-text-secondary text-[11px]">
-            Ставки в dossier.bids (PG mirror). Heuristic winner — минимальный CMT,
-            без ML.
+            Ставки в dossier.bids (PG mirror). Heuristic winner — минимальный CMT, без ML.
           </p>
           {hasDossierBidLink ? (
             <Badge variant="outline" className="mt-1 text-[10px]">

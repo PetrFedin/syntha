@@ -75,7 +75,9 @@ export function SupplierOrderCommsPanel({ orderId, collectionId, articleId }: Pr
             <Package className="h-4 w-4" />
             <CardTitle className="text-base">Цепочка закупок</CardTitle>
           </div>
-          <CardDescription>MRP-поставка → BOM бренда → трекинг магазина → заказ на производство.</CardDescription>
+          <CardDescription>
+            MRP-поставка → BOM бренда → трекинг магазина → заказ на производство.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" asChild>

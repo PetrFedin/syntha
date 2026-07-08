@@ -27,7 +27,10 @@ export function SupDevBomBrandDevPeerStrip({ collectionId, articleId }: Props) {
   const passportHref = brandAttributeSchemaMaterialPassportHref(collectionId);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_SUP_DEV_BOM_BRAND_DEV_PEER_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_SUP_DEV_BOM_BRAND_DEV_PEER_STRIP_TESTID}
+    >
       <Link
         href={passportHref}
         data-testid="sup-dev-bom-brand-material-passport-link"

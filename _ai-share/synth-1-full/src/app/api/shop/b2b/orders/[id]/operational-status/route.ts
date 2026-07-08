@@ -56,7 +56,10 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     try {
       body = (await req.json()) as Record<string, unknown>;
     } catch {
-      return NextResponse.json({ ok: false, messageRu: 'Некорректное тело запроса.' }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, messageRu: 'Некорректное тело запроса.' },
+        { status: 400 }
+      );
     }
 
     const status = String(body.status ?? '').trim();
@@ -64,8 +67,7 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
       return NextResponse.json(
         {
           ok: false,
-          messageRu:
-            'status: amendment_pending | amendment_approved | amendment_rejected',
+          messageRu: 'status: amendment_pending | amendment_approved | amendment_rejected',
         },
         { status: 400 }
       );

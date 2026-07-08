@@ -111,7 +111,10 @@ export function WaveYrReadinessCellDashboardStrip({
       ) : null}
 
       {model.showVerboseDiagnostics ? (
-        <span className="text-text-muted text-[9px]" data-testid="wave-yr-readiness-verbose-diagnostics">
+        <span
+          className="text-text-muted text-[9px]"
+          data-testid="wave-yr-readiness-verbose-diagnostics"
+        >
           {WAVE_ZE_VERBOSE_DIAGNOSTICS_RU}
         </span>
       ) : null}

@@ -22,7 +22,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as ShopReplenishmentRulesConfig[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as ShopReplenishmentRulesConfig[];
     if (Array.isArray(parsed)) {
       for (const row of parsed) {
         if (row.buyerId) memory.set(row.buyerId.trim(), row);

@@ -95,7 +95,12 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'category handbook + ProductVariantManager',
     resolveHref: () => ROUTES.brand.attributeHealth,
-    relatedIds: ['dev-size-chart-grade', 'sc-release-gate', 'co-wholesale-matrix', 'dev-sample-lifecycle'],
+    relatedIds: [
+      'dev-size-chart-grade',
+      'sc-release-gate',
+      'co-wholesale-matrix',
+      'dev-sample-lifecycle',
+    ],
   },
   {
     id: 'dev-size-chart-grade',
@@ -161,7 +166,12 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'shop-showroom-buy workspace + inline qty + cover hero (dossier PG)',
     resolveHref: resolveScShowroomBuyHref,
-    relatedIds: ['co-wholesale-matrix', 'sc-linesheet-syndication', 'co-replenishment-workspace', 'sc-showroom-3d-stream'],
+    relatedIds: [
+      'co-wholesale-matrix',
+      'sc-linesheet-syndication',
+      'co-replenishment-workspace',
+      'sc-showroom-3d-stream',
+    ],
   },
   {
     id: 'sc-showroom-3d-stream',
@@ -335,7 +345,12 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'shop-b2b-partners rep tab + shop-agent-rep + brand-agent-rep workspaces',
     resolveHref: resolveCoAgentRepHref,
-    relatedIds: ['co-wholesale-matrix', 'co-collaborative-order', 'co-landed-margin', 'co-pricelist-version'],
+    relatedIds: [
+      'co-wholesale-matrix',
+      'co-collaborative-order',
+      'co-landed-margin',
+      'co-pricelist-version',
+    ],
   },
   {
     id: 'co-collaborative-order',
@@ -361,7 +376,12 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'manufacturer-handoff-queue workspace (sample · handoff · orders · factory-ack)',
     resolveHref: resolveOpHandoffQueueHref,
-    relatedIds: ['op-cut-ticket-wip', 'dev-sample-lifecycle', 'op-qc-gate', 'op-factory-techpack-ack'],
+    relatedIds: [
+      'op-cut-ticket-wip',
+      'dev-sample-lifecycle',
+      'op-qc-gate',
+      'op-factory-techpack-ack',
+    ],
   },
   {
     id: 'op-factory-techpack-ack',
@@ -427,7 +447,13 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     improves: 'SupplierCollectionOrderForecast + supplier-procurement forecast tab',
     resolveHref: (ctx) =>
       `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(demoCollection(ctx))}`,
-    relatedIds: ['co-wholesale-matrix', 'dev-supplier-model-bom', 'op-mrp-supply', 'op-handoff-queue', 'dev-rfq-supplier'],
+    relatedIds: [
+      'co-wholesale-matrix',
+      'dev-supplier-model-bom',
+      'op-mrp-supply',
+      'op-handoff-queue',
+      'dev-rfq-supplier',
+    ],
   },
   {
     id: 'op-inventory-atp',
@@ -464,9 +490,15 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     externalRefs: ['NuOrder collab'],
     status: 'live',
     phase: 'now',
-    improves: 'shop-order-comms + brand-order-comms + manufacturer-comms + supplier-procurement order tab',
+    improves:
+      'shop-order-comms + brand-order-comms + manufacturer-comms + supplier-procurement order tab',
     resolveHref: resolveCommsOrderContextHref,
-    relatedIds: ['co-wholesale-matrix', 'co-collaborative-order', 'op-handoff-queue', 'op-mrp-supply'],
+    relatedIds: [
+      'co-wholesale-matrix',
+      'co-collaborative-order',
+      'op-handoff-queue',
+      'op-mrp-supply',
+    ],
   },
   {
     id: 'comms-entity-threads',
@@ -491,8 +523,7 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     status: 'enhance',
     phase: 'now',
     improves: 'brand-crm-segmentation workspace on customer-groups',
-    resolveHref: () =>
-      `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
+    resolveHref: () => `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
     relatedIds: ['sc-showroom-buy', 'co-wholesale-matrix', 'co-agent-rep'],
   },
 ] as const;

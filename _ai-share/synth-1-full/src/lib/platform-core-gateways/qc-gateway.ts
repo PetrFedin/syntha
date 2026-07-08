@@ -149,7 +149,10 @@ function defectQty(d: PlatformCoreQcDefect): number {
   return positiveNumber(d.qtyAffected) ?? 1;
 }
 
-function countBySeverity(defects: PlatformCoreQcDefect[], severity: PlatformCoreQcDefect['severity']): number {
+function countBySeverity(
+  defects: PlatformCoreQcDefect[],
+  severity: PlatformCoreQcDefect['severity']
+): number {
   return defects.filter((d) => d.severity === severity).reduce((s, d) => s + defectQty(d), 0);
 }
 
@@ -200,9 +203,7 @@ function buildSnapshot(input: {
     updatedAt: input.updatedAt,
     source: input.defects.length ? 'workshop2_qc_defects' : 'workshop2_dossier_mirror',
     inspectedQty:
-      mirrorNum(inspector, 'checkedCount') ??
-      mirrorNum(aql, 'sampleSize') ??
-      order?.quantity,
+      mirrorNum(inspector, 'checkedCount') ?? mirrorNum(aql, 'sampleSize') ?? order?.quantity,
     panel,
     aql,
     inspector,
@@ -279,21 +280,25 @@ function evaluateQc(snapshot: PlatformCoreQcSnapshot): PlatformCoreQcEvaluation 
     issues.push({
       id: 'qc.aql.blocked',
       severity: 'blocker',
-      message: cleanString(snapshot.aql?.hintRu as string) ?? 'AQL mirror блокирует handoff/shipment.',
+      message:
+        cleanString(snapshot.aql?.hintRu as string) ?? 'AQL mirror блокирует handoff/shipment.',
     });
   }
   if (mirrorBool(snapshot.inspector, 'offlineOnly')) {
     issues.push({
       id: 'qc.inspector.offline_only',
       severity: 'blocker',
-      message: cleanString(snapshot.inspector?.hintRu as string) ?? 'Отчёт инспектора не синхронизирован.',
+      message:
+        cleanString(snapshot.inspector?.hintRu as string) ?? 'Отчёт инспектора не синхронизирован.',
     });
   }
   if (mirrorBool(snapshot.inspector, 'blockerHandoff')) {
     issues.push({
       id: 'qc.inspector.blocked',
       severity: 'blocker',
-      message: cleanString(snapshot.inspector?.hintRu as string) ?? 'Инспектор блокирует handoff/shipment.',
+      message:
+        cleanString(snapshot.inspector?.hintRu as string) ??
+        'Инспектор блокирует handoff/shipment.',
     });
   }
   if (!passed) {
@@ -316,13 +321,13 @@ function evaluateQc(snapshot: PlatformCoreQcSnapshot): PlatformCoreQcEvaluation 
 
   const handoffBlocked = Boolean(
     !passed ||
-      !sampleOrderLinked ||
-      !hasEvidence ||
-      mirrorNum(snapshot.panel, 'pendingBatchCount') ||
-      mirrorBool(snapshot.panel, 'blockerHandoff') ||
-      mirrorBool(snapshot.aql, 'blockerHandoff') ||
-      mirrorBool(snapshot.inspector, 'blockerHandoff') ||
-      mirrorBool(snapshot.inspector, 'offlineOnly')
+    !sampleOrderLinked ||
+    !hasEvidence ||
+    mirrorNum(snapshot.panel, 'pendingBatchCount') ||
+    mirrorBool(snapshot.panel, 'blockerHandoff') ||
+    mirrorBool(snapshot.aql, 'blockerHandoff') ||
+    mirrorBool(snapshot.inspector, 'blockerHandoff') ||
+    mirrorBool(snapshot.inspector, 'offlineOnly')
   );
 
   return {

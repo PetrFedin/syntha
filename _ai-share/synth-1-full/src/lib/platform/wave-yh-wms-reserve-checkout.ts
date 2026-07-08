@@ -87,10 +87,7 @@ export function formatShopCheckoutWmsReserveLiveDetailRu(input: {
   return parts.length > 0 ? parts.join(' · ') : null;
 }
 
-export function buildShopCheckoutWmsBalancesHref(
-  collectionId: string,
-  articleId?: string
-): string {
+export function buildShopCheckoutWmsBalancesHref(collectionId: string, articleId?: string): string {
   const article = articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
   return `/api/workshop2/articles/${encodeURIComponent(collectionId)}/${encodeURIComponent(article)}/wms/balances`;
 }

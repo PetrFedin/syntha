@@ -17,7 +17,10 @@ import {
   supCmQuotePeerRfqInboxHrefIsCanonical,
   supCmRfqInboxRoutePath,
 } from '@/lib/fashion/supplier-comms-wave-yo';
-import { resolveDevMaterialPassportHref, resolveDevRfqSupplierHref } from '@/lib/platform/pillar-capability-role-resolve';
+import {
+  resolveDevMaterialPassportHref,
+  resolveDevRfqSupplierHref,
+} from '@/lib/platform/pillar-capability-role-resolve';
 import { factorySupplierRfqInboxHref } from '@/lib/routes';
 
 const SRC = path.join(process.cwd(), 'src');
@@ -37,7 +40,9 @@ describe('wave YO — supplier comms dedupe + chain-status materials push', () =
 
     const demo = supCmQuotePeerHrefsForDemo('SS27', 'demo-ss27-01');
     expect(demo.isCanonical).toBe(true);
-    expect(demo.rfqInboxHref).toBe(factorySupplierRfqInboxHref({ collectionId: 'SS27', articleId: 'demo-ss27-01' }));
+    expect(demo.rfqInboxHref).toBe(
+      factorySupplierRfqInboxHref({ collectionId: 'SS27', articleId: 'demo-ss27-01' })
+    );
     expect(supCmRfqInboxRoutePath()).toBe('/factory/supplier/rfq-inbox');
   });
 
@@ -64,10 +69,10 @@ describe('wave YO — supplier comms dedupe + chain-status materials push', () =
 
   it('materials_supplied push strip testids + SSE/push attrs', () => {
     const orderId = PLATFORM_CORE_DEMO.demoOrderId;
-    expect(supCmChainMaterialsPushTestId(orderId)).toBe(
-      `sup-cm-chain-materials-push-${orderId}`
+    expect(supCmChainMaterialsPushTestId(orderId)).toBe(`sup-cm-chain-materials-push-${orderId}`);
+    expect(supCmChainMaterialsSuppliedPushBadgeTestId(orderId)).toContain(
+      'materials-supplied-push'
     );
-    expect(supCmChainMaterialsSuppliedPushBadgeTestId(orderId)).toContain('materials-supplied-push');
     expect(WAVE_YO_SUP_CM_CHAIN_MATERIALS_PUSH_STEP).toBe('materials_supplied');
     expect(WAVE_YO_SUP_CM_CHAIN_MATERIALS_SSE_ATTR).toBe('data-materials-sse-live');
     expect(WAVE_YO_SUP_CM_CHAIN_MATERIALS_PUSH_ATTR).toBe('data-materials-push-bump');
@@ -82,7 +87,9 @@ describe('wave YO — supplier comms dedupe + chain-status materials push', () =
   });
 
   it('quote peer UI + comms cabinet wired to RFQ inbox testids', () => {
-    expect(WAVE_YO_SUP_CM_QUOTE_PEER_RFQ_INBOX_LINK_TESTID).toBe('sup-cm-article-quote-rfq-inbox-link');
+    expect(WAVE_YO_SUP_CM_QUOTE_PEER_RFQ_INBOX_LINK_TESTID).toBe(
+      'sup-cm-article-quote-rfq-inbox-link'
+    );
     expect(WAVE_YO_SUP_CM_CABINET_RFQ_INBOX_PEER_LINK_TESTID).toBe(
       'sup-cm-cabinet-rfq-inbox-peer-link'
     );

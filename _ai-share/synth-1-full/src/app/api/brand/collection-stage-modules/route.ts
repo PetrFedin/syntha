@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
 
 /** PUT — persist collection stage modules to PG (Wave SE · S1). */
 export async function PUT(req: NextRequest) {
-  let body: { collectionId?: string; doc?: CollectionStageModulesDoc; organizationId?: string } = {};
+  let body: { collectionId?: string; doc?: CollectionStageModulesDoc; organizationId?: string } =
+    {};
   try {
     body = (await req.json()) as typeof body;
   } catch {

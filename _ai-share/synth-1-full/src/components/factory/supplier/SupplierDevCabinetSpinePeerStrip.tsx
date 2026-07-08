@@ -7,10 +7,7 @@ import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import {
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  ROUTES,
-} from '@/lib/routes';
+import { factorySupplierMessagesWorkshop2ArticleContextHref, ROUTES } from '@/lib/routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -31,13 +28,21 @@ export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orde
 
   return (
     <div className={hubGadget.goldenPath} data-testid="sup-dev-cabinet-spine-peer-strip">
-      <Link href={materialsHref} data-testid="sup-dev-cabinet-materials-link" className={hubGadget.goldenLink}>
+      <Link
+        href={materialsHref}
+        data-testid="sup-dev-cabinet-materials-link"
+        className={hubGadget.goldenLink}
+      >
         BOM
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={catalogHref} data-testid="sup-dev-cabinet-catalog-link" className={hubGadget.goldenLink}>
+      <Link
+        href={catalogHref}
+        data-testid="sup-dev-cabinet-catalog-link"
+        className={hubGadget.goldenLink}
+      >
         Каталог
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -53,7 +58,11 @@ export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orde
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={procurementHref} data-testid="sup-dev-cabinet-procurement-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurementHref}
+        data-testid="sup-dev-cabinet-procurement-link"
+        className={hubGadget.goldenLink}
+      >
         Закупка
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -65,7 +74,11 @@ export function SupplierDevCabinetSpinePeerStrip({ collectionId, articleId, orde
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={commsHref} data-testid="sup-dev-cabinet-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={commsHref}
+        data-testid="sup-dev-cabinet-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>

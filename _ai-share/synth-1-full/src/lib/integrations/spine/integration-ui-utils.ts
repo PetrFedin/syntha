@@ -91,12 +91,7 @@ export function operationalStatusToBrandBadgeVariant(
   return 'outline';
 }
 
-export type WholesaleSourcePlatform =
-  | 'joor'
-  | 'nuorder'
-  | 'zedonk'
-  | 'apparel_magic'
-  | 'aims360';
+export type WholesaleSourcePlatform = 'joor' | 'nuorder' | 'zedonk' | 'apparel_magic' | 'aims360';
 
 /** Канал по internal id заказа (INT-*). */
 export function resolveWholesaleOrderSourcePlatform(
@@ -126,7 +121,8 @@ export function wholesaleTrackingApiBase(
   sourcePlatform?: string
 ): string | null {
   const fromId = resolveWholesaleOrderSourcePlatform(wholesaleOrderId);
-  const platform = (sourcePlatform?.trim().toLowerCase() ?? fromId) as WholesaleSourcePlatform | null;
+  const platform = (sourcePlatform?.trim().toLowerCase() ??
+    fromId) as WholesaleSourcePlatform | null;
   if (!platform) return null;
   return TRACKING_SYNC_PATH[platform] ?? null;
 }

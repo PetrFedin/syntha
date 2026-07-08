@@ -20,7 +20,9 @@ export function resetFloorTabDraftPersistModeCacheForTests(): void {
 }
 
 /** PG `/api/brand/production/floor-tabs/:scope` when доступен; иначе localStorage (не в core). */
-export async function loadFloorTabDraftWithMode(scope: FloorTabScope): Promise<FloorTabDraftLoadResult> {
+export async function loadFloorTabDraftWithMode(
+  scope: FloorTabScope
+): Promise<FloorTabDraftLoadResult> {
   const corePgOnly = isPlatformCoreMode();
   try {
     const res = await fetch(`/api/brand/production/floor-tabs/${encodeURIComponent(scope)}`, {

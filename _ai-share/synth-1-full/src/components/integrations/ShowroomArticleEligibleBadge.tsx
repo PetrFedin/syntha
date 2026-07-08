@@ -15,7 +15,11 @@ export function ShowroomArticleEligibleBadge({ collectionId, articleId, variant 
 
   if (loadState === 'loading' || loadState === 'idle') {
     return (
-      <Badge variant="outline" className="text-[9px]" data-testid={`${variant}-sc-eligible-loading-${articleId}`}>
+      <Badge
+        variant="outline"
+        className="text-[9px]"
+        data-testid={`${variant}-sc-eligible-loading-${articleId}`}
+      >
         eligible…
       </Badge>
     );
@@ -23,7 +27,11 @@ export function ShowroomArticleEligibleBadge({ collectionId, articleId, variant 
 
   if (!gate) {
     return (
-      <Badge variant="outline" className="text-[9px]" data-testid={`${variant}-sc-eligible-unknown-${articleId}`}>
+      <Badge
+        variant="outline"
+        className="text-[9px]"
+        data-testid={`${variant}-sc-eligible-unknown-${articleId}`}
+      >
         eligible —
       </Badge>
     );

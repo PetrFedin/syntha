@@ -223,7 +223,10 @@ export async function listBrandSizeChartGradeFeedServer(input?: {
   }
 
   hydrateFileIfNeeded();
-  if (![...memoryByKey.values()].some((row) => 'gradeState' in row) && input?.seedIfEmpty !== false) {
+  if (
+    ![...memoryByKey.values()].some((row) => 'gradeState' in row) &&
+    input?.seedIfEmpty !== false
+  ) {
     await seedRows(org, collectionId, canUseDiskPersistence() ? 'file' : 'memory');
   }
   const bySku = new Map(
@@ -245,7 +248,10 @@ export async function patchBrandSizeChartGradeFeedServer(input: {
   sku: string;
   gradeState: BrandSizeChartGradeState;
   organizationId?: string;
-}): Promise<{ row: BrandSizeChartGradeFeedRow | null; storageMode: BrandAttributeSchemaFeedStorageMode }> {
+}): Promise<{
+  row: BrandSizeChartGradeFeedRow | null;
+  storageMode: BrandAttributeSchemaFeedStorageMode;
+}> {
   const listed = await listBrandSizeChartGradeFeedServer({
     collectionId: input.collectionId,
     organizationId: input.organizationId,
@@ -277,7 +283,10 @@ export async function patchBrandSizeChartGradeFeedServer(input: {
 export async function refreshBrandAttributeSchemaFeedServer(input: {
   collectionId: string;
   organizationId?: string;
-}): Promise<{ schemaSummary: ReturnType<typeof summarizeBrandAttributeSchemaFeed>; storageMode: BrandAttributeSchemaFeedStorageMode }> {
+}): Promise<{
+  schemaSummary: ReturnType<typeof summarizeBrandAttributeSchemaFeed>;
+  storageMode: BrandAttributeSchemaFeedStorageMode;
+}> {
   const org = input.organizationId ?? DEFAULT_ORG;
   const collectionId = input.collectionId.trim();
   const mode: BrandAttributeSchemaFeedStorageMode = isWorkshop2PostgresEnabled()

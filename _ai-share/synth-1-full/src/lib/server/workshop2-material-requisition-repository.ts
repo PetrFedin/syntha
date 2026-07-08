@@ -297,7 +297,7 @@ export async function patchWorkshop2MaterialRequisitionSupplierStatus(input: {
     [
       existing.id,
       nextStatus,
-      input.status === 'confirmed' ? partialShipQty ?? null : null,
+      input.status === 'confirmed' ? (partialShipQty ?? null) : null,
       backorderFlag,
       JSON.stringify({
         supplierNote: input.note?.trim() || null,
@@ -306,7 +306,7 @@ export async function patchWorkshop2MaterialRequisitionSupplierStatus(input: {
         requestedQty: requestedQty > 0 ? requestedQty : null,
         shippedQty: input.status === 'confirmed' ? shippedQty : null,
         backorder: backorderFlag,
-        partialShipQty: input.status === 'confirmed' ? partialShipQty ?? null : null,
+        partialShipQty: input.status === 'confirmed' ? (partialShipQty ?? null) : null,
         backorderFlag,
       }),
     ]

@@ -23,10 +23,9 @@ export async function fetchPgContextualThreads(
   const params = new URLSearchParams();
   if (readerId?.trim()) params.set('readerId', readerId.trim());
   const qs = params.toString();
-  const res = await fetch(
-    `${pgContextualThreadsApiPath(cabinet)}${qs ? `?${qs}` : ''}`,
-    { cache: 'no-store' }
-  );
+  const res = await fetch(`${pgContextualThreadsApiPath(cabinet)}${qs ? `?${qs}` : ''}`, {
+    cache: 'no-store',
+  });
   if (!res.ok) return { threads: [], source: 'empty' };
   const json = (await res.json()) as { threads?: BrandPgThreadRow[]; source?: string };
   return { threads: json.threads ?? [], source: json.source ?? 'empty' };

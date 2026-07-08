@@ -160,8 +160,7 @@ function PlatformCoreW2OrderDetailFacts({
   const chainPushEnabled = usePlatformCoreChainStatusPushEnabled(
     variant === 'shop' ? 'shop' : 'brand'
   );
-  const pollEnabled =
-    embedSurface === 'cabinetTracking' ? chainPushEnabled : true;
+  const pollEnabled = embedSurface === 'cabinetTracking' ? chainPushEnabled : true;
   const { tick: chainPollTick, sseConnected } = usePlatformCoreChainStatusPoll(pollEnabled, [
     orderId,
   ]);
@@ -225,7 +224,9 @@ function PlatformCoreW2OrderDetailFacts({
 
   const collectionId = order.collectionId ?? demo.collectionId;
   const articleId = order.articleId ?? demo.demoArticleId;
-  const showroomHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
+  const showroomHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+  );
   const factoryDossierHref =
     chain?.dossierHref ?? factoryProductionDossierHref(articleId, { collectionId });
   const articleHref =
@@ -668,7 +669,10 @@ function PlatformCoreW2OrderDetailFacts({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Строки заказа</CardTitle>
           </CardHeader>
-          <CardContent className={hubCabinet.workspaceTableScroll} data-testid="platform-core-order-lines-scroll">
+          <CardContent
+            className={hubCabinet.workspaceTableScroll}
+            data-testid="platform-core-order-lines-scroll"
+          >
             <Table>
               <TableHeader>
                 <TableRow>
@@ -742,12 +746,12 @@ function ShopCoCabinetTrackingEmbedSurface({
 
   const chainStatusLabel = mirrorPayload
     ? formatBrandPeerStatusSummaryRu(mirrorPayload)
-    : order.statusLabelRu ?? WAVE_XY_SHOP_CO_CHAIN_LIVE_PREFIX_RU;
+    : (order.statusLabelRu ?? WAVE_XY_SHOP_CO_CHAIN_LIVE_PREFIX_RU);
 
   return (
     <div
       id="shop-co-buyer-tracking"
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/40 space-y-2 rounded-md border px-3 py-2 text-xs"
       data-testid="shop-co-cabinet-tracking-embed"
       data-chain-sse-live={sseConnected && chainPushEnabled ? '1' : '0'}
     >
@@ -789,7 +793,7 @@ function ShopCoCabinetTrackingEmbedSurface({
               data-testid="shop-co-cabinet-tracking-embed-brand-mirror"
             >
               <span className={hubGadget.muted}>{WAVE_XY_SHOP_CO_BRAND_MIRROR_PREFIX_RU}:</span>
-              <span className="text-xs text-text-primary">{chainStatusLabel}</span>
+              <span className="text-text-primary text-xs">{chainStatusLabel}</span>
             </div>
           ) : null}
           <ShopCoTrackingChainStatusMirrorBadge

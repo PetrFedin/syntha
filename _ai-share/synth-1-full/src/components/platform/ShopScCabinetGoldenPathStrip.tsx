@@ -34,8 +34,13 @@ export function ShopScCabinetGoldenPathStrip({
     `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
   );
 
-  const parts: Array<{ key: string; href: string; label: string; testId: string; legacy?: string }> =
-    [];
+  const parts: Array<{
+    key: string;
+    href: string;
+    label: string;
+    testId: string;
+    legacy?: string;
+  }> = [];
 
   if (omitStep !== 'showroom') {
     parts.push({
@@ -89,13 +94,14 @@ export function ShopScCabinetGoldenPathStrip({
     >
       {parts.map((part, index) => (
         <span key={part.key} className="inline-flex items-center gap-1.5">
-          {index > 0 ? <span className={hubGadget.goldenSep} aria-hidden>·</span> : null}
+          {index > 0 ? (
+            <span className={hubGadget.goldenSep} aria-hidden>
+              ·
+            </span>
+          ) : null}
           <Link
             href={part.href}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === part.key && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === part.key && 'font-bold underline')}
             data-testid={part.testId}
             {...(part.legacy ? { 'data-audit-legacy': part.legacy } : {})}
           >

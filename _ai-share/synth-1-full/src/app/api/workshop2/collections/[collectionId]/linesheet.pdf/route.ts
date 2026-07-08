@@ -2,7 +2,10 @@
  * GET collection linesheet PDF — опубликованные артикулы PG (brand pillar 2).
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlatformCoreDemo, isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
+import {
+  getPlatformCoreDemo,
+  isPlatformCoreEmptyChainCollection,
+} from '@/lib/platform-core-demo-context';
 import { brandScLinesheetPdfEmptyApiMessageRu } from '@/lib/b2b/brand-sc-linesheet-readpath';
 import { resolveWorkshop2B2bArticleHeroImageUrl } from '@/lib/production/workshop2-b2b-article-hero-image';
 import { buildWorkshop2CollectionLinesheetPdfBytes } from '@/lib/production/workshop2-collection-linesheet-pdf';
@@ -24,10 +27,7 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
 
   let articles = await listWorkshop2PublishedShowroomArticles(collectionId);
 
-  if (
-    !articles.length &&
-    !isPlatformCoreEmptyChainCollection(collectionId)
-  ) {
+  if (!articles.length && !isPlatformCoreEmptyChainCollection(collectionId)) {
     const demoArticleId = getPlatformCoreDemo(collectionId).demoArticleId;
     const record = await getWorkshop2ServerDossierRecord(collectionId, demoArticleId);
     if (record?.dossier) {

@@ -34,6 +34,6 @@ OUT: B2B matrix/checkout (syntha-b2b-order), factory PO (syntha-factory-producti
 <verify>
 ```bash
 cd /Users/petr/Projects && uv run pytest tests/unit/test_platform_stack.py -q -k comms
-cd /Users/petr/Projects/_ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
+cd _ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
 ```
 </verify>

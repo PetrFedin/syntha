@@ -574,138 +574,265 @@ function BrandLayoutContent({ children }: { children: React.ReactNode }) {
               {platformCore ? (
                 <CabinetHubMobileNavOnly onOpenMobileNav={() => setSidebarOpen(true)} />
               ) : (
-              <>
-              <CabinetHubTitleRow
-                className="border-border-subtle gap-2 border-b pb-2"
-                onOpenMobileNav={() => setSidebarOpen(true)}
-                hubIcon={Store}
-                iconTileClassName="bg-text-primary text-text-inverse shadow-xl shadow-black/15 ring-1 ring-border-subtle"
-                title="Бренд-центр"
-                trailing={
-                  <div className="flex w-full min-w-0 shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
-                    {!platformCore ? (
-                    <div className="border-border-subtle mr-0.5 hidden min-w-0 max-w-full items-center gap-2 border-r pr-2 2xl:flex">
-                      <p className="text-text-secondary flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[9px] font-black uppercase tracking-widest">
-                        <Activity className="text-accent-primary h-3 w-3 shrink-0" /> Центр
-                        live-аналитики
-                      </p>
-                      <div className="bg-border-subtle h-6 w-px shrink-0" aria-hidden />
-                      <TooltipProvider>
-                        <div
-                          className={cn(
-                            'relative flex h-7 w-[min(100%,200px)] min-w-0 items-center overflow-hidden sm:w-[min(100%,220px)]',
-                            BRAND_SIDEBAR_W
-                          )}
-                        >
-                          <AnimatePresence>
-                            <motion.div
-                              key={currentKpiIndex}
-                              initial={{ y: 20, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: -20, opacity: 0 }}
-                              transition={{ duration: 0.5, ease: 'easeInOut' }}
-                              className="absolute inset-0 flex items-center"
-                            >
-                              {(() => {
-                                const m = kpiData[currentKpiIndex];
-                                return (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div
-                                        onClick={() => router.push(m.href)}
-                                        className="group/kpi border-border-subtle bg-bg-surface hover:border-accent-primary/30 flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg border px-2 py-1 text-[10px] font-black uppercase shadow-sm transition-all hover:shadow-md"
-                                      >
-                                        <span className="text-text-muted group-hover/kpi:text-accent-primary truncate transition-colors">
-                                          {m.label}
-                                        </span>
-                                        <div className="ml-auto flex shrink-0 items-center gap-1.5">
-                                          <span
-                                            className={cn(
-                                              'text-xs tabular-nums',
-                                              m.color(typeof m.val === 'number' ? m.val : 100)
-                                            )}
+                <>
+                  <CabinetHubTitleRow
+                    className="border-border-subtle gap-2 border-b pb-2"
+                    onOpenMobileNav={() => setSidebarOpen(true)}
+                    hubIcon={Store}
+                    iconTileClassName="bg-text-primary text-text-inverse shadow-xl shadow-black/15 ring-1 ring-border-subtle"
+                    title="Бренд-центр"
+                    trailing={
+                      <div className="flex w-full min-w-0 shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
+                        {!platformCore ? (
+                          <div className="border-border-subtle mr-0.5 hidden min-w-0 max-w-full items-center gap-2 border-r pr-2 2xl:flex">
+                            <p className="text-text-secondary flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[9px] font-black uppercase tracking-widest">
+                              <Activity className="text-accent-primary h-3 w-3 shrink-0" /> Центр
+                              live-аналитики
+                            </p>
+                            <div className="bg-border-subtle h-6 w-px shrink-0" aria-hidden />
+                            <TooltipProvider>
+                              <div
+                                className={cn(
+                                  'relative flex h-7 w-[min(100%,200px)] min-w-0 items-center overflow-hidden sm:w-[min(100%,220px)]',
+                                  BRAND_SIDEBAR_W
+                                )}
+                              >
+                                <AnimatePresence>
+                                  <motion.div
+                                    key={currentKpiIndex}
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -20, opacity: 0 }}
+                                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                    className="absolute inset-0 flex items-center"
+                                  >
+                                    {(() => {
+                                      const m = kpiData[currentKpiIndex];
+                                      return (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div
+                                              onClick={() => router.push(m.href)}
+                                              className="group/kpi border-border-subtle bg-bg-surface hover:border-accent-primary/30 flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg border px-2 py-1 text-[10px] font-black uppercase shadow-sm transition-all hover:shadow-md"
+                                            >
+                                              <span className="text-text-muted group-hover/kpi:text-accent-primary truncate transition-colors">
+                                                {m.label}
+                                              </span>
+                                              <div className="ml-auto flex shrink-0 items-center gap-1.5">
+                                                <span
+                                                  className={cn(
+                                                    'text-xs tabular-nums',
+                                                    m.color(typeof m.val === 'number' ? m.val : 100)
+                                                  )}
+                                                >
+                                                  {typeof m.val === 'number'
+                                                    ? `${m.val}${m.unit}`
+                                                    : m.val}
+                                                </span>
+                                                <div
+                                                  className={cn(
+                                                    'flex items-center text-[8px]',
+                                                    m.trend > 0
+                                                      ? 'text-emerald-500'
+                                                      : 'text-rose-500'
+                                                  )}
+                                                >
+                                                  {m.trend > 0 ? (
+                                                    <ArrowUpRight className="mr-0.5 h-2 w-2" />
+                                                  ) : (
+                                                    <ArrowDownRight className="mr-0.5 h-2 w-2" />
+                                                  )}
+                                                  {Math.abs(m.trend)}%
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </TooltipTrigger>
+                                          <TooltipContent
+                                            side="bottom"
+                                            className="bg-text-primary text-text-inverse z-[100] max-w-[240px] space-y-3 rounded-xl border-none p-3 text-[9px] font-medium shadow-xl"
                                           >
-                                            {typeof m.val === 'number'
-                                              ? `${m.val}${m.unit}`
-                                              : m.val}
-                                          </span>
-                                          <div
-                                            className={cn(
-                                              'flex items-center text-[8px]',
-                                              m.trend > 0 ? 'text-emerald-500' : 'text-rose-500'
-                                            )}
-                                          >
-                                            {m.trend > 0 ? (
-                                              <ArrowUpRight className="mr-0.5 h-2 w-2" />
-                                            ) : (
-                                              <ArrowDownRight className="mr-0.5 h-2 w-2" />
-                                            )}
-                                            {Math.abs(m.trend)}%
+                                            <div>
+                                              <div className="mb-1 flex items-start justify-between">
+                                                <p className="text-accent-primary font-black uppercase tracking-widest">
+                                                  {m.label} ·{' '}
+                                                  {typeof m.val === 'number'
+                                                    ? `${m.val}${m.unit}`
+                                                    : m.val}
+                                                </p>
+                                                <Badge
+                                                  className={cn(
+                                                    'h-4 border-none text-[6px] font-black',
+                                                    m.trend > 0
+                                                      ? 'bg-emerald-500/20 text-emerald-400'
+                                                      : 'bg-rose-500/20 text-rose-400'
+                                                  )}
+                                                >
+                                                  {m.trend > 0 ? '+' : ''}
+                                                  {m.trend}% к пред. периоду
+                                                </Badge>
+                                              </div>
+                                              <p className="leading-relaxed opacity-90">{m.desc}</p>
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                              <div className="flex items-center justify-between text-[7px] font-black uppercase tracking-widest text-white/40">
+                                                <span>Тренд (4 недели)</span>
+                                                <span
+                                                  className={cn(
+                                                    m.trend > 0
+                                                      ? 'text-emerald-400'
+                                                      : 'text-rose-400'
+                                                  )}
+                                                >
+                                                  {m.trendText}
+                                                </span>
+                                              </div>
+                                              <div className="flex h-8 w-full items-end gap-0.5">
+                                                {(
+                                                  m.sparkline || [30, 45, 35, 60, 55, 80, 75, 90]
+                                                ).map((h, idx) => (
+                                                  <div
+                                                    key={idx}
+                                                    className={cn(
+                                                      'flex-1 rounded-t-[1px] transition-all duration-500',
+                                                      idx === 7
+                                                        ? 'bg-accent-primary'
+                                                        : 'bg-white/10'
+                                                    )}
+                                                    style={{ height: `${h}%` }}
+                                                  />
+                                                ))}
+                                              </div>
+                                            </div>
+
+                                            <div className="space-y-2 border-t border-white/10 pt-2">
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                  <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
+                                                    Контроль:
+                                                  </span>
+                                                  <span className="text-accent-primary/90 block text-[8px] leading-tight">
+                                                    {m.controlledIn}
+                                                  </span>
+                                                </div>
+                                                <div>
+                                                  <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
+                                                    Факторы:
+                                                  </span>
+                                                  <span className="block text-[8px] leading-tight text-emerald-400">
+                                                    {m.factors}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              <div className="grid grid-cols-3 gap-1 pt-1">
+                                                <Button
+                                                  onClick={() => router.push(m.href)}
+                                                  variant="ghost"
+                                                  className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
+                                                >
+                                                  Детали
+                                                </Button>
+                                                <Button
+                                                  variant="ghost"
+                                                  className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
+                                                >
+                                                  Алерт
+                                                </Button>
+                                                <Button
+                                                  variant="ghost"
+                                                  className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
+                                                >
+                                                  Экспорт
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      );
+                                    })()}
+                                  </motion.div>
+                                </AnimatePresence>
+                              </div>
+                            </TooltipProvider>
+
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-text-muted hover:bg-accent-primary/10 hover:text-accent-primary h-7 w-7 shrink-0 rounded-lg transition-all"
+                                >
+                                  <ListFilter className="size-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="border-border-subtle bg-bg-surface z-[100] w-64 rounded-2xl border p-2 shadow-2xl"
+                              >
+                                <p className="border-border-subtle text-text-muted mb-1 border-b px-3 py-2 text-[8px] font-black uppercase tracking-widest">
+                                  Все показатели
+                                </p>
+                                <TooltipProvider delayDuration={0}>
+                                  {kpiData.map((m, i) => (
+                                    <Tooltip key={i}>
+                                      <TooltipTrigger asChild>
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setCurrentKpiIndex(i);
+                                            router.push(m.href);
+                                          }}
+                                          className="hover:bg-bg-surface2 group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2"
+                                        >
+                                          <div className="flex items-center gap-2">
+                                            <div
+                                              className={cn(
+                                                'h-1.5 w-1.5 rounded-full',
+                                                currentKpiIndex === i
+                                                  ? 'bg-accent-primary'
+                                                  : 'bg-border-subtle'
+                                              )}
+                                            />
+                                            <span className="text-text-primary group-hover:text-accent-primary text-[10px] font-black uppercase tracking-widest transition-colors">
+                                              {m.label}
+                                            </span>
                                           </div>
-                                        </div>
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                      side="bottom"
-                                      className="bg-text-primary text-text-inverse z-[100] max-w-[240px] space-y-3 rounded-xl border-none p-3 text-[9px] font-medium shadow-xl"
-                                    >
-                                      <div>
-                                        <div className="mb-1 flex items-start justify-between">
-                                          <p className="text-accent-primary font-black uppercase tracking-widest">
-                                            {m.label} ·{' '}
-                                            {typeof m.val === 'number'
-                                              ? `${m.val}${m.unit}`
-                                              : m.val}
-                                          </p>
-                                          <Badge
-                                            className={cn(
-                                              'h-4 border-none text-[6px] font-black',
-                                              m.trend > 0
-                                                ? 'bg-emerald-500/20 text-emerald-400'
-                                                : 'bg-rose-500/20 text-rose-400'
-                                            )}
-                                          >
-                                            {m.trend > 0 ? '+' : ''}
-                                            {m.trend}% к пред. периоду
-                                          </Badge>
-                                        </div>
+                                          <div className="flex items-center gap-2">
+                                            <span
+                                              className={cn(
+                                                'text-[10px] font-black',
+                                                m.color(typeof m.val === 'number' ? m.val : 100)
+                                              )}
+                                            >
+                                              {typeof m.val === 'number'
+                                                ? `${m.val}${m.unit}`
+                                                : m.val}
+                                            </span>
+                                            <div
+                                              className={cn(
+                                                'flex items-center text-[7px] font-bold',
+                                                m.trend > 0 ? 'text-emerald-500' : 'text-rose-500'
+                                              )}
+                                            >
+                                              {m.trend > 0 ? '↑' : '↓'}
+                                              {Math.abs(m.trend)}%
+                                            </div>
+                                          </div>
+                                        </DropdownMenuItem>
+                                      </TooltipTrigger>
+                                      <TooltipContent
+                                        side="right"
+                                        className="bg-text-primary text-text-inverse z-[110] max-w-[220px] space-y-2 rounded-xl border-none p-3 text-[9px] font-medium shadow-xl"
+                                      >
+                                        <p className="text-accent-primary font-black uppercase tracking-widest">
+                                          {m.label} · детализация
+                                        </p>
                                         <p className="leading-relaxed opacity-90">{m.desc}</p>
-                                      </div>
-
-                                      <div className="space-y-1.5">
-                                        <div className="flex items-center justify-between text-[7px] font-black uppercase tracking-widest text-white/40">
-                                          <span>Тренд (4 недели)</span>
-                                          <span
-                                            className={cn(
-                                              m.trend > 0 ? 'text-emerald-400' : 'text-rose-400'
-                                            )}
-                                          >
-                                            {m.trendText}
-                                          </span>
-                                        </div>
-                                        <div className="flex h-8 w-full items-end gap-0.5">
-                                          {(m.sparkline || [30, 45, 35, 60, 55, 80, 75, 90]).map(
-                                            (h, idx) => (
-                                              <div
-                                                key={idx}
-                                                className={cn(
-                                                  'flex-1 rounded-t-[1px] transition-all duration-500',
-                                                  idx === 7 ? 'bg-accent-primary' : 'bg-white/10'
-                                                )}
-                                                style={{ height: `${h}%` }}
-                                              />
-                                            )
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      <div className="space-y-2 border-t border-white/10 pt-2">
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex gap-3 border-t border-white/10 pt-1">
                                           <div>
                                             <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
                                               Контроль:
                                             </span>
-                                            <span className="text-accent-primary/90 block text-[8px] leading-tight">
+                                            <span className="text-accent-primary/90 text-[8px]">
                                               {m.controlledIn}
                                             </span>
                                           </div>
@@ -713,172 +840,54 @@ function BrandLayoutContent({ children }: { children: React.ReactNode }) {
                                             <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
                                               Факторы:
                                             </span>
-                                            <span className="block text-[8px] leading-tight text-emerald-400">
+                                            <span className="text-[8px] text-emerald-400">
                                               {m.factors}
                                             </span>
                                           </div>
                                         </div>
-                                        <div className="grid grid-cols-3 gap-1 pt-1">
-                                          <Button
-                                            onClick={() => router.push(m.href)}
-                                            variant="ghost"
-                                            className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
-                                          >
-                                            Детали
-                                          </Button>
-                                          <Button
-                                            variant="ghost"
-                                            className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
-                                          >
-                                            Алерт
-                                          </Button>
-                                          <Button
-                                            variant="ghost"
-                                            className="h-6 rounded-lg border border-white/5 bg-white/5 p-0 text-[6px] font-black uppercase hover:bg-white/10"
-                                          >
-                                            Экспорт
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                );
-                              })()}
-                            </motion.div>
-                          </AnimatePresence>
-                        </div>
-                      </TooltipProvider>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ))}
+                                </TooltipProvider>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        ) : null}
+                        {!platformCore ? <SearchBar /> : null}
+                      </div>
+                    }
+                  />
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-text-muted hover:bg-accent-primary/10 hover:text-accent-primary h-7 w-7 shrink-0 rounded-lg transition-all"
-                          >
-                            <ListFilter className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="border-border-subtle bg-bg-surface z-[100] w-64 rounded-2xl border p-2 shadow-2xl"
-                        >
-                          <p className="border-border-subtle text-text-muted mb-1 border-b px-3 py-2 text-[8px] font-black uppercase tracking-widest">
-                            Все показатели
-                          </p>
-                          <TooltipProvider delayDuration={0}>
-                            {kpiData.map((m, i) => (
-                              <Tooltip key={i}>
-                                <TooltipTrigger asChild>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setCurrentKpiIndex(i);
-                                      router.push(m.href);
-                                    }}
-                                    className="hover:bg-bg-surface2 group flex cursor-pointer items-center justify-between rounded-xl px-3 py-2"
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <div
-                                        className={cn(
-                                          'h-1.5 w-1.5 rounded-full',
-                                          currentKpiIndex === i
-                                            ? 'bg-accent-primary'
-                                            : 'bg-border-subtle'
-                                        )}
-                                      />
-                                      <span className="text-text-primary group-hover:text-accent-primary text-[10px] font-black uppercase tracking-widest transition-colors">
-                                        {m.label}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span
-                                        className={cn(
-                                          'text-[10px] font-black',
-                                          m.color(typeof m.val === 'number' ? m.val : 100)
-                                        )}
-                                      >
-                                        {typeof m.val === 'number' ? `${m.val}${m.unit}` : m.val}
-                                      </span>
-                                      <div
-                                        className={cn(
-                                          'flex items-center text-[7px] font-bold',
-                                          m.trend > 0 ? 'text-emerald-500' : 'text-rose-500'
-                                        )}
-                                      >
-                                        {m.trend > 0 ? '↑' : '↓'}
-                                        {Math.abs(m.trend)}%
-                                      </div>
-                                    </div>
-                                  </DropdownMenuItem>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  side="right"
-                                  className="bg-text-primary text-text-inverse z-[110] max-w-[220px] space-y-2 rounded-xl border-none p-3 text-[9px] font-medium shadow-xl"
-                                >
-                                  <p className="text-accent-primary font-black uppercase tracking-widest">
-                                    {m.label} · детализация
-                                  </p>
-                                  <p className="leading-relaxed opacity-90">{m.desc}</p>
-                                  <div className="flex gap-3 border-t border-white/10 pt-1">
-                                    <div>
-                                      <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
-                                        Контроль:
-                                      </span>
-                                      <span className="text-accent-primary/90 text-[8px]">
-                                        {m.controlledIn}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="block text-[7px] font-black uppercase tracking-widest text-white/45">
-                                        Факторы:
-                                      </span>
-                                      <span className="text-[8px] text-emerald-400">
-                                        {m.factors}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            ))}
-                          </TooltipProvider>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    ) : null}
-                    {!platformCore ? <SearchBar /> : null}
-                  </div>
-                }
-              />
-
-              {!platformCore ? (
-                <CabinetHubSectionBar
-                  accentClassName="bg-accent-primary"
-                  breadcrumbItems={
-                    hubBreadcrumbRow ?? (['Аккаунт', 'Кабинет бренда', hubBreadcrumbLeaf] as const)
-                  }
-                  sectionTitle={
-                    (pathname || '').startsWith('/brand/production/workshop2')
-                      ? undefined
-                      : hubBreadcrumbLeaf
-                  }
-                  trailing={
-                    <>
-                      {(Array.isArray(profile?.alerts) ? profile.alerts : []).map(
-                        (alert: any, idx: number) => (
-                        <Badge
-                          key={idx}
-                          variant="outline"
-                          className="border-accent-primary/20 bg-accent-primary/10 text-accent-primary h-7 animate-pulse px-2 text-[7px] font-black uppercase tracking-widest"
-                        >
-                          {alert.message}
-                        </Badge>
-                        )
-                      )}
-                    </>
-                  }
-                />
-              ) : null}
-              </>
+                  {!platformCore ? (
+                    <CabinetHubSectionBar
+                      accentClassName="bg-accent-primary"
+                      breadcrumbItems={
+                        hubBreadcrumbRow ??
+                        (['Аккаунт', 'Кабинет бренда', hubBreadcrumbLeaf] as const)
+                      }
+                      sectionTitle={
+                        (pathname || '').startsWith('/brand/production/workshop2')
+                          ? undefined
+                          : hubBreadcrumbLeaf
+                      }
+                      trailing={
+                        <>
+                          {(Array.isArray(profile?.alerts) ? profile.alerts : []).map(
+                            (alert: any, idx: number) => (
+                              <Badge
+                                key={idx}
+                                variant="outline"
+                                className="border-accent-primary/20 bg-accent-primary/10 text-accent-primary h-7 animate-pulse px-2 text-[7px] font-black uppercase tracking-widest"
+                              >
+                                {alert.message}
+                              </Badge>
+                            )
+                          )}
+                        </>
+                      }
+                    />
+                  ) : null}
+                </>
               )}
 
               {!platformCore ? <BrandSectionHeaderBlock /> : null}

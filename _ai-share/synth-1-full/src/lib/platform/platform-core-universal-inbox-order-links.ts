@@ -12,11 +12,7 @@ import {
   shopMessagesB2bOrderContextHref,
 } from '@/lib/routes';
 
-export type PlatformCoreUniversalInboxVariant =
-  | 'shop'
-  | 'brand'
-  | 'manufacturer'
-  | 'supplier';
+export type PlatformCoreUniversalInboxVariant = 'shop' | 'brand' | 'manufacturer' | 'supplier';
 
 export type UniversalInboxOrderDeepLinks = {
   chatHref: string;

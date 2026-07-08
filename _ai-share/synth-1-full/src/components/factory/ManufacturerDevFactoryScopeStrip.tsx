@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import {
-  ROUTES,
-  factoryProductionDossierHref,
-} from '@/lib/routes';
+import { ROUTES, factoryProductionDossierHref } from '@/lib/routes';
 import { WORKSHOP2_COL_PARAM } from '@/lib/production/workshop2-url';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { factorySampleQueueDeepHref } from '@/lib/platform/wave-xc-mfr-sample-status-patch';
@@ -17,11 +14,7 @@ type Props = {
 };
 
 /** Mfr dev status — factory-scoped filter honesty + brand W2 read-only peer. */
-export function ManufacturerDevFactoryScopeStrip({
-  collectionId,
-  articleId,
-  factoryId,
-}: Props) {
+export function ManufacturerDevFactoryScopeStrip({ collectionId, articleId, factoryId }: Props) {
   const brandW2Href = `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
   const dossierHref = factoryProductionDossierHref(articleId, { collectionId });
 

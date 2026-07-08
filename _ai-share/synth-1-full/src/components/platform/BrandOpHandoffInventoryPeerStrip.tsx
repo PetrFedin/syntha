@@ -48,7 +48,11 @@ export function BrandOpHandoffInventoryPeerStrip({ orderId, collectionId, factor
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={handoff.qcGateTabHref} data-testid="brand-op-handoff-qc-gate-link" className={hubGadget.goldenLink}>
+      <Link
+        href={handoff.qcGateTabHref}
+        data-testid="brand-op-handoff-qc-gate-link"
+        className={hubGadget.goldenLink}
+      >
         Гейт КК
       </Link>
     </div>

@@ -32,8 +32,7 @@ export const BRAND_PRICELIST_TIER_SYNC_SOURCE_RU = (mode: string) =>
 
 export const SHOP_PRICELIST_TIER_RECEIVE_SYNCED_RU = 'Тир получен от бренда';
 export const SHOP_PRICELIST_TIER_RECEIVE_PENDING_RU = 'Ожидает прайс-лист бренда';
-export const SHOP_PRICELIST_TIER_RECEIVE_MULTIPLIER_RU = (multiplier: number) =>
-  `×${multiplier}`;
+export const SHOP_PRICELIST_TIER_RECEIVE_MULTIPLIER_RU = (multiplier: number) => `×${multiplier}`;
 
 export function brandPricelistShopMatrixTierBadgeHref(
   collectionId: string,

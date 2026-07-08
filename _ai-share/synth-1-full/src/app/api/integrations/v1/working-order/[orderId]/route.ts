@@ -45,8 +45,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
   } catch {
     body = {};
   }
-  const lines = (body.lines as Parameters<typeof addWorkingOrderEditVersion>[0]['lines']) ??
-    getImportedLineItems(orderId) ?? [];
+  const lines =
+    (body.lines as Parameters<typeof addWorkingOrderEditVersion>[0]['lines']) ??
+    getImportedLineItems(orderId) ??
+    [];
   const version = addWorkingOrderEditVersion({
     wholesaleOrderId: orderId,
     label: String(body.label ?? `edit v${listWorkingOrderVersions(orderId).length + 1}`),

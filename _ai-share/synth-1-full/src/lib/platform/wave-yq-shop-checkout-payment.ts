@@ -42,7 +42,8 @@ export {
   shouldShowShopCheckoutPaymentTrackingCrossLink,
 } from '@/lib/platform/wave-yw-shop-checkout-payment';
 
-export const WAVE_YQ_SHOP_CO_CHECKOUT_PAYMENT_INTENT_API = WAVE_YW_SHOP_CO_CHECKOUT_PAYMENT_INTENT_API;
+export const WAVE_YQ_SHOP_CO_CHECKOUT_PAYMENT_INTENT_API =
+  WAVE_YW_SHOP_CO_CHECKOUT_PAYMENT_INTENT_API;
 export const WAVE_YQ_SHOP_CO_CHECKOUT_PAYMENT_INTENT_STRIP_TESTID =
   WAVE_YW_SHOP_CO_CHECKOUT_PAYMENT_INTENT_STRIP_TESTID;
 export const WAVE_YQ_SHOP_CO_CHECKOUT_PAYMENT_INTENT_LINK_TESTID =
@@ -81,7 +82,9 @@ export function formatShopCheckoutPaymentNotConnectedDetailRu(
 /** Message row — wave YQ extends YW with honest not_connected copy (no EN leakage). */
 export function formatShopCheckoutPaymentIntentMessageRu(input: {
   probe: ShopCoCheckoutPaymentIntentProbe | null;
-  intent: import('@/lib/b2b/shop-co-checkout-payment-intent').ShopCoCheckoutPaymentIntentResult | null;
+  intent:
+    | import('@/lib/b2b/shop-co-checkout-payment-intent').ShopCoCheckoutPaymentIntentResult
+    | null;
   loading: boolean;
 }): string {
   if (input.loading) return 'Проверка платёжного провайдера…';

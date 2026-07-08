@@ -77,9 +77,7 @@ function BrandMessagesCoreContent() {
         role="alert"
       >
         <p className="font-semibold">Сообщения недоступны</p>
-        <p className="text-text-secondary mt-1">
-          {PLATFORM_CORE_MESSAGES_UNAVAILABLE_RU}
-        </p>
+        <p className="text-text-secondary mt-1">{PLATFORM_CORE_MESSAGES_UNAVAILABLE_RU}</p>
         <p className="mt-3">
           <Link href={ROUTES.brand.productionWorkshop2} className="text-accent-primary underline">
             Перейти в разработку коллекции →

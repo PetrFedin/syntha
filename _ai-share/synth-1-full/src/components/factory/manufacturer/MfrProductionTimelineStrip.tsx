@@ -84,11 +84,18 @@ export function MfrProductionTimelineStrip({
       {!compact ? (
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] font-semibold text-amber-950">WIP · цех</p>
-          <Badge variant="outline" className="text-[8px] uppercase" data-testid="mfr-op-production-timeline-storage">
+          <Badge
+            variant="outline"
+            className="text-[8px] uppercase"
+            data-testid="mfr-op-production-timeline-storage"
+          >
             {storageMode === 'postgres' ? 'PG WIP' : 'WIP local'}
           </Badge>
           {labelRu ? (
-            <span className="text-[10px] text-amber-900" data-testid="mfr-op-production-timeline-stage">
+            <span
+              className="text-[10px] text-amber-900"
+              data-testid="mfr-op-production-timeline-stage"
+            >
               {labelRu}
             </span>
           ) : null}

@@ -28,7 +28,10 @@ async function resolveScopeKey(
     if (checkoutAuth instanceof NextResponse) return checkoutAuth;
     scopeKey =
       scopeKey ||
-      resolveShopCoreBuyerIdFromRequest(req, req.nextUrl.searchParams.get('buyerId') ?? checkoutAuth.buyerId);
+      resolveShopCoreBuyerIdFromRequest(
+        req,
+        req.nextUrl.searchParams.get('buyerId') ?? checkoutAuth.buyerId
+      );
     return scopeKey;
   }
   const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);

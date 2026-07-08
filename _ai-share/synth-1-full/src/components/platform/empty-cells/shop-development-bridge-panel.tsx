@@ -51,8 +51,9 @@ export default function ShopDevelopmentBridge({
   const [sampleMsg, setSampleMsg] = useState<string | null>(null);
   const [sampleBusy, setSampleBusy] = useState(false);
   const [visitChanges, setVisitChanges] = useState<string[]>([]);
-  const [progressSnapshot, setProgressSnapshot] =
-    useState<ShopDevelopmentProgressSnapshot | null>(null);
+  const [progressSnapshot, setProgressSnapshot] = useState<ShopDevelopmentProgressSnapshot | null>(
+    null
+  );
   const [progressLoading, setProgressLoading] = useState(false);
   const devSnap = usePillarSnapshot({
     collectionId,
@@ -83,8 +84,7 @@ export default function ShopDevelopmentBridge({
   const articleCount = devStatus?.articleCount ?? null;
   const readyForBuyers = sampleStatus?.readyForBuyers ?? null;
 
-  const brandW2Href =
-    devStatus?.workshop2Href ?? brandDevelopmentCabinetHref(collectionId);
+  const brandW2Href = devStatus?.workshop2Href ?? brandDevelopmentCabinetHref(collectionId);
   const shopShowroomHref =
     sampleStatus?.shopShowroomHref ??
     `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
@@ -166,9 +166,7 @@ export default function ShopDevelopmentBridge({
     <section data-testid="shop-development-bridge" className="min-w-0 space-y-2">
       <Card className={cn(hubGadget.pillarCard, 'border-sky-200/60')}>
         <CardContent className={cn(hubGadget.pillarBody, 'space-y-2 text-xs')}>
-          {hideLead ? null : (
-            <p className="font-semibold">Разработка ведёт бренд · {colLabel}</p>
-          )}
+          {hideLead ? null : <p className="font-semibold">Разработка ведёт бренд · {colLabel}</p>}
           {loadState === 'loading' ? (
             <p className="text-text-muted">Загрузка…</p>
           ) : loadState === 'error' ? (
@@ -259,9 +257,11 @@ export default function ShopDevelopmentBridge({
                   variant="vertical"
                 />
               ) : (
-                <p className="text-text-muted text-xs">Нет шагов development-status для коллекции.</p>
+                <p className="text-text-muted text-xs">
+                  Нет шагов development-status для коллекции.
+                </p>
               )}
-              <div className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 p-2">
+              <div className="border-border-subtle bg-bg-surface2/40 space-y-2 rounded-md border p-2">
                 <p className="text-text-secondary text-[11px]">
                   Запрос образца по артикулу{' '}
                   <span className="font-mono">{previewSampleArticleId}</span> — уведомление уйдёт
@@ -278,7 +278,10 @@ export default function ShopDevelopmentBridge({
                   Запросить образец
                 </Button>
                 {sampleMsg ? (
-                  <p className="text-emerald-800 text-[11px]" data-testid="shop-dev-bridge-request-sample-msg">
+                  <p
+                    className="text-[11px] text-emerald-800"
+                    data-testid="shop-dev-bridge-request-sample-msg"
+                  >
                     {sampleMsg}
                   </p>
                 ) : null}

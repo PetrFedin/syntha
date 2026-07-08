@@ -208,16 +208,16 @@ export type Workshop2Phase1DossierSectionBodyInputBundles = {
 /** Flat orchestrator scope → nested section body bundles (wave 72). */
 export type Workshop2Phase1DossierSectionBodyFlatScope =
   Workshop2Phase1DossierSectionBodySectionNavBundle &
-  Workshop2Phase1DossierSectionBodyTzMinimalBundle &
-  Workshop2Phase1DossierSectionBodyDossierCoreBundle &
-  Workshop2Phase1DossierSectionBodyPassportBundle &
-  Workshop2Phase1DossierSectionBodyJumpNavBundle &
-  Workshop2Phase1DossierSectionBodyHandbookBundle &
-  Workshop2Phase1DossierSectionBodyRowsAttrsBundle &
-  Workshop2Phase1DossierSectionBodySignoffBundle &
-  Workshop2Phase1DossierSectionBodyTechPackBundle &
-  Workshop2Phase1DossierSectionBodySketchBundle &
-  Workshop2Phase1DossierSectionBodyVisualsAssignmentBundle;
+    Workshop2Phase1DossierSectionBodyTzMinimalBundle &
+    Workshop2Phase1DossierSectionBodyDossierCoreBundle &
+    Workshop2Phase1DossierSectionBodyPassportBundle &
+    Workshop2Phase1DossierSectionBodyJumpNavBundle &
+    Workshop2Phase1DossierSectionBodyHandbookBundle &
+    Workshop2Phase1DossierSectionBodyRowsAttrsBundle &
+    Workshop2Phase1DossierSectionBodySignoffBundle &
+    Workshop2Phase1DossierSectionBodyTechPackBundle &
+    Workshop2Phase1DossierSectionBodySketchBundle &
+    Workshop2Phase1DossierSectionBodyVisualsAssignmentBundle;
 
 export function buildWorkshop2Phase1DossierSectionBodyInputBundles(
   c: Workshop2Phase1DossierSectionBodyFlatScope

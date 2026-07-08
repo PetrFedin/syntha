@@ -51,10 +51,7 @@ export function BrandMaterialPassportGoldenPathStrip({ collectionId, activeStep 
           ) : null}
           <Link
             href={hrefFor(step.id)}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === step.id && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === step.id && 'font-bold underline')}
             data-testid={`brand-material-passport-golden-${step.id}-link`}
           >
             {step.label}

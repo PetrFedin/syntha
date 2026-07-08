@@ -28,9 +28,7 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      sendRaw(
-        formatPlatformCoreB2bRegistrySseData({ type: 'ping', ts: new Date().toISOString() })
-      );
+      sendRaw(formatPlatformCoreB2bRegistrySseData({ type: 'ping', ts: new Date().toISOString() }));
 
       const onBump = (reason?: string) => {
         sendRaw(

@@ -24,12 +24,12 @@ export function PlatformCoreEmptyChainBanner({ collectionId }: Props) {
     <div
       role="status"
       data-testid="platform-core-empty-chain-banner"
-      className="border-slate-300/80 bg-slate-50 text-slate-900 flex gap-3 rounded-xl border px-4 py-3 text-sm"
+      className="flex gap-3 rounded-xl border border-slate-300/80 bg-slate-50 px-4 py-3 text-sm text-slate-900"
     >
       <GitCompare className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" aria-hidden />
       <div className="space-y-1">
         <p className="font-semibold">Пустая цепочка</p>
-        <p className="text-slate-800/90 text-xs leading-relaxed">
+        <p className="text-xs leading-relaxed text-slate-800/90">
           {PLATFORM_CORE_EMPTY_CHAIN_BANNER_RU}
         </p>
         <p className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
@@ -46,7 +46,10 @@ export function PlatformCoreEmptyChainBanner({ collectionId }: Props) {
           >
             {getPlatformCoreCollectionLabel(PLATFORM_CORE_DEMO.collectionId)}
           </Link>
-          <Link href="/platform?collection=FW27" className="font-medium underline underline-offset-2">
+          <Link
+            href="/platform?collection=FW27"
+            className="font-medium underline underline-offset-2"
+          >
             {getPlatformCoreCollectionLabel('FW27')}
           </Link>
         </p>

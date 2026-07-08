@@ -3,10 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listWorkshop2B2bOrdersForBuyer } from '@/lib/server/workshop2-b2b-orders-repository';
 
 /** GET /api/brand/retailers/[id]/b2b-orders — W2 B2B заказы партнёра (CRM bridge). */
-export async function GET(
-  _req: NextRequest,
-  ctx: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const buyerId = id?.trim();
   if (!buyerId) {

@@ -92,65 +92,66 @@ export const Composer: React.FC<ComposerProps> = ({
     <div
       className={cn(
         'relative z-10 mx-auto w-full max-w-4xl border-t border-slate-100 bg-white p-3 transition-all',
-        slimCore && 'max-md:sticky max-md:bottom-0 max-md:z-20 max-md:pb-safe max-md:bg-white/95 max-md:backdrop-blur-sm'
+        slimCore &&
+          'max-md:pb-safe max-md:sticky max-md:bottom-0 max-md:z-20 max-md:bg-white/95 max-md:backdrop-blur-sm'
       )}
     >
       {!slimCore && (
-      <div className="scrollbar-hide mb-2.5 flex gap-1.5 overflow-x-auto py-0.5">
-        <Button
-          variant="outline"
-          className="h-6.5 rounded-lg border-indigo-100 bg-indigo-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-indigo-600 shadow-sm transition-all hover:bg-indigo-600 hover:text-white"
-          onClick={() => onSmartReply('status')}
-        >
-          <Factory className="mr-1.5 h-3 w-3" /> Status
-        </Button>
-        <Button
-          variant="outline"
-          className="h-6.5 rounded-lg border-emerald-100 bg-emerald-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-emerald-600 shadow-sm transition-all hover:bg-emerald-600 hover:text-white"
-          onClick={() => onSmartReply('invoice')}
-        >
-          <CreditCard className="mr-1.5 h-3 w-3" /> Invoice
-        </Button>
-        <Button
-          variant="outline"
-          className="h-6.5 rounded-lg border-amber-100 bg-amber-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-amber-600 shadow-sm transition-all hover:bg-amber-600 hover:text-white"
-          onClick={() => onSmartReply('qc')}
-        >
-          <ShieldAlert className="mr-1.5 h-3 w-3" /> QC Report
-        </Button>
-        <Button
-          variant="outline"
-          className="h-6.5 rounded-lg border-indigo-100 bg-indigo-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-indigo-600 shadow-sm transition-all hover:bg-indigo-600 hover:text-white"
-          onClick={() => onSmartReply('reminder')}
-        >
-          <BellRing className="mr-1.5 h-3 w-3" /> Reminder
-        </Button>
-        <Button
-          variant="outline"
-          className="h-6.5 rounded-lg border-slate-200 bg-white px-2.5 text-[8px] font-bold uppercase tracking-widest text-slate-500 shadow-sm transition-all hover:bg-slate-900 hover:text-white"
-          onClick={() => onSmartReply('translate')}
-        >
-          <Languages className="mr-1.5 h-3 w-3" /> Translate
-        </Button>
-        {onOpenCreateTask && (
+        <div className="scrollbar-hide mb-2.5 flex gap-1.5 overflow-x-auto py-0.5">
           <Button
             variant="outline"
-            className="h-6.5 rounded-lg border-violet-100 bg-violet-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-violet-600 shadow-sm transition-all hover:bg-violet-600 hover:text-white"
-            onClick={onOpenCreateTask}
+            className="h-6.5 rounded-lg border-indigo-100 bg-indigo-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-indigo-600 shadow-sm transition-all hover:bg-indigo-600 hover:text-white"
+            onClick={() => onSmartReply('status')}
           >
-            <ListTodo className="mr-1.5 h-3 w-3" /> Задача
+            <Factory className="mr-1.5 h-3 w-3" /> Status
           </Button>
-        )}
-        {onAttachProduct && (
+          <Button
+            variant="outline"
+            className="h-6.5 rounded-lg border-emerald-100 bg-emerald-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-emerald-600 shadow-sm transition-all hover:bg-emerald-600 hover:text-white"
+            onClick={() => onSmartReply('invoice')}
+          >
+            <CreditCard className="mr-1.5 h-3 w-3" /> Invoice
+          </Button>
           <Button
             variant="outline"
             className="h-6.5 rounded-lg border-amber-100 bg-amber-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-amber-600 shadow-sm transition-all hover:bg-amber-600 hover:text-white"
-            onClick={onAttachProduct}
+            onClick={() => onSmartReply('qc')}
           >
-            <Package className="mr-1.5 h-3 w-3" /> Товар
+            <ShieldAlert className="mr-1.5 h-3 w-3" /> QC Report
           </Button>
-        )}
-      </div>
+          <Button
+            variant="outline"
+            className="h-6.5 rounded-lg border-indigo-100 bg-indigo-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-indigo-600 shadow-sm transition-all hover:bg-indigo-600 hover:text-white"
+            onClick={() => onSmartReply('reminder')}
+          >
+            <BellRing className="mr-1.5 h-3 w-3" /> Reminder
+          </Button>
+          <Button
+            variant="outline"
+            className="h-6.5 rounded-lg border-slate-200 bg-white px-2.5 text-[8px] font-bold uppercase tracking-widest text-slate-500 shadow-sm transition-all hover:bg-slate-900 hover:text-white"
+            onClick={() => onSmartReply('translate')}
+          >
+            <Languages className="mr-1.5 h-3 w-3" /> Translate
+          </Button>
+          {onOpenCreateTask && (
+            <Button
+              variant="outline"
+              className="h-6.5 rounded-lg border-violet-100 bg-violet-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-violet-600 shadow-sm transition-all hover:bg-violet-600 hover:text-white"
+              onClick={onOpenCreateTask}
+            >
+              <ListTodo className="mr-1.5 h-3 w-3" /> Задача
+            </Button>
+          )}
+          {onAttachProduct && (
+            <Button
+              variant="outline"
+              className="h-6.5 rounded-lg border-amber-100 bg-amber-50/30 px-2.5 text-[8px] font-bold uppercase tracking-widest text-amber-600 shadow-sm transition-all hover:bg-amber-600 hover:text-white"
+              onClick={onAttachProduct}
+            >
+              <Package className="mr-1.5 h-3 w-3" /> Товар
+            </Button>
+          )}
+        </div>
       )}
 
       <div className="group/composer relative">

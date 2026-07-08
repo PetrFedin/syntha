@@ -61,16 +61,16 @@ export default function Workshop2InvestorSummaryPage() {
       {coreMode ? (
         <PlatformCorePlaceholderSurfaceDisclaimer
           route="/brand/production/workshop2/investor-summary"
-          className="text-text-muted border-amber-200 bg-amber-50/80 rounded-md border px-3 py-2 text-xs"
+          className="text-text-muted rounded-md border border-amber-200 bg-amber-50/80 px-3 py-2 text-xs"
         />
       ) : null}
 
       {errorRu ? (
-        <p className="text-destructive text-sm" role="status">
+        <p className="text-sm text-destructive" role="status">
           {errorRu}
         </p>
       ) : !brief && !readiness ? (
-        <p className="text-muted-foreground text-sm">Загрузка…</p>
+        <p className="text-sm text-muted-foreground">Загрузка…</p>
       ) : (
         <div className="space-y-4 text-sm">
           <div className="flex flex-wrap gap-2" data-testid="workshop2-investor-summary-badges">

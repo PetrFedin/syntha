@@ -1,4 +1,7 @@
-import { PILLAR_CAPABILITY_REGISTRY, getPillarCapabilityById } from '@/lib/platform/pillar-capability-registry';
+import {
+  PILLAR_CAPABILITY_REGISTRY,
+  getPillarCapabilityById,
+} from '@/lib/platform/pillar-capability-registry';
 import { getShopReplenishmentWorkflowLinks } from '@/lib/platform/pillar-capability-links';
 
 describe('pillar-capability-registry', () => {

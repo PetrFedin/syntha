@@ -114,9 +114,8 @@ describe('wave YB — brand collection inventory overlay PG (core S1)', () => {
       isPlatformCoreMode: () => true,
     }));
     jest.resetModules();
-    const { loadCollectionInventoryOverlayWithMode: loadCore } = await import(
-      '@/lib/production/collection-inventory-overlay-store'
-    );
+    const { loadCollectionInventoryOverlayWithMode: loadCore } =
+      await import('@/lib/production/collection-inventory-overlay-store');
 
     const loaded = await loadCore('SS27');
     expect(loaded.persistMode).toBe('postgres');

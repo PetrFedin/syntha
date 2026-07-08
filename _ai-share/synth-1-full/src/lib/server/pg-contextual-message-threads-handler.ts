@@ -11,20 +11,21 @@ import { isWorkshop2PgConnectionError } from '@/lib/server/workshop2-pg-pool';
 
 export type PgContextualThreadsCabinet = 'brand' | 'shop' | 'factory';
 
-const THREAD_LIMITS: Record<PgContextualThreadsCabinet, { contextType: string; limit: number }[]> = {
-  brand: [
-    { contextType: 'workshop2_article', limit: 20 },
-    { contextType: 'b2b_order', limit: 15 },
-  ],
-  shop: [
-    { contextType: 'b2b_order', limit: 30 },
-    { contextType: 'workshop2_article', limit: 15 },
-  ],
-  factory: [
-    { contextType: 'b2b_order', limit: 20 },
-    { contextType: 'workshop2_article', limit: 15 },
-  ],
-};
+const THREAD_LIMITS: Record<PgContextualThreadsCabinet, { contextType: string; limit: number }[]> =
+  {
+    brand: [
+      { contextType: 'workshop2_article', limit: 20 },
+      { contextType: 'b2b_order', limit: 15 },
+    ],
+    shop: [
+      { contextType: 'b2b_order', limit: 30 },
+      { contextType: 'workshop2_article', limit: 15 },
+    ],
+    factory: [
+      { contextType: 'b2b_order', limit: 20 },
+      { contextType: 'workshop2_article', limit: 15 },
+    ],
+  };
 
 const HINT_RU: Record<PgContextualThreadsCabinet, string> = {
   brand:

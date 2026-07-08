@@ -50,10 +50,7 @@ export function PlatformB2bSpineGoldenPathStrip({
   };
 
   return (
-    <div
-      className={hubGadget.goldenPath}
-      data-testid={`${testIdPrefix}-golden-path-strip`}
-    >
+    <div className={hubGadget.goldenPath} data-testid={`${testIdPrefix}-golden-path-strip`}>
       {STEPS.map((step, index) => (
         <span key={step.id} className="contents">
           {index > 0 ? (

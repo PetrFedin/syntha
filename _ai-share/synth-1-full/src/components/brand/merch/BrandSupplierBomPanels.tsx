@@ -45,10 +45,7 @@ export function BrandSupplierBomLinesPanel({
     enabled: true,
   });
 
-  const snapshotLines = useMemo(
-    () => snapshot?.supplierProcurement?.bomLines ?? [],
-    [snapshot]
-  );
+  const snapshotLines = useMemo(() => snapshot?.supplierProcurement?.bomLines ?? [], [snapshot]);
 
   const [rows, setRows] = useState<BrandSupplierBomFeedRow[]>([]);
   const [summary, setSummary] = useState({ total: 0, filled: 0, pgSourced: 0 });
@@ -112,7 +109,11 @@ export function BrandSupplierBomLinesPanel({
         </Button>
       </div>
       <BrandDevBomAltMaterialApprovalStrip collectionId={collectionId} articleId={articleId} />
-      <SupplierBomPreview demo={{ ...PLATFORM_CORE_DEMO, collectionId, demoArticleId: articleId }} compact hideLead />
+      <SupplierBomPreview
+        demo={{ ...PLATFORM_CORE_DEMO, collectionId, demoArticleId: articleId }}
+        compact
+        hideLead
+      />
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">BOM lines · persisted</CardTitle>
@@ -167,7 +168,9 @@ export function BrandSupplierBomProcurementPanel({
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Procurement · RFQ</CardTitle>
-          <CardDescription>Centric RFQ → supplier quote → award (столпы 1 + 4 + 5).</CardDescription>
+          <CardDescription>
+            Centric RFQ → supplier quote → award (столпы 1 + 4 + 5).
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>

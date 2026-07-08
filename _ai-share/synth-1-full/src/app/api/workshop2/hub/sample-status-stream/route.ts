@@ -74,7 +74,9 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      sendRaw(formatPlatformCoreSampleStatusSseData({ type: 'ping', ts: new Date().toISOString() }));
+      sendRaw(
+        formatPlatformCoreSampleStatusSseData({ type: 'ping', ts: new Date().toISOString() })
+      );
       void poll();
 
       const onBump = () => void poll();

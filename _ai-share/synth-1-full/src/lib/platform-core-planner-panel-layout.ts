@@ -11,7 +11,11 @@ export const PLANNER_STATUS_RANK: Record<NonNullable<PlatformCorePlannerItem['st
 };
 
 export function sortPlannerItemsByPriorityThenStatus<
-  T extends { priority: PlannerPriority; status?: PlatformCorePlannerItem['status']; title: string },
+  T extends {
+    priority: PlannerPriority;
+    status?: PlatformCorePlannerItem['status'];
+    title: string;
+  },
 >(items: T[]): T[] {
   return [...items].sort(
     (a, b) =>

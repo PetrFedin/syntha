@@ -11,9 +11,7 @@ import {
   WORKSHOP2_PHASE1_DOSSIER_CORE_OFFLINE_BLOCKED_BANNER_TESTID,
   buildBrandDossierDiffAttachTzPoCrossLinks,
 } from '@/lib/platform/wave-xq-brand-dossier-dual-write-off';
-import {
-  WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY,
-} from '@/lib/production/workshop2-phase1-dossier-storage';
+import { WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY } from '@/lib/production/workshop2-phase1-dossier-storage';
 import {
   shouldPersistPhase1DossierOfflineDualWrite,
   shouldMirrorPgClientStoreToLocalStorage,
@@ -52,7 +50,9 @@ describe('wave XQ — brand dossier/ТЗ offline dual-write OFF in core', () => 
 
   it('phase1-dossier persist/hydrate skip LS mirror in core', () => {
     const persist = read('components/brand/production/use-workshop2-phase1-dossier-persist.ts');
-    const hydrate = read('components/brand/production/use-workshop2-phase1-dossier-hydrate-from-storage.ts');
+    const hydrate = read(
+      'components/brand/production/use-workshop2-phase1-dossier-hydrate-from-storage.ts'
+    );
     expect(persist).toContain('shouldPersistPhase1DossierOfflineDualWrite');
     expect(hydrate).toContain('shouldPersistPhase1DossierOfflineDualWrite');
     expect(persist).not.toContain('allowLocalMirror');
@@ -78,7 +78,9 @@ describe('wave XQ — brand dossier/ТЗ offline dual-write OFF in core', () => 
     const wayfinding = read(
       'app/brand/production/workshop2/(w2-enterprise)/c/[collectionId]/a/[articleId]/workshop2-article-core-wayfinding.tsx'
     );
-    const banner = read('components/brand/production/Workshop2Phase1DossierCoreOfflineBlockedBanner.tsx');
+    const banner = read(
+      'components/brand/production/Workshop2Phase1DossierCoreOfflineBlockedBanner.tsx'
+    );
     expect(wayfinding).toContain('Workshop2Phase1DossierCoreOfflineBlockedBanner');
     expect(banner).toContain('WORKSHOP2_PHASE1_DOSSIER_CORE_OFFLINE_BLOCKED_BANNER_TESTID');
     expect(banner).toContain('data-offline-blocked');

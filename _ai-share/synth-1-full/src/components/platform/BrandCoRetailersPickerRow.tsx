@@ -13,7 +13,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useBrandCoRetailersSummary } from '@/hooks/use-brand-co-retailers-summary';
-import { brandB2bOrdersCollectionRegistryHref, brandB2bOrdersRegistryHref, ROUTES } from '@/lib/platform-core-routes';
+import {
+  brandB2bOrdersCollectionRegistryHref,
+  brandB2bOrdersRegistryHref,
+  ROUTES,
+} from '@/lib/platform-core-routes';
 import { pillarInsight } from '@/lib/platform-core-cabinet-chrome';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 import { cn } from '@/lib/utils';

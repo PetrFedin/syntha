@@ -100,8 +100,7 @@ export function BrandDossierFactoryDiffPanel({
   const omitAttachTzCrossStrip = shouldOmitBrandDossierDiffAttachTzCrossStrip(context);
 
   const resolvedOrderId = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
-  const resolvedPoId =
-    productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
+  const resolvedPoId = productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
   const peers = buildBrandDossierFactoryDiffPeerHrefs({
     collectionId,
     articleId,
@@ -134,7 +133,7 @@ export function BrandDossierFactoryDiffPanel({
     <div
       id={BRAND_DOSSIER_FACTORY_DIFF_PANEL_ANCHOR}
       className={cn(
-        'border-border-subtle rounded-md border bg-bg-surface2/50 text-xs',
+        'border-border-subtle bg-bg-surface2/50 rounded-md border text-xs',
         compact ? 'px-2 py-1.5' : 'px-3 py-2'
       )}
       data-testid="brand-dossier-factory-diff-panel"
@@ -152,7 +151,7 @@ export function BrandDossierFactoryDiffPanel({
         {loadingLive ? (
           <Badge
             variant="outline"
-            className="text-[9px] text-text-muted"
+            className="text-text-muted text-[9px]"
             data-testid="brand-dossier-factory-diff-loading-badge"
           >
             {compact ? WAVE_YL_DIFF_LOADING_RU : 'Загрузка…'}
@@ -177,7 +176,7 @@ export function BrandDossierFactoryDiffPanel({
           </span>
         ) : null}
         {!loadingLive && !isLive ? (
-          <Badge variant="outline" className="text-[9px] text-text-muted">
+          <Badge variant="outline" className="text-text-muted text-[9px]">
             {compact ? WAVE_YL_DIFF_STUB_RU : 'заглушка'}
           </Badge>
         ) : null}
@@ -209,7 +208,7 @@ export function BrandDossierFactoryDiffPanel({
       </div>
       <div className={cn('grid md:grid-cols-2', compact ? 'gap-1.5' : 'gap-2')}>
         <div
-          className="min-w-0 rounded border border-border-subtle bg-bg-surface px-2 py-1.5"
+          className="border-border-subtle bg-bg-surface min-w-0 rounded border px-2 py-1.5"
           data-testid="brand-dossier-factory-diff-brand-col"
         >
           <p className="text-text-muted mb-1 text-[9px] font-bold uppercase">
@@ -233,7 +232,7 @@ export function BrandDossierFactoryDiffPanel({
           </ul>
         </div>
         <div
-          className="min-w-0 rounded border border-border-subtle bg-bg-surface px-2 py-1.5"
+          className="border-border-subtle bg-bg-surface min-w-0 rounded border px-2 py-1.5"
           data-testid="brand-dossier-factory-diff-factory-col"
         >
           <p className="text-text-muted mb-1 text-[9px] font-bold uppercase">

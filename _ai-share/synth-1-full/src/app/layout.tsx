@@ -20,11 +20,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="ru"
-      suppressHydrationWarning
-      className={fontVariables}
-    >
+    <html lang="ru" suppressHydrationWarning className={fontVariables}>
       <body className={bodyClassName}>
         {/* Dev: ранний reload при ChunkLoadError — клиентский чанк layout может не загрузиться до монтирования ChunkLoadRecovery. */}
         {process.env.NODE_ENV === 'development' ? (

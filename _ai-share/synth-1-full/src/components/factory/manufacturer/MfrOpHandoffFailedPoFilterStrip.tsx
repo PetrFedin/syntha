@@ -46,7 +46,10 @@ export function MfrOpHandoffFailedPoFilterStrip({ failedCount, totalCount, activ
       >
         {active ? 'Только ошибки ERP' : 'Все серии'}
       </Button>
-      <span className="text-text-muted text-[9px]" data-testid="mfr-op-handoff-failed-po-filter-count">
+      <span
+        className="text-text-muted text-[9px]"
+        data-testid="mfr-op-handoff-failed-po-filter-count"
+      >
         {active
           ? `${failedCount} из ${totalCount} · фильтр ERP`
           : `${totalCount} серий · ошибок ERP: ${failedCount}`}

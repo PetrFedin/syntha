@@ -35,14 +35,15 @@ export function PlatformCoreBrandPreOrdersPanel() {
   const importedPrebook = coreMode
     ? []
     : integrationOverlay.importedBrandRows.filter(
-        (row) =>
-          isIntegrationImportedWholesaleOrderId(row.order) && row.orderMode === 'pre_order'
+        (row) => isIntegrationImportedWholesaleOrderId(row.order) && row.orderMode === 'pre_order'
       );
   const chainOrderIds = [
     ...new Set([...prebookRows.map((row) => row.order), ...importedPrebook.map((r) => r.order)]),
   ];
   const { summaries: chainSummaries } = useWorkshop2B2bChainSummaries(chainOrderIds, true);
-  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
+  const matrixHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
+  );
   const hasRows = prebookRows.length > 0 || importedPrebook.length > 0;
 
   return (

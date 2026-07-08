@@ -60,7 +60,13 @@ describe('workshop2-techpack-release-gate', () => {
       ],
       sampleBasePerSizePieceQty: { size_m: 10 },
       sketchSheets: [
-        { sheetId: 'f1', viewKind: 'front', annotations: [{ annotationId: 'a1', categoryLeafId: 'x', xPct: 1, yPct: 1, text: 'collar' }] },
+        {
+          sheetId: 'f1',
+          viewKind: 'front',
+          annotations: [
+            { annotationId: 'a1', categoryLeafId: 'x', xPct: 1, yPct: 1, text: 'collar' },
+          ],
+        },
         { sheetId: 'b1', viewKind: 'back', annotations: [] },
       ],
       compositionLabelSpec: { labelWidthMm: '40', labelHeightMm: '20' },

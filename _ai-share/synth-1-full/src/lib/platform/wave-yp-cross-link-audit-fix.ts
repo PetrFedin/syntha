@@ -34,19 +34,24 @@ export const WAVE_YP_CRM_ASSIGN_RU = 'Назначение CRM';
 
 export const WAVE_YP_SHOP_SC_SHOWROOM_B2B_PEER_STRIP_TESTID = 'shop-sc-showroom-b2b-peer-strip';
 export const WAVE_YP_SHOP_SC_PARTNERS_B2B_PEER_STRIP_TESTID = 'shop-sc-partners-b2b-peer-strip';
-export const WAVE_YP_SHOP_SC_MATRIX_ENTRY_CO_PEER_STRIP_TESTID = 'shop-sc-matrix-entry-co-peer-strip';
+export const WAVE_YP_SHOP_SC_MATRIX_ENTRY_CO_PEER_STRIP_TESTID =
+  'shop-sc-matrix-entry-co-peer-strip';
 export const WAVE_YP_SHOP_SC_SHOWROOM_MONETIZATION_PEER_STRIP_TESTID =
   'shop-sc-showroom-monetization-peer-strip';
-export const WAVE_YP_BRAND_SC_SHOWROOM_RETAIL_PEER_STRIP_TESTID = 'brand-sc-showroom-retail-peer-strip';
-export const WAVE_YP_BRAND_SC_LINESHEETS_RETAIL_PEER_STRIP_TESTID = 'brand-sc-linesheets-retail-peer-strip';
+export const WAVE_YP_BRAND_SC_SHOWROOM_RETAIL_PEER_STRIP_TESTID =
+  'brand-sc-showroom-retail-peer-strip';
+export const WAVE_YP_BRAND_SC_LINESHEETS_RETAIL_PEER_STRIP_TESTID =
+  'brand-sc-linesheets-retail-peer-strip';
 export const WAVE_YP_BRAND_SC_RELEASE_GATE_SCHEMA_PASSPORT_PEER_STRIP_TESTID =
   'brand-sc-release-gate-schema-passport-peer-strip';
 export const WAVE_YP_BRAND_DEV_PASSPORT_RELEASE_GATE_PEER_STRIP_TESTID =
   'brand-dev-passport-release-gate-peer-strip';
-export const WAVE_YP_BRAND_DEV_MERCH_CO_SPINE_PEER_STRIP_TESTID = 'brand-attribute-schema-co-spine-peer-strip';
+export const WAVE_YP_BRAND_DEV_MERCH_CO_SPINE_PEER_STRIP_TESTID =
+  'brand-attribute-schema-co-spine-peer-strip';
 export const WAVE_YP_PLATFORM_B2B_MARKETROOM_CO_SPINE_PEER_STRIP_TESTID =
   'platform-b2b-marketroom-co-spine-peer-strip';
-export const WAVE_YP_PLATFORM_B2B_HUB_CO_SPINE_PEER_STRIP_TESTID = 'platform-b2b-hub-co-spine-peer-strip';
+export const WAVE_YP_PLATFORM_B2B_HUB_CO_SPINE_PEER_STRIP_TESTID =
+  'platform-b2b-hub-co-spine-peer-strip';
 export const WAVE_YP_SUP_DEV_BOM_BRAND_DEV_PEER_STRIP_TESTID = 'sup-dev-bom-brand-dev-peer-strip';
 
 /** Closed wave YP cross-link audit fixes (10). */
@@ -57,7 +62,10 @@ export const WAVE_YP_CROSS_LINK_AUDIT_FIXES = [
     pillar: 'sample_collection' as const,
     sectionId: 'shop-sc-showroom',
     was: 'Partners discover без ?collection=',
-    testids: [WAVE_YP_SHOP_SC_SHOWROOM_MONETIZATION_PEER_STRIP_TESTID, 'shop-sc-showroom-partners-link'],
+    testids: [
+      WAVE_YP_SHOP_SC_SHOWROOM_MONETIZATION_PEER_STRIP_TESTID,
+      'shop-sc-showroom-partners-link',
+    ],
     sourceFile: 'components/platform/ShopScShowroomMonetizationPeerStrip.tsx',
     sourceMustContain: ['discoverPageHref', 'WAVE_YP_PARTNERS_RU', 'WAVE_YP_LINESHEET_RU'],
     sourceMustNotContain: ['ROUTES.shop.b2bPartnersDiscover}', 'Partners\n'],
@@ -103,7 +111,11 @@ export const WAVE_YP_CROSS_LINK_AUDIT_FIXES = [
     was: 'EN Linesheets / Release gate / Platform B2B',
     testids: [WAVE_YP_BRAND_SC_SHOWROOM_RETAIL_PEER_STRIP_TESTID],
     sourceFile: 'components/platform/BrandScShowroomRetailPeerStrip.tsx',
-    sourceMustContain: ['WAVE_YP_LINESHEETS_RU', 'WAVE_YP_RELEASE_GATE_RU', 'WAVE_YP_PLATFORM_B2B_RU'],
+    sourceMustContain: [
+      'WAVE_YP_LINESHEETS_RU',
+      'WAVE_YP_RELEASE_GATE_RU',
+      'WAVE_YP_PLATFORM_B2B_RU',
+    ],
     sourceMustNotContain: ['Linesheets\n', 'Release gate', 'Platform B2B'],
   },
   {
@@ -131,7 +143,12 @@ export const WAVE_YP_CROSS_LINK_AUDIT_FIXES = [
       'WAVE_YP_MAT_CERTS_RU',
       'WAVE_YP_RELEASE_CHECKLIST_RU',
     ],
-    sourceMustNotContain: ['Attribute schema', 'Material rollup', 'Material certs', 'Release checklist'],
+    sourceMustNotContain: [
+      'Attribute schema',
+      'Material rollup',
+      'Material certs',
+      'Release checklist',
+    ],
   },
   {
     id: 'brand-dev-passport-release-gate-peer-ru',
@@ -178,11 +195,19 @@ export function scanReadinessPeerStripTestIdGaps(
   cells: ReadonlyArray<{
     roleId: string;
     pillarId: string;
-    subItems: ReadonlyArray<{ id: string; good: readonly string[]; bad: readonly string[]; fix: readonly string[] }>;
+    subItems: ReadonlyArray<{
+      id: string;
+      good: readonly string[];
+      bad: readonly string[];
+      fix: readonly string[];
+    }>;
   }>
 ): string[] {
   const closed = new Set(
-    WAVE_YP_CROSS_LINK_AUDIT_FIXES.flatMap((f) => f.testids).flatMap((tid) => [tid, tid.replace(/-peer-strip$/, '')])
+    WAVE_YP_CROSS_LINK_AUDIT_FIXES.flatMap((f) => f.testids).flatMap((tid) => [
+      tid,
+      tid.replace(/-peer-strip$/, ''),
+    ])
   );
   const gaps: string[] = [];
   for (const cell of cells) {

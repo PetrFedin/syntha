@@ -37,10 +37,12 @@ describe('wave WB — brand BOM alt-material approval PG', () => {
     expect(brandCanDecideAltMaterialApproval({ action: 'reject', currentStatus: 'pending' })).toBe(
       true
     );
-    expect(brandCanDecideAltMaterialApproval({ action: 'approve', currentStatus: 'approved' })).toBe(
+    expect(
+      brandCanDecideAltMaterialApproval({ action: 'approve', currentStatus: 'approved' })
+    ).toBe(false);
+    expect(brandCanDecideAltMaterialApproval({ action: 'reject', currentStatus: null })).toBe(
       false
     );
-    expect(brandCanDecideAltMaterialApproval({ action: 'reject', currentStatus: null })).toBe(false);
   });
 
   it('RU labels without English noise', () => {

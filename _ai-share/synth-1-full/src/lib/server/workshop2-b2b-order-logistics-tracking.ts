@@ -37,9 +37,8 @@ export async function resolveWorkshop2B2bLogisticsTracking(
     };
   }
 
-  const { getOrderTracking } = await import(
-    '@/lib/integrations/spine/order-tracking-persistence.file'
-  );
+  const { getOrderTracking } =
+    await import('@/lib/integrations/spine/order-tracking-persistence.file');
   const spine = getOrderTracking(id);
   if (spine?.trackingNumber?.trim()) {
     return {

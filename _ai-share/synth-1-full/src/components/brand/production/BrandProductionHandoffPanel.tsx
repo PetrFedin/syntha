@@ -85,7 +85,7 @@ export function BrandProductionHandoffPanel({
           className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm"
           data-testid="brand-op-qc-gate-blocks-handoff"
         >
-          <p className="text-destructive font-medium">
+          <p className="font-medium text-destructive">
             Передача в цех заблокирована: {qcBlocksHandoff} инспекций QC не пройдены (fail/rework).
           </p>
           <p className="text-text-secondary mt-1 text-xs">
@@ -115,7 +115,11 @@ export function BrandProductionHandoffPanel({
               />
             ) : null}
             {qcBlocksHandoff > 0 ? (
-              <Badge variant="destructive" className="text-[10px] uppercase" data-testid="brand-production-handoff-qc-block-badge">
+              <Badge
+                variant="destructive"
+                className="text-[10px] uppercase"
+                data-testid="brand-production-handoff-qc-block-badge"
+              >
                 QC блок: {qcBlocksHandoff}
               </Badge>
             ) : null}
@@ -142,12 +146,18 @@ export function BrandProductionHandoffPanel({
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={manufacturerQcHref} data-testid="brand-production-handoff-manufacturer-qc-link">
+            <Link
+              href={manufacturerQcHref}
+              data-testid="brand-production-handoff-manufacturer-qc-link"
+            >
               КК производства
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link href={manufacturerAckHref} data-testid="brand-production-handoff-factory-ack-link">
+            <Link
+              href={manufacturerAckHref}
+              data-testid="brand-production-handoff-factory-ack-link"
+            >
               Подтверждение ТЗ
             </Link>
           </Button>

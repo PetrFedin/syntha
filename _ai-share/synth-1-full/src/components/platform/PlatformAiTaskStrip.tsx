@@ -87,9 +87,7 @@ export function PlatformAiTaskStrip({
       data-testid={testId}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-text-muted text-[11px]">
-          AI · {hintAgent ?? 'orchestrator'}
-        </span>
+        <span className="text-text-muted text-[11px]">AI · {hintAgent ?? 'orchestrator'}</span>
         <Button
           type="button"
           size="sm"
@@ -102,7 +100,7 @@ export function PlatformAiTaskStrip({
         </Button>
       </div>
       {error ? (
-        <p className="text-destructive text-[11px]" data-testid={`${testId}-error`}>
+        <p className="text-[11px] text-destructive" data-testid={`${testId}-error`}>
           {error}
         </p>
       ) : null}
@@ -114,9 +112,7 @@ export function PlatformAiTaskStrip({
           {result.code_changes ? (
             <p className="max-h-28 overflow-y-auto whitespace-pre-wrap">{result.code_changes}</p>
           ) : null}
-          {result.next_step ? (
-            <p className="text-text-muted">{result.next_step}</p>
-          ) : null}
+          {result.next_step ? <p className="text-text-muted">{result.next_step}</p> : null}
         </div>
       ) : null}
     </div>

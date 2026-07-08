@@ -211,11 +211,7 @@ export const WAVE_YS_CROSS_CUTTING: Record<
   S4: {
     label: 'notification_events PG + production ops SoT',
     waves: 'SD/UP/XI',
-    itemIds: [
-      'td-no-pg-json-fallback',
-      'td-mocks-inventory',
-      'agent-no-pg-json-fallback',
-    ],
+    itemIds: ['td-no-pg-json-fallback', 'td-mocks-inventory', 'agent-no-pg-json-fallback'],
   },
   S5: {
     label: 'readiness audit 8.0 + RU dedup + cross-link peers',

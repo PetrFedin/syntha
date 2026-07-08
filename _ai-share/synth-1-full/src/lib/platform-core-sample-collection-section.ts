@@ -6,6 +6,7 @@ import type { ShopScGoldenPathOmitStep } from '@/components/platform/ShopScCabin
 import type { ArticleSpineGoldenStepId } from '@/lib/platform-core-article-spine-golden-path';
 import { platformCoreCabinetSectionHref } from '@/lib/platform-core-cabinet-workspace';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
+import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 import { ROUTES } from '@/lib/platform-core-routes';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
@@ -41,7 +42,12 @@ export function resolveBrandScArticleSpineActiveStep(
 export function brandScPublishCabinetHref(
   demo: Pick<PlatformCoreDemoContext, 'collectionId' | 'demoOrderId' | 'demoArticleId'>
 ): string {
-  return platformCoreCabinetSectionHref('brand', 'sample_collection', BRAND_SC_PUBLISH_SECTION, demo);
+  return platformCoreCabinetSectionHref(
+    'brand',
+    'sample_collection',
+    BRAND_SC_PUBLISH_SECTION,
+    demo
+  );
 }
 
 export function shopScShowroomMatrixQuickAddHref(
@@ -50,5 +56,5 @@ export function shopScShowroomMatrixQuickAddHref(
   demo: Pick<PlatformCoreDemoContext, 'collectionId' | 'demoOrderId' | 'demoArticleId'>
 ): string {
   const base = `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
-  return platformCoreUiHref(base, { ...demo, collectionId });
+  return platformCoreUiHref(base, { ...PLATFORM_CORE_DEMO, ...demo, collectionId });
 }

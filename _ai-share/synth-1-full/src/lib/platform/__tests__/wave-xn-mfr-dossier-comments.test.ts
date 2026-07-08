@@ -50,18 +50,27 @@ describe('wave XN — mfr factory dossier comments constants', () => {
   });
 
   it('RU peer strip labels + testids for mfr dev dossier', () => {
-    expect(WAVE_XN_MFR_DOSSIER_COMMENT_PEER_STRIP_TESTID).toBe('mfr-dev-dossier-comment-peer-strip');
-    expect(WAVE_XN_MFR_DOSSIER_ANNOTATION_PEER_STRIP_TESTID).toBe('mfr-dev-dossier-annotation-peer-strip');
+    expect(WAVE_XN_MFR_DOSSIER_COMMENT_PEER_STRIP_TESTID).toBe(
+      'mfr-dev-dossier-comment-peer-strip'
+    );
+    expect(WAVE_XN_MFR_DOSSIER_ANNOTATION_PEER_STRIP_TESTID).toBe(
+      'mfr-dev-dossier-annotation-peer-strip'
+    );
     expect(WAVE_XN_MFR_DOSSIER_PEER_BRAND_DIFF_RU).toMatch(/сверка/i);
     expect(WAVE_XN_MFR_DOSSIER_COMMENT_BRAND_DIFF_LINK_TESTID).toContain('brand-diff');
     expect(WAVE_XN_MFR_DOSSIER_PEER_CHAT_RU).toMatch(/чат/i);
     expect(WAVE_XN_MFR_DOSSIER_PEER_SAMPLE_QUEUE_RU).toMatch(/образц/i);
     expect(WAVE_XN_MFR_DOSSIER_PEER_MATERIALS_RU).toBe('Материалы');
-    expect(buildMfrDossierCommentMaterialsHref(COLLECTION)).toContain('/factory/production/materials');
+    expect(buildMfrDossierCommentMaterialsHref(COLLECTION)).toContain(
+      '/factory/production/materials'
+    );
   });
 
   it('cross-links brand diff viewer ↔ mfr annotation panel', () => {
-    const peers = buildMfrDossierCommentsPeerHrefs({ collectionId: COLLECTION, articleId: ARTICLE });
+    const peers = buildMfrDossierCommentsPeerHrefs({
+      collectionId: COLLECTION,
+      articleId: ARTICLE,
+    });
     expect(peers.brandDiffViewerHref).toContain('#brand-dossier-factory-diff');
     expect(peers.brandDiffViewerHref).toContain('/brand/production/workshop2/');
     expect(peers.factoryAnnotationHref).toContain(`#${MFR_DEV_DOSSIER_ANNOTATION_PANEL_ANCHOR}`);

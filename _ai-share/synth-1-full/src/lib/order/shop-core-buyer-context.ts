@@ -38,10 +38,10 @@ export const SHOP_CORE_ORG_TO_BUYER_ID: Readonly<Record<string, string>> = {
   shop2: 'shop2',
   'org-shop-001': 'shop1',
   'org-shop-002': 'shop2',
-  'retail_msk_1': 'shop1',
-  'retail_msk_2': 'shop2',
-  'retail_spb_1': 'shop2',
-  'retail_spb_2': 'shop2',
+  retail_msk_1: 'shop1',
+  retail_msk_2: 'shop2',
+  retail_spb_1: 'shop2',
+  retail_spb_2: 'shop2',
   'buyer-demo': 'shop1',
   'buyer-demo-spb': 'shop2',
 };
@@ -173,15 +173,18 @@ export function resolveShopCoreBuyerIdFromClient(input?: {
   const fromOrg = resolveShopCoreBuyerIdFromOrganization(input?.activeOrganizationId);
   const fromSession = resolveShopCoreBuyerIdFromSessionUid(input?.sessionUid);
   return normalizeShopCoreBuyerId(
-    input?.searchBuyer ?? fromOrg ?? fromSession ?? input?.cookieBuyer ?? input?.storageBuyer ?? null
+    input?.searchBuyer ??
+      fromOrg ??
+      fromSession ??
+      input?.cookieBuyer ??
+      input?.storageBuyer ??
+      null
   );
 }
 
 export function readShopCoreBuyerIdFromDocumentCookie(): string | undefined {
   if (typeof document === 'undefined') return undefined;
-  const match = document.cookie.match(
-    new RegExp(`(?:^|;\\s*)${SHOP_CORE_BUYER_COOKIE}=([^;]+)`)
-  );
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${SHOP_CORE_BUYER_COOKIE}=([^;]+)`));
   return match?.[1] ? decodeURIComponent(match[1]).trim() : undefined;
 }
 

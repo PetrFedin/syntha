@@ -25,12 +25,15 @@ export function SupplierCalendarLogisticsPeerStrip({ collectionId, articleId, or
   return (
     <div className="space-y-2" data-testid={SUP_CM_CALENDAR_LOGISTICS_PEER_STRIP_TESTID}>
       <SupCmLogisticsEtaMapOverlayStrip orderId={orderId} />
-      <div className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs">
+      <div className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs">
         <Badge variant="outline" className="text-[9px] uppercase">
           {supCmLogisticsPeerBadgeRu()}
         </Badge>
         <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
-          <Link href={shopB2bTrackingOrderHref(orderId)} data-testid="sup-cm-calendar-shop-tracking-link">
+          <Link
+            href={shopB2bTrackingOrderHref(orderId)}
+            data-testid="sup-cm-calendar-shop-tracking-link"
+          >
             Трекинг магазина
           </Link>
         </Button>

@@ -21,9 +21,7 @@ import {
   techPackGateMapFromReleaseRows,
 } from '@/lib/fashion/brand-release-syndication';
 import { buildBrandLinesheetSyndicationSession } from '@/lib/fashion/brand-linesheet-syndication';
-import {
-  buildBrandTechPackReleaseGateRows,
-} from '@/lib/fashion/brand-techpack-release-gate-rows';
+import { buildBrandTechPackReleaseGateRows } from '@/lib/fashion/brand-techpack-release-gate-rows';
 import { getWorkshop2Phase1Dossier } from '@/lib/production/workshop2-phase1-dossier-storage';
 import { pushBrandReleaseSyndication } from '@/lib/fashion/brand-release-syndication-push-store';
 import type { Product } from '@/lib/types';
@@ -148,7 +146,10 @@ export function BrandReleaseSyndicationPanel({ products }: Props) {
       </div>
 
       {pushNotice ? (
-        <p className="text-text-secondary text-xs" data-testid="brand-release-syndication-push-notice">
+        <p
+          className="text-text-secondary text-xs"
+          data-testid="brand-release-syndication-push-notice"
+        >
           {pushNotice}
         </p>
       ) : null}
@@ -183,8 +184,12 @@ export function BrandReleaseSyndicationPanel({ products }: Props) {
                       {row.name}
                     </p>
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm">{row.launchPercent}%</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{row.attributePercent}%</TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {row.launchPercent}%
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {row.attributePercent}%
+                  </TableCell>
                   <TableCell className="text-right font-mono text-xs">
                     {row.techPackSheetsReady === null
                       ? '—'

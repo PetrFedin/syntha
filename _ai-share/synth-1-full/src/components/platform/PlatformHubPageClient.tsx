@@ -21,7 +21,7 @@ export function PlatformHubPageClient() {
 
   return (
     <PlatformCoreChromeShell collectionId={hubCollectionId}>
-      <div className="bg-bg-surface overflow-x-clip pb-safe min-h-[calc(100vh-2.5rem)] w-full min-w-0 px-4 md:px-6 md:pb-6">
+      <div className="bg-bg-surface pb-safe min-h-[calc(100vh-2.5rem)] w-full min-w-0 overflow-x-clip px-4 md:px-6 md:pb-6">
         <div data-testid="platform-core-hub-main-column" className="space-y-2 md:space-y-4">
           <PlatformCoreSynthaStyleBanner />
 

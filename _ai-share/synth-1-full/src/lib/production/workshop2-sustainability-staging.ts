@@ -210,8 +210,7 @@ export function evaluateWorkshop2SustainabilityStagingExportGate(input: {
     return {
       id: 'sustainability.staging.failed',
       severity: 'warning',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') || 'LCA staging failed — export warning.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') || 'LCA staging failed — export warning.',
     };
   }
   return null;

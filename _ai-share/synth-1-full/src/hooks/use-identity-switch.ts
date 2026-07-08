@@ -90,7 +90,8 @@ export function useIdentitySwitch() {
         client: ROUTES.client.profile,
       };
 
-      const targetUrl = getCoreRoleLandingHref(roleKey) ?? roleMap[roleKey] ?? ROUTES.client.profile;
+      const targetUrl =
+        getCoreRoleLandingHref(roleKey) ?? roleMap[roleKey] ?? ROUTES.client.profile;
 
       console.log('Identity switch SUCCESS. Final target:', targetUrl, '(roleKey:', roleKey, ')');
 

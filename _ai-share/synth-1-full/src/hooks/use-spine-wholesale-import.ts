@@ -27,5 +27,11 @@ export function useSpineWholesaleImport(platform: SpineWholesaleImportPlatform) 
     }
   }, [platform]);
 
-  return { busy, messageRu, lastWholesaleOrderId, runImport, clearMessage: () => setMessageRu(null) };
+  return {
+    busy,
+    messageRu,
+    lastWholesaleOrderId,
+    runImport,
+    clearMessage: () => setMessageRu(null),
+  };
 }

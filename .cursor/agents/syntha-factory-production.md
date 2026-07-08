@@ -25,6 +25,6 @@ OUT: brand W2 development, shop B2B checkout.
 <verify>
 ```bash
 cd /Users/petr/Projects && npm run core:status
-cd /Users/petr/Projects/_ai-share/synth-1-full && npx playwright test e2e/core-02-demo-golden-path.spec.ts -g "manufacturer|supplier|factory" --project=chromium
+cd _ai-share/synth-1-full && npx playwright test e2e/core-02-demo-golden-path.spec.ts -g "manufacturer|supplier|factory" --project=chromium
 ```
 </verify>

@@ -106,7 +106,7 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-lg border bg-bg-surface2/30 px-3 py-2"
+      className="border-border-subtle bg-bg-surface2/30 space-y-2 rounded-lg border px-3 py-2"
       data-testid="shop-dev-bridge-assortment-wishlist-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -114,7 +114,11 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
           Wishlist ассортимента
         </span>
         {storageMode === 'postgres' ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="shop-dev-bridge-wishlist-storage-pg">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="shop-dev-bridge-wishlist-storage-pg"
+          >
             PG wishlist
           </Badge>
         ) : null}
@@ -147,7 +151,10 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
             <li key={item.articleId} className="flex flex-wrap items-center gap-2">
               <span className="font-mono">{item.articleId}</span>
               {item.addedAt ? (
-                <span className="text-text-muted text-[10px]" data-testid={`shop-dev-bridge-wishlist-added-${item.articleId}`}>
+                <span
+                  className="text-text-muted text-[10px]"
+                  data-testid={`shop-dev-bridge-wishlist-added-${item.articleId}`}
+                >
                   {new Date(item.addedAt).toLocaleDateString('ru-RU')}
                 </span>
               ) : null}
@@ -163,7 +170,9 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
                 Запросить образец
               </Button>
               <Link
-                href={platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(item.articleId)}`)}
+                href={platformCoreUiHref(
+                  `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(item.articleId)}`
+                )}
                 className={hubGadget.goldenLink}
                 data-testid={`shop-dev-bridge-wishlist-matrix-${item.articleId}`}
               >
@@ -173,7 +182,7 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
                 type="button"
                 size="sm"
                 variant="ghost"
-                className="h-7 px-2 text-[10px] text-text-muted"
+                className="text-text-muted h-7 px-2 text-[10px]"
                 disabled={busy}
                 data-testid={`shop-dev-bridge-wishlist-remove-${item.articleId}`}
                 onClick={() => void removeArticle(item.articleId)}
@@ -187,12 +196,15 @@ export function ShopDevelopmentBridgeAssortmentWishlistStrip({
         <p className="text-text-muted text-[11px]">Пусто — добавьте артикул для отслеживания.</p>
       )}
       {listErrorRu ? (
-        <p className="text-destructive text-[11px]" data-testid="shop-dev-bridge-wishlist-error">
+        <p className="text-[11px] text-destructive" data-testid="shop-dev-bridge-wishlist-error">
           {listErrorRu}
         </p>
       ) : null}
       {sampleMsg ? (
-        <p className="text-emerald-800 text-[11px]" data-testid="shop-dev-bridge-request-sample-wishlist-msg">
+        <p
+          className="text-[11px] text-emerald-800"
+          data-testid="shop-dev-bridge-request-sample-wishlist-msg"
+        >
           {sampleMsg}
         </p>
       ) : null}

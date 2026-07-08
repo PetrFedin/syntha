@@ -363,7 +363,9 @@ export function Workshop2SmartRoutingPanel({
               <Button
                 data-testid="workshop2-smart-routing-load-template"
                 onClick={handleGenerate}
-                disabled={loading || disabled || smartRoutingGateBlocked || !smartRoutingDemoAllowed}
+                disabled={
+                  loading || disabled || smartRoutingGateBlocked || !smartRoutingDemoAllowed
+                }
                 variant="outline"
                 size="sm"
                 className="h-8 shrink-0 gap-1.5 border-indigo-200 text-xs text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"

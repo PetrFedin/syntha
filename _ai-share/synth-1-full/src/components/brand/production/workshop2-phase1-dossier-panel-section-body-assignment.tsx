@@ -128,8 +128,7 @@ export function Workshop2DossierSectionBodyAssignment({
   };
 
   const searchParams = useSearchParams();
-  const factoryPackTab =
-    searchParams.get(PILLAR_CAPABILITY_FEATURE_PARAM) === 'factory-pack';
+  const factoryPackTab = searchParams.get(PILLAR_CAPABILITY_FEATURE_PARAM) === 'factory-pack';
   const factoryPackExportContext = useMemo(
     () =>
       buildWorkshop2FinalTzExportContextFromDossier(dossier, {
@@ -185,9 +184,7 @@ export function Workshop2DossierSectionBodyAssignment({
           setDossier={setDossier}
           updatedByLabel={handoffBlockProps.updatedByLabel}
           tzWriteDisabled={handoffBlockProps.tzWriteDisabled}
-          onExportNotice={(message) =>
-            toast({ title: 'Фабричный пакет', description: message })
-          }
+          onExportNotice={(message) => toast({ title: 'Фабричный пакет', description: message })}
         />
       ) : null}
 

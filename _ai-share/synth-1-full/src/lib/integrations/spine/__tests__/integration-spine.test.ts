@@ -1,7 +1,11 @@
 import { mapExternalOrderStatus, wholesaleOrderIdForExternalImport } from '../integration-platform';
 import { statusIndicatesBrandConfirm } from '../operational-import-handoff.service';
 import { resolveEligibleForCollection } from '../eligible-gate';
-import { getCentricApprovedForArticle, listIntegrationExternalRefs, upsertExternalRef } from '../integration-external-refs-persistence.file';
+import {
+  getCentricApprovedForArticle,
+  listIntegrationExternalRefs,
+  upsertExternalRef,
+} from '../integration-external-refs-persistence.file';
 import { importWholesaleOrder } from '../order-import.service';
 import { findImportedOrderByExternalKey } from '../imported-orders-persistence';
 import path from 'path';
@@ -68,7 +72,11 @@ describe('integration spine', () => {
     };
     const first = importWholesaleOrder({ platform: 'joor', externalOrderId: 'joor-order-99', raw });
     expect(first.created).toBe(true);
-    const second = importWholesaleOrder({ platform: 'joor', externalOrderId: 'joor-order-99', raw });
+    const second = importWholesaleOrder({
+      platform: 'joor',
+      externalOrderId: 'joor-order-99',
+      raw,
+    });
     expect(second.created).toBe(false);
     expect(second.wholesaleOrderId).toBe(first.wholesaleOrderId);
     expect(findImportedOrderByExternalKey('joor', 'joor-order-99')?.wholesaleOrderId).toBe(

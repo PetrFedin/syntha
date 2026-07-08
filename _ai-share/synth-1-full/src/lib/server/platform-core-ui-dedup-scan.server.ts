@@ -11,12 +11,7 @@ export type UiDedupScanHit = {
   hint: string;
 };
 
-const SCAN_ROOTS = [
-  'src/components/platform',
-  'src/app/brand',
-  'src/app/shop',
-  'src/app/factory',
-];
+const SCAN_ROOTS = ['src/components/platform', 'src/app/brand', 'src/app/shop', 'src/app/factory'];
 
 /** Lightweight grep rules mirroring platform-core-ui-dedup-audit (no full Jest in analyze). */
 const UI_DEDUP_RULES: {
@@ -89,7 +84,8 @@ async function walkTsFiles(root: string, rel: string, out: string[], depth = 0) 
     return;
   }
   for (const ent of entries) {
-    if (ent.name.startsWith('.') || ent.name === 'node_modules' || ent.name === '_archive') continue;
+    if (ent.name.startsWith('.') || ent.name === 'node_modules' || ent.name === '_archive')
+      continue;
     const sub = path.join(rel, ent.name);
     if (ent.isDirectory()) {
       await walkTsFiles(root, sub, out, depth + 1);

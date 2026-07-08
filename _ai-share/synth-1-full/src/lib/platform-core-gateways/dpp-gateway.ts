@@ -5,9 +5,7 @@ import {
   getWorkshop2ServerDossierStoreMode,
 } from '@/lib/platform-core-ports/dossier-store';
 
-export type PlatformCoreDppGatewaySource =
-  | 'workshop2_dossier_dpp'
-  | 'workshop2_dossier_materials';
+export type PlatformCoreDppGatewaySource = 'workshop2_dossier_dpp' | 'workshop2_dossier_materials';
 
 export type PlatformCoreAdapterIssue = {
   id: string;

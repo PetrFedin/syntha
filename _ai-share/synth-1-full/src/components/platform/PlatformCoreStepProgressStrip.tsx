@@ -28,7 +28,9 @@ export function PlatformCoreStepProgressStrip({
             ) : (
               <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
             )}
-            <span className={step.done ? 'text-text-primary' : 'text-text-muted'}>{step.labelRu}</span>
+            <span className={step.done ? 'text-text-primary' : 'text-text-muted'}>
+              {step.labelRu}
+            </span>
           </li>
         ))}
       </ul>
@@ -42,13 +44,16 @@ export function PlatformCoreStepProgressStrip({
       className="flex max-w-full flex-nowrap items-start gap-1 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden"
     >
       {steps.map((step, index) => (
-        <li key={step.id} className="flex min-w-[4.5rem] max-w-[9rem] shrink-0 snap-start flex-col items-center gap-1 md:min-w-0 md:max-w-[9rem] md:flex-1">
+        <li
+          key={step.id}
+          className="flex min-w-[4.5rem] max-w-[9rem] shrink-0 snap-start flex-col items-center gap-1 md:min-w-0 md:max-w-[9rem] md:flex-1"
+        >
           <div className="flex w-full items-center">
             {index > 0 ? (
               <span
                 className={
                   step.done || steps[index - 1]?.done
-                    ? 'bg-emerald-300 h-px min-w-[0.35rem] flex-1'
+                    ? 'h-px min-w-[0.35rem] flex-1 bg-emerald-300'
                     : 'bg-border-subtle h-px min-w-[0.35rem] flex-1'
                 }
                 aria-hidden
@@ -64,7 +69,9 @@ export function PlatformCoreStepProgressStrip({
             {index < steps.length - 1 ? (
               <span
                 className={
-                  step.done ? 'bg-emerald-300 h-px min-w-[0.35rem] flex-1' : 'bg-border-subtle h-px min-w-[0.35rem] flex-1'
+                  step.done
+                    ? 'h-px min-w-[0.35rem] flex-1 bg-emerald-300'
+                    : 'bg-border-subtle h-px min-w-[0.35rem] flex-1'
                 }
                 aria-hidden
               />

@@ -69,8 +69,7 @@ export function useWorkshop2Phase1DossierHydrateFromStorage(p: {
 
   useEffect(() => {
     let cancelled = false;
-    const coreGolden =
-      isPlatformCoreMode() && isPlatformCoreGoldenCollectionId(collectionId);
+    const coreGolden = isPlatformCoreMode() && isPlatformCoreGoldenCollectionId(collectionId);
 
     void (async () => {
       if (coreGolden) {
@@ -100,7 +99,8 @@ export function useWorkshop2Phase1DossierHydrateFromStorage(p: {
         return;
       }
 
-      const raw = getWorkshop2Phase1Dossier(collectionId, articleId) ?? emptyWorkshop2DossierPhase1();
+      const raw =
+        getWorkshop2Phase1Dossier(collectionId, articleId) ?? emptyWorkshop2DossierPhase1();
       const normalized = normalizeHydratedDossier(
         raw,
         collectionId,

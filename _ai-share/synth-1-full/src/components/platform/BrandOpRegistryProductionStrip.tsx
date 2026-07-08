@@ -69,7 +69,7 @@ export function BrandOpRegistryProductionStrip({ demo, contextOrderId }: Props) 
             data-testid="brand-op-registry-cut-ticket-link"
             className={hubGadget.goldenLink}
           >
-        Техкарта раскроя
+            Техкарта раскроя
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·

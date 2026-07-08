@@ -32,9 +32,9 @@ export function PlatformCoreInventoryLedgerStrip({
   limit = 6,
   testId,
 }: Props) {
-  const [rows, setRows] = useState<Awaited<ReturnType<typeof fetchShopInventoryLedgerFeed>>['rows']>(
-    []
-  );
+  const [rows, setRows] = useState<
+    Awaited<ReturnType<typeof fetchShopInventoryLedgerFeed>>['rows']
+  >([]);
   const [ledgerSource, setLedgerSource] = useState<ReplenishmentStockAtpSource>('demo');
   const [loading, setLoading] = useState(true);
   const [refreshBusy, setRefreshBusy] = useState(false);
@@ -83,7 +83,12 @@ export function PlatformCoreInventoryLedgerStrip({
             <Badge variant="outline" data-testid={`${rootTestId}-source-${ledgerSource}`}>
               {ledgerSource === 'pg' ? 'PG ledger' : `Ledger ${ledgerSource}`}
             </Badge>
-            <Button size="sm" variant="outline" disabled={refreshBusy} onClick={() => void refresh()}>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={refreshBusy}
+              onClick={() => void refresh()}
+            >
               {refreshBusy ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
               Refresh
             </Button>
@@ -115,7 +120,9 @@ export function PlatformCoreInventoryLedgerStrip({
                 <TableRow key={row.sku} data-testid={`${rootTestId}-row-${row.sku}`}>
                   <TableCell className="font-mono text-xs">{row.sku}</TableCell>
                   <TableCell className="text-right font-mono text-sm">{row.ledgerAtp}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{row.physicalOnHand}</TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {row.physicalOnHand}
+                  </TableCell>
                   <TableCell
                     className={`text-right font-mono text-sm ${
                       row.diff === 0

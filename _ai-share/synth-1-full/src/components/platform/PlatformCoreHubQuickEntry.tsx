@@ -2,12 +2,7 @@
 
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  Factory,
-  ShoppingBag,
-  Store,
-  Warehouse,
-} from 'lucide-react';
+import { Factory, ShoppingBag, Store, Warehouse } from 'lucide-react';
 import {
   getDefaultPillarForRole,
   getPlatformCoreHubRowsForUi,
@@ -93,7 +88,9 @@ export function PlatformCoreHubQuickEntry({ layout = 'grid', className }: Props)
             title={row.label}
             subtitle={ROLE_LEADS[row.id]}
             variant="role"
-            className={layout === 'horizontal' ? PLATFORM_CORE_HUB_CARD_ROLE_HORIZONTAL_WIDTH : undefined}
+            className={
+              layout === 'horizontal' ? PLATFORM_CORE_HUB_CARD_ROLE_HORIZONTAL_WIDTH : undefined
+            }
           />
         ))}
       </div>

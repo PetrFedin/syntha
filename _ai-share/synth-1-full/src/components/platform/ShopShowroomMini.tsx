@@ -32,9 +32,7 @@ import { ShopScCabinetB2bPeerStrip } from '@/components/platform/ShopScCabinetB2
 import { ShopScCabinetFullShowroomHonestStrip } from '@/components/platform/ShopScCabinetFullShowroomHonestStrip';
 import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
 import { usePlatformCoreHubAuditLegacyAttrs } from '@/hooks/use-platform-core-hub-audit-legacy-attrs';
-import {
-  shouldShowHubCabinetPublishedCountSyncBadge,
-} from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
+import { shouldShowHubCabinetPublishedCountSyncBadge } from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { PillarInsightHeader } from '@/components/platform/PillarInsightPrimitives';
 import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
@@ -66,12 +64,15 @@ export function ShopShowroomMini({
   const { buyerId } = useShopCoreBuyerId();
   const [sampleBusy, setSampleBusy] = useState(false);
   const [sampleHint, setSampleHint] = useState<string | null>(null);
-  const { partnerships, source: partnersSource, loadState: partnersLoadState } = useShopB2bPartnerships({
+  const {
+    partnerships,
+    source: partnersSource,
+    loadState: partnersLoadState,
+  } = useShopB2bPartnerships({
     enabled: true,
     collectionId,
   });
-  const partner =
-    partnerships.find((p) => p.status === 'connected') ?? partnerships[0] ?? null;
+  const partner = partnerships.find((p) => p.status === 'connected') ?? partnerships[0] ?? null;
   const [publishedCount, setPublishedCount] = useState<number | null>(null);
   const [publishedLoadState, setPublishedLoadState] = useState<'loading' | 'ready' | 'error'>(
     'loading'
@@ -101,7 +102,9 @@ export function ShopShowroomMini({
     partnerLogoUrl: partner?.logo,
     fallbackUrl: WORKSHOP2_B2B_MATRIX_FALLBACK_IMAGE,
   });
-  const showroom3dHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=3d-stream`);
+  const showroom3dHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=3d-stream`
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -196,10 +199,7 @@ export function ShopShowroomMini({
       <div className={hubGadget.card}>
         {coverHero ? (
           <>
-            <ShopShowroomCoverHeroStrip
-              hero={coverHero}
-              testId="shop-sc-cabinet-hero"
-            />
+            <ShopShowroomCoverHeroStrip hero={coverHero} testId="shop-sc-cabinet-hero" />
             {shouldShowShopShowroomCoverHeroPriorityStrip(coverHero.source) ? (
               <ShopShowroomCoverHeroPriorityStrip activeSource={coverHero.source} />
             ) : null}
@@ -256,9 +256,16 @@ export function ShopShowroomMini({
                 >
                   Повторить
                 </Button>
-                <Button asChild variant="ghost" size="sm" className="h-7 text-[10px] font-semibold uppercase">
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-[10px] font-semibold uppercase"
+                >
                   <Link
-                    href={platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`)}
+                    href={platformCoreUiHref(
+                      `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+                    )}
                     data-testid="shop-sc-cabinet-published-showroom-link"
                   >
                     Полная витрина →
@@ -332,10 +339,14 @@ export function ShopShowroomMini({
         </div>
       </div>
       <div
-        className="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-2"
+        className="border-border-subtle flex flex-wrap items-center gap-2 border-t pt-2"
         data-testid="shop-sc-catalog-signals"
       >
-        <ShowroomArticleEligibleBadge collectionId={collectionId} articleId={demoArticleId} variant="shop" />
+        <ShowroomArticleEligibleBadge
+          collectionId={collectionId}
+          articleId={demoArticleId}
+          variant="shop"
+        />
         <ShopProductInventoryBadges
           sku={matrixSku}
           variant="showroom"
@@ -345,7 +356,7 @@ export function ShopShowroomMini({
           zedonkBySku={zedonkBySku}
         />
       </div>
-      <div className="flex flex-wrap items-center gap-2 border-t border-border-subtle pt-2">
+      <div className="border-border-subtle flex flex-wrap items-center gap-2 border-t pt-2">
         <Button
           type="button"
           variant="outline"
@@ -400,7 +411,7 @@ export function ShopShowroomMini({
       {!compact ? (
         <div
           id="shop-sc-3d-showroom"
-          className="border-t border-border-subtle pt-3"
+          className="border-border-subtle border-t pt-3"
           data-testid="shop-sc-cabinet-3d-panel"
         >
           <B2b3dStreamPanelLazy
@@ -409,11 +420,11 @@ export function ShopShowroomMini({
           />
         </div>
       ) : compact && coreMode && spotlightArticle ? (
-        <div
-          className="border-t border-border-subtle pt-2"
-          data-testid="shop-sc-compact-3d-panel"
-        >
-          <B2b3dStreamPanelLazy collectionId={collectionId} articleId={spotlightArticle.articleId} />
+        <div className="border-border-subtle border-t pt-2" data-testid="shop-sc-compact-3d-panel">
+          <B2b3dStreamPanelLazy
+            collectionId={collectionId}
+            articleId={spotlightArticle.articleId}
+          />
         </div>
       ) : null}
     </div>

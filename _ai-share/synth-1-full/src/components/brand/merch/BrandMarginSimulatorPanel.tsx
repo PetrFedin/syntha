@@ -6,12 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { fetchBrandLandedMarginSkuDefaults } from '@/lib/b2b/landed-margin-feed-store';
 import { products } from '@/lib/products';
 import { simulateMargin } from '@/lib/fashion/margin-simulator';
@@ -119,7 +114,9 @@ export function BrandMarginSimulatorPanel({ collectionId, orderId }: Props) {
           <div className="grid gap-4 sm:grid-cols-3">
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader className="py-3">
-                <CardDescription className="text-[10px] font-bold uppercase">Net Profit</CardDescription>
+                <CardDescription className="text-[10px] font-bold uppercase">
+                  Net Profit
+                </CardDescription>
                 <CardTitle className="text-2xl font-bold">
                   {simulation.netProfit.toLocaleString()} ₽
                 </CardTitle>
@@ -127,7 +124,9 @@ export function BrandMarginSimulatorPanel({ collectionId, orderId }: Props) {
             </Card>
             <Card className="border-emerald-200 bg-emerald-50/30">
               <CardHeader className="py-3">
-                <CardDescription className="text-[10px] font-bold uppercase">Net Margin</CardDescription>
+                <CardDescription className="text-[10px] font-bold uppercase">
+                  Net Margin
+                </CardDescription>
                 <CardTitle className="text-2xl font-bold text-emerald-700">
                   {simulation.netMarginPct}%
                 </CardTitle>
@@ -135,8 +134,12 @@ export function BrandMarginSimulatorPanel({ collectionId, orderId }: Props) {
             </Card>
             <Card className="border-blue-200 bg-blue-50/30">
               <CardHeader className="py-3">
-                <CardDescription className="text-[10px] font-bold uppercase">Markup (x)</CardDescription>
-                <CardTitle className="text-2xl font-bold text-blue-700">{simulation.markup}x</CardTitle>
+                <CardDescription className="text-[10px] font-bold uppercase">
+                  Markup (x)
+                </CardDescription>
+                <CardTitle className="text-2xl font-bold text-blue-700">
+                  {simulation.markup}x
+                </CardTitle>
               </CardHeader>
             </Card>
           </div>

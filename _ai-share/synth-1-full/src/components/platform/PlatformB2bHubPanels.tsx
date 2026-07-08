@@ -27,7 +27,7 @@ export function PlatformB2bHubOverviewPanel({ collectionId }: Props) {
         testIdPrefix="platform-b2b-hub"
       />
       <div
-        className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+        className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
         data-testid="platform-b2b-hub-greenfield-buyer-strip"
       >
         <Badge variant="outline" className="text-[11px] uppercase">
@@ -37,12 +37,18 @@ export function PlatformB2bHubOverviewPanel({ collectionId }: Props) {
           CRM бренда → синхронизация тира → реестр и оформление заказа магазина.
         </span>
         <Button size="sm" variant="outline" className="h-8 text-[11px]" asChild>
-          <Link href={session.brandCrmBuyerAssignHref} data-testid="platform-b2b-hub-overview-crm-assign-link">
+          <Link
+            href={session.brandCrmBuyerAssignHref}
+            data-testid="platform-b2b-hub-overview-crm-assign-link"
+          >
             Назначение в CRM
           </Link>
         </Button>
         <Button size="sm" variant="ghost" className="h-8 text-[11px]" asChild>
-          <Link href={session.shopRegistryGreenfieldHref} data-testid="platform-b2b-hub-overview-shop-registry-link">
+          <Link
+            href={session.shopRegistryGreenfieldHref}
+            data-testid="platform-b2b-hub-overview-shop-registry-link"
+          >
             Реестр магазина
           </Link>
         </Button>
@@ -111,7 +117,9 @@ export function PlatformB2bHubMarketroomBridgePanel({ collectionId }: Props) {
             <Compass className="h-4 w-4" />
             <CardTitle className="text-base">Вход в маркетрум</CardTitle>
           </div>
-          <CardDescription>Полный workspace на отдельном маршруте — здесь только мост.</CardDescription>
+          <CardDescription>
+            Полный workspace на отдельном маршруте — здесь только мост.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>

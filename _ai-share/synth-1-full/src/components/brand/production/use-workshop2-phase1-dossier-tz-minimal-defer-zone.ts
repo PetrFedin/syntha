@@ -5,7 +5,10 @@ import { useWorkshop2Phase1DossierHandbookCheckSnapshotResetOnActiveSection } fr
 import { useWorkshop2Phase1DossierTzMinimalMode } from '@/components/brand/production/use-workshop2-phase1-dossier-tz-minimal-mode';
 import { useWorkshop2Phase1DossierTzNotifyHighlightResetOnArticleChange } from '@/components/brand/production/use-workshop2-phase1-dossier-tz-notify-highlight-reset-on-article-change';
 import type { HandbookCheckSnapshot } from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-check-snapshot';
-import type { Workshop2DossierPhase1, Workshop2TzSignoffSectionKey } from '@/lib/production/workshop2-dossier-phase1.types';
+import type {
+  Workshop2DossierPhase1,
+  Workshop2TzSignoffSectionKey,
+} from '@/lib/production/workshop2-dossier-phase1.types';
 
 export type UseWorkshop2Phase1DossierTzMinimalDeferZoneInput = {
   isPhase1: boolean;

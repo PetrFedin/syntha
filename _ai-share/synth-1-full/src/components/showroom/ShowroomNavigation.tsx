@@ -22,9 +22,9 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { VisualConstellation } from './VisualConstellation';
 import { DigitalTwinRunway } from './DigitalTwinRunway';
-import { VisualAssortmentPlanner } from '../b2b/AssortmentPlanner';
-import { WholesaleCollectionExplorer } from '../b2b/WholesaleCollectionExplorer';
-import { WholesaleOrderMatrix } from '../b2b/WholesaleOrderMatrix';
+import { VisualAssortmentPlanner } from '@/components/b2b/AssortmentPlanner';
+import { WholesaleCollectionExplorer } from '@/components/b2b/WholesaleCollectionExplorer';
+import { WholesaleOrderMatrix } from '@/components/b2b/WholesaleOrderMatrix';
 import { useUIState } from '@/providers/ui-state';
 import { useB2BState } from '@/providers/b2b-state';
 import { cn } from '@/lib/cn';
@@ -125,16 +125,16 @@ export const ShowroomNavigation: React.FC<ShowroomNavigationProps> = ({
               )}
             </div>
             {!slim ? (
-            <Badge
-              variant="outline"
-              className="border-border-default text-text-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-normal"
-            >
-              {showroomTab === 'kickstarter'
-                ? 'Лаборатория'
-                : showroomTab === 'outlet'
-                  ? 'Аутлет'
-                  : 'Витрина'}
-            </Badge>
+              <Badge
+                variant="outline"
+                className="border-border-default text-text-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-normal"
+              >
+                {showroomTab === 'kickstarter'
+                  ? 'Лаборатория'
+                  : showroomTab === 'outlet'
+                    ? 'Аутлет'
+                    : 'Витрина'}
+              </Badge>
             ) : null}
           </div>
           <h2 className="text-text-primary text-2xl font-bold uppercase leading-tight tracking-tight md:text-4xl">

@@ -18,7 +18,9 @@ export const FACTORY_MES_RELEASE_STAGE_LABEL_RU: Record<FactoryMesReleaseStage, 
   released: 'Выпуск',
 };
 
-export function resolveFactoryMesReleaseStage(raw: string | null | undefined): FactoryMesReleaseStage {
+export function resolveFactoryMesReleaseStage(
+  raw: string | null | undefined
+): FactoryMesReleaseStage {
   const v = String(raw ?? '').trim() as FactoryMesReleaseStage;
   return (FACTORY_MES_RELEASE_STAGE_ORDER as readonly string[]).includes(v) ? v : 'queued';
 }
@@ -28,9 +30,7 @@ export function factoryMesReleaseStageLabelRu(stage: string): string {
   return FACTORY_MES_RELEASE_STAGE_LABEL_RU[key];
 }
 
-export function getNextFactoryMesReleaseStage(
-  current: string
-): FactoryMesReleaseStage | null {
+export function getNextFactoryMesReleaseStage(current: string): FactoryMesReleaseStage | null {
   const stage = resolveFactoryMesReleaseStage(current);
   const idx = FACTORY_MES_RELEASE_STAGE_ORDER.indexOf(stage);
   if (idx < 0 || idx >= FACTORY_MES_RELEASE_STAGE_ORDER.length - 1) return null;

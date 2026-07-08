@@ -71,7 +71,9 @@ export function BrandAgentRepLedgerPanel() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Commission ledger</CardTitle>
-          <CardDescription>Brand oversight · order-level rows from workshop2_b2b_commissions.</CardDescription>
+          <CardDescription>
+            Brand oversight · order-level rows from workshop2_b2b_commissions.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -124,7 +126,10 @@ export function BrandAgentRepRepsPanel() {
             <p className="text-text-secondary text-sm">Нет rep в ledger.</p>
           ) : (
             names.map((name) => (
-              <div key={name} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
+              <div
+                key={name}
+                className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+              >
                 <span>{name}</span>
                 <Button size="sm" variant="ghost" asChild>
                   <Link href={brandAgentRepShopCommissionHref()}>Комиссия магазина</Link>

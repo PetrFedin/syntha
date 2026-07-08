@@ -22,7 +22,7 @@ export function PlatformCoreSynthaStyleBanner() {
         <img
           src={hero.imageUrl}
           alt={hero.imageAlt}
-          className="h-full w-full object-cover object-[center_30%] transition-transform duration-[30s] group-hover/card:scale-105 md:object-center"
+          className="duration-[30s] h-full w-full object-cover object-[center_30%] transition-transform group-hover/card:scale-105 md:object-center"
         />
         {/* Mobile: только левый градиент — без затемнения снизу */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/5 to-transparent md:hidden" />
@@ -42,7 +42,7 @@ export function PlatformCoreSynthaStyleBanner() {
               {hero.title}
             </h2>
           </div>
-          <p className="hidden max-w-xl truncate border-l-2 border-indigo-500/50 pl-3 text-sm font-medium text-slate-300 sm:block md:line-clamp-1 md:pl-5 md:text-[15px] lg:line-clamp-none lg:whitespace-normal lg:overflow-visible">
+          <p className="hidden max-w-xl truncate border-l-2 border-indigo-500/50 pl-3 text-sm font-medium text-slate-300 sm:block md:line-clamp-1 md:pl-5 md:text-[15px] lg:line-clamp-none lg:overflow-visible lg:whitespace-normal">
             {hero.description}
           </p>
         </div>

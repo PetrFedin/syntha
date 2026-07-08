@@ -127,11 +127,7 @@ export function Workshop2HubShowroomPublishButton({
   };
 
   const canPublish =
-    ready === true &&
-    passportBlocked === false &&
-    !checking &&
-    !busy &&
-    articleIds.length > 0;
+    ready === true && passportBlocked === false && !checking && !busy && articleIds.length > 0;
   const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
   const brandLinesheetsHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
 
@@ -190,7 +186,8 @@ export function Workshop2HubShowroomPublishButton({
           className="rounded border border-rose-200/80 bg-rose-50/70 px-2 py-1.5 text-[10px] text-rose-950"
           data-testid="brand-sc-release-gate-block-publish-hint"
         >
-          {passportMessageRu ?? 'Release gate: material passport не завершён — publish заблокирован.'}
+          {passportMessageRu ??
+            'Release gate: material passport не завершён — publish заблокирован.'}
         </p>
       ) : null}
       {blocked.length > 0 ? (

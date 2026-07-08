@@ -82,7 +82,11 @@ export function evaluateWorkshop2VaultPanelExportGate(
         'ZIP ТЗ: S3 обязателен в production для vault binaries.',
     };
   }
-  if (!mirror.handoffVaultOk && workshop2PgMirrorNum(mirror, 'withStoragePath') < workshop2PgMirrorNum(mirror, 'minVaultRequired')) {
+  if (
+    !mirror.handoffVaultOk &&
+    workshop2PgMirrorNum(mirror, 'withStoragePath') <
+      workshop2PgMirrorNum(mirror, 'minVaultRequired')
+  ) {
     return {
       id: 'export.vault.min_files',
       severity: 'warning',

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +21,10 @@ def _orchestrator_task_types() -> list[str]:
 
 
 def main() -> None:
-    from app.agents.hub_agent_routing import PILLAR_CURSOR_SUBAGENT, build_hub_agent_matrix
+    from app.agents.hub_agent_routing import (
+        PILLAR_CURSOR_SUBAGENT,
+        build_hub_agent_matrix,
+    )
     from app.agents.registry import AGENT_REGISTRY, list_unwired_agents
     from app.agents.section_agent_hints import SECTION_AGENT_HINTS
 
@@ -30,7 +33,7 @@ def main() -> None:
     lines: list[str] = [
         "# Agents map (Fashion OS / SYNTHA)",
         "",
-        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Generated: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}",
         "",
         "Refresh: `npm run agent:intel:refresh` (also `/gsd-intel refresh`).",
         "",
@@ -63,11 +66,17 @@ def main() -> None:
 
     unwired = list_unwired_agents()
     if unwired:
-        lines.extend(["", f"Unwired: {', '.join(f'`{k}`' for k in sorted(unwired))}", ""])
+        lines.extend(
+            ["", f"Unwired: {', '.join(f'`{k}`' for k in sorted(unwired))}", ""]
+        )
 
     lines.extend(["", "## Hub: pillar × role → primary backend agent", ""])
-    lines.append("| Pillar | Brand | Shop | Manufacturer | Supplier | Cursor subagent |")
-    lines.append("|--------|-------|------|--------------|----------|-----------------|")
+    lines.append(
+        "| Pillar | Brand | Shop | Manufacturer | Supplier | Cursor subagent |"
+    )
+    lines.append(
+        "|--------|-------|------|--------------|----------|-----------------|"
+    )
     by_pillar: dict[str, dict[str, str | None]] = {}
     for row in build_hub_agent_matrix():
         p = row["pillar"]

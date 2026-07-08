@@ -30,7 +30,10 @@ export function BrandDevInvestorReadinessPeerStrip({
   const releaseGateHref = brandDevInvestorReleaseGatePeerHref(collectionId);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YF_BRAND_DEV_INVESTOR_PEER_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YF_BRAND_DEV_INVESTOR_PEER_STRIP_TESTID}
+    >
       {!omitKanbanLink ? (
         <>
           <Link

@@ -10,7 +10,10 @@ describe('wave-am pg sync spine peers', () => {
   });
 
   it('shop working order session tracking href', () => {
-    const session = buildShopWorkingOrderSession({ wholesaleOrderId: 'B2B-DEMO-1', collectionId: 'SS27' });
+    const session = buildShopWorkingOrderSession({
+      wholesaleOrderId: 'B2B-DEMO-1',
+      collectionId: 'SS27',
+    });
     expect(session.trackingHref).toContain('B2B-DEMO-1');
     expect(session.checkoutHref).toContain('checkout');
   });

@@ -69,9 +69,7 @@ export async function POST(req: NextRequest) {
 
   const explicitBuyer = String(body.buyerId ?? '').trim();
   const resolvedBuyerId =
-    checkoutAuth.mode === 'jwt'
-      ? checkoutAuth.buyerId
-      : explicitBuyer || checkoutAuth.buyerId;
+    checkoutAuth.mode === 'jwt' ? checkoutAuth.buyerId : explicitBuyer || checkoutAuth.buyerId;
 
   const moqViolations = collectWorkshop2B2bOrderLineMoqViolations(lines);
   if (moqViolations.length > 0) {

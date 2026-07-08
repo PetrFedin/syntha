@@ -43,6 +43,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch {
-    return NextResponse.json({ ok: false, messageRu: 'Некорректное тело запроса.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Некорректное тело запроса.' },
+      { status: 400 }
+    );
   }
 }

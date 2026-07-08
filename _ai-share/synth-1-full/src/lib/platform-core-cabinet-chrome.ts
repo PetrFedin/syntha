@@ -27,8 +27,7 @@ export const hubCabinet = {
     'border-border-subtle lg:sticky lg:top-3 lg:w-64 lg:shrink-0 lg:space-y-2 lg:rounded-xl lg:border lg:bg-bg-surface lg:p-3',
   header: 'space-y-1 border-b border-border-subtle pb-3',
   headerCompact: 'border-border-subtle border-b pb-2',
-  headerCompactLine:
-    'text-text-secondary line-clamp-1 text-[11px] font-medium md:text-xs',
+  headerCompactLine: 'text-text-secondary line-clamp-1 text-[11px] font-medium md:text-xs',
   title: 'text-sm font-bold tracking-tight text-text-primary',
   lead: 'max-w-3xl text-xs leading-relaxed text-text-secondary',
   roleMeta: 'text-[11px] font-medium text-text-muted',
@@ -38,18 +37,15 @@ export const hubCabinet = {
   /** Embedded workspace: только «Разделы», без списка столпов — уже в segmented nav. */
   pillarSectionNav:
     'border-border-subtle shrink-0 rounded-lg border bg-bg-surface p-2 shadow-none max-md:hidden md:w-36 lg:w-[9.25rem]',
-  pillarNavMobile:
-    'border-border-subtle rounded-xl border bg-bg-surface p-1 shadow-sm md:hidden',
+  pillarNavMobile: 'border-border-subtle rounded-xl border bg-bg-surface p-1 shadow-sm md:hidden',
   /** Столпы в шапке кабинета при embedded (desktop + mobile). */
-  pillarNavEmbedded:
-    'border-border-subtle rounded-xl border bg-bg-surface p-1 shadow-sm',
+  pillarNavEmbedded: 'border-border-subtle rounded-xl border bg-bg-surface p-1 shadow-sm',
   pillarSegmentRow: 'flex flex-wrap gap-1',
   pillarSegmentBtn:
     'inline-flex min-h-10 flex-1 basis-[calc(50%-0.25rem)] items-center justify-center rounded-lg px-2 text-[11px] font-semibold leading-tight transition-colors sm:basis-auto sm:flex-none sm:px-3',
   pillarSegmentBtnActive: 'bg-accent-primary/10 text-text-primary ring-1 ring-accent-primary/25',
   pillarSegmentBtnIdle: 'text-text-secondary hover:bg-bg-surface2',
-  pillarNavLabel:
-    'text-text-muted px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide',
+  pillarNavLabel: 'text-text-muted px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide',
   pillarBtnActive:
     'bg-accent-primary/10 text-text-primary flex w-full flex-col rounded-lg border border-accent-primary/20 px-2 py-1.5 text-left transition-colors',
   pillarBtnIdle:
@@ -58,8 +54,7 @@ export const hubCabinet = {
   pillarNavHorizontal:
     'border-border-subtle rounded-xl border bg-bg-surface p-0.5 shadow-sm md:hidden',
   /** Strip на workspace: виден < lg (на desktop — столпы в сайдбаре). */
-  workspacePillarStrip:
-    'border-border-subtle rounded-xl border bg-bg-surface p-0.5 shadow-sm',
+  workspacePillarStrip: 'border-border-subtle rounded-xl border bg-bg-surface p-0.5 shadow-sm',
   pillarNavPillRow:
     'flex flex-wrap gap-0.5 sm:flex-nowrap sm:overflow-x-auto sm:overscroll-x-contain sm:snap-x sm:snap-mandatory sm:scroll-px-0.5 sm:[-webkit-overflow-scrolling:touch] sm:[scrollbar-width:none] sm:[&::-webkit-scrollbar]:hidden',
   pillarPill:
@@ -92,12 +87,12 @@ export const hubCabinet = {
   contextBarEntity:
     'bg-bg-surface2 text-text-muted line-clamp-1 min-w-0 max-w-[42vw] shrink rounded px-1.5 py-0.5 text-[11px] font-medium hover:text-text-primary md:max-w-xs',
   workspaceCardGrid: 'grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4',
-  workspaceTableScroll:
-    'overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]',
+  workspaceTableScroll: 'overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]',
   workspaceStickyHead: 'sticky top-0 z-20 bg-bg-surface/95 backdrop-blur-sm',
   workspaceStickyCol:
     'sticky left-0 z-10 border-border-subtle border-r bg-bg-surface shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)]',
-  orderDetailLayout: 'min-w-0 overflow-x-clip lg:grid lg:grid-cols-[1fr_20rem] lg:items-start lg:gap-4',
+  orderDetailLayout:
+    'min-w-0 overflow-x-clip lg:grid lg:grid-cols-[1fr_20rem] lg:items-start lg:gap-4',
   orderDetailMain: 'min-w-0 space-y-3 overflow-x-clip',
   orderDetailRail:
     'border-border-subtle space-y-3 rounded-lg border bg-bg-surface p-3 max-lg:hidden lg:sticky lg:top-4',
@@ -140,8 +135,10 @@ export const pillarInsight = {
   muted: 'text-text-muted text-xs leading-snug',
   metaBadge:
     'border-border-subtle bg-bg-surface2 h-5 shrink-0 px-1.5 text-[11px] text-text-secondary',
-  ctaRow: 'flex flex-col gap-2 pt-0.5 md:flex-row md:flex-wrap md:items-center md:gap-x-3 md:gap-y-1',
-  ctaLink: 'text-text-primary w-full text-center text-xs font-medium hover:underline md:w-auto md:text-left',
+  ctaRow:
+    'flex flex-col gap-2 pt-0.5 md:flex-row md:flex-wrap md:items-center md:gap-x-3 md:gap-y-1',
+  ctaLink:
+    'text-text-primary w-full text-center text-xs font-medium hover:underline md:w-auto md:text-left',
   insightCta:
     'bg-accent-primary text-accent-primary-foreground inline-flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90 md:w-auto',
   goldenPath:

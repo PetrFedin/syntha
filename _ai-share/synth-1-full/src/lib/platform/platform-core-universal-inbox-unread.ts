@@ -32,7 +32,5 @@ export function resolveUniversalInboxOrderTotalUnread(
 ): number {
   const id = orderId.trim();
   if (!id) return 0;
-  return (
-    resolveUniversalInboxOrderThreadUnread(id, unreadByChat) + (pgEventUnreadByOrder[id] ?? 0)
-  );
+  return resolveUniversalInboxOrderThreadUnread(id, unreadByChat) + (pgEventUnreadByOrder[id] ?? 0);
 }

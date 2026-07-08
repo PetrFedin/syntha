@@ -32,8 +32,7 @@ export function buildWorkshop2B2bSchetOffertaApiUrl(orderId: string): string {
 /** File journal выкл. когда PG configured (ADR-002 pg-primary). */
 export function isWorkshop2B2bInvoiceJournalFilePersistEnabled(): boolean {
   if (process.env.NODE_ENV === 'test') return true;
-  const db =
-    process.env.WORKSHOP2_DATABASE_URL?.trim() || process.env.DATABASE_URL?.trim();
+  const db = process.env.WORKSHOP2_DATABASE_URL?.trim() || process.env.DATABASE_URL?.trim();
   if (db) return false;
   if (process.env.PLATFORM_CORE_SPINE_PG_PRIMARY === '1') return false;
   return true;

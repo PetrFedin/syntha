@@ -44,9 +44,7 @@ export function Workshop2ReleaseLogisticsPanel({
   const mirroredAt = workshop2PgMirrorStr(mirror, 'mirroredAt');
   const hintRu = workshop2PgMirrorStr(mirror, 'hintRu');
   const journalStep =
-    workshop2PgMirrorStr(mirror, 'currentStep') ||
-    workshop2PgMirrorStr(mirror, 'status') ||
-    '—';
+    workshop2PgMirrorStr(mirror, 'currentStep') || workshop2PgMirrorStr(mirror, 'status') || '—';
 
   return (
     <div

@@ -1,9 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  platformCoreHeaderControlBtnClass,
-} from '@/lib/platform-core-header-controls';
+import { platformCoreHeaderControlBtnClass } from '@/lib/platform-core-header-controls';
 import {
   PLATFORM_CORE_B2B_HUB_HREF,
   PLATFORM_CORE_B2C_HUB_HREF,

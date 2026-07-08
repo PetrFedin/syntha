@@ -66,7 +66,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     txMeta: { eventType: 'workshop2_erp_staging' },
   });
   if (!saved.ok) {
-    return jsonWorkshop2ErrorRu(workshop2DossierPutFailureStatus(saved), workshop2DossierPutFailureMessageRu(saved));
+    return jsonWorkshop2ErrorRu(
+      workshop2DossierPutFailureStatus(saved),
+      workshop2DossierPutFailureMessageRu(saved)
+    );
   }
 
   const status = !result.ok && !result.skipped ? 502 : 200;

@@ -5,7 +5,10 @@ import {
   brandAttributeSchemaFeatureHref,
   brandAttributeSchemaMaterialPassportHref,
 } from '@/lib/platform-core-ports/fashion/brand-attribute-schema-workspace';
-import { brandMaterialPassportReleaseChecklistHref, brandMaterialPassportFeatureHref } from '@/lib/platform-core-ports/fashion/brand-material-passport-workspace';
+import {
+  brandMaterialPassportReleaseChecklistHref,
+  brandMaterialPassportFeatureHref,
+} from '@/lib/platform-core-ports/fashion/brand-material-passport-workspace';
 import {
   WAVE_YP_ATTR_SCHEMA_RU,
   WAVE_YP_BRAND_SC_RELEASE_GATE_SCHEMA_PASSPORT_PEER_STRIP_TESTID,

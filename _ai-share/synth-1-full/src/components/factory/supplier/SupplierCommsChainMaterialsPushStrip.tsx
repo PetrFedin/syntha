@@ -136,7 +136,9 @@ export function SupplierCommsChainMaterialsPushStrip({
             : supCmChainMaterialsPushFallbackRu())}
       </span>
       {event?.bodyRu ? (
-        <span className="text-text-secondary hidden max-w-[16rem] truncate sm:inline">{event.bodyRu}</span>
+        <span className="text-text-secondary hidden max-w-[16rem] truncate sm:inline">
+          {event.bodyRu}
+        </span>
       ) : null}
       <Badge
         variant="outline"

@@ -138,7 +138,7 @@ export function ContextualChatThread({
         />
         {sseLive ? (
           <span
-            className="text-emerald-700 text-[10px] font-medium"
+            className="text-[10px] font-medium text-emerald-700"
             data-testid="contextual-chat-sse-live-badge"
           >
             live · SSE
@@ -173,7 +173,9 @@ export function ContextualChatThread({
               <div
                 className="bg-bg-surface2 text-text-primary rounded-md rounded-tl-none p-3 text-sm"
                 data-testid={
-                  msg.message.includes('[📎 ') ? 'contextual-chat-message-with-attachment' : undefined
+                  msg.message.includes('[📎 ')
+                    ? 'contextual-chat-message-with-attachment'
+                    : undefined
                 }
               >
                 {renderMessageBody(msg.message)}

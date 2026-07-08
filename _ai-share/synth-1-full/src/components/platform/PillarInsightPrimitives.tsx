@@ -41,7 +41,10 @@ export function PillarInsightSteps({ steps, testId, preferListFromMd = true }: S
   if (steps.length === 0) return null;
 
   const chips = (
-    <div className={cn(pillarInsight.stepRow, preferListFromMd && 'md:hidden')} data-testid={testId}>
+    <div
+      className={cn(pillarInsight.stepRow, preferListFromMd && 'md:hidden')}
+      data-testid={testId}
+    >
       {steps.map((step, index) => (
         <span
           key={step.id}

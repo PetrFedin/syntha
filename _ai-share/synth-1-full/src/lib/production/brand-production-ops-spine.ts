@@ -35,9 +35,7 @@ export function workshop2PoToBrandProductionOpsRow(
 ): BrandProductionOpsPoRow {
   const payload = po.payload ?? {};
   const poCode =
-    (payload.poCode as string | undefined)?.trim() ||
-    po.lineRef?.trim() ||
-    `PO-${po.id.slice(-6)}`;
+    (payload.poCode as string | undefined)?.trim() || po.lineRef?.trim() || `PO-${po.id.slice(-6)}`;
   const sku = (payload.sku as string | undefined)?.trim() || po.articleId;
   const supplierOrFactory =
     (payload.factoryName as string | undefined)?.trim() ||

@@ -104,7 +104,9 @@ export function RangePlannerConflictResolverStrip({
           data-testid="brand-range-planner-conflict-resolver-sync-btn"
           onClick={() => void onSync()}
         >
-          {syncing ? RANGE_PLANNER_OVERLAY_CONFLICT_SYNCING_RU : RANGE_PLANNER_OVERLAY_CONFLICT_PULL_CTA_RU}
+          {syncing
+            ? RANGE_PLANNER_OVERLAY_CONFLICT_SYNCING_RU
+            : RANGE_PLANNER_OVERLAY_CONFLICT_PULL_CTA_RU}
         </Button>
       </div>
     </div>

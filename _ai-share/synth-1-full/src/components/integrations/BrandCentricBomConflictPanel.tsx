@@ -119,7 +119,7 @@ export function BrandCentricBomConflictPanel({
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Импорт и сверка BOM
         </Button>
-        {msg ? <p className="text-muted-foreground text-xs">{msg}</p> : null}
+        {msg ? <p className="text-xs text-muted-foreground">{msg}</p> : null}
         {result && result.conflicts.length > 0 ? (
           <ul className="space-y-1.5" data-testid="brand-centric-bom-conflict-list">
             {result.conflicts.map((c) => (

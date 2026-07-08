@@ -4,6 +4,7 @@ src/package.json
 .next
 .next-codex
 .next-isolated
+.next-e2e
 out
 .firebase
 

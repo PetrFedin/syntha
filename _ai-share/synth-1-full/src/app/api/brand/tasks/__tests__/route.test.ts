@@ -20,7 +20,10 @@ import { listBrandTasksKanban, replaceBrandTasksKanban } from '@/lib/server/bran
 describe('/api/brand/tasks', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (guardWorkshop2Route as jest.Mock).mockResolvedValue({ ok: true, actor: { actorLabel: 'brand-test' } });
+    (guardWorkshop2Route as jest.Mock).mockResolvedValue({
+      ok: true,
+      actor: { actorLabel: 'brand-test' },
+    });
   });
 
   it('GET requires read guard and returns tasks', async () => {

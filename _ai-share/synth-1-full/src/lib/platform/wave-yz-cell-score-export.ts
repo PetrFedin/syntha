@@ -15,8 +15,7 @@ import {
 export const WAVE_YZ_READINESS_SCORES_API_PATH =
   '/api/workshop2/platform-core/readiness-scores' as const;
 
-export const WAVE_YZ_READINESS_SCORE_EXPORT_STRIP_TESTID =
-  'wave-yz-readiness-score-export-strip';
+export const WAVE_YZ_READINESS_SCORE_EXPORT_STRIP_TESTID = 'wave-yz-readiness-score-export-strip';
 export const WAVE_YZ_READINESS_SCORE_EXPORT_SUMMARY_TESTID =
   'wave-yz-readiness-score-export-summary';
 export const WAVE_YZ_READINESS_SCORE_EXPORT_JSON_LINK_TESTID =

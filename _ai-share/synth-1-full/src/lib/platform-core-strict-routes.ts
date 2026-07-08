@@ -38,7 +38,6 @@ const CORE_PAGE_PREFIXES = [
   PLATFORM_CORE_STRICT_CABINET_PATHS.factorySupplierMessages,
   '/login',
   '/auth',
-  '/client',
 ] as const;
 
 function normalizePath(pathname: string): string {

@@ -54,11 +54,7 @@ export function getPgChatLastSeenMessageCount(chatId: string): number {
   return load()[chatId]?.lastSeenMessageCount ?? 0;
 }
 
-function syncPgChatSeenToServer(
-  chatId: string,
-  messageCount: number,
-  readerId?: string
-): void {
+function syncPgChatSeenToServer(chatId: string, messageCount: number, readerId?: string): void {
   if (!readerId?.trim() || typeof window === 'undefined') return;
   const parsed = parseBrandPgContextChatId(chatId);
   void postPgContextualReadState({

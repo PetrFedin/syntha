@@ -20,11 +20,16 @@ describe('shop-replenishment-stock-slices', () => {
       labelRu: 'SS27',
     });
     expect(ss27.length).toBeLessThanOrEqual(all.length);
-    expect(rowMatchesReplenishmentStockSlice({ seasonTag: 'SS27', orgId: 'shop1' }, {
-      orgId: 'shop1',
-      seasonId: 'SS27',
-      collectionId: 'SS27',
-      labelRu: 'x',
-    })).toBe(true);
+    expect(
+      rowMatchesReplenishmentStockSlice(
+        { seasonTag: 'SS27', orgId: 'shop1' },
+        {
+          orgId: 'shop1',
+          seasonId: 'SS27',
+          collectionId: 'SS27',
+          labelRu: 'x',
+        }
+      )
+    ).toBe(true);
   });
 });

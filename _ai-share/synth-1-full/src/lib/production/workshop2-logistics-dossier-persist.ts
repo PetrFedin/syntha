@@ -68,7 +68,8 @@ export function summarizeWorkshop2LogisticsPanelTrackingUi(input: {
   const mirror = input.dossier?.logisticsShipmentMirror;
   if (mirror) {
     const active = workshop2PgMirrorNum(mirror, 'shipmentCount') > 0;
-    const step = workshop2PgMirrorStr(mirror, 'currentStep') || workshop2PgMirrorStr(mirror, 'status');
+    const step =
+      workshop2PgMirrorStr(mirror, 'currentStep') || workshop2PgMirrorStr(mirror, 'status');
     return {
       trackingActive: active,
       statusLabelRu: active ? `PG · ${step ?? 'journal'}` : 'Mirror в PG · нет отгрузок',
@@ -163,8 +164,7 @@ export function evaluateWorkshop2LogisticsExportGate(
     return {
       id: 'logistics.export_unlinked',
       severity: 'blocker',
-      messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') ?? 'ZIP ТЗ: отгрузка без sample order.',
+      messageRu: workshop2PgMirrorStr(mirror, 'hintRu') ?? 'ZIP ТЗ: отгрузка без sample order.',
     };
   }
   return null;

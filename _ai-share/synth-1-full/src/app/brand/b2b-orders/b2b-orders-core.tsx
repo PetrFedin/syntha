@@ -174,8 +174,11 @@ export function BrandB2bOrdersCorePage() {
     ]
   );
 
-  const { rows: w2Rows, partnerIds: apiPartnerIds, loadState: w2LoadState } =
-    useBrandWorkshop2B2bOrdersList(true, listReloadNonce, partnerFilter);
+  const {
+    rows: w2Rows,
+    partnerIds: apiPartnerIds,
+    loadState: w2LoadState,
+  } = useBrandWorkshop2B2bOrdersList(true, listReloadNonce, partnerFilter);
   const integrationOverlay = useB2bRegistryIntegrationOverlay('brand', true, listReloadNonce);
   const orders = useMemo(() => {
     if (w2LoadState !== 'ready' || !w2Rows) return [];
@@ -209,7 +212,8 @@ export function BrandB2bOrdersCorePage() {
     partnerFilter === 'all'
       ? orders
       : orders.filter(
-          (o) => o.retailerId === partnerFilter || o.shop === partnerFilter || o.order === partnerFilter
+          (o) =>
+            o.retailerId === partnerFilter || o.shop === partnerFilter || o.order === partnerFilter
         );
   const corePendingLabels = BRAND_CORE_PENDING_W2_STATUSES.map(workshop2B2bOrderStatusLabelRu);
   const needingActionCount = orders.filter((o) => corePendingLabels.includes(o.status)).length;
@@ -371,64 +375,64 @@ export function BrandB2bOrdersCorePage() {
             <>
               {!embeddedWorkspace ? (
                 <>
-              <div
-                className={hubGadget.goldenPath + ' mb-3'}
-                data-testid="brand-co-registry-context-strip"
-              >
-                {contextOrderId ? (
-                  <>
+                  <div
+                    className={hubGadget.goldenPath + ' mb-3'}
+                    data-testid="brand-co-registry-context-strip"
+                  >
+                    {contextOrderId ? (
+                      <>
+                        <Link
+                          href={brandB2bOrderHref(contextOrderId)}
+                          data-testid="brand-co-registry-active-order-link"
+                          className={hubGadget.goldenLink}
+                        >
+                          Заказ
+                        </Link>
+                        <span className={hubGadget.goldenSep} aria-hidden>
+                          ·
+                        </span>
+                      </>
+                    ) : null}
                     <Link
-                      href={brandB2bOrderHref(contextOrderId)}
-                      data-testid="brand-co-registry-active-order-link"
+                      href={brandB2bOrdersProductionRegistryHref()}
+                      data-testid="brand-co-registry-production-link"
                       className={hubGadget.goldenLink}
                     >
-                      Заказ
+                      В производстве
                     </Link>
-                    <span className={hubGadget.goldenSep} aria-hidden>
-                      ·
-                    </span>
-                  </>
-                ) : null}
-                <Link
-                  href={brandB2bOrdersProductionRegistryHref()}
-                  data-testid="brand-co-registry-production-link"
-                  className={hubGadget.goldenLink}
-                >
-                  В производстве
-                </Link>
-                {contextOrderId ? (
-                  <>
-                    <span className={hubGadget.goldenSep} aria-hidden>
-                      ·
-                    </span>
-                    <Link
-                      href={shopB2bTrackingOrderHref(contextOrderId)}
-                      data-testid="brand-co-registry-tracking-link"
-                      className={hubGadget.goldenLink}
-                    >
-                      Трекинг магазина
-                    </Link>
-                  </>
-                ) : null}
-              </div>
-              <BrandCoRegistryShopTrackingPeerStrip
-                collectionId={registryCollectionId}
-                orderId={contextOrderId || undefined}
-              />
-              <BrandCoRegistryAmendQueueStrip
-                collectionId={registryCollectionId}
-                partner={partnerFilter}
-                reloadNonce={listReloadNonce}
-              />
-              <BrandCoRegistryRetailOnboardingStrip
-                collectionId={
-                  collectionFilter !== 'all'
-                    ? collectionFilter
-                    : getPlatformCoreDemoByOrderId(contextOrderId || registryFallbackOrderId)
-                        .collectionId
-                }
-                orderId={contextOrderId || undefined}
-              />
+                    {contextOrderId ? (
+                      <>
+                        <span className={hubGadget.goldenSep} aria-hidden>
+                          ·
+                        </span>
+                        <Link
+                          href={shopB2bTrackingOrderHref(contextOrderId)}
+                          data-testid="brand-co-registry-tracking-link"
+                          className={hubGadget.goldenLink}
+                        >
+                          Трекинг магазина
+                        </Link>
+                      </>
+                    ) : null}
+                  </div>
+                  <BrandCoRegistryShopTrackingPeerStrip
+                    collectionId={registryCollectionId}
+                    orderId={contextOrderId || undefined}
+                  />
+                  <BrandCoRegistryAmendQueueStrip
+                    collectionId={registryCollectionId}
+                    partner={partnerFilter}
+                    reloadNonce={listReloadNonce}
+                  />
+                  <BrandCoRegistryRetailOnboardingStrip
+                    collectionId={
+                      collectionFilter !== 'all'
+                        ? collectionFilter
+                        : getPlatformCoreDemoByOrderId(contextOrderId || registryFallbackOrderId)
+                            .collectionId
+                    }
+                    orderId={contextOrderId || undefined}
+                  />
                 </>
               ) : null}
               {coreMode ? (

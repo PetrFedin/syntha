@@ -3,7 +3,10 @@ import type {
   ShopRepOfflineDraftsConfig,
 } from '@/lib/shop/shop-rep-offline-drafts-store.types';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { shouldMirrorPgClientStoreToLocalStorage, shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
+import {
+  shouldMirrorPgClientStoreToLocalStorage,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 
 export type { ShopRepOfflineDraft, ShopRepOfflineDraftsConfig };
 
@@ -33,10 +36,9 @@ function saveLocal(config: ShopRepOfflineDraftsConfig): void {
 export async function fetchShopRepOfflineDrafts(
   repId = DEFAULT_REP
 ): Promise<{ config: ShopRepOfflineDraftsConfig; storageMode?: string; messageRu?: string }> {
-  const res = await fetch(
-    `/api/shop/b2b/rep/offline-drafts?repId=${encodeURIComponent(repId)}`,
-    { cache: 'no-store' }
-  );
+  const res = await fetch(`/api/shop/b2b/rep/offline-drafts?repId=${encodeURIComponent(repId)}`, {
+    cache: 'no-store',
+  });
   const json = (await res.json()) as {
     ok?: boolean;
     config?: ShopRepOfflineDraftsConfig | null;
@@ -56,8 +58,7 @@ export async function fetchShopRepOfflineDrafts(
       storageMode: 'memory',
     };
   }
-  const config =
-    json.config ?? { repId, drafts: [], updatedAt: new Date().toISOString() };
+  const config = json.config ?? { repId, drafts: [], updatedAt: new Date().toISOString() };
   if (shouldMirrorPgClientStoreToLocalStorage()) {
     saveLocal(config);
   }

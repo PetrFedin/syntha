@@ -10,10 +10,7 @@ import { ManufacturerTechPackAckWorkspacePanel } from '@/components/factory/Manu
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
 import { PillarCapabilityWorkspaceChrome } from '@/components/platform/PillarCapabilityWorkspaceChrome';
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import {
-  getPlatformCoreDemo,
-  resolvePageCollectionId,
-} from '@/lib/platform-core-hub-matrix';
+import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { usePillarCapabilityWorkspace } from '@/hooks/use-pillar-capability-workspace';
 import { usePlatformCoreHashScroll } from '@/hooks/use-platform-core-hash-scroll';

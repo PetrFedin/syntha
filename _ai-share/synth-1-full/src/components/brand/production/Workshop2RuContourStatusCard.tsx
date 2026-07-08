@@ -38,7 +38,10 @@ export function Workshop2RuContourStatusCard({
     void fetch('/api/workshop2/investor-readiness', { cache: 'no-store' })
       .then(async (res) => {
         if (!res.ok) return null;
-        return (await res.json()) as { readyForInvestorDemo?: boolean; stagingNoteRu?: string } | null;
+        return (await res.json()) as {
+          readyForInvestorDemo?: boolean;
+          stagingNoteRu?: string;
+        } | null;
       })
       .then((data) => {
         if (cancelled || !data) return;

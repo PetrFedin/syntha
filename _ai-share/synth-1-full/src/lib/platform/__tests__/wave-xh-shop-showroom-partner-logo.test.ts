@@ -88,9 +88,9 @@ describe('wave XH — eligible-for-matrix filter API polish', () => {
   });
 
   it('appends eligibleOnly when filter active', () => {
-    expect(buildShopShowroomEligibleFilterApiUrl('SS27', 'shop1', { eligibleOnly: true })).toContain(
-      'eligibleOnly=1'
-    );
+    expect(
+      buildShopShowroomEligibleFilterApiUrl('SS27', 'shop1', { eligibleOnly: true })
+    ).toContain('eligibleOnly=1');
   });
 
   it('toggle label shows counts', () => {

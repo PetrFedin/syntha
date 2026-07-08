@@ -74,7 +74,7 @@ export function PlatformCoreQcGateInlineRecordStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/50 px-3 py-3"
+      className="border-border-subtle bg-bg-surface2/50 space-y-2 rounded-md border px-3 py-3"
       data-testid={`${testIdPrefix}-inline-record-strip`}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -97,7 +97,10 @@ export function PlatformCoreQcGateInlineRecordStrip({
         <div className="w-[8rem]">
           <label className="text-text-muted mb-1 block text-[10px] uppercase">Result</label>
           <Select value={result} onValueChange={(v) => setResult(v as QcResult)}>
-            <SelectTrigger className="h-8 text-xs" data-testid={`${testIdPrefix}-inline-record-result`}>
+            <SelectTrigger
+              className="h-8 text-xs"
+              data-testid={`${testIdPrefix}-inline-record-result`}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -119,7 +122,10 @@ export function PlatformCoreQcGateInlineRecordStrip({
         </Button>
       </div>
       {message ? (
-        <p className="text-text-muted text-[10px]" data-testid={`${testIdPrefix}-inline-record-message`}>
+        <p
+          className="text-text-muted text-[10px]"
+          data-testid={`${testIdPrefix}-inline-record-message`}
+        >
           {message}
         </p>
       ) : null}

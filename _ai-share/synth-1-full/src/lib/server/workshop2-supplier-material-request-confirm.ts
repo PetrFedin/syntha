@@ -12,9 +12,7 @@ import {
 } from '@/lib/server/workshop2-material-requisition-repository';
 import { bumpPlatformCoreChainStatus } from '@/lib/server/platform-core-chain-status-hub';
 import { bumpPlatformCoreB2bRegistry } from '@/lib/server/platform-core-b2b-registry-hub';
-import {
-  patchWorkshop2B2bInventoryReserve,
-} from '@/lib/server/workshop2-b2b-production-handoff';
+import { patchWorkshop2B2bInventoryReserve } from '@/lib/server/workshop2-b2b-production-handoff';
 import {
   getWorkshop2ServerDossierRecord,
   putWorkshop2ServerDossierRecord,
@@ -33,11 +31,11 @@ import {
   uniqueArticleScopesFromB2bOrder,
   workshop2B2bOrderContextId,
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
-import {
-  buildWorkshop2SupplierBulkConfirmIdempotencyKey,
-} from '@/lib/production/workshop2-supplier-bulk-confirm-idempotency';
+import { buildWorkshop2SupplierBulkConfirmIdempotencyKey } from '@/lib/production/workshop2-supplier-bulk-confirm-idempotency';
 
-const SUPPLIER_BULK_CONFIRM_IDEM_KEY = Symbol.for('syntha.workshop2.supplier.bulk-confirm.idempotency');
+const SUPPLIER_BULK_CONFIRM_IDEM_KEY = Symbol.for(
+  'syntha.workshop2.supplier.bulk-confirm.idempotency'
+);
 
 type SupplierBulkConfirmIdempotencyRecord = {
   response: BulkSupplierMaterialConfirmResult;
@@ -192,11 +190,7 @@ export async function confirmWorkshop2SupplierMaterialRequest(input: {
     }
   }
 
-  if (
-    input.status === 'confirmed' &&
-    b2bOrderId &&
-    !input.skipBrandPush
-  ) {
+  if (input.status === 'confirmed' && b2bOrderId && !input.skipBrandPush) {
     await pushSupplierMaterialsBrandNotify({
       b2bOrderId,
       collectionId: requisition.collectionId,
@@ -238,7 +232,9 @@ async function pushSupplierMaterialsBrandNotify(input: {
     input.partialShipQty != null
       ? ` · отгрузка ${input.partialShipQty}${input.backorder ? ' · backorder' : ''}`
       : '';
-  const lineRu = input.lineLabel ? `Строка BOM: ${input.lineLabel}` : 'Push поставщика · materials_supplied';
+  const lineRu = input.lineLabel
+    ? `Строка BOM: ${input.lineLabel}`
+    : 'Push поставщика · materials_supplied';
   void recordPlatformCoreChainNotificationEvents({
     orderId: input.b2bOrderId,
     collectionId: input.collectionId,

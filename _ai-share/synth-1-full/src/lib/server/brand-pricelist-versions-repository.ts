@@ -88,7 +88,10 @@ function mapPgRow(row: {
   };
 }
 
-async function listPersistedPg(org: string, collectionId: string): Promise<BrandPricelistVersionRow[]> {
+async function listPersistedPg(
+  org: string,
+  collectionId: string
+): Promise<BrandPricelistVersionRow[]> {
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query(
     `SELECT id, collection_id, name, channel, valid_from, valid_to, list_type,
@@ -230,7 +233,10 @@ export async function patchBrandPricelistVersionServer(input: {
   multiplier?: number;
   validTo?: string;
   organizationId?: string;
-}): Promise<{ row: BrandPricelistVersionRow | null; storageMode: BrandPricelistVersionsStorageMode }> {
+}): Promise<{
+  row: BrandPricelistVersionRow | null;
+  storageMode: BrandPricelistVersionsStorageMode;
+}> {
   const org = input.organizationId ?? DEFAULT_ORG;
   const collectionId = input.collectionId.trim();
   const listed = await listBrandPricelistVersionsServer({

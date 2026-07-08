@@ -7,9 +7,9 @@ import { ShopB2bPartnerBrandDetailCorePage } from '@/app/shop/b2b/partners/[bran
 
 const ShopB2bPartnerBrandDetailLegacyPage = dynamic(
   () =>
-    import(
-      '@/_archive/platform-core-legacy/app/shop/b2b/partners/[brandId]/partner-brand-detail-legacy'
-    ).then((m) => m.ShopB2bPartnerBrandDetailLegacyPage),
+    import('@/_archive/platform-core-legacy/app/shop/b2b/partners/[brandId]/partner-brand-detail-legacy').then(
+      (m) => m.ShopB2bPartnerBrandDetailLegacyPage
+    ),
   { ssr: false }
 );
 

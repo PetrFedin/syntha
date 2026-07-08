@@ -77,8 +77,7 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       order: 2,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'Sample queue PG — factory PATCH + hash-scroll (~8.0 после wave XC).',
+      summary: 'Sample queue PG — factory PATCH + hash-scroll (~8.0 после wave XC).',
       good: [
         'Sample queue card',
         'SAMPLE-DEMO в e2e',
@@ -177,7 +176,12 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        platformCoreCabinetSectionHref('manufacturer', 'order_production', 'mfr-op-handoff-queue', d),
+        platformCoreCabinetSectionHref(
+          'manufacturer',
+          'order_production',
+          'mfr-op-handoff-queue',
+          d
+        ),
     },
     {
       id: 'mfr-op-production-orders',
@@ -213,7 +217,12 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        platformCoreCabinetSectionHref('manufacturer', 'order_production', 'mfr-op-production-orders', d),
+        platformCoreCabinetSectionHref(
+          'manufacturer',
+          'order_production',
+          'mfr-op-production-orders',
+          d
+        ),
     },
     {
       id: 'mfr-op-dossier',
@@ -221,8 +230,7 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       order: 3,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'TZ export-print route + PO TZ PDF peer deduped (~8.0 после wave XU).',
+      summary: 'TZ export-print route + PO TZ PDF peer deduped (~8.0 после wave XU).',
       good: [
         'factory-dossier-core-chrome + `?pillar=order_production`',
         'CO spine peer queue/brand-handoff/tracking/cut-ticket/procurement (`mfr-op-dossier-co-spine-peer-strip`)',

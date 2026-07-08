@@ -7,9 +7,10 @@ export type SupplierMaterialPartialShipInput = {
   backorderFlag?: boolean;
 };
 
-export function parseSupplierMaterialPartialShipFields(
-  body: Record<string, unknown>
-): { shippedQty?: number; backorder?: boolean } {
+export function parseSupplierMaterialPartialShipFields(body: Record<string, unknown>): {
+  shippedQty?: number;
+  backorder?: boolean;
+} {
   const qtyRaw = body.partialShipQty ?? body.shippedQty;
   const shippedQty =
     qtyRaw != null && Number.isFinite(Number(qtyRaw))

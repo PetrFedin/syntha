@@ -18,8 +18,8 @@ export function MfrOpHandoffQueueRegistrySoTStrip({ registryHref }: Props) {
         data-testid="mfr-op-handoff-queue-registry-sot-link"
       >
         производственные заказы
-      </Link>
-      {' '}(без дубля bulk-ack).
+      </Link>{' '}
+      (без дубля bulk-ack).
     </p>
   );
 }

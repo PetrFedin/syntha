@@ -45,7 +45,11 @@ export function SupplierAltMaterialsApprovalPanel({ collectionId, articleId, row
     void load();
   }, [load]);
 
-  const act = async (row: SupplierAltMaterialRow, alternative: string, action: 'submit' | 'approve' | 'reject') => {
+  const act = async (
+    row: SupplierAltMaterialRow,
+    alternative: string,
+    action: 'submit' | 'approve' | 'reject'
+  ) => {
     const key = buildSupplierAltMaterialApprovalKey(row.primary, alternative);
     const currentStatus = approvals[key] ?? null;
     if (!supplierCanActAltMaterialApproval({ action, currentStatus })) return;
@@ -91,9 +95,18 @@ export function SupplierAltMaterialsApprovalPanel({ collectionId, articleId, row
           const key = buildSupplierAltMaterialApprovalKey(row.primary, alt);
           const status = approvals[key] ?? null;
           const busy = busyKey === key;
-          const canSubmit = supplierCanActAltMaterialApproval({ action: 'submit', currentStatus: status });
-          const canApprove = supplierCanActAltMaterialApproval({ action: 'approve', currentStatus: status });
-          const canReject = supplierCanActAltMaterialApproval({ action: 'reject', currentStatus: status });
+          const canSubmit = supplierCanActAltMaterialApproval({
+            action: 'submit',
+            currentStatus: status,
+          });
+          const canApprove = supplierCanActAltMaterialApproval({
+            action: 'approve',
+            currentStatus: status,
+          });
+          const canReject = supplierCanActAltMaterialApproval({
+            action: 'reject',
+            currentStatus: status,
+          });
           return (
             <li
               key={key}
@@ -104,7 +117,11 @@ export function SupplierAltMaterialsApprovalPanel({ collectionId, articleId, row
               <span className="text-muted-foreground">→</span>
               <span>{alt}</span>
               {status ? (
-                <Badge variant="outline" className="text-[10px]" data-testid={`materials-alt-status-${key}`}>
+                <Badge
+                  variant="outline"
+                  className="text-[10px]"
+                  data-testid={`materials-alt-status-${key}`}
+                >
                   {formatSupplierAltMaterialApprovalStatusRu(status)}
                 </Badge>
               ) : null}

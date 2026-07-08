@@ -11,23 +11,51 @@ export function BrandCoLandedMarginCoPeerStrip({ collectionId, orderId }: Props)
 
   return (
     <div className={hubGadget.goldenPath} data-testid="brand-co-landed-margin-co-peer-strip">
-      <Link href={s.shopMatrixHref} data-testid="brand-co-landed-margin-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={s.shopMatrixHref}
+        data-testid="brand-co-landed-margin-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.shopCheckoutHref} data-testid="brand-co-landed-margin-checkout-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.shopCheckoutHref}
+        data-testid="brand-co-landed-margin-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.priceListsVersionsHref} data-testid="brand-co-landed-margin-pricelist-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.priceListsVersionsHref}
+        data-testid="brand-co-landed-margin-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.shopReplenishmentAtpHref} data-testid="brand-co-landed-margin-replenishment-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.shopReplenishmentAtpHref}
+        data-testid="brand-co-landed-margin-replenishment-link"
+        className={hubGadget.goldenLink}
+      >
         ATP
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.brandOrderCommsHandoffHref} data-testid="brand-co-landed-margin-handoff-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.brandOrderCommsHandoffHref}
+        data-testid="brand-co-landed-margin-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
     </div>

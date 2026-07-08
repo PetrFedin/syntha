@@ -81,10 +81,7 @@ export function evaluateWorkshop2MatchmakerMirrorHandoffGate(
 ): Workshop2HandoffReadinessCheck | null {
   const mirror = dossier.matchmakerMirror;
   if (!mirror) return null;
-  if (
-    mirror.blockerHandoff === true ||
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true'
-  ) {
+  if (mirror.blockerHandoff === true || workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true') {
     return {
       id: 'matchmaker.mirror_stale_or_low',
       severity: 'warning',

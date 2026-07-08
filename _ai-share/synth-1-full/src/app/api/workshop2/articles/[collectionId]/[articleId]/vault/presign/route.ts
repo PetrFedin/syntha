@@ -70,7 +70,11 @@ async function postVaultPresign(req: NextRequest, ctx: RouteCtx) {
       .toLowerCase();
     if (intentEarly === 'get') {
       return NextResponse.json(
-        { ok: false, error: 'vault_demo_get_unavailable', message: 'Demo vault: только PUT ingest.' },
+        {
+          ok: false,
+          error: 'vault_demo_get_unavailable',
+          message: 'Demo vault: только PUT ingest.',
+        },
         { status: 503 }
       );
     }

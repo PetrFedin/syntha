@@ -151,7 +151,8 @@ export function Workshop2FinalTzWizardDialog({
                 </Button>
               </div>
               <p className="text-text-secondary text-xs">
-                Предпросмотр ({previewMode === 'factory-pack' ? 'ole_globirds sheets' : 'полное ТЗ'}).
+                Предпросмотр ({previewMode === 'factory-pack' ? 'ole_globirds sheets' : 'полное ТЗ'}
+                ).
               </p>
               <iframe
                 title="Предпросмотр экспорта"

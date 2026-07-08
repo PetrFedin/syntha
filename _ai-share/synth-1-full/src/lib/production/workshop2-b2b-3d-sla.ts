@@ -52,8 +52,7 @@ export function summarizeWorkshop2B2b3dSlaFromJournal(): Workshop2B2b3dSlaSummar
       ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
       : 0;
   const errorCount = entries.filter((e) => e.error === true).length;
-  const errorRatePct =
-    sessionCount > 0 ? Math.round((errorCount / sessionCount) * 1000) / 10 : 0;
+  const errorRatePct = sessionCount > 0 ? Math.round((errorCount / sessionCount) * 1000) / 10 : 0;
 
   return {
     sessionCount,

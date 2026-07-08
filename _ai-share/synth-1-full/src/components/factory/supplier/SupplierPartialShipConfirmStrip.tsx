@@ -87,7 +87,9 @@ export function SupplierPartialShipConfirmStrip({
       className="space-y-2 rounded-md border border-emerald-200/80 bg-emerald-50/40 px-2 py-2"
       data-testid="sup-op-partial-ship-confirm-strip"
     >
-      <p className="text-[10px] font-semibold text-emerald-950">{WAVE_WI_SUP_PARTIAL_SHIP_TITLE_RU}</p>
+      <p className="text-[10px] font-semibold text-emerald-950">
+        {WAVE_WI_SUP_PARTIAL_SHIP_TITLE_RU}
+      </p>
       <div className="flex flex-wrap items-end gap-2">
         <div className="space-y-1">
           <Label htmlFor="sup-op-partial-ship-qty" className="text-[10px]">

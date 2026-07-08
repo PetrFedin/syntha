@@ -8,10 +8,9 @@ import uuid
 
 from app.core import security
 from app.core.config import settings
-from app.db.session import async_session_factory
 from app.db.repositories.user import UserRepository
+from app.db.session import async_session_factory
 from app.services.auth_service import resolve_mock_role_org
-
 
 DEV_USERS = [
     ("brand_admin@test.com", "brand_admin123", "Brand Admin"),

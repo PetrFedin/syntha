@@ -34,7 +34,10 @@ function statusFromRound(round: BrandSampleLifecycleRoundId): BrandSampleLifecyc
   return round === 'sms' ? 'in_progress' : 'pending';
 }
 
-function nextActionRu(round: BrandSampleLifecycleRoundId, status: BrandSampleLifecycleRoundStatus): string {
+function nextActionRu(
+  round: BrandSampleLifecycleRoundId,
+  status: BrandSampleLifecycleRoundStatus
+): string {
   if (status === 'approved') return 'Release gate → syndication.';
   if (round === 'gold') return 'Gold sample approval + handoff.';
   if (round === 'sms') return 'Fit comments → gold sample.';

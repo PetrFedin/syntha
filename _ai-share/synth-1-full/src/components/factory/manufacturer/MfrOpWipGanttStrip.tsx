@@ -65,9 +65,7 @@ export function MfrOpWipGanttStrip({
         if (cancelled) return;
         setRows(json.timeline?.rows ?? []);
         setStorageMode(json.timeline?.storageMode ?? 'file');
-        setStorageModeLabelRu(
-          json.storageModeLabelRu ?? json.timeline?.storageModeLabelRu ?? null
-        );
+        setStorageModeLabelRu(json.storageModeLabelRu ?? json.timeline?.storageModeLabelRu ?? null);
         setMessageRu(json.timeline?.messageRu ?? null);
       })
       .catch(() => {
@@ -95,10 +93,7 @@ export function MfrOpWipGanttStrip({
         {showFloorSoTStrip && handoffQueueHref ? (
           <MfrOpWipFloorTabletSoTStrip variant="gantt-owner" handoffQueueHref={handoffQueueHref} />
         ) : null}
-        <p
-          className="text-text-muted text-[10px]"
-          data-testid="mfr-op-wip-gantt-empty"
-        >
+        <p className="text-text-muted text-[10px]" data-testid="mfr-op-wip-gantt-empty">
           {messageRu ?? 'Нет серий для Ганта'}
         </p>
       </div>
@@ -127,8 +122,7 @@ export function MfrOpWipGanttStrip({
           className="text-[8px] uppercase"
           data-testid="mfr-op-wip-gantt-storage"
         >
-          {storageModeLabelRu ??
-            (storageMode === 'postgres' ? 'WIP · PostgreSQL' : 'WIP · файл')}
+          {storageModeLabelRu ?? (storageMode === 'postgres' ? 'WIP · PostgreSQL' : 'WIP · файл')}
         </Badge>
         {messageRu ? (
           <span className="text-text-muted text-[9px]" data-testid="mfr-op-wip-gantt-summary">

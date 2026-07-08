@@ -883,7 +883,9 @@ export function buildWorkshop2FinalTzExportContextFromDossier(
   const mirror = dossier.articleFormMirror;
   const categoryLeafId =
     mirror?.categoryLeafId?.trim() ||
-    dossier.categorySketchAnnotations?.find((a) => a.categoryLeafId?.trim())?.categoryLeafId?.trim() ||
+    dossier.categorySketchAnnotations
+      ?.find((a) => a.categoryLeafId?.trim())
+      ?.categoryLeafId?.trim() ||
     'catalog-unassigned';
   const leaf = findHandbookLeafById(categoryLeafId);
   const pathLabel = lastExport?.pathLabelSnapshot?.trim() || leaf?.pathLabel || '—';

@@ -1,10 +1,6 @@
 import { WORKSHOP2_B2B_MATRIX_FALLBACK_IMAGE } from '@/lib/b2b/workshop2-b2b-matrix-catalog';
 
-export type ShopShowroomCoverHeroSource =
-  | 'dossier'
-  | 'partner-cover'
-  | 'partner-logo'
-  | 'fallback';
+export type ShopShowroomCoverHeroSource = 'dossier' | 'partner-cover' | 'partner-logo' | 'fallback';
 
 export type ShopShowroomCoverHero = {
   url: string;

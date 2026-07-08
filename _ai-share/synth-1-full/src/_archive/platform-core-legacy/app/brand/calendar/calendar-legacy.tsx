@@ -58,9 +58,7 @@ function BrandCalendarMain({ coreMode }: { coreMode?: boolean }) {
     fallback: searchParams.get('collectionId'),
   });
   const orderId =
-    searchParams.get('orderId')?.trim() ||
-    searchParams.get('order')?.trim() ||
-    undefined;
+    searchParams.get('orderId')?.trim() || searchParams.get('order')?.trim() || undefined;
   const [liveEvents, setLiveEvents] = useState<ReturnType<typeof getAllCalendarEvents>>([]);
   const [collabEvents, setCollabEvents] = useState<CalendarEvent[]>([]);
   const [integrationEvents, setIntegrationEvents] = useState<CalendarEvent[]>([]);

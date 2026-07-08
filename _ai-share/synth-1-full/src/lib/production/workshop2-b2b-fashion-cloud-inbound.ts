@@ -134,18 +134,16 @@ export function buildWorkshop2B2bFashionCloudDraftOrder(
   payload: Workshop2B2bFashionCloudInboundPayload
 ): Workshop2B2bOrderRecord {
   const now = new Date().toISOString();
-  const lines =
-    payload.lines ??
-    [
-      {
-        collectionId: payload.collectionId ?? 'SS27',
-        articleId: payload.articleId ?? 'demo-ss27-01',
-        colorCode: '001',
-        size: 'M',
-        qty: 1,
-        wholesalePriceRub: 0,
-      },
-    ];
+  const lines = payload.lines ?? [
+    {
+      collectionId: payload.collectionId ?? 'SS27',
+      articleId: payload.articleId ?? 'demo-ss27-01',
+      colorCode: '001',
+      size: 'M',
+      qty: 1,
+      wholesalePriceRub: 0,
+    },
+  ];
   const totalRub = lines.reduce((s, l) => s + l.qty * l.wholesalePriceRub, 0);
   return {
     id: mapWorkshop2B2bInboundExternalRefToOrderId(`fc:${payload.externalOrderRef}`),

@@ -75,7 +75,7 @@ describe('platform-core-readiness-audit', () => {
   it('every active cell has SECTION_AUDIT coverage (3+ разделов)', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27');
     const active = cells.filter((c) => c.active);
-    expect(active.length).toBe(8);
+    expect(active.length).toBe(9);
     for (const cell of active) {
       const expected = expectedVisibleSectionCount(cell.roleId, cell.pillarId);
       expect(expected).toBeGreaterThanOrEqual(3);
@@ -120,11 +120,11 @@ describe('platform-core-readiness-audit', () => {
     expect(formatReadinessScore(null)).toBe('—');
   });
 
-  it('summary: only 8 active scored cells (baseline)', () => {
+  it('summary: 9 active scored cells (baseline, shop OP active)', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27', { liveChain: true });
     const summary = summarizePlatformCoreReadiness(cells, 'live');
-    expect(summary.activeScoredCount).toBe(8);
-    expect(summary.scoredCellCount).toBe(8);
+    expect(summary.activeScoredCount).toBe(9);
+    expect(summary.scoredCellCount).toBe(9);
     expect(summary.allCellsAvg).toBeGreaterThanOrEqual(7.0);
     expect(summary.activeCellsAvg).toBeGreaterThanOrEqual(7.0);
     expect(summary.activeCellsAvg).toBeLessThan(8.0);

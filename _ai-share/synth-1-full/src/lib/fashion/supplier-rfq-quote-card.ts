@@ -2,9 +2,7 @@ import type { BrandCentricRfqQuoteCard } from '@/lib/fashion/brand-centric-rfq-q
 
 export const SUPPLIER_RFQ_DEMO_SUPPLIER_ID = 'sup-textile-plus';
 
-export function formatSupplierRfqQuoteStatusRu(
-  status: BrandCentricRfqQuoteCard['status']
-): string {
+export function formatSupplierRfqQuoteStatusRu(status: BrandCentricRfqQuoteCard['status']): string {
   switch (status) {
     case 'accepted':
       return 'Принята брендом';

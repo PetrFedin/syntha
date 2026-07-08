@@ -29,7 +29,20 @@ describe('shop-matrix-article-inspector', () => {
         operations: [],
         measurements: [],
       },
-      assignments: [{ assignmentId: 'a1', kind: 'canonical' as const, attributeId: 'composition', values: [{ valueId: 'v1', valueSource: 'free_text' as const, displayLabel: '80% wool · 20% poly' }] }],
+      assignments: [
+        {
+          assignmentId: 'a1',
+          kind: 'canonical' as const,
+          attributeId: 'composition',
+          values: [
+            {
+              valueId: 'v1',
+              valueSource: 'free_text' as const,
+              displayLabel: '80% wool · 20% poly',
+            },
+          ],
+        },
+      ],
     } as Workshop2DossierPhase1;
 
     const view = extractShopMatrixArticleInspectorView({

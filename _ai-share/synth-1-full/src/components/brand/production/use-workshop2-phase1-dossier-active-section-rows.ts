@@ -30,17 +30,12 @@ export function useWorkshop2Phase1DossierActiveSectionRows({
 }: UseWorkshop2Phase1DossierActiveSectionRowsInput) {
   const currentPhase: '1' | '2' | '3' = isPhase2 ? '2' : isPhase3 ? '3' : '1';
 
-  const phaseRowsCurrent = isPhase2
-    ? rowsToShowPhase2
-    : isPhase3
-      ? rowsToShowPhase3
-      : rowsToShow;
+  const phaseRowsCurrent = isPhase2 ? rowsToShowPhase2 : isPhase3 ? rowsToShowPhase3 : rowsToShow;
 
   const sectionRowsCurrent = useMemo(
     () =>
       phaseRowsCurrent.filter(
-        (row) =>
-          getSectionForAttr(row.attribute.attributeId, row.group?.groupId) === activeSection
+        (row) => getSectionForAttr(row.attribute.attributeId, row.group?.groupId) === activeSection
       ),
     [phaseRowsCurrent, activeSection]
   );

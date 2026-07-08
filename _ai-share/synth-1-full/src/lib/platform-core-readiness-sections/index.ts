@@ -5,7 +5,11 @@
  * Редактировать данные по ролям: `brand-audit.ts`, `shop-audit.ts`, …
  */
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import { getPlatformCoreDemo, platformCoreRolePillarHref, rewriteHrefForDemo } from '@/lib/platform-core-hub-matrix';
+import {
+  getPlatformCoreDemo,
+  platformCoreRolePillarHref,
+  rewriteHrefForDemo,
+} from '@/lib/platform-core-hub-matrix';
 import type { ReadinessSubItem } from '@/lib/platform-core-readiness-audit';
 import { filterReadinessSubItemsForTwoRoleBaseline } from '@/lib/platform-core-two-role-sections';
 

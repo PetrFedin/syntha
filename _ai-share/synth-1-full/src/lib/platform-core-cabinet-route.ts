@@ -13,7 +13,9 @@ export function isPlatformCoreCabinetPath(pathname: string | null | undefined): 
 }
 
 /** В core-демо хаб поставщика доступен любой роли цепочки (инвестор walkthrough). */
-export function isPlatformCoreSupplierWalkthroughPath(pathname: string | null | undefined): boolean {
+export function isPlatformCoreSupplierWalkthroughPath(
+  pathname: string | null | undefined
+): boolean {
   if (!pathname) return false;
   return pathname === '/factory/supplier';
 }

@@ -146,7 +146,11 @@ export async function resolveWorkshop2PublishedArticlesForHub(input: {
 /** Состав + досье из PG для golden-path коллекций (FW27 и др.). */
 export async function hydrateWorkshop2PlatformCoreCollectionFromPg(
   collectionId: string,
-  options?: { preferApi?: boolean; localInventory?: LocalCollectionInventory; seedLines?: unknown[] }
+  options?: {
+    preferApi?: boolean;
+    localInventory?: LocalCollectionInventory;
+    seedLines?: unknown[];
+  }
 ): Promise<{
   articles: Workshop2PgPublishedArticleRow[];
   dossiersHydrated: number;

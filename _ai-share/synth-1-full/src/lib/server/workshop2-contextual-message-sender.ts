@@ -18,8 +18,7 @@ export function resolveContextualMessageSenderFromHeaders(
     headers.get('x-user-name')?.trim();
   if (fromHeader) return fromHeader;
 
-  const email =
-    headers.get('x-w2-actor-email')?.trim() || headers.get('x-user-email')?.trim();
+  const email = headers.get('x-w2-actor-email')?.trim() || headers.get('x-user-email')?.trim();
   if (email) return email.split('@')[0] ?? email;
 
   return WORKSHOP2_CONTEXTUAL_DEFAULT_SENDER;

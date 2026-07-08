@@ -14,8 +14,7 @@ export const PLATFORM_CORE_WMS_RESERVE_BEFORE_HANDOFF_RU =
 
 export const PLATFORM_CORE_WMS_RESERVE_DONE_RU = 'Резерв на складе';
 
-export const PLATFORM_CORE_WMS_RESERVE_DISABLED_RU =
-  'WMS (склад) выключен — резерв недоступен';
+export const PLATFORM_CORE_WMS_RESERVE_DISABLED_RU = 'WMS (склад) выключен — резерв недоступен';
 
 /** Supplier procurement: резерв после shop checkout + brand handoff. */
 export const PLATFORM_CORE_WMS_RESERVE_SUPPLIER_PROCUREMENT_RU =
@@ -58,7 +57,9 @@ export function formatPlatformCoreWmsCheckoutAtpBadgeRu(input: {
 }
 
 /** Честная подпись источника stock-atp для checkout (RU). */
-export function formatPlatformCoreWmsStockAtpSourceRu(source: string | null | undefined): string | null {
+export function formatPlatformCoreWmsStockAtpSourceRu(
+  source: string | null | undefined
+): string | null {
   if (!source?.trim()) return null;
   if (source === 'pg+wms') return 'PG + склад WMS';
   if (source === 'wms') return 'WMS';

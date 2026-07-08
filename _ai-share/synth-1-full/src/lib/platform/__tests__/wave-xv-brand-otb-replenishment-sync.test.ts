@@ -47,7 +47,9 @@ describe('wave XV — brand CO OTB plan sync × shop replenishment rules', () =>
     const row = buildBrandCoOtbReplenishmentBuyerRow({
       buyerId: 'shop1',
       collectionId: 'SS27',
-      mix: [{ category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' }],
+      mix: [
+        { category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' },
+      ],
       activePresetId: 'fashion-eos',
     });
     expect(row.syncStatus).toBe('aligned');

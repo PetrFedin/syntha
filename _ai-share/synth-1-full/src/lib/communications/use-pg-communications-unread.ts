@@ -6,10 +6,7 @@ import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-re
 import { usePlatformCoreCommsInboxPoll } from '@/hooks/use-platform-core-comms-inbox-poll';
 import type { BrandPgThreadRow } from '@/lib/brand/brand-messages-pg-threads';
 import { usePgContextualActorId } from '@/hooks/use-pg-contextual-actor-id';
-import {
-  buildPgUnreadCountByChat,
-  totalPgUnreadFromByChat,
-} from './pg-contextual-unread-metrics';
+import { buildPgUnreadCountByChat, totalPgUnreadFromByChat } from './pg-contextual-unread-metrics';
 import type { PgContextualThreadsCabinet } from '@/lib/server/pg-contextual-message-threads-handler';
 import { subscribePgContextualReadState } from './pg-contextual-read-state';
 

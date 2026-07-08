@@ -204,7 +204,7 @@ export default function LineSheetGenerator() {
           {catalogSource === 'w2' ? (
             <a
               href={`${ROUTES.brand.showroom}?collection=${collectionId}`}
-              className="text-indigo-600 mt-2 inline-block text-[10px] font-bold uppercase tracking-wider hover:underline"
+              className="mt-2 inline-block text-[10px] font-bold uppercase tracking-wider text-indigo-600 hover:underline"
             >
               Открыть showroom →
             </a>

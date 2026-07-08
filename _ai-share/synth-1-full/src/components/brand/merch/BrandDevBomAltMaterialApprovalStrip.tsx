@@ -108,12 +108,15 @@ export function BrandDevBomAltMaterialApprovalStrip({ collectionId, articleId }:
     demoOrderId: '',
     factoryId: '',
   });
-  const supplierCabinetHref = buildSupplierDevBomCabinetAltMaterialHref({ collectionId, articleId });
+  const supplierCabinetHref = buildSupplierDevBomCabinetAltMaterialHref({
+    collectionId,
+    articleId,
+  });
   const brandBomHref = buildBrandSupplierBomSession({ collectionId, articleId }).bomHref;
 
   return (
     <div
-      className="border-border-subtle flex flex-col gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-col gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="brand-dev-bom-alt-material-approval-strip"
     >
       <div
@@ -124,7 +127,11 @@ export function BrandDevBomAltMaterialApprovalStrip({ collectionId, articleId }:
           Согласование альтернатив
         </Badge>
         {storageMode === 'postgres' ? (
-          <Badge variant="secondary" className="text-[9px]" data-testid="brand-dev-bom-alt-material-storage-pg">
+          <Badge
+            variant="secondary"
+            className="text-[9px]"
+            data-testid="brand-dev-bom-alt-material-storage-pg"
+          >
             PG
           </Badge>
         ) : null}
@@ -147,7 +154,11 @@ export function BrandDevBomAltMaterialApprovalStrip({ collectionId, articleId }:
               </Badge>
             ) : null}
             {summary.rejected > 0 ? (
-              <Badge variant="outline" className="text-rose-700" data-testid="brand-dev-bom-alt-material-rejected">
+              <Badge
+                variant="outline"
+                className="text-rose-700"
+                data-testid="brand-dev-bom-alt-material-rejected"
+              >
                 {summary.rejected} {formatSupplierAltMaterialApprovalStatusRu('rejected')}
               </Badge>
             ) : null}
@@ -167,7 +178,11 @@ export function BrandDevBomAltMaterialApprovalStrip({ collectionId, articleId }:
         >
           {WAVE_XW_BRAND_SUP_CABINET_LINK_RU}
         </Link>
-        <Link href={brandBomHref} className={hubGadget.goldenLink} data-testid="brand-dev-bom-alt-material-bom-link">
+        <Link
+          href={brandBomHref}
+          className={hubGadget.goldenLink}
+          data-testid="brand-dev-bom-alt-material-bom-link"
+        >
           BOM · закупка →
         </Link>
       </div>

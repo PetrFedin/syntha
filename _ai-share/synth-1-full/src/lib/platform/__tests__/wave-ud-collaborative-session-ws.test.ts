@@ -1,6 +1,8 @@
 describe('wave UD — P1 shop CO collaborative session SSE + PG journal', () => {
   it('session journal migration + repository', () => {
-    expect('061_wave_ud_shop_collaborative_session_journal').toContain('collaborative_session_journal');
+    expect('061_wave_ud_shop_collaborative_session_journal').toContain(
+      'collaborative_session_journal'
+    );
     expect('shop_collaborative_session_journal').toContain('journal');
     expect('appendBrandCollaborativeMarginJournal').toContain('MarginJournal');
     expect('listShopCollaborativeSessionJournal').toContain('SessionJournal');

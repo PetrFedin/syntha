@@ -89,7 +89,10 @@ export function SampleCollectionPillarCard({ collectionId: collectionIdProp, var
           {(status?.steps ?? []).map((step) => (
             <li key={step.id} className="flex items-start gap-2 text-xs">
               {step.done ? (
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
+                <CheckCircle2
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                  aria-hidden
+                />
               ) : (
                 <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
               )}
@@ -137,7 +140,9 @@ export function SampleCollectionPillarCard({ collectionId: collectionIdProp, var
                   {SHOP_CORE_BUYER_PRESETS.map((preset) => (
                     <Link
                       key={preset.id}
-                      href={shopB2bMatrixReorderHref(collectionId, undefined, { buyerId: preset.id })}
+                      href={shopB2bMatrixReorderHref(collectionId, undefined, {
+                        buyerId: preset.id,
+                      })}
                       className="text-accent-primary font-medium hover:underline"
                       data-testid={`sample-collection-matrix-buyer-${preset.id}`}
                     >

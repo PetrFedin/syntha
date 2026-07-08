@@ -100,7 +100,7 @@ export function SpineOrderExportStrip({
   if (!isIntegrationImportedWholesaleOrderId(orderId)) return null;
   if (loadState === 'loading') {
     return (
-      <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
         Экспорт…
       </span>
@@ -159,7 +159,7 @@ export function SpineOrderExportStrip({
         ) : null}
       </div>
       {exportMsg ? (
-        <p className="text-muted-foreground text-[10px]" data-testid="spine-export-message">
+        <p className="text-[10px] text-muted-foreground" data-testid="spine-export-message">
           {exportMsg}
         </p>
       ) : null}

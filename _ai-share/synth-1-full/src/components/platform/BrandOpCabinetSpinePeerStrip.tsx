@@ -21,25 +21,41 @@ export function BrandOpCabinetSpinePeerStrip({ orderId, collectionId }: Props) {
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="brand-op-cabinet-spine-peer-strip"
     >
-      <Link href={session.handoffTabHref} data-testid="brand-op-cabinet-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffTabHref}
+        data-testid="brand-op-cabinet-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.qcGateTabHref} data-testid="brand-op-cabinet-qc-gate-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.qcGateTabHref}
+        data-testid="brand-op-cabinet-qc-gate-link"
+        className={hubGadget.goldenLink}
+      >
         Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="brand-op-cabinet-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="brand-op-cabinet-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.manufacturerOrderCommsHref} data-testid="brand-op-cabinet-mfr-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.manufacturerOrderCommsHref}
+        data-testid="brand-op-cabinet-mfr-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Связь с цехом
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>

@@ -41,25 +41,41 @@ export function MfrOpCabinetSpinePeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.brandOrderHandoffHref} data-testid="mfr-op-cabinet-brand-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandOrderHandoffHref}
+        data-testid="mfr-op-cabinet-brand-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="mfr-op-cabinet-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="mfr-op-cabinet-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.cutTicketHref} data-testid="mfr-op-cabinet-cut-ticket-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.cutTicketHref}
+        data-testid="mfr-op-cabinet-cut-ticket-link"
+        className={hubGadget.goldenLink}
+      >
         Техкарта раскроя
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.materialsHref} data-testid="mfr-op-cabinet-materials-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.materialsHref}
+        data-testid="mfr-op-cabinet-materials-link"
+        className={hubGadget.goldenLink}
+      >
         Материалы
       </Link>
       {!coreSlim ? (

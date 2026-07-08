@@ -123,7 +123,9 @@ function cleanString(v: unknown): string | undefined {
   return t || undefined;
 }
 
-function adapterStatus(issues: PlatformCoreAdapterIssue[]): PlatformCoreEntityCommsEvaluation['status'] {
+function adapterStatus(
+  issues: PlatformCoreAdapterIssue[]
+): PlatformCoreEntityCommsEvaluation['status'] {
   if (issues.some((i) => i.severity === 'blocker')) return 'blocked';
   if (issues.some((i) => i.severity === 'warning')) return 'warning';
   return 'core_ready';
@@ -228,9 +230,7 @@ function buildCalendar(input: {
   const persistConfigured = isWorkshop2BrandCalendarSyncConfigured();
   const now = Date.now();
   const blockers = input.events.filter((e) => e.isBlocker);
-  const overdueCount = input.events.filter(
-    (e) => eventTimestamp(e) < now && e.isBlocker
-  ).length;
+  const overdueCount = input.events.filter((e) => eventTimestamp(e) < now && e.isBlocker).length;
   const next =
     [...input.events]
       .filter((e) => eventTimestamp(e) >= now)
@@ -258,7 +258,10 @@ function buildCalendar(input: {
   };
 }
 
-function evaluateComms(thread: PlatformCoreEntityThreadSnapshot, calendar: PlatformCoreCalendarSnapshot): PlatformCoreEntityCommsEvaluation {
+function evaluateComms(
+  thread: PlatformCoreEntityThreadSnapshot,
+  calendar: PlatformCoreCalendarSnapshot
+): PlatformCoreEntityCommsEvaluation {
   const issues: PlatformCoreAdapterIssue[] = [];
 
   if (!thread.persistConfigured) {

@@ -123,7 +123,10 @@ export async function upsertWorkshop2B2bCommissionLineOnOrderSubmit(input: {
   hydrateFileIfNeeded();
   const idx = memoryLines.findIndex((l) => l.orderId === line.orderId);
   if (idx >= 0) {
-    memoryLines[idx] = { ...line, payoutStatus: line.payoutStatus ?? memoryLines[idx]?.payoutStatus ?? 'accrued' };
+    memoryLines[idx] = {
+      ...line,
+      payoutStatus: line.payoutStatus ?? memoryLines[idx]?.payoutStatus ?? 'accrued',
+    };
   } else {
     memoryLines.push({ ...line, payoutStatus: line.payoutStatus ?? 'accrued' });
   }
@@ -263,14 +266,10 @@ export async function listWorkshop2B2bCommissionLinesForOrganization(input?: {
   }
 
   hydrateFileIfNeeded();
-  let lines = memoryLines
-    .filter((l) => (repFilter ? l.repId === repFilter : true))
-    .slice(0, limit);
+  let lines = memoryLines.filter((l) => (repFilter ? l.repId === repFilter : true)).slice(0, limit);
   if (!lines.length && seedIfEmpty) {
     await seedWorkshop2B2bCommissionLines(org);
-    lines = memoryLines
-      .filter((l) => (repFilter ? l.repId === repFilter : true))
-      .slice(0, limit);
+    lines = memoryLines.filter((l) => (repFilter ? l.repId === repFilter : true)).slice(0, limit);
   }
   return lines;
 }

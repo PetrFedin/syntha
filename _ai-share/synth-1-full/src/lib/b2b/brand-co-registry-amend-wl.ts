@@ -34,6 +34,5 @@ export function brandCoRegistryAmendDetailHref(orderId: string): string {
   return brandB2bOrderHref(orderId);
 }
 
-export const BRAND_CO_REGISTRY_AMEND_QUEUE_EMPTY_RU =
-  'Нет активных заявок на изменение заказа.';
+export const BRAND_CO_REGISTRY_AMEND_QUEUE_EMPTY_RU = 'Нет активных заявок на изменение заказа.';
 export const BRAND_CO_REGISTRY_AMEND_QUEUE_SUMMARY_RU = 'Заявки на изменение в реестре';

@@ -47,7 +47,7 @@ export function BrandReleaseTechPackGatePanel({ products, collectionId }: Props)
         </Badge>
         <Link
           href={brandTechPackExportHubHref(resolvedCollection)}
-          className="text-primary text-xs underline-offset-2 hover:underline"
+          className="text-xs text-primary underline-offset-2 hover:underline"
         >
           W2 · factory pack hub
         </Link>
@@ -56,8 +56,8 @@ export function BrandReleaseTechPackGatePanel({ products, collectionId }: Props)
         <CardHeader>
           <CardTitle className="text-base">Tech pack · 6 листов</CardTitle>
           <CardDescription className="text-xs leading-snug">
-            Release gate: все листы green + qty color×size bridge → showroom / handoff. SoT — Workshop
-            2 dossier (local/PG).
+            Release gate: все листы green + qty color×size bridge → showroom / handoff. SoT —
+            Workshop 2 dossier (local/PG).
           </CardDescription>
         </CardHeader>
         <CardContent className="max-h-[480px] overflow-auto">
@@ -81,7 +81,7 @@ export function BrandReleaseTechPackGatePanel({ products, collectionId }: Props)
                     >
                       {row.sku}
                     </Link>
-                    <p className="text-muted-foreground line-clamp-1 max-w-[200px] text-[10px]">
+                    <p className="line-clamp-1 max-w-[200px] text-[10px] text-muted-foreground">
                       {row.name}
                     </p>
                   </TableCell>

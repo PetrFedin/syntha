@@ -24,5 +24,9 @@ export function appendWorkshop2B2bOAuthCallbackJournal(input: {
   }
   rows.push({ ...input, at: new Date().toISOString() });
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify({ updatedAt: new Date().toISOString(), entries: rows }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(
+    file,
+    `${JSON.stringify({ updatedAt: new Date().toISOString(), entries: rows }, null, 2)}\n`,
+    'utf8'
+  );
 }

@@ -52,7 +52,7 @@ export function BrandCollectionInventoryOverlayPgStrip({
 
   return (
     <div
-      className="border-border-subtle mb-4 flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 mb-4 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid={BRAND_COLLECTION_INVENTORY_OVERLAY_STRIP_TESTID}
     >
       {loading ? (

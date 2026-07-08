@@ -28,9 +28,7 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      sendRaw(
-        formatPlatformCoreCommsInboxSseData({ type: 'ping', ts: new Date().toISOString() })
-      );
+      sendRaw(formatPlatformCoreCommsInboxSseData({ type: 'ping', ts: new Date().toISOString() }));
 
       const onBump = () => {
         sendRaw(

@@ -23,9 +23,7 @@ function ShopB2bPartnersDiscoverWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
   const orderId =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    undefined;
+    searchParams.get('order')?.trim() || searchParams.get('orderId')?.trim() || undefined;
   const ctx = { collectionId, orderId, role: 'shop' as const };
   const { activeFeatureId } = usePillarCapabilityWorkspace('shop-b2b-partners');
 
@@ -49,7 +47,9 @@ function ShopB2bPartnersDiscoverWorkspaceBody() {
       {activeFeatureId === 'roster' ? (
         <ShopB2bPartnersDiscoverBridgePanel collectionId={collectionId} />
       ) : null}
-      {activeFeatureId === 'rep' ? <ShopB2bPartnersRepConnectPanel collectionId={collectionId} /> : null}
+      {activeFeatureId === 'rep' ? (
+        <ShopB2bPartnersRepConnectPanel collectionId={collectionId} />
+      ) : null}
     </PillarCapabilityWorkspaceChrome>
   );
 }

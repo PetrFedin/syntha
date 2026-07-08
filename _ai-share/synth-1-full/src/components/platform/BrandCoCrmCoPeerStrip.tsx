@@ -20,19 +20,31 @@ export function BrandCoCrmCoPeerStrip({ collectionId, orderId }: Props) {
 
   return (
     <div className={hubGadget.goldenPath} data-testid="brand-co-crm-co-peer-strip">
-      <Link href={comms.registryHref} data-testid="brand-co-crm-registry-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.registryHref}
+        data-testid="brand-co-crm-registry-link"
+        className={hubGadget.goldenLink}
+      >
         Реестр
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={shop.checkoutHref} data-testid="brand-co-crm-shop-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={shop.checkoutHref}
+        data-testid="brand-co-crm-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={shop.matrixHref} data-testid="brand-co-crm-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={shop.matrixHref}
+        data-testid="brand-co-crm-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -48,19 +60,31 @@ export function BrandCoCrmCoPeerStrip({ collectionId, orderId }: Props) {
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crm.collaborativeHref} data-testid="brand-co-crm-collaborative-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crm.collaborativeHref}
+        data-testid="brand-co-crm-collaborative-link"
+        className={hubGadget.goldenLink}
+      >
         Совместный заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={comms.chatHref} data-testid="brand-co-crm-order-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.chatHref}
+        data-testid="brand-co-crm-order-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crm.brandLandedMarginHref} data-testid="brand-co-crm-landed-margin-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crm.brandLandedMarginHref}
+        data-testid="brand-co-crm-landed-margin-link"
+        className={hubGadget.goldenLink}
+      >
         Маржа с доставкой
       </Link>
     </div>

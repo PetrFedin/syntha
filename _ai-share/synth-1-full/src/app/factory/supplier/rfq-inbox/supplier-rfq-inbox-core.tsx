@@ -21,26 +21,30 @@ function SupplierRfqInboxBody() {
   return (
     <div data-testid="supplier-rfq-inbox-panel">
       <div className="space-y-4" data-testid="supplier-rfq-inbox-core">
-      <p className="text-text-secondary text-xs" data-testid="supplier-rfq-inbox-lead">
-        Входящие запросы котировок от бренда — отдельно от общего inbox сообщений.
-      </p>
-      <SupplierRfqSlaTimerStrip collectionId={collectionId} articleId={articleId} />
-      <SupplierRfqQuoteCardPanel collectionId={collectionId} articleId={articleId} />
-      <SupplierProcurementRfqPanel collectionId={collectionId} articleId={articleId} />
-      <p className="text-text-muted text-[10px]">
-        Чат по цене материала:{' '}
-        <Link href={chatHref} className="text-accent-primary underline" data-testid="supplier-rfq-inbox-chat-link">
-          открыть чат артикула →
-        </Link>
-        {' · '}
-        <Link
-          href={`${ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}`}
-          className="text-accent-primary underline"
-          data-testid="supplier-rfq-inbox-messages-link"
-        >
-          все сообщения →
-        </Link>
-      </p>
+        <p className="text-text-secondary text-xs" data-testid="supplier-rfq-inbox-lead">
+          Входящие запросы котировок от бренда — отдельно от общего inbox сообщений.
+        </p>
+        <SupplierRfqSlaTimerStrip collectionId={collectionId} articleId={articleId} />
+        <SupplierRfqQuoteCardPanel collectionId={collectionId} articleId={articleId} />
+        <SupplierProcurementRfqPanel collectionId={collectionId} articleId={articleId} />
+        <p className="text-text-muted text-[10px]">
+          Чат по цене материала:{' '}
+          <Link
+            href={chatHref}
+            className="text-accent-primary underline"
+            data-testid="supplier-rfq-inbox-chat-link"
+          >
+            открыть чат артикула →
+          </Link>
+          {' · '}
+          <Link
+            href={`${ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}`}
+            className="text-accent-primary underline"
+            data-testid="supplier-rfq-inbox-messages-link"
+          >
+            все сообщения →
+          </Link>
+        </p>
       </div>
     </div>
   );
@@ -53,9 +57,7 @@ export function SupplierRfqInboxCorePage() {
         <Suspense fallback={null}>
           <PlatformCoreCommsUniversalInboxStrip variant="supplier" />
         </Suspense>
-        <Suspense
-          fallback={<div className="text-text-secondary p-6 text-sm">Загрузка RFQ…</div>}
-        >
+        <Suspense fallback={<div className="text-text-secondary p-6 text-sm">Загрузка RFQ…</div>}>
           <SupplierRfqInboxBody />
         </Suspense>
       </PlatformCoreListChrome>

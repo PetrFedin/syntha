@@ -13,14 +13,15 @@ export async function GET(req: NextRequest) {
 
   const result = await loadShopMatrixArticleInspectorView({ collectionId, articleId });
   if (!result.ok) {
-    const status =
-      'code' in result && result.code === 'factory_pack_gate_blocked' ? 403 : 404;
+    const status = 'code' in result && result.code === 'factory_pack_gate_blocked' ? 403 : 404;
     return NextResponse.json(
       {
         ok: false,
         messageRu: result.messageRu,
         ...('code' in result && result.code ? { code: result.code } : {}),
-        ...('releaseGate' in result && result.releaseGate ? { releaseGate: result.releaseGate } : {}),
+        ...('releaseGate' in result && result.releaseGate
+          ? { releaseGate: result.releaseGate }
+          : {}),
       },
       { status }
     );

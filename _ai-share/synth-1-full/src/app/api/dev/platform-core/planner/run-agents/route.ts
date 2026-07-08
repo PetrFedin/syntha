@@ -26,10 +26,7 @@ function pickNextOpen(snapshot: ReturnType<typeof buildPlatformCorePlanner>) {
   return snapshot.queue.find((t) => t.status === 'open' || t.status === 'in_progress') ?? null;
 }
 
-function findPlannerTarget(
-  snapshot: ReturnType<typeof buildPlatformCorePlanner>,
-  id?: string
-) {
+function findPlannerTarget(snapshot: ReturnType<typeof buildPlatformCorePlanner>, id?: string) {
   if (id) {
     return snapshot.queue.find(
       (t) => t.id === id && (t.status === 'open' || t.status === 'in_progress')
@@ -56,10 +53,7 @@ export async function POST(request: Request) {
   const runtime = await readPlannerRuntimeState();
   const snapshot = buildPlatformCorePlanner(collectionId, runtimeToOverlay(runtime));
 
-  const target = findPlannerTarget(
-    snapshot,
-    body.id
-  );
+  const target = findPlannerTarget(snapshot, body.id);
 
   if (!target) {
     return NextResponse.json(

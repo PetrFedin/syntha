@@ -40,13 +40,11 @@ export function BrandCollectionAllocationQueueBadge({ reloadNonce = 0 }: { reloa
     };
   }, [reloadNonce]);
 
-  const spineItems = items.filter((i) =>
-    isIntegrationImportedWholesaleOrderId(i.wholesaleOrderId)
-  );
+  const spineItems = items.filter((i) => isIntegrationImportedWholesaleOrderId(i.wholesaleOrderId));
 
   if (loading) {
     return (
-      <span className="text-muted-foreground inline-flex items-center gap-1 text-[10px]">
+      <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
         Резерв…
       </span>

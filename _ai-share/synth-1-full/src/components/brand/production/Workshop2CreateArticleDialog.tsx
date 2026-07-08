@@ -6,11 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useState, type ReactN
 import { AcronymWithTooltip } from '@/components/ui/acronym-with-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Dialog,
   DialogContent,
@@ -136,10 +132,7 @@ type Props = {
   collectionDisplayName: string;
   pickerLines: LocalOrderLine[];
   /** false — дубликат SKU или ошибка PG; true — успех (навигация — у родителя). */
-  onCommit: (
-    collectionId: string,
-    commit: Workshop2ArticleCommit
-  ) => boolean | Promise<boolean>;
+  onCommit: (collectionId: string, commit: Workshop2ArticleCommit) => boolean | Promise<boolean>;
   /** Редактирование существующей строки — те же поля, что при «Новый». */
   editArticle?: Workshop2EditArticlePayload | null;
   onSaveEdit?: (
@@ -781,7 +774,7 @@ export function Workshop2CreateArticleDialog({
 
         {!isEdit && pgUnavailable ? (
           <p
-            className="text-destructive text-xs"
+            className="text-xs text-destructive"
             role="status"
             data-testid={BRAND_SKU_WIZARD_DRAFT_FAIL_CLOSED_BANNER_TESTID}
           >
@@ -869,7 +862,9 @@ export function Workshop2CreateArticleDialog({
             {baseLineHandbookLeaf ? (
               <Workshop2CategoryHandbookGuidance leaf={baseLineHandbookLeaf} className="mt-1" />
             ) : baseLineId ? (
-              <p className="text-text-muted mt-1 text-[10px]">Категория не сопоставлена со справочником.</p>
+              <p className="text-text-muted mt-1 text-[10px]">
+                Категория не сопоставлена со справочником.
+              </p>
             ) : null}
           </div>
         ) : (
@@ -1013,7 +1008,10 @@ export function Workshop2CreateArticleDialog({
 
             <div className="grid gap-1.5 sm:grid-cols-3 sm:gap-2">
               <div className="grid gap-1">
-                <Label htmlFor="w2-art-l1" className="text-[10px] font-semibold uppercase tracking-wide">
+                <Label
+                  htmlFor="w2-art-l1"
+                  className="text-[10px] font-semibold uppercase tracking-wide"
+                >
                   Ур. 1
                 </Label>
                 <select
@@ -1038,7 +1036,10 @@ export function Workshop2CreateArticleDialog({
                 </select>
               </div>
               <div className="grid gap-1">
-                <Label htmlFor="w2-art-l2" className="text-[10px] font-semibold uppercase tracking-wide">
+                <Label
+                  htmlFor="w2-art-l2"
+                  className="text-[10px] font-semibold uppercase tracking-wide"
+                >
                   Ур. 2
                 </Label>
                 <select
@@ -1063,7 +1064,10 @@ export function Workshop2CreateArticleDialog({
                 </select>
               </div>
               <div className="grid gap-1 sm:col-span-1">
-                <Label htmlFor="w2-art-l3" className="text-[10px] font-semibold uppercase tracking-wide">
+                <Label
+                  htmlFor="w2-art-l3"
+                  className="text-[10px] font-semibold uppercase tracking-wide"
+                >
                   Ур. 3
                 </Label>
                 <select
@@ -1085,9 +1089,7 @@ export function Workshop2CreateArticleDialog({
                 </select>
               </div>
             </div>
-            {resolvedLeaf ? (
-              <Workshop2CategoryHandbookGuidance leaf={resolvedLeaf} />
-            ) : null}
+            {resolvedLeaf ? <Workshop2CategoryHandbookGuidance leaf={resolvedLeaf} /> : null}
             <div className="grid gap-1">
               <Label htmlFor="w2-art-com" className="text-xs font-semibold">
                 Комментарий
@@ -1140,7 +1142,7 @@ export function Workshop2CreateArticleDialog({
                 aria-hidden
               />
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 border-t border-border-subtle px-3 pb-3 pt-2">
+            <CollapsibleContent className="border-border-subtle space-y-3 border-t px-3 pb-3 pt-2">
               <div className="flex items-center gap-1">
                 <p className="text-text-muted text-[10px]">Закрепление подписей по ролям</p>
                 <WorkshopInlineHintIcon label="Подписанты ТЗ">
@@ -1151,79 +1153,79 @@ export function Workshop2CreateArticleDialog({
                   </p>
                 </WorkshopInlineHintIcon>
               </div>
-            <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
-              <div className="grid gap-1">
-                <Label htmlFor="w2-tz-des">Дизайн</Label>
-                <select
-                  id="w2-tz-des"
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                  value={tzDesigner}
-                  onChange={(e) => setTzDesigner(e.target.value)}
-                >
-                  {signatorySelectChildren}
-                </select>
-              </div>
-              <div className="grid gap-1">
-                <Label htmlFor="w2-tz-tech">Технолог</Label>
-                <select
-                  id="w2-tz-tech"
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                  value={tzTechnologist}
-                  onChange={(e) => setTzTechnologist(e.target.value)}
-                >
-                  {signatorySelectChildren}
-                </select>
-              </div>
-              <div className="grid gap-1">
-                <Label htmlFor="w2-tz-mgr">Менеджер</Label>
-                <select
-                  id="w2-tz-mgr"
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                  value={tzManager}
-                  onChange={(e) => setTzManager(e.target.value)}
-                >
-                  {signatorySelectChildren}
-                </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex flex-wrap gap-1">
-                {WORKSHOP2_TZ_EXTRA_ROLE_PRESET_DEFS.map((p) => (
-                  <Button
-                    key={p.id}
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className="h-7 px-2 text-[10px] font-medium"
-                    title={`Добавить строку «${p.roleTitle}»`}
-                    onClick={() => addTzExtraPresetRow(p.id)}
+              <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
+                <div className="grid gap-1">
+                  <Label htmlFor="w2-tz-des">Дизайн</Label>
+                  <select
+                    id="w2-tz-des"
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    value={tzDesigner}
+                    onChange={(e) => setTzDesigner(e.target.value)}
                   >
-                    + {WORKSHOP2_TZ_EXTRA_ROLE_PRESET_BUTTON_LABEL_RU[p.id]}
-                  </Button>
-                ))}
+                    {signatorySelectChildren}
+                  </select>
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="w2-tz-tech">Технолог</Label>
+                  <select
+                    id="w2-tz-tech"
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    value={tzTechnologist}
+                    onChange={(e) => setTzTechnologist(e.target.value)}
+                  >
+                    {signatorySelectChildren}
+                  </select>
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="w2-tz-mgr">Менеджер</Label>
+                  <select
+                    id="w2-tz-mgr"
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    value={tzManager}
+                    onChange={(e) => setTzManager(e.target.value)}
+                  >
+                    {signatorySelectChildren}
+                  </select>
+                </div>
               </div>
-              <div className="h-[11rem] space-y-2 overflow-y-auto overscroll-contain pr-0.5">
-                {tzExtraRows.map((row) => (
-                  <CreateArticleDialogTzExtraRow
-                    key={row.rowId}
-                    row={row}
-                    onChangeTitle={(t) => patchTzExtraTitle(row.rowId, t)}
-                    onChangeAssignee={(v) => patchTzExtraAssignee(row.rowId, v)}
-                    onRemove={() => removeTzExtraRow(row.rowId)}
-                    signatorySelectChildren={signatorySelectChildren}
-                  />
-                ))}
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-1">
+                  {WORKSHOP2_TZ_EXTRA_ROLE_PRESET_DEFS.map((p) => (
+                    <Button
+                      key={p.id}
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="h-7 px-2 text-[10px] font-medium"
+                      title={`Добавить строку «${p.roleTitle}»`}
+                      onClick={() => addTzExtraPresetRow(p.id)}
+                    >
+                      + {WORKSHOP2_TZ_EXTRA_ROLE_PRESET_BUTTON_LABEL_RU[p.id]}
+                    </Button>
+                  ))}
+                </div>
+                <div className="h-[11rem] space-y-2 overflow-y-auto overscroll-contain pr-0.5">
+                  {tzExtraRows.map((row) => (
+                    <CreateArticleDialogTzExtraRow
+                      key={row.rowId}
+                      row={row}
+                      onChangeTitle={(t) => patchTzExtraTitle(row.rowId, t)}
+                      onChangeAssignee={(v) => patchTzExtraAssignee(row.rowId, v)}
+                      onRemove={() => removeTzExtraRow(row.rowId)}
+                      signatorySelectChildren={signatorySelectChildren}
+                    />
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={addTzExtraRow}
+                >
+                  + Добавить роль
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 text-xs"
-                onClick={addTzExtraRow}
-              >
-                + Добавить роль
-              </Button>
-            </div>
             </CollapsibleContent>
           </Collapsible>
         ) : null}

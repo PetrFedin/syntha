@@ -14,10 +14,7 @@ export type ShopShowroomInlineSize = (typeof SHOP_SHOWROOM_INLINE_SIZES)[number]
 
 export function parseShopShowroomInlineSize(raw?: string | null): ShopShowroomInlineSize {
   const normalized = raw?.trim().toUpperCase();
-  if (
-    normalized &&
-    SHOP_SHOWROOM_INLINE_SIZES.includes(normalized as ShopShowroomInlineSize)
-  ) {
+  if (normalized && SHOP_SHOWROOM_INLINE_SIZES.includes(normalized as ShopShowroomInlineSize)) {
     return normalized as ShopShowroomInlineSize;
   }
   return 'M';

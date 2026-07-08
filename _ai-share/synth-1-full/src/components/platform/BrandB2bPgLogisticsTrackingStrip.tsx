@@ -29,7 +29,10 @@ export function BrandB2bPgLogisticsTrackingStrip({ orderId }: Props) {
           `/api/workshop2/b2b/orders/${encodeURIComponent(orderId)}/logistics-tracking`,
           { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
         );
-        const json = (await res.json()) as { trackingNumber?: string | null; carrier?: string | null };
+        const json = (await res.json()) as {
+          trackingNumber?: string | null;
+          carrier?: string | null;
+        };
         if (!cancelled && json.trackingNumber) {
           setSaved(json.trackingNumber);
           setTrackingNumber(json.trackingNumber);
@@ -64,7 +67,11 @@ export function BrandB2bPgLogisticsTrackingStrip({ orderId }: Props) {
           }),
         }
       );
-      const json = (await res.json()) as { ok?: boolean; messageRu?: string; trackingNumber?: string };
+      const json = (await res.json()) as {
+        ok?: boolean;
+        messageRu?: string;
+        trackingNumber?: string;
+      };
       if (res.ok && json.ok) {
         setSaved(json.trackingNumber ?? trackingNumber.trim());
         setMsg(json.messageRu ?? 'Трек-номер сохранён.');
@@ -86,9 +93,7 @@ export function BrandB2bPgLogisticsTrackingStrip({ orderId }: Props) {
       <p className="flex items-center gap-1 text-[10px] font-medium text-sky-950">
         <Truck className="h-3 w-3" aria-hidden />
         Логистика · ТТН для магазина
-        {saved ? (
-          <span className="text-text-muted font-normal">· сохранён</span>
-        ) : null}
+        {saved ? <span className="text-text-muted font-normal">· сохранён</span> : null}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <Input

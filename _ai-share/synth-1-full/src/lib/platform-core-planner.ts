@@ -13,7 +13,10 @@ import {
   PLATFORM_CORE_PLANNER_AGENT_ITEMS,
   type PlatformCorePlannerAgentItem,
 } from '@/lib/platform-core-planner-agent';
-import { isPlatformCorePlannerAutoDoneTitle, isPlatformCorePlannerClosedWaveTitle } from '@/lib/platform-core-planner-auto-done';
+import {
+  isPlatformCorePlannerAutoDoneTitle,
+  isPlatformCorePlannerClosedWaveTitle,
+} from '@/lib/platform-core-planner-auto-done';
 import { getPlatformCorePlannerSessionSummary } from '@/lib/platform-core-planner-session';
 
 export type PlannerPriority = 'P0' | 'P1' | 'P2';
@@ -67,7 +70,8 @@ const TECH_DEBT_REGISTRY: PlatformCoreTechDebtItem[] = [
     id: 'td-ts-brand',
     category: 'error',
     priority: 'P2',
-    title: 'TypeScript — зона brand / production / merch (закрыто: typecheck:w2 + platform-core gate)',
+    title:
+      'TypeScript — зона brand / production / merch (закрыто: typecheck:w2 + platform-core gate)',
     action: 'fix',
     hint: 'typecheck:platform-core green; остаток full typecheck ~83 err вне hot paths',
     source: 'CORE_PRODUCT_DEEP_PLAN §4',
@@ -263,7 +267,11 @@ function inferPriority(text: string, defaultP: PlannerPriority): PlannerPriority
 }
 
 function slugId(parts: string[]) {
-  return parts.join('-').replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 80);
+  return parts
+    .join('-')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .toLowerCase()
+    .slice(0, 80);
 }
 
 function itemsFromCell(cell: ReadinessCell): PlatformCorePlannerItem[] {
@@ -308,7 +316,8 @@ function itemsFromCell(cell: ReadinessCell): PlatformCorePlannerItem[] {
   for (const sub of cell.subItems ?? []) {
     for (const [i, title] of (sub.fix ?? []).entries()) {
       const full = `${sub.label}: ${title}`;
-      if (isPlatformCorePlannerAutoDoneTitle(full) || isPlatformCorePlannerAutoDoneTitle(title)) continue;
+      if (isPlatformCorePlannerAutoDoneTitle(full) || isPlatformCorePlannerAutoDoneTitle(title))
+        continue;
       out.push({
         id: slugId(['sec', sub.id, String(i)]),
         kind: 'improve',
@@ -375,9 +384,7 @@ export type PlannerRuntimeOverlay = {
     pillarId?: CoreHubPillarId;
     addedAt: string;
   }>;
-  discoveredTechDebt?: Array<
-    PlatformCoreTechDebtItem & { evidence: string; addedAt: string }
-  >;
+  discoveredTechDebt?: Array<PlatformCoreTechDebtItem & { evidence: string; addedAt: string }>;
   agentDispatch?: {
     taskId: string;
     taskTitle: string;
@@ -428,9 +435,7 @@ export const EMPTY_PLATFORM_CORE_PLANNER_SNAPSHOT: PlatformCorePlannerSnapshot =
   updatedAt: new Date(0).toISOString(),
 };
 
-function applyAutoDoneStatus(
-  items: PlatformCorePlannerItem[]
-): PlatformCorePlannerItem[] {
+function applyAutoDoneStatus(items: PlatformCorePlannerItem[]): PlatformCorePlannerItem[] {
   return items.map((item) =>
     isPlatformCorePlannerAutoDoneTitle(item.title) ? { ...item, status: 'done' as const } : item
   );
@@ -440,7 +445,9 @@ function visiblePlannerItems<T extends { title: string }>(items: T[]): T[] {
   return items.filter((item) => !isPlatformCorePlannerClosedWaveTitle(item.title));
 }
 
-function applyRuntimeOverlay<T extends { id: string; title: string; status: 'open' | 'in_progress' | 'done' }>(
+function applyRuntimeOverlay<
+  T extends { id: string; title: string; status: 'open' | 'in_progress' | 'done' },
+>(
   items: T[],
   overlay?: PlannerRuntimeOverlay
 ): (T & { claimedBy?: string; claimedAt?: string; note?: string })[] {
@@ -468,11 +475,7 @@ export function collectPlatformCorePlannerRegistry(
   collectionId = 'SS27'
 ): Array<{ id: string; title: string }> {
   const cells = getPlatformCoreReadinessMatrix(collectionId);
-  const merged = [
-    ...pillarStageItems(),
-    ...cells.flatMap(itemsFromCell),
-    ...agentPlannerItems(),
-  ];
+  const merged = [...pillarStageItems(), ...cells.flatMap(itemsFromCell), ...agentPlannerItems()];
   const dedup = new Map<string, string>();
   for (const item of merged) {
     if (!dedup.has(item.id)) dedup.set(item.id, item.title);
@@ -521,19 +524,19 @@ export function buildPlatformCorePlanner(
     ...(runtime?.discoveredDevelopment ?? [])
       .filter((d) => !isPlatformCorePlannerClosedWaveTitle(d.title))
       .map((d) => ({
-      id: d.id,
-      kind: d.kind,
-      priority: d.priority,
-      title: d.title,
-      roleId: d.roleId,
-      pillarId: d.pillarId,
-      roleLabel: d.roleId ? ROLE_LABELS[d.roleId] : undefined,
-      pillarTitle: d.pillarId ? PILLAR_TITLE[d.pillarId] : undefined,
-      source: 'agent' as const,
-      href: d.href,
-      status: 'open' as const,
-      note: d.evidence,
-    })),
+        id: d.id,
+        kind: d.kind,
+        priority: d.priority,
+        title: d.title,
+        roleId: d.roleId,
+        pillarId: d.pillarId,
+        roleLabel: d.roleId ? ROLE_LABELS[d.roleId] : undefined,
+        pillarTitle: d.pillarId ? PILLAR_TITLE[d.pillarId] : undefined,
+        source: 'agent' as const,
+        href: d.href,
+        status: 'open' as const,
+        note: d.evidence,
+      })),
   ];
 
   const dedup = new Map<string, PlatformCorePlannerItem>();
@@ -558,17 +561,15 @@ export function buildPlatformCorePlanner(
     ...(runtime?.discoveredTechDebt ?? [])
       .filter((d) => !isDiscoveredTechDebtNoise(d))
       .map((d) => ({
-      id: d.id,
-      category: d.category as TechDebtCategory,
-      priority: d.priority,
-      title: d.title,
-      action: d.action,
-      hint: d.hint ?? d.evidence,
-      source: d.source,
-    })),
-  ].sort(
-    (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]
-  );
+        id: d.id,
+        category: d.category as TechDebtCategory,
+        priority: d.priority,
+        title: d.title,
+        action: d.action,
+        hint: d.hint ?? d.evidence,
+        source: d.source,
+      })),
+  ].sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
   const techDebt: PlatformCorePlannerTechDebtRow[] = visiblePlannerItems(
     applyRuntimeOverlay(
       techDebtRaw.map((td) => ({ ...td, status: 'open' as const, id: td.id })),
@@ -602,8 +603,7 @@ export function buildPlatformCorePlanner(
       done: doneCount + techDebt.filter((i) => i.status === 'done').length,
     },
     agentConnected: Boolean(
-      runtime?.lastAgentAt &&
-        Date.now() - new Date(runtime.lastAgentAt).getTime() < 5 * 60 * 1000
+      runtime?.lastAgentAt && Date.now() - new Date(runtime.lastAgentAt).getTime() < 5 * 60 * 1000
     ),
     agentDispatch: runtime?.agentDispatch ?? null,
     sessionSummary: getPlatformCorePlannerSessionSummary(),

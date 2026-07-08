@@ -79,7 +79,8 @@ export async function GET(req: NextRequest) {
       escapeCsvCell(inv?.mode ?? ''),
       escapeCsvCell(buildWorkshop2B2bInvoiceHtmlUrl(o.id)),
       escapeCsvCell(
-        invoices.find((i) => i.orderId === o.id)?.invoiceHtmlUrl ?? buildWorkshop2B2bInvoiceHtmlUrl(o.id)
+        invoices.find((i) => i.orderId === o.id)?.invoiceHtmlUrl ??
+          buildWorkshop2B2bInvoiceHtmlUrl(o.id)
       ),
       escapeCsvCell(o.updatedAt),
     ].join(',');

@@ -59,9 +59,8 @@ export async function getPlatformCoreBomCostingForArticle(input: {
   const rollup = computeWorkshop2BomCostingRollup(dossier);
   const lineCount = rollup.lineCosts.length;
 
-  const { getWorkshop2ServerDossierStoreMode } = await import(
-    '@/lib/platform-core-ports/dossier-store'
-  );
+  const { getWorkshop2ServerDossierStoreMode } =
+    await import('@/lib/platform-core-ports/dossier-store');
 
   return {
     ok: true,

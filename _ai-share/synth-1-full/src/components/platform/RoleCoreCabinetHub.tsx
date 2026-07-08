@@ -83,9 +83,7 @@ import {
   shopMessagesB2bOrderContextHref,
   shopMessagesWorkshop2ArticleContextHref,
 } from '@/lib/platform-core-routes';
-import {
-  formatWholesaleOrderDisplayId,
-} from '@/lib/integrations/spine/integration-ui-utils';
+import { formatWholesaleOrderDisplayId } from '@/lib/integrations/spine/integration-ui-utils';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 
 const PlatformCoreEmptyCellPanels = dynamic(
@@ -178,13 +176,12 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
       const hash = roleId === 'shop' && p === 'order_production' ? '#shop-co-buyer-tracking' : '';
       const target = cabinetPathWithQuery(pathname, searchParams, {
         roleId,
-        pillarId: roleId === 'shop' && p === 'order_production' ? 'collection_order' : defaultPillar,
+        pillarId:
+          roleId === 'shop' && p === 'order_production' ? 'collection_order' : defaultPillar,
         collectionId,
         hash,
       });
-      const current = searchParams.toString()
-        ? `${pathname}?${searchParams.toString()}`
-        : pathname;
+      const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
       if (target !== current) router.replace(target, { scroll: false });
       return;
     }
@@ -196,9 +193,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
       if (isPlatformCoreMode()) {
         const defaultSection = PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[next];
         const sectionId =
-          hasEmbeddedPlatformCoreWorkspace(roleId, next) && defaultSection
-            ? defaultSection
-            : null;
+          hasEmbeddedPlatformCoreWorkspace(roleId, next) && defaultSection ? defaultSection : null;
         const target = cabinetPathWithQuery(pathname, searchParams, {
           roleId,
           pillarId: next,
@@ -227,9 +222,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
     setSelectedPillar(pillarId);
     const defaultSection = PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[pillarId];
     const sectionId =
-      hasEmbeddedPlatformCoreWorkspace(roleId, pillarId) && defaultSection
-        ? defaultSection
-        : null;
+      hasEmbeddedPlatformCoreWorkspace(roleId, pillarId) && defaultSection ? defaultSection : null;
     router.replace(
       cabinetPathWithQuery(pathname, searchParams, {
         roleId,
@@ -318,9 +311,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
   }, [coreMode, collectionId, demo, roleId, selectedPillar, row, cell]);
 
   if (!row || !cell) {
-    return (
-      <PlatformCorePillarInsightSkeleton testId="role-core-cabinet-hub-loading" />
-    );
+    return <PlatformCorePillarInsightSkeleton testId="role-core-cabinet-hub-loading" />;
   }
 
   const navPillarIds = getRoleCabinetNavPillarIds(roleId, collectionId);
@@ -349,12 +340,9 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
   const cabinetActions = buildPillarCabinetActions(roleId, selectedPillar, demo);
   const chainProgress = countRoleChainProgress(navPillarIds, pillarDone);
   const showEmbeddedWorkspace =
-    coreMode &&
-    cell.kind === 'active' &&
-    hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
+    coreMode && cell.kind === 'active' && hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
   const hidePillarSectionListInSpine =
-    isPlatformCoreArticleSpineMode() &&
-    hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
+    isPlatformCoreArticleSpineMode() && hasEmbeddedPlatformCoreWorkspace(roleId, selectedPillar);
   const insightSectionId = resolveCabinetWorkspaceSection(
     roleId,
     selectedPillar,
@@ -423,11 +411,11 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
       className={cn(
         hubCabinet.page,
         isPlatformCoreMode() && 'bg-bg-surface pb-safe min-h-[calc(100vh-2.5rem)]',
-        isPlatformCoreMode() && selectedPillar === 'comms' && 'pb-20 md:pb-safe',
+        isPlatformCoreMode() && selectedPillar === 'comms' && 'md:pb-safe pb-20',
         !isPlatformCoreMode() && 'mx-auto max-w-6xl px-4 py-8 md:px-6'
       )}
     >
-      <header className="border-border-subtle sticky top-0 z-20 -mx-4 space-y-2 border-b bg-bg-surface/95 px-4 pb-2 backdrop-blur-sm md:-mx-6 md:space-y-0 md:px-6">
+      <header className="border-border-subtle bg-bg-surface/95 sticky top-0 z-20 -mx-4 space-y-2 border-b px-4 pb-2 backdrop-blur-sm md:-mx-6 md:space-y-0 md:px-6">
         <PlatformCoreContextBar
           roleId={roleId}
           pillarId={selectedPillar}
@@ -446,7 +434,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
       {coreMode ? (
         <div
           className={cn(
-            'sticky top-10 z-10 -mx-4 bg-bg-surface/95 px-4 py-1 backdrop-blur-sm',
+            'bg-bg-surface/95 sticky top-10 z-10 -mx-4 px-4 py-1 backdrop-blur-sm',
             showEmbeddedWorkspace
               ? 'md:static md:mx-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none'
               : 'md:hidden'
@@ -478,10 +466,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
         {!showEmbeddedWorkspace ? (
           <aside
             data-testid="role-core-pillar-nav"
-            className={cn(
-              hubCabinet.pillarNav,
-              coreMode && 'lg:col-start-1 lg:row-start-1'
-            )}
+            className={cn(hubCabinet.pillarNav, coreMode && 'lg:col-start-1 lg:row-start-1')}
           >
             <p className={hubCabinet.pillarNavLabel}>Столпы</p>
             <nav aria-label="Разделы столпов" className="flex flex-col gap-0.5">
@@ -499,14 +484,9 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
           data-testid="role-core-pillar-panel"
           className={cn(
             hubCabinet.pillarPanel,
-            coreMode &&
-              'w-full max-w-none border-0 bg-transparent p-0 shadow-none',
-            coreMode &&
-              showEmbeddedWorkspace &&
-              'min-w-0 flex-1',
-            coreMode &&
-              !showEmbeddedWorkspace &&
-              'lg:col-start-2 lg:row-start-1'
+            coreMode && 'w-full max-w-none border-0 bg-transparent p-0 shadow-none',
+            coreMode && showEmbeddedWorkspace && 'min-w-0 flex-1',
+            coreMode && !showEmbeddedWorkspace && 'lg:col-start-2 lg:row-start-1'
           )}
         >
           {cell.kind === 'empty' ? (
@@ -551,7 +531,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
                         articleId={
                           roleId === 'brand' && selectedPillar === 'development'
                             ? developmentArticleId
-                            : developmentArticleId ?? demo.demoArticleId
+                            : (developmentArticleId ?? demo.demoArticleId)
                         }
                         orderId={demoOrderIdFromUrl ?? demo.demoOrderId}
                         factoryId={demo.factoryId}
@@ -559,67 +539,79 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
                     </>
                   ) : (
                     <>
-                  <PillarCabinetHeader
-                    title={pillarMeta?.title ?? cell.title}
-                    subtitle={pillarMeta?.subtitle}
-                    lead={pillarLead || undefined}
-                    progress={
-                      chainProgress.total > 0 ? (
-                        <PillarCabinetProgress
-                          done={chainProgress.done}
-                          total={chainProgress.total}
+                      <PillarCabinetHeader
+                        title={pillarMeta?.title ?? cell.title}
+                        subtitle={pillarMeta?.subtitle}
+                        lead={pillarLead || undefined}
+                        progress={
+                          chainProgress.total > 0 ? (
+                            <PillarCabinetProgress
+                              done={chainProgress.done}
+                              total={chainProgress.total}
+                            />
+                          ) : pillarDone(selectedPillar) != null ? (
+                            <p className="text-text-muted text-[11px]">
+                              {pillarDone(selectedPillar)
+                                ? 'Этап цепочки выполнен'
+                                : 'Этап цепочки в работе'}
+                            </p>
+                          ) : null
+                        }
+                      />
+                      {showActionRail ? (
+                        <PillarCabinetActionRail
+                          variant="inline"
+                          className="lg:hidden"
+                          primary={cabinetActions.primary}
+                          secondary={cabinetActions.secondary}
+                          workspace={cabinetActions.workspace}
+                          onPrefetch={prefetchPlatformCoreW2FromHref}
                         />
-                      ) : pillarDone(selectedPillar) != null ? (
-                        <p className="text-text-muted text-[11px]">
-                          {pillarDone(selectedPillar)
-                            ? 'Этап цепочки выполнен'
-                            : 'Этап цепочки в работе'}
-                        </p>
-                      ) : null
-                    }
-                    />
-                    {showActionRail ? (
-                      <PillarCabinetActionRail
-                        variant="inline"
-                        className="lg:hidden"
-                        primary={cabinetActions.primary}
-                        secondary={cabinetActions.secondary}
-                        workspace={cabinetActions.workspace}
-                        onPrefetch={prefetchPlatformCoreW2FromHref}
+                      ) : null}
+                      {shouldShowHubCabinetInvestorReadinessStrip(auditUi) ? (
+                        <WaveYrReadinessCellDashboardStrip
+                          roleId={roleId}
+                          pillarId={selectedPillar}
+                          collectionId={collectionId}
+                          compact
+                        />
+                      ) : null}
+                      {!hidePillarSectionListInSpine ? (
+                        <PillarSectionList
+                          sections={displayCabinetSections}
+                          liveConnected={
+                            orderIdsForPoll.length > 0 &&
+                            chainPushEnabled &&
+                            shouldSuppressHubCabinetChainStatusBadge({ compact: true, auditUi })
+                              ? sseConnected
+                              : undefined
+                          }
+                          appendRow={
+                            !isPlatformCoreArticleSpineMode() &&
+                            roleId === 'brand' &&
+                            selectedPillar === 'collection_order' &&
+                            cell.kind === 'active' ? (
+                              <BrandCoRetailersPickerRow collectionId={collectionId} />
+                            ) : null
+                          }
+                        />
+                      ) : null}
+                      <PillarRelatedLinks
+                        related={relatedLinks}
+                        overflowSections={overflowSections}
                       />
-                    ) : null}
-                    {shouldShowHubCabinetInvestorReadinessStrip(auditUi) ? (
-                      <WaveYrReadinessCellDashboardStrip
-                        roleId={roleId}
-                        pillarId={selectedPillar}
-                        collectionId={collectionId}
-                        compact
-                      />
-                    ) : null}
-                    {!hidePillarSectionListInSpine ? (
-                    <PillarSectionList
-                      sections={displayCabinetSections}
-                      liveConnected={
-                        orderIdsForPoll.length > 0 &&
-                        chainPushEnabled &&
-                        shouldSuppressHubCabinetChainStatusBadge({ compact: true, auditUi })
-                          ? sseConnected
-                          : undefined
-                      }
-                      appendRow={
-                        !isPlatformCoreArticleSpineMode() &&
-                        roleId === 'brand' &&
-                        selectedPillar === 'collection_order' &&
-                        cell.kind === 'active' ? (
-                          <BrandCoRetailersPickerRow collectionId={collectionId} />
-                        ) : null
-                      }
-                    />
-                    ) : null}
-                    <PillarRelatedLinks related={relatedLinks} overflowSections={overflowSections} />
-                    {showOperatorPillarInsight ? (
-                      shouldShowHubCabinetPillarDiagnostics(auditUi) ? (
-                        <PillarCabinetDiagnostics>
+                      {showOperatorPillarInsight ? (
+                        shouldShowHubCabinetPillarDiagnostics(auditUi) ? (
+                          <PillarCabinetDiagnostics>
+                            <RoleCorePillarInsightCards
+                              roleId={roleId}
+                              pillarId={selectedPillar}
+                              compact
+                              minimalChrome
+                              sectionId={insightSectionId}
+                            />
+                          </PillarCabinetDiagnostics>
+                        ) : (
                           <RoleCorePillarInsightCards
                             roleId={roleId}
                             pillarId={selectedPillar}
@@ -627,17 +619,8 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
                             minimalChrome
                             sectionId={insightSectionId}
                           />
-                        </PillarCabinetDiagnostics>
-                      ) : (
-                        <RoleCorePillarInsightCards
-                          roleId={roleId}
-                          pillarId={selectedPillar}
-                          compact
-                          minimalChrome
-                          sectionId={insightSectionId}
-                        />
-                      )
-                    ) : null}
+                        )
+                      ) : null}
                     </>
                   )}
                 </div>
@@ -702,4 +685,3 @@ function RoleCoreCabinetHubWithCollection(props: Props) {
 export function RoleCoreCabinetHub(props: Props) {
   return <RoleCoreCabinetHubWithCollection {...props} />;
 }
-

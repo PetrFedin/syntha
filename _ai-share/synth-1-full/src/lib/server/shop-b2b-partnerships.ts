@@ -133,7 +133,9 @@ export async function listShopB2bPartnerships(
     );
   }
 
-  const connectedIds = new Set(results.filter((p) => p.status === 'connected').map((p) => p.brandId));
+  const connectedIds = new Set(
+    results.filter((p) => p.status === 'connected').map((p) => p.brandId)
+  );
 
   for (const brand of CATALOG_BRANDS) {
     if (brand.id === PLATFORM_CORE_CONNECTED_BRAND_ID) continue;
@@ -243,7 +245,8 @@ export async function connectShopB2bPartnershipDemo(input: {
     collectionId: input.collectionId?.trim(),
   });
 
-  const { bumpPlatformCoreB2bRegistry } = await import('@/lib/server/platform-core-b2b-registry-hub');
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
   bumpPlatformCoreB2bRegistry('shop.partnership.connected');
 
   return {

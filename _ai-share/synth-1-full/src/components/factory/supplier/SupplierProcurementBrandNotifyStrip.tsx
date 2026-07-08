@@ -105,7 +105,7 @@ export function SupplierProcurementBrandNotifyStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 space-y-2 rounded-md border px-3 py-2 text-xs"
       data-testid="sup-op-procurement-brand-push-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -127,12 +127,20 @@ export function SupplierProcurementBrandNotifyStrip({
           {pushing ? 'Отправка…' : materialsConfirmed ? 'Push → бренд' : 'Push после confirm'}
         </Button>
         <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
-          <Link href={brandChatHref} data-testid="sup-op-procurement-brand-push-chat-link" data-comms-tail-po={productionOrderId?.trim() || undefined}>
+          <Link
+            href={brandChatHref}
+            data-testid="sup-op-procurement-brand-push-chat-link"
+            data-comms-tail-po={productionOrderId?.trim() || undefined}
+          >
             Чат бренду
           </Link>
         </Button>
         <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-          <Link href={entitiesHref} data-testid="sup-op-procurement-brand-push-entities-link" data-comms-tail-po={productionOrderId?.trim() || undefined}>
+          <Link
+            href={entitiesHref}
+            data-testid="sup-op-procurement-brand-push-entities-link"
+            data-comms-tail-po={productionOrderId?.trim() || undefined}
+          >
             Треды сущностей
           </Link>
         </Button>

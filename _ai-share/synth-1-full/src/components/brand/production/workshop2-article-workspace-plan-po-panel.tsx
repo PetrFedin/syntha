@@ -34,9 +34,7 @@ export function Workshop2ArticlePlanPoPanel({
         title="План · PO"
         description="Plan PO panel"
       />
-      {dossier ? (
-        <Workshop2B2BIntegrationPanel dossier={dossier} articleId={articleId} />
-      ) : null}
+      {dossier ? <Workshop2B2BIntegrationPanel dossier={dossier} articleId={articleId} /> : null}
     </Workshop2OperationalPanelShell>
   );
 }

@@ -123,12 +123,11 @@ export function buildWorkshop2PerformanceBudgetPayload(
     lastProbeTimings.articleLcpMs == null;
 
   const budgetResults = DEFAULT_TARGETS.map((t) => {
-    const lcpMs =
-      t.route.includes('showroom')
-        ? lastProbeTimings.showroomLcpMs
-        : t.route.includes('workshop2?')
-          ? lastProbeTimings.hubLcpMs
-          : lastProbeTimings.articleLcpMs;
+    const lcpMs = t.route.includes('showroom')
+      ? lastProbeTimings.showroomLcpMs
+      : t.route.includes('workshop2?')
+        ? lastProbeTimings.hubLcpMs
+        : lastProbeTimings.articleLcpMs;
     const pass =
       investorDemoMode && stubWithoutTimings ? true : lcpMs != null ? lcpMs <= t.lcpP75Ms : false;
     return {

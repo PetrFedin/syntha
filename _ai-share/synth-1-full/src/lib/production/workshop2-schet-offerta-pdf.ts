@@ -40,11 +40,7 @@ export function buildWorkshop2SchetOffertaPdfBytes(
 
   y = writeln(doc, `Schet-offerta No ${payload.orderId}`, y, { bold: true });
   y += 1;
-  y = writeln(
-    doc,
-    `Date: ${new Date(payload.generatedAt).toLocaleString('ru-RU')}`,
-    y
-  );
+  y = writeln(doc, `Date: ${new Date(payload.generatedAt).toLocaleString('ru-RU')}`, y);
   y += 2;
   y = writeln(
     doc,

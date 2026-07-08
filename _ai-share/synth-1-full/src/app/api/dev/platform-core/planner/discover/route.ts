@@ -24,7 +24,11 @@ function asTechDebtCategory(raw: unknown): TechDebtCategory {
 }
 
 function slugId(parts: string[]) {
-  return parts.join('-').replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 80);
+  return parts
+    .join('-')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .toLowerCase()
+    .slice(0, 80);
 }
 
 function normalizeDev(raw: unknown): PlannerDiscoveredDevItem[] {
@@ -46,9 +50,12 @@ function normalizeDev(raw: unknown): PlannerDiscoveredDevItem[] {
       title,
       evidence: String(o.evidence ?? o.hint ?? 'cursor-scan').slice(0, 400),
       href: typeof o.href === 'string' ? o.href : undefined,
-      roleId: typeof o.roleId === 'string' ? (o.roleId as PlannerDiscoveredDevItem['roleId']) : undefined,
+      roleId:
+        typeof o.roleId === 'string' ? (o.roleId as PlannerDiscoveredDevItem['roleId']) : undefined,
       pillarId:
-        typeof o.pillarId === 'string' ? (o.pillarId as PlannerDiscoveredDevItem['pillarId']) : undefined,
+        typeof o.pillarId === 'string'
+          ? (o.pillarId as PlannerDiscoveredDevItem['pillarId'])
+          : undefined,
       addedAt: now,
     });
   }

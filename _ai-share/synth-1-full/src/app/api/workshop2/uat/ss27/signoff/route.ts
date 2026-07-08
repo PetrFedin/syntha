@@ -10,7 +10,9 @@ import {
 } from '@/lib/production/workshop2-ss27-uat-signoff-journal';
 
 function parseRole(value: unknown): Workshop2Ss27UatSignoffRole | null {
-  const raw = String(value ?? '').trim().toLowerCase();
+  const raw = String(value ?? '')
+    .trim()
+    .toLowerCase();
   if (raw === 'ops' || raw === 'staging' || raw === 'product') return raw;
   return null;
 }

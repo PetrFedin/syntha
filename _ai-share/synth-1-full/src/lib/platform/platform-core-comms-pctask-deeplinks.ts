@@ -15,7 +15,9 @@ import type { PlatformCoreChainCalendarStepKind } from '@/lib/server/platform-co
 
 export type PlatformCoreCommsCalendarOwnerRole = CoreChainRoleId;
 
-function variantForRole(role: PlatformCoreCommsCalendarOwnerRole): PlatformCoreUniversalInboxVariant {
+function variantForRole(
+  role: PlatformCoreCommsCalendarOwnerRole
+): PlatformCoreUniversalInboxVariant {
   if (role === 'manufacturer') return 'manufacturer';
   if (role === 'supplier') return 'supplier';
   if (role === 'brand') return 'brand';

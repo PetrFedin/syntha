@@ -29,13 +29,21 @@ export function BrandCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
     >
       {resolvedOrderId ? (
         <>
-          <Link href={session.registryHref} data-testid="brand-cm-cabinet-registry-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.registryHref}
+            data-testid="brand-cm-cabinet-registry-link"
+            className={hubGadget.goldenLink}
+          >
             Реестр
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.handoffHref} data-testid="brand-cm-cabinet-handoff-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.handoffHref}
+            data-testid="brand-cm-cabinet-handoff-link"
+            className={hubGadget.goldenLink}
+          >
             Передача
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
@@ -43,25 +51,41 @@ export function BrandCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
           </span>
         </>
       ) : null}
-      <Link href={session.shopMatrixHref} data-testid="brand-cm-cabinet-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopMatrixHref}
+        data-testid="brand-cm-cabinet-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopCheckoutHref} data-testid="brand-cm-cabinet-shop-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopCheckoutHref}
+        data-testid="brand-cm-cabinet-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crmHref} data-testid="brand-cm-cabinet-crm-segments-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="brand-cm-cabinet-crm-segments-link"
+        className={hubGadget.goldenLink}
+      >
         Сегменты CRM
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="brand-cm-cabinet-crm-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="brand-cm-cabinet-crm-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист
       </Link>
       {resolvedOrderId ? (
@@ -69,7 +93,11 @@ export function BrandCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.replenishmentAtpHref} data-testid="brand-cm-cabinet-replenishment-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.replenishmentAtpHref}
+            data-testid="brand-cm-cabinet-replenishment-link"
+            className={hubGadget.goldenLink}
+          >
             Пополнение
           </Link>
         </>

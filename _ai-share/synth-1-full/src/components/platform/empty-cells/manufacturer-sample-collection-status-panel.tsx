@@ -96,10 +96,8 @@ function ManufacturerSampleCtaLinks({
   compact?: boolean;
   testIdPrefix: string;
 }) {
-  const brandW2Href =
-    status?.workshop2Href ?? brandDevelopmentCabinetHref(demo.collectionId);
-  const brandLinesheetHref =
-    status?.linesheetHref ?? brandLinesheetsHrefForDemo(demo);
+  const brandW2Href = status?.workshop2Href ?? brandDevelopmentCabinetHref(demo.collectionId);
+  const brandLinesheetHref = status?.linesheetHref ?? brandLinesheetsHrefForDemo(demo);
   const brandCoreSampleHref = `${ROUTES.brand.coreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(demo.collectionId)}`;
 
   if (compact) {
@@ -184,10 +182,7 @@ export default function ManufacturerSampleCollectionStatus({
 
   if (compact) {
     return (
-      <section
-        data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID}
-        className="space-y-1"
-      >
+      <section data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID} className="space-y-1">
         <Card data-testid="manufacturer-sample-collection-mini" className="border-violet-200/60">
           <CardContent className="space-y-1.5 p-3 text-xs">
             <p className="flex items-center gap-1.5 font-semibold">
@@ -239,10 +234,7 @@ export default function ManufacturerSampleCollectionStatus({
   }
 
   return (
-    <section
-      data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID}
-      className="space-y-2"
-    >
+    <section data-testid={MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID} className="space-y-2">
       <Card data-testid="manufacturer-sample-collection" className="border-violet-200/60">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-bold">

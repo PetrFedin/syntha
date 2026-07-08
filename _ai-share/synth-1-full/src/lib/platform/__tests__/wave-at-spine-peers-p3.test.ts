@@ -8,7 +8,10 @@ import { buildShopShowroomBuySession } from '@/lib/b2b/shop-showroom-buy';
 describe('wave-at spine peers p3', () => {
   it('platform B2B hub + marketroom session hrefs', () => {
     const hub = buildPlatformB2bHubSession({ collectionId: 'SS27', orderId: 'B2B-DEMO-1' });
-    const marketroom = buildPlatformB2bMarketroomSession({ collectionId: 'SS27', orderId: 'B2B-DEMO-1' });
+    const marketroom = buildPlatformB2bMarketroomSession({
+      collectionId: 'SS27',
+      orderId: 'B2B-DEMO-1',
+    });
     expect(hub.buyPathHref).toContain('buy-path');
     expect(hub.shopMatrixHref).toContain('matrix');
     expect(marketroom.platformHubHref).toContain('platform');

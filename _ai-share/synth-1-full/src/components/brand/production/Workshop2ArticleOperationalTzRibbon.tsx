@@ -73,8 +73,7 @@ export function Workshop2ArticleOperationalTzRibbon({
         </ul>
       ) : (
         <p className="text-text-muted border-border-subtle/70 mt-2 border-t pt-2 text-[10px] leading-snug">
-          По связанным разделам ТЗ нет открытых предупреждений
-          движка готовности.
+          По связанным разделам ТЗ нет открытых предупреждений движка готовности.
         </p>
       )}
     </div>

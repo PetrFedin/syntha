@@ -15,9 +15,7 @@ function resolveReaderId(req: NextRequest, fromBody?: string): string | null {
   const body = fromBody?.trim();
   if (body) return body;
   return (
-    req.headers.get('x-w2-actor-id')?.trim() ||
-    req.headers.get('x-synth-actor-id')?.trim() ||
-    null
+    req.headers.get('x-w2-actor-id')?.trim() || req.headers.get('x-synth-actor-id')?.trim() || null
   );
 }
 
@@ -78,7 +76,10 @@ export async function POST(req: NextRequest) {
       return invalidOrderIdResponse('POST');
     }
     if (!pillarRaw || !isCoreHubPillarId(pillarRaw) || !sectionId) {
-      return NextResponse.json({ ok: false, messageRu: 'Укажите pillarId и sectionId.' }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, messageRu: 'Укажите pillarId и sectionId.' },
+        { status: 400 }
+      );
     }
     if (!readerId) {
       return NextResponse.json({ ok: false, messageRu: 'Укажите readerId.' }, { status: 400 });
@@ -94,6 +95,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, readState: record });
   } catch {
-    return NextResponse.json({ ok: false, messageRu: 'Некорректное тело запроса.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Некорректное тело запроса.' },
+      { status: 400 }
+    );
   }
 }

@@ -87,7 +87,10 @@ export function brandOpChainMaterialsInventoryLedgerLinkLabelRu(): string {
   return 'Резерв WMS · ledger →';
 }
 
-export function supplierPatchHrefCarriesPoContext(href: string, productionOrderId: string): boolean {
+export function supplierPatchHrefCarriesPoContext(
+  href: string,
+  productionOrderId: string
+): boolean {
   const po = productionOrderId.trim();
   if (!po) return false;
   return href.includes(`po=${encodeURIComponent(po)}`);

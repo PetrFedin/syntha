@@ -10,10 +10,7 @@ import {
   BRAND_SC_RELEASE_GATE_CHECK_API_PATH,
 } from '@/lib/production/brand-material-passport-release-gate';
 
-export {
-  BRAND_RELEASE_GATE_PASSPORT_BLOCKED_RU,
-  BRAND_SC_RELEASE_GATE_CHECK_API_PATH,
-};
+export { BRAND_RELEASE_GATE_PASSPORT_BLOCKED_RU, BRAND_SC_RELEASE_GATE_CHECK_API_PATH };
 
 /** RU banner when passport blocks showroom/linesheet publish. */
 export const BRAND_SC_RELEASE_GATE_BLOCK_PUBLISH_BANNER_RU =

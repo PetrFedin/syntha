@@ -106,8 +106,7 @@ export function buildWorkshop2OpsSlaDashboard(
   const ackOk =
     (ackEdoP99Ms == null || ackEdoP99Ms <= sloTargets.ackP99Ms) &&
     (ackMarkingP99Ms == null || ackMarkingP99Ms <= sloTargets.ackP99Ms);
-  const b2b3dOk =
-    b2b3d.sessionCount === 0 || b2b3d.errorRatePct <= sloTargets.b2b3dErrorRatePct;
+  const b2b3dOk = b2b3d.sessionCount === 0 || b2b3d.errorRatePct <= sloTargets.b2b3dErrorRatePct;
   const sloOk = ackOk && b2b3dOk;
 
   return {

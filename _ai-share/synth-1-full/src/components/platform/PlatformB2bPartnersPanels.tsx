@@ -67,7 +67,7 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
         testIdPrefix="platform-b2b-partners"
       />
       <div
-        className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+        className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
         data-testid="platform-b2b-greenfield-buyer-onboarding-strip"
       >
         <Badge variant="outline" className="text-[9px] uppercase">
@@ -102,7 +102,10 @@ export function PlatformB2bPartnersOnboardingPanel({ collectionId }: Props) {
         <Badge variant="outline">{counts.profile} профиль</Badge>
       </div>
       {actionMessage ? (
-        <p className="text-text-secondary text-xs" data-testid="platform-partners-onboarding-message">
+        <p
+          className="text-text-secondary text-xs"
+          data-testid="platform-partners-onboarding-message"
+        >
           {actionMessage}
         </p>
       ) : null}
@@ -178,7 +181,9 @@ export function PlatformB2bPartnersShopRosterPanel({ collectionId }: Props) {
             <Store className="h-4 w-4" />
             <CardTitle className="text-base">Партнёрства магазина</CardTitle>
           </div>
-          <CardDescription>Ростер покупателя · подбор · портал представителя (столп 2 → 3).</CardDescription>
+          <CardDescription>
+            Ростер покупателя · подбор · портал представителя (столп 2 → 3).
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>

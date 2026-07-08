@@ -1,10 +1,7 @@
 /**
  * Wave VQ — brand OP chain SSE dedup, dossier locked/diff, cut_ticket PG verify.
  */
-import {
-  brandB2bOrderChainContextHref,
-  brandB2bOrderDossierContextHref,
-} from '@/lib/routes';
+import { brandB2bOrderChainContextHref, brandB2bOrderDossierContextHref } from '@/lib/routes';
 import type { ProductionOrderCutTicketStub } from '@/lib/production/brand-op-production-order-cut-ticket';
 import { isProductionOrderCutTicketEmpty } from '@/lib/production/brand-op-production-order-cut-ticket';
 
@@ -30,8 +27,7 @@ export function brandOpDossierLockedBadgeRu(input: {
   dossierVersionAtHandoff?: number;
   live?: boolean;
 }): string {
-  const version =
-    input.dossierVersionAtHandoff != null ? ` v${input.dossierVersionAtHandoff}` : '';
+  const version = input.dossierVersionAtHandoff != null ? ` v${input.dossierVersionAtHandoff}` : '';
   const liveSuffix = input.live ? ' · live PG' : '';
   return `Зафиксировано${version} при передаче${liveSuffix}`;
 }

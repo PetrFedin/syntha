@@ -49,7 +49,10 @@ export async function PUT(req: NextRequest) {
   const buyerId = resolveBuyerId(req, checkoutAuth.buyerId, String(body.buyerId ?? ''));
   const activePresetId = String(body.activePresetId ?? '').trim();
   if (!activePresetId) {
-    return NextResponse.json({ ok: false, messageRu: 'activePresetId обязателен.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'activePresetId обязателен.' },
+      { status: 400 }
+    );
   }
 
   const config = await putShopReplenishmentRulesServer({

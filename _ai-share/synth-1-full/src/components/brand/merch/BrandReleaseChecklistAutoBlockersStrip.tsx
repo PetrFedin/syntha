@@ -45,13 +45,19 @@ export function BrandReleaseChecklistAutoBlockersStrip({ collectionId }: Props) 
           {blocked.length} / {rows.length} SKU blocked
         </Badge>
         <Button size="sm" variant="outline" className="ml-auto h-7 text-[10px]" asChild>
-          <Link href={techpackGateHref} data-testid="brand-release-checklist-auto-blockers-gate-link">
+          <Link
+            href={techpackGateHref}
+            data-testid="brand-release-checklist-auto-blockers-gate-link"
+          >
             Гейт фабричного пакета
           </Link>
         </Button>
       </div>
       {blocked.length === 0 ? (
-        <p className="text-text-secondary text-[10px]" data-testid="brand-release-checklist-auto-blockers-clear">
+        <p
+          className="text-text-secondary text-[10px]"
+          data-testid="brand-release-checklist-auto-blockers-clear"
+        >
           Все SKU проходят techpack gate — можно syndication/publish.
         </p>
       ) : (

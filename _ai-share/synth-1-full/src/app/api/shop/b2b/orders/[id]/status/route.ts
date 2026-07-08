@@ -94,12 +94,7 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json(
       { ok: false, code: result.code, messageRu: result.messageRu },
       {
-        status:
-          result.code === 'not_found'
-            ? 404
-            : result.code === 'qc_gate_blocked'
-              ? 403
-              : 409,
+        status: result.code === 'not_found' ? 404 : result.code === 'qc_gate_blocked' ? 403 : 409,
       }
     );
   }

@@ -24,26 +24,45 @@ export function ShopScShowroomB2bPeerStrip({ collectionId, orderId }: Props) {
   const checkoutHref = coercePlatformCoreNativeHref(session.checkoutHref);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_SHOP_SC_SHOWROOM_B2B_PEER_STRIP_TESTID}>
-      <Link href={platform.hubHref} data-testid="shop-sc-showroom-platform-hub-link" className={hubGadget.goldenLink}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_SHOP_SC_SHOWROOM_B2B_PEER_STRIP_TESTID}
+    >
+      <Link
+        href={platform.hubHref}
+        data-testid="shop-sc-showroom-platform-hub-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_PLATFORM_B2B_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={checkoutHref} data-testid="shop-sc-showroom-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={checkoutHref}
+        data-testid="shop-sc-showroom-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={platform.marketroomShowcaseHref} data-testid="shop-sc-showroom-marketroom-link" className={hubGadget.goldenLink}>
+      <Link
+        href={platform.marketroomShowcaseHref}
+        data-testid="shop-sc-showroom-marketroom-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_MARKETROOM_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={platform.partnersDirectoryHref} data-testid="shop-sc-showroom-partners-directory-link" className={hubGadget.goldenLink}>
+      <Link
+        href={platform.partnersDirectoryHref}
+        data-testid="shop-sc-showroom-partners-directory-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_PARTNERS_RU}
       </Link>
     </div>

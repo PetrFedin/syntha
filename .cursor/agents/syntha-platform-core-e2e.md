@@ -28,7 +28,7 @@ Spawn when CI fails, golden path breaks, or matrix/SECTION_AUDIT regressions.
 <verify>
 ```bash
 cd /Users/petr/Projects && npm run core:status
-cd /Users/petr/Projects/_ai-share/synth-1-full && npx playwright test e2e/core-02-demo-golden-path.spec.ts -g "your test" --project=chromium
+cd _ai-share/synth-1-full && npx playwright test e2e/core-02-demo-golden-path.spec.ts -g "your test" --project=chromium
 # Full (long): npm run core:verify
 ```
 </verify>

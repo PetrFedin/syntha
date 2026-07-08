@@ -38,9 +38,7 @@ describe('platform-core-development-status-sse', () => {
     const fp2 = fingerprintWorkshop2DevelopmentStatus({
       ...base,
       sampleQueueCount: 1,
-      steps: base.steps.map((s) =>
-        s.id === 'factory_samples' ? { ...s, done: true } : s
-      ),
+      steps: base.steps.map((s) => (s.id === 'factory_samples' ? { ...s, done: true } : s)),
     });
     expect(fp1).not.toBe(fp2);
   });

@@ -352,14 +352,14 @@ export function Workshop2TechPackHandoffBlock({
     ? committingHandoff
       ? 'Фиксация на сервере…'
       : tzWriteDisabled
-      ? W2_TZ_HINT_PRODUCTION_EDIT
-      : !handoffMarksUnlocked
-        ? (handoffLockReason ?? W2_TZ_HINT_FOUR_SECTION_SIGNOFFS)
-        : !brandDispatched
-          ? 'Сначала отметьте «Бренд: передано».'
-          : !factoryReceived
-            ? 'Сначала отметьте «Производство: получено».'
-            : 'Выберите минимум одно вложение для передачи.'
+        ? W2_TZ_HINT_PRODUCTION_EDIT
+        : !handoffMarksUnlocked
+          ? (handoffLockReason ?? W2_TZ_HINT_FOUR_SECTION_SIGNOFFS)
+          : !brandDispatched
+            ? 'Сначала отметьте «Бренд: передано».'
+            : !factoryReceived
+              ? 'Сначала отметьте «Производство: получено».'
+              : 'Выберите минимум одно вложение для передачи.'
     : null;
   const handoffPrimaryStatusTone = handoffCommitDisabled
     ? 'border-amber-200/90 bg-amber-50/80 text-amber-950'

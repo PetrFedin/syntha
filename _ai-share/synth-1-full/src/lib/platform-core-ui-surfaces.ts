@@ -28,7 +28,14 @@ export function isPlatformCoreWorkspaceCompact(surface: PlatformCoreUiSurface): 
 export const PLATFORM_CORE_SURFACE_LAYERS = {
   /** business: только role-entry-blocks; audit: + matrix оценок */
   hub: ['role-entry-blocks', 'matrix'],
-  cabinet: ['context-bar', 'role-strip', 'pillar-nav-aside', 'insight-compact', 'primary-cta', 'cross-role-compact'],
+  cabinet: [
+    'context-bar',
+    'role-strip',
+    'pillar-nav-aside',
+    'insight-compact',
+    'primary-cta',
+    'cross-role-compact',
+  ],
   workspace: ['context-bar', 'pillar-strip', 'page-content', 'cross-role-compact'],
   'order-detail': ['context-bar', 'pillar-strip', 'order-facts', 'cross-role-compact'],
 } as const satisfies Record<PlatformCoreUiSurface, readonly string[]>;

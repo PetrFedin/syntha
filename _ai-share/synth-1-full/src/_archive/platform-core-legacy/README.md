@@ -20,15 +20,15 @@
 
 Канон: `src/lib/platform-core-wave7-retail-crm-archive.ts`
 
-| Файл в архиве | Stub (spine → null) |
-|---------------|---------------------|
-| `retail-crm/BrandScCabinetRetailPeerStrip.tsx` | `components/platform/BrandScCabinetRetailPeerStrip.tsx` |
-| `retail-crm/BrandScLinesheetsRetailPeerStrip.tsx` | … |
-| `retail-crm/BrandScShowroomRetailPeerStrip.tsx` | … |
-| `retail-crm/BrandCoRegistryRetailOnboardingStrip.tsx` | … |
-| `retail-crm/BrandCoAgentRepCoPeerStrip.tsx` | … |
-| `retail-crm/BrandDevMerchCoSpinePeerStrip.tsx` | … |
-| `retail-crm/ShopDevelopmentBridgeGreenfieldCrmStrip.tsx` | … |
+| Файл в архиве                                            | Stub (spine → null)                                     |
+| -------------------------------------------------------- | ------------------------------------------------------- |
+| `retail-crm/BrandScCabinetRetailPeerStrip.tsx`           | `components/platform/BrandScCabinetRetailPeerStrip.tsx` |
+| `retail-crm/BrandScLinesheetsRetailPeerStrip.tsx`        | …                                                       |
+| `retail-crm/BrandScShowroomRetailPeerStrip.tsx`          | …                                                       |
+| `retail-crm/BrandCoRegistryRetailOnboardingStrip.tsx`    | …                                                       |
+| `retail-crm/BrandCoAgentRepCoPeerStrip.tsx`              | …                                                       |
+| `retail-crm/BrandDevMerchCoSpinePeerStrip.tsx`           | …                                                       |
+| `retail-crm/ShopDevelopmentBridgeGreenfieldCrmStrip.tsx` | …                                                       |
 
 **Не в Wave 7:** pricelist/WSSI/agent-rep **hub sections** — только фильтр `ARTICLE_SPINE_ARCHIVE_SECTION_IDS` (deep-link сохранён).
 

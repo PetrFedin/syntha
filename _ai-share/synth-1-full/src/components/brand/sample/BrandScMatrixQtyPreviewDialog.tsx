@@ -76,22 +76,18 @@ export function BrandScMatrixQtyPreviewDialog({
           return;
         }
         const byArticle: Record<string, number> = {};
-        for (const line of mapOperationalItemsToForecastLines(
-          parsed.data.data.order.items ?? []
-        )) {
+        for (const line of mapOperationalItemsToForecastLines(parsed.data.data.order.items ?? [])) {
           byArticle[line.articleId] = (byArticle[line.articleId] ?? 0) + line.qty;
         }
-        setRows(
-          Object.entries(byArticle).map(([articleId, qty]) => ({ articleId, qty }))
-        );
+        setRows(Object.entries(byArticle).map(([articleId, qty]) => ({ articleId, qty })));
         setLoadState('ready');
         return;
       }
 
-      const res = await fetch(
-        `/api/workshop2/b2b/orders/${encodeURIComponent(activeOrderId)}`,
-        { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
-      );
+      const res = await fetch(`/api/workshop2/b2b/orders/${encodeURIComponent(activeOrderId)}`, {
+        headers: buildWorkshop2ApiRequestHeaders(),
+        cache: 'no-store',
+      });
       const json = (await res.json()) as {
         ok?: boolean;
         order?: { lines?: Array<{ articleId?: string; qty?: number }> };
@@ -147,7 +143,7 @@ export function BrandScMatrixQtyPreviewDialog({
             Загрузка…
           </p>
         ) : loadState === 'error' ? (
-          <p className="text-destructive text-xs" data-testid="brand-sc-matrix-qty-preview-error">
+          <p className="text-xs text-destructive" data-testid="brand-sc-matrix-qty-preview-error">
             Preview недоступен — нет данных заказа.
           </p>
         ) : (
@@ -172,7 +168,9 @@ export function BrandScMatrixQtyPreviewDialog({
                 </li>
               ))}
               {rows.length === 0 ? (
-                <li className="text-text-muted text-[11px]">Нет строк — опубликуйте витрину или оформите заказ.</li>
+                <li className="text-text-muted text-[11px]">
+                  Нет строк — опубликуйте витрину или оформите заказ.
+                </li>
               ) : null}
             </ul>
           </div>

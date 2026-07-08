@@ -150,9 +150,10 @@ export function clearShopBuyerCrmProfilesMemoryForTests(): void {
   fileHydrated = false;
 }
 
-export async function getShopBuyerCrmProfileServer(input?: {
-  buyerId?: string;
-}): Promise<{ profile: ShopBuyerCrmProfile | null; storageMode: 'pg' | 'file' | 'memory' | 'demo' }> {
+export async function getShopBuyerCrmProfileServer(input?: { buyerId?: string }): Promise<{
+  profile: ShopBuyerCrmProfile | null;
+  storageMode: 'pg' | 'file' | 'memory' | 'demo';
+}> {
   const buyerId = normalizeShopCoreBuyerId(input?.buyerId);
 
   if (isWorkshop2PostgresEnabled()) {
@@ -177,7 +178,10 @@ export async function assignShopBuyerCrmProfileServer(input: {
   buyerId?: string;
   segmentKey: string;
   onboardingNoteRu?: string;
-}): Promise<{ profile: ShopBuyerCrmProfile | null; storageMode: 'pg' | 'file' | 'memory' | 'demo' }> {
+}): Promise<{
+  profile: ShopBuyerCrmProfile | null;
+  storageMode: 'pg' | 'file' | 'memory' | 'demo';
+}> {
   const buyerId = normalizeShopCoreBuyerId(input.buyerId);
   const segmentKey = input.segmentKey.trim();
   if (!segmentKey) return { profile: null, storageMode: 'demo' };

@@ -212,9 +212,7 @@ export function Workshop2ChangeRequestsPanel({
   return (
     <div className="border-border-subtle bg-bg-surface space-y-4 rounded-xl border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-text-primary text-sm font-semibold">
-          Запросы на изменение (CR)
-        </h3>
+        <h3 className="text-text-primary text-sm font-semibold">Запросы на изменение (CR)</h3>
         <div className="flex flex-wrap gap-2">
           <span data-testid="workshop2-cr-pg-chip">
             <Workshop2OperationalPgMirrorChip {...crPgMirror} />
@@ -294,9 +292,7 @@ export function Workshop2ChangeRequestsPanel({
       </div>
 
       {crs.length === 0 ? (
-        <p className="text-text-muted text-xs">
-          Нет активных запросов на изменение.
-        </p>
+        <p className="text-text-muted text-xs">Нет активных запросов на изменение.</p>
       ) : (
         <div className="space-y-2">
           {crs.map((cr) => {

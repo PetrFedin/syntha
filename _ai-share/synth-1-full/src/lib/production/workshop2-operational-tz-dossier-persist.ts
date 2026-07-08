@@ -98,8 +98,7 @@ export function evaluateWorkshop2OperationalTzSampleGate(
       id: 'operational.tz.supply_focus_low',
       severity: 'warning',
       messageRu:
-        hintRu ||
-        `Снабжение: focus ТЗ ${supplyFocus}% — синхронизация и образец рискованы.`,
+        hintRu || `Снабжение: focus ТЗ ${supplyFocus}% — синхронизация и образец рискованы.`,
     };
   }
   return null;
@@ -111,8 +110,7 @@ export function evaluateWorkshop2OperationalTzHandoffGate(
   const mirror = dossier.operationalTzMirror;
   if (!mirror) return null;
   const blockerHandoff =
-    mirror.blockerHandoff === true ||
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true';
+    mirror.blockerHandoff === true || workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true';
   if (!blockerHandoff) return null;
   const minFocusPct = workshop2PgMirrorNum(mirror, 'minFocusPct');
   return {

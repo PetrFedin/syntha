@@ -42,8 +42,17 @@ export function BrandZedonkConsolidatedImportButton({ consolidatedId, brandOrder
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2" data-testid={`zedonk-consolidated-import-${consolidatedId}`}>
-      <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => void runImport()}>
+    <div
+      className="flex flex-wrap items-center gap-2"
+      data-testid={`zedonk-consolidated-import-${consolidatedId}`}
+    >
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        disabled={busy}
+        onClick={() => void runImport()}
+      >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         Импорт консолидации
       </Button>
@@ -52,7 +61,7 @@ export function BrandZedonkConsolidatedImportButton({ consolidatedId, brandOrder
           {count} заказов
         </Badge>
       ) : null}
-      {msg ? <span className="text-muted-foreground text-[10px]">{msg}</span> : null}
+      {msg ? <span className="text-[10px] text-muted-foreground">{msg}</span> : null}
     </div>
   );
 }

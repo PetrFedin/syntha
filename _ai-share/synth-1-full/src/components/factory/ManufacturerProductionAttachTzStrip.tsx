@@ -4,7 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { manufacturerCommsEntitiesHref, manufacturerCommsInboxHref } from '@/lib/fashion/manufacturer-comms-entity-threads';
+import {
+  manufacturerCommsEntitiesHref,
+  manufacturerCommsInboxHref,
+} from '@/lib/fashion/manufacturer-comms-entity-threads';
 import { attachFactoryCommsEntityThreadTz } from '@/lib/fashion/factory-comms-entity-thread-attach-tz-store';
 
 type Props = {
@@ -40,7 +43,7 @@ export function ManufacturerProductionAttachTzStrip({ collectionId, articleId, o
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="mfr-op-production-attach-tz-strip"
     >
       <Badge variant="outline" className="text-[9px] uppercase">
@@ -73,7 +76,10 @@ export function ManufacturerProductionAttachTzStrip({ collectionId, articleId, o
         </Link>
       </Button>
       <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-        <Link href={manufacturerCommsInboxHref()} data-testid="mfr-op-production-attach-tz-inbox-link">
+        <Link
+          href={manufacturerCommsInboxHref()}
+          data-testid="mfr-op-production-attach-tz-inbox-link"
+        >
           Inbox
         </Link>
       </Button>

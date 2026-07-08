@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import {
-  calculateReplenishment,
-  type ReplenishmentBomLine,
-} from '@/lib/b2b/replenishment-service';
+import { calculateReplenishment, type ReplenishmentBomLine } from '@/lib/b2b/replenishment-service';
 
 type SuggestRequestBody = {
   bomLines?: unknown;
@@ -26,11 +23,13 @@ export async function POST(request: Request) {
 
     const qty = typeof plannedQuantity === 'number' && plannedQuantity > 0 ? plannedQuantity : 100;
 
-    const validatedLines = bomLines.filter(isReplenishmentBomLine).filter(
-      (line) =>
-        (line.qty === undefined || line.qty >= 0) &&
-        (line.costPerUnit === undefined || line.costPerUnit >= 0)
-    );
+    const validatedLines = bomLines
+      .filter(isReplenishmentBomLine)
+      .filter(
+        (line) =>
+          (line.qty === undefined || line.qty >= 0) &&
+          (line.costPerUnit === undefined || line.costPerUnit >= 0)
+      );
 
     const suggestions = calculateReplenishment(validatedLines, qty);
 

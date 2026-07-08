@@ -66,8 +66,7 @@ export function CommsCabinetThreadPreview({
   const fallbackThread =
     mergedThreads.find(
       (t) =>
-        t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE &&
-        t.contextId?.trim() === activeOrder
+        t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE && t.contextId?.trim() === activeOrder
     ) ??
     mergedThreads.find((t) => t.contextType === WORKSHOP2_B2B_ORDER_CONTEXT_TYPE) ??
     mergedThreads[0] ??
@@ -78,7 +77,7 @@ export function CommsCabinetThreadPreview({
     selectedThreadKey === COMMS_CABINET_SECTION_CONTEXT_THREAD_KEY && Boolean(sectionContextRow);
 
   const href = sectionContextActive
-    ? sectionContextRow?.href ?? null
+    ? (sectionContextRow?.href ?? null)
     : thread
       ? commsCabinetThreadWorkspaceHref(variant, thread)
       : null;
@@ -112,8 +111,7 @@ export function CommsCabinetThreadPreview({
             </p>
             {thread?.messageCount ? (
               <p className="text-text-muted text-[11px]">
-                {thread.messageCount}{' '}
-                {thread.messageCount === 1 ? 'сообщение' : 'сообщений'}
+                {thread.messageCount} {thread.messageCount === 1 ? 'сообщение' : 'сообщений'}
               </p>
             ) : null}
           </div>

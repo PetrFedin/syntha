@@ -52,31 +52,51 @@ export function MfrDevSampleQueueHandoffPeerStrip({
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="mfr-dev-sample-queue-handoff-peer-strip"
     >
-      <Link href={handoffHref} data-testid="mfr-dev-sample-queue-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={handoffHref}
+        data-testid="mfr-dev-sample-queue-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={qcHref} data-testid="mfr-dev-sample-queue-qc-link" className={hubGadget.goldenLink}>
+      <Link
+        href={qcHref}
+        data-testid="mfr-dev-sample-queue-qc-link"
+        className={hubGadget.goldenLink}
+      >
         Гейт КК
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={techpackHref} data-testid="mfr-dev-sample-queue-techpack-link" className={hubGadget.goldenLink}>
+      <Link
+        href={techpackHref}
+        data-testid="mfr-dev-sample-queue-techpack-link"
+        className={hubGadget.goldenLink}
+      >
         Подтверждение техпака
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={dossierHref} data-testid="mfr-dev-sample-queue-dossier-link" className={hubGadget.goldenLink}>
+      <Link
+        href={dossierHref}
+        data-testid="mfr-dev-sample-queue-dossier-link"
+        className={hubGadget.goldenLink}
+      >
         Досье
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={ops.ordersHref} data-testid="mfr-dev-sample-queue-production-ops-link" className={hubGadget.goldenLink}>
+      <Link
+        href={ops.ordersHref}
+        data-testid="mfr-dev-sample-queue-production-ops-link"
+        className={hubGadget.goldenLink}
+      >
         Операции цеха
       </Link>
     </div>

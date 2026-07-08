@@ -65,7 +65,10 @@ describe('wave XJ — collection stage modules PG (brand production floor)', () 
       ok: true,
       json: async () => ({
         ok: true,
-        doc: { v: 1, steps: { costing: { fields: { landedCostPolicy: 'FOB' }, attachments: [], history: [] } } },
+        doc: {
+          v: 1,
+          steps: { costing: { fields: { landedCostPolicy: 'FOB' }, attachments: [], history: [] } },
+        },
         storageMode: 'postgres',
       }),
     });
@@ -87,9 +90,8 @@ describe('wave XJ — collection stage modules PG (brand production floor)', () 
       shouldMirrorPgClientStoreToLocalStorage: () => false,
     }));
     jest.resetModules();
-    const { loadCollectionStageModulesWithMode: loadCore } = await import(
-      '@/lib/production/collection-stage-modules-store'
-    );
+    const { loadCollectionStageModulesWithMode: loadCore } =
+      await import('@/lib/production/collection-stage-modules-store');
 
     const fetchMock = jest.fn().mockResolvedValue({ ok: false, json: async () => ({}) });
     global.fetch = fetchMock as typeof fetch;

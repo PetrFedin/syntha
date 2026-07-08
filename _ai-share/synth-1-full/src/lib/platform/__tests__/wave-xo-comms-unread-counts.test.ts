@@ -65,7 +65,9 @@ describe('wave XO — universal inbox PG unread all roles', () => {
   });
 
   it('order-specific unread testids on universal inbox strip', () => {
-    expect(`shop-cm-universal-inbox-order-unread-${ORDER_A}`).toContain('universal-inbox-order-unread');
+    expect(`shop-cm-universal-inbox-order-unread-${ORDER_A}`).toContain(
+      'universal-inbox-order-unread'
+    );
     expect(`brand-cm-universal-inbox-order-unread-${ORDER_A}`).toContain(ORDER_A);
     expect(`mfr-cm-universal-inbox-order-unread-${ORDER_A}`).toContain('mfr-cm');
     expect(`sup-cm-universal-inbox-order-unread-${ORDER_A}`).toContain('sup-cm');
@@ -73,14 +75,18 @@ describe('wave XO — universal inbox PG unread all roles', () => {
 
   it('tracking → calendar CTA row carries pcTask deep-link (all roles)', () => {
     for (const variant of ['shop', 'brand', 'manufacturer', 'supplier'] as const) {
-      const row = universalInboxOrderCalendarRowLinks(variant, ORDER_A, { collectionId: COLLECTION });
+      const row = universalInboxOrderCalendarRowLinks(variant, ORDER_A, {
+        collectionId: COLLECTION,
+      });
       expect(row.calendarHref).toContain('pcTask=');
       expect(row.pcTaskId).toContain(ORDER_A);
       expect(row.trackingHref.length).toBeGreaterThan(10);
-      expect(`${variant}-cm-universal-inbox-po-calendar-tracking-link`).toContain('calendar-tracking');
-      expect(`${variant === 'manufacturer' ? 'mfr' : variant === 'supplier' ? 'sup' : variant}-cm-universal-inbox-po-calendar-link`).toContain(
-        'calendar-link'
+      expect(`${variant}-cm-universal-inbox-po-calendar-tracking-link`).toContain(
+        'calendar-tracking'
       );
+      expect(
+        `${variant === 'manufacturer' ? 'mfr' : variant === 'supplier' ? 'sup' : variant}-cm-universal-inbox-po-calendar-link`
+      ).toContain('calendar-link');
     }
   });
 });

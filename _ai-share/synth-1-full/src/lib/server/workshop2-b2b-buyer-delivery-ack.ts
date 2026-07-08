@@ -46,9 +46,11 @@ export async function acknowledgeWorkshop2B2bBuyerDelivery(input: {
     updatedAt: acknowledgedAt,
   };
   await putWorkshop2B2bOrder(next);
-  const { bumpPlatformCoreChainStatus } = await import('@/lib/server/platform-core-chain-status-hub');
+  const { bumpPlatformCoreChainStatus } =
+    await import('@/lib/server/platform-core-chain-status-hub');
   bumpPlatformCoreChainStatus([orderId]);
-  const { bumpPlatformCoreB2bRegistry } = await import('@/lib/server/platform-core-b2b-registry-hub');
+  const { bumpPlatformCoreB2bRegistry } =
+    await import('@/lib/server/platform-core-b2b-registry-hub');
   bumpPlatformCoreB2bRegistry('b2b.order.delivery_acknowledged');
   return { ok: true, order: next, acknowledgedAt };
 }

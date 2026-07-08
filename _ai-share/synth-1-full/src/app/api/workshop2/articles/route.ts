@@ -111,8 +111,7 @@ export async function POST(req: NextRequest) {
     bumpPlatformCoreDevelopmentStatus([collectionId]);
   }
 
-  const sku =
-    'prefill' in built ? built.prefill.sku : built.sku;
+  const sku = 'prefill' in built ? built.prefill.sku : built.sku;
   const tierOut = 'prefill' in built ? built.prefill.tier : undefined;
   const prefill = 'prefill' in built ? built.prefill : undefined;
 

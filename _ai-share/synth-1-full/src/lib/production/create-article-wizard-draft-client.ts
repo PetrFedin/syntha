@@ -44,7 +44,10 @@ export async function loadCreateArticleWizardDraftWithMode(
   try {
     const res = await fetch(apiPath(cid), { cache: 'no-store' });
     if (res.ok) {
-      const data = (await res.json()) as { ok?: boolean; draft?: CreateArticleWizardDraftV1 | null };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        draft?: CreateArticleWizardDraftV1 | null;
+      };
       if (data.ok) {
         cachedPersistMode = 'postgres';
         const draft = data.draft ?? null;
@@ -78,8 +81,7 @@ export async function persistCreateArticleWizardDraft(
   payload: CreateArticleWizardDraftV1
 ): Promise<{ persistMode: CreateArticleWizardDraftPersistMode }> {
   const cid = collectionId.trim();
-  const mode =
-    cachedPersistMode ?? (await loadCreateArticleWizardDraftWithMode(cid)).persistMode;
+  const mode = cachedPersistMode ?? (await loadCreateArticleWizardDraftWithMode(cid)).persistMode;
 
   if (mode === 'postgres') {
     await fetch(apiPath(cid), {
@@ -101,8 +103,7 @@ export async function clearCreateArticleWizardDraft(
   collectionId: string
 ): Promise<{ persistMode: CreateArticleWizardDraftPersistMode }> {
   const cid = collectionId.trim();
-  const mode =
-    cachedPersistMode ?? (await loadCreateArticleWizardDraftWithMode(cid)).persistMode;
+  const mode = cachedPersistMode ?? (await loadCreateArticleWizardDraftWithMode(cid)).persistMode;
 
   if (mode === 'postgres') {
     await fetch(apiPath(cid), {

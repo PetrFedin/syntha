@@ -6,9 +6,7 @@ import {
   getWorkshop2ServerDossierStoreMode,
 } from '@/lib/platform-core-ports/dossier-store';
 
-export type PlatformCoreCapacityGatewaySource =
-  | 'workshop2_b2b_order'
-  | 'workshop2_dossier_mirror';
+export type PlatformCoreCapacityGatewaySource = 'workshop2_b2b_order' | 'workshop2_dossier_mirror';
 
 export type PlatformCoreAdapterIssue = {
   id: string;
@@ -169,7 +167,9 @@ function positiveNumber(...values: unknown[]): number | undefined {
   return undefined;
 }
 
-function adapterStatus(issues: PlatformCoreAdapterIssue[]): PlatformCoreCapacityEvaluation['status'] {
+function adapterStatus(
+  issues: PlatformCoreAdapterIssue[]
+): PlatformCoreCapacityEvaluation['status'] {
   if (issues.some((i) => i.severity === 'blocker')) return 'blocked';
   if (issues.some((i) => i.severity === 'warning')) return 'warning';
   return 'core_ready';
@@ -183,15 +183,26 @@ function firstLineArticle(order: OrderShape): { collectionId?: string; articleId
   };
 }
 
-function lineMatchesEntity(line: OrderLine, entity: { collectionId?: string; articleId?: string }): boolean {
-  if (entity.articleId && cleanString(line.articleId) && line.articleId !== entity.articleId) return false;
-  if (entity.collectionId && cleanString(line.collectionId) && line.collectionId !== entity.collectionId) {
+function lineMatchesEntity(
+  line: OrderLine,
+  entity: { collectionId?: string; articleId?: string }
+): boolean {
+  if (entity.articleId && cleanString(line.articleId) && line.articleId !== entity.articleId)
+    return false;
+  if (
+    entity.collectionId &&
+    cleanString(line.collectionId) &&
+    line.collectionId !== entity.collectionId
+  ) {
     return false;
   }
   return Boolean(entity.articleId || entity.collectionId);
 }
 
-function orderLinesForEntity(order: OrderShape, entity: { collectionId?: string; articleId?: string }) {
+function orderLinesForEntity(
+  order: OrderShape,
+  entity: { collectionId?: string; articleId?: string }
+) {
   const scoped = order.lines.filter((line) => lineMatchesEntity(line, entity));
   return scoped.length ? scoped : order.lines;
 }
@@ -248,7 +259,9 @@ function routeStepsFromDossier(dossier?: DossierCapacityShape): PlatformCoreCapa
   return [];
 }
 
-function capacityMirror(dossier?: DossierCapacityShape): PlatformCoreCapacityMirrorSnapshot | undefined {
+function capacityMirror(
+  dossier?: DossierCapacityShape
+): PlatformCoreCapacityMirrorSnapshot | undefined {
   const raw =
     dossier?.capacityPlanningMirror ??
     dossier?.factoryCapacityMirror ??
@@ -259,7 +272,11 @@ function capacityMirror(dossier?: DossierCapacityShape): PlatformCoreCapacityMir
     lineId: cleanString(raw.lineId),
     startDate: cleanString(raw.startDate),
     availableQty: firstFiniteNumber(raw.availableQty, raw.availableSlotsQty, raw.capacityQty),
-    availableMinutes: firstFiniteNumber(raw.availableMinutes, raw.availableCapacityMinutes, raw.freeMinutes),
+    availableMinutes: firstFiniteNumber(
+      raw.availableMinutes,
+      raw.availableCapacityMinutes,
+      raw.freeMinutes
+    ),
     bookedMinutes: firstFiniteNumber(raw.bookedMinutes, raw.reservedMinutes),
     status: cleanString(raw.status),
     hintRu: cleanString(raw.hintRu),
@@ -267,18 +284,25 @@ function capacityMirror(dossier?: DossierCapacityShape): PlatformCoreCapacityMir
   };
 }
 
-function startDateFromMilestones(milestones: DossierCapacityShape['taMilestones']): string | undefined {
+function startDateFromMilestones(
+  milestones: DossierCapacityShape['taMilestones']
+): string | undefined {
   const candidates = (milestones ?? []).filter((m) => {
     const title = cleanString(m.title)?.toLowerCase() ?? '';
     return (
       Boolean(cleanString(m.targetDate)) &&
-      (title.includes('старт') || title.includes('запуск') || title.includes('производ') || title.includes('пошив'))
+      (title.includes('старт') ||
+        title.includes('запуск') ||
+        title.includes('производ') ||
+        title.includes('пошив'))
     );
   });
   return cleanString(candidates[0]?.targetDate);
 }
 
-function routingMinutesPerUnit(steps: readonly PlatformCoreCapacityRoutingStep[]): number | undefined {
+function routingMinutesPerUnit(
+  steps: readonly PlatformCoreCapacityRoutingStep[]
+): number | undefined {
   const total = steps.reduce((sum, step) => sum + (positiveNumber(step.sashMin) ?? 0), 0);
   return total > 0 ? Math.round(total * 100) / 100 : undefined;
 }
@@ -344,7 +368,11 @@ function buildSnapshot(input: {
     startDateFromMilestones(input.dossier?.taMilestones);
   const hasMinuteCapacity = availableMinutes !== undefined;
   const hasQuantityCapacity = availableQty !== undefined;
-  const capacitySource = hasMinuteCapacity ? 'minutes' : hasQuantityCapacity ? 'quantity' : 'missing';
+  const capacitySource = hasMinuteCapacity
+    ? 'minutes'
+    : hasQuantityCapacity
+      ? 'quantity'
+      : 'missing';
 
   return {
     orderId: input.order.id,
@@ -420,10 +448,7 @@ function evaluateCapacity(snapshot: PlatformCoreCapacitySnapshot): PlatformCoreC
       severity: 'blocker',
       message: 'Доступных минут линии не хватает под заказ.',
     });
-  } else if (
-    snapshot.availableQty !== undefined &&
-    snapshot.availableQty < snapshot.requiredQty
-  ) {
+  } else if (snapshot.availableQty !== undefined && snapshot.availableQty < snapshot.requiredQty) {
     issues.push({
       id: 'capacity.qty.overbooked',
       severity: 'blocker',

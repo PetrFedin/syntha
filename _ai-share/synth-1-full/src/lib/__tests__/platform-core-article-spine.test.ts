@@ -16,7 +16,9 @@ describe('platform-core-article-spine', () => {
   it('defines ordered spine stages from article to comms', () => {
     expect(PLATFORM_CORE_ARTICLE_SPINE_STAGES[0].id).toBe('article_create');
     expect(PLATFORM_CORE_ARTICLE_SPINE_STAGES.at(-1)?.id).toBe('comms_calendar');
-    const fulfillment = PLATFORM_CORE_ARTICLE_SPINE_STAGES.find((s) => s.id === 'order_fulfillment');
+    const fulfillment = PLATFORM_CORE_ARTICLE_SPINE_STAGES.find(
+      (s) => s.id === 'order_fulfillment'
+    );
     expect(fulfillment?.primaryRoleId).toBe('brand');
   });
 
@@ -55,7 +57,9 @@ describe('platform-core-article-spine', () => {
 
   it('resolveArticleCreationMode defaults to full_production', () => {
     expect(resolveArticleCreationMode(undefined)).toBe('full_production');
-    expect(resolveArticleCreationMode({ articleCreationMode: 'buy_or_import' })).toBe('buy_or_import');
+    expect(resolveArticleCreationMode({ articleCreationMode: 'buy_or_import' })).toBe(
+      'buy_or_import'
+    );
     expect(isArticleCreationMode('full_production')).toBe(true);
     expect(isArticleCreationMode('invalid')).toBe(false);
   });

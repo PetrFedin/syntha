@@ -78,7 +78,10 @@ export function SupplierPriceDeltaAlertStrip({ collectionId, articleId }: Props)
 
   if (state === 'loading') {
     return (
-      <p className="text-text-muted text-[10px]" data-testid={SUP_DEV_PRICE_DELTA_ALERT_LOADING_TESTID}>
+      <p
+        className="text-text-muted text-[10px]"
+        data-testid={SUP_DEV_PRICE_DELTA_ALERT_LOADING_TESTID}
+      >
         {supDevPriceDeltaAlertLoadingRu()}
       </p>
     );
@@ -87,7 +90,7 @@ export function SupplierPriceDeltaAlertStrip({ collectionId, articleId }: Props)
   if (state === 'error') {
     return (
       <div
-        className="border-border-subtle rounded-md border px-3 py-2 text-xs text-text-muted"
+        className="border-border-subtle text-text-muted rounded-md border px-3 py-2 text-xs"
         data-testid="sup-dev-price-delta-alert-error"
       >
         {supDevPriceDeltaAlertErrorRu()}
@@ -98,7 +101,7 @@ export function SupplierPriceDeltaAlertStrip({ collectionId, articleId }: Props)
   if (alerts.length === 0) {
     return (
       <div
-        className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/40 px-3 py-2 text-xs text-text-secondary"
+        className="border-border-subtle bg-bg-surface2/40 text-text-secondary flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
         data-testid={SUP_DEV_PRICE_DELTA_ALERT_EMPTY_TESTID}
       >
         <Badge variant="outline" className="text-[9px]">

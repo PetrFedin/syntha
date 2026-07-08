@@ -83,7 +83,10 @@ function catalogMixForCollection(collectionId: string): BrandWssiMixFeedRow[] {
   return buildBrandWssiMixFeedRows(filtered.length ? filtered : products);
 }
 
-async function listPg(org: string, collectionId: string): Promise<{
+async function listPg(
+  org: string,
+  collectionId: string
+): Promise<{
   mix: BrandWssiMixFeedRow[];
   capacity: BrandWssiCapacityFeedRow[];
 }> {
@@ -251,7 +254,10 @@ export async function patchBrandWssiMixTargetServer(input: {
 export async function refreshBrandWssiOtbServer(input: {
   collectionId: string;
   organizationId?: string;
-}): Promise<{ mixSummary: ReturnType<typeof summarizeBrandWssiMixFeed>; storageMode: BrandWssiFeedStorageMode }> {
+}): Promise<{
+  mixSummary: ReturnType<typeof summarizeBrandWssiMixFeed>;
+  storageMode: BrandWssiFeedStorageMode;
+}> {
   const org = input.organizationId ?? DEFAULT_ORG;
   const collectionId = input.collectionId.trim();
   const catalogMix = catalogMixForCollection(collectionId);

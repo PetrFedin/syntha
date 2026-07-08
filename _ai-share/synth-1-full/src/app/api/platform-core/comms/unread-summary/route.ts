@@ -33,7 +33,14 @@ function cabinetForRole(role: PlatformCoreNotificationRole): PgContextualThreads
 
 function parseOrderIds(raw: string | null): string[] {
   if (!raw?.trim()) return [];
-  return [...new Set(raw.split(',').map((id) => id.trim()).filter(Boolean))];
+  return [
+    ...new Set(
+      raw
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+    ),
+  ];
 }
 
 /** GET — PG unread summary: single order or per-order batch (threads + notification_events). */
@@ -61,7 +68,10 @@ export async function GET(req: NextRequest) {
     if (checkoutAuth instanceof NextResponse) return checkoutAuth;
     scopeKey =
       scopeKey ||
-      resolveShopCoreBuyerIdFromRequest(req, req.nextUrl.searchParams.get('buyerId') ?? checkoutAuth.buyerId);
+      resolveShopCoreBuyerIdFromRequest(
+        req,
+        req.nextUrl.searchParams.get('buyerId') ?? checkoutAuth.buyerId
+      );
   } else {
     const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);
     if (auth instanceof NextResponse) return auth;

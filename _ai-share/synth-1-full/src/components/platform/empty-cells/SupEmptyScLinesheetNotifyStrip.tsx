@@ -73,7 +73,11 @@ export function SupEmptyScLinesheetNotifyStrip({ collectionId, articleId }: Prop
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-text-muted text-[10px] font-semibold uppercase">Лайншит · BOM</span>
         {storageMode === 'postgres' ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="sup-empty-sc-linesheet-notify-pg">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="sup-empty-sc-linesheet-notify-pg"
+          >
             PG уведомление
           </Badge>
         ) : null}
@@ -85,14 +89,15 @@ export function SupEmptyScLinesheetNotifyStrip({ collectionId, articleId }: Prop
           {events.map((event) => (
             <li key={event.id} className="text-text-secondary text-[11px] leading-snug">
               <span className="font-medium">{event.titleRu}</span>
-              {event.bodyRu ? (
-                <span className="text-text-muted block">{event.bodyRu}</span>
-              ) : null}
+              {event.bodyRu ? <span className="text-text-muted block">{event.bodyRu}</span> : null}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-text-muted text-[11px]" data-testid="sup-empty-sc-linesheet-notify-empty">
+        <p
+          className="text-text-muted text-[11px]"
+          data-testid="sup-empty-sc-linesheet-notify-empty"
+        >
           Пока нет событий — появится после добавления артикулов брендом в лайншит.
         </p>
       )}

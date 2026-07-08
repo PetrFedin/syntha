@@ -8,9 +8,7 @@ import {
 import type { BrandCommsEntityThreadKind } from '@/lib/fashion/brand-comms-entity-threads';
 import { bumpPlatformCoreCommsInbox } from '@/lib/server/platform-core-comms-inbox-hub';
 import { appendWorkshop2ContextualMessage } from '@/lib/server/workshop2-contextual-messages-repository';
-import {
-  WORKSHOP2_CONTEXTUAL_SYSTEM_SENDER,
-} from '@/lib/server/workshop2-contextual-message-sender';
+import { WORKSHOP2_CONTEXTUAL_SYSTEM_SENDER } from '@/lib/server/workshop2-contextual-message-sender';
 import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 
 export async function attachBrandCommsEntityThreadTzServer(input: {
@@ -24,7 +22,10 @@ export async function attachBrandCommsEntityThreadTzServer(input: {
   }
   const collectionId = input.collectionId.trim();
   const articleId = input.articleId.trim();
-  const dossierHref = workshop2ArticleHref(collectionId, articleId, { w2pane: 'tz', w2sec: 'spec' });
+  const dossierHref = workshop2ArticleHref(collectionId, articleId, {
+    w2pane: 'tz',
+    w2sec: 'spec',
+  });
   const contextId = `${collectionId}:${articleId}`;
   const message = brandCommsEntityThreadAttachTzMessage({
     threadKind: input.threadKind,

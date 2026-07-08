@@ -14,9 +14,7 @@ import {
 import { useAuth } from '@/providers/auth-provider';
 import { initialOrderItems } from '@/lib/order-data';
 import { getProductionDataPort } from '@/lib/production-data';
-import {
-  enrichWorkshop2ArticleRows,
-} from '@/lib/production/workshop2-article-category-facets';
+import { enrichWorkshop2ArticleRows } from '@/lib/production/workshop2-article-category-facets';
 import { deriveStagesArticleFacets } from '@/lib/production/stages-tab-facets';
 import { subscribeUnifiedSkuFlowSaved } from '@/lib/production/sku-flow-sync';
 import {
@@ -94,7 +92,10 @@ import {
   buildWorkshop2PgSourceStats,
   type Workshop2PgSourceStats,
 } from '@/lib/production/workshop2-pg-source-stats';
-import { resolveWorkshop2HubPublishedArticlesReadPath, shouldUseLocalStorageClientFallbackInCore } from '@/lib/production/workshop2-pg-read-path-policy';
+import {
+  resolveWorkshop2HubPublishedArticlesReadPath,
+  shouldUseLocalStorageClientFallbackInCore,
+} from '@/lib/production/workshop2-pg-read-path-policy';
 import {
   getRangePlannerOverlayForCollection,
   syncRangePlannerOverlayFromDevelopmentStatus,
@@ -359,9 +360,7 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
           return;
         }
         const json = (await res.json()) as { ok?: boolean; postgres?: string; storeMode?: string };
-        setWorkshop2PgServerAvailable(
-          resolveWorkshop2BackendStatusFromHealth(json) === 'server'
-        );
+        setWorkshop2PgServerAvailable(resolveWorkshop2BackendStatusFromHealth(json) === 'server');
       })
       .catch(() => {
         if (!cancelled) setWorkshop2PgServerAvailable(false);
@@ -397,7 +396,6 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
   }, [localInventory, workshop2PgServerAvailable]);
 
   const seedOrderLines = useMemo(() => initialOrderItems as unknown as LocalOrderLine[], []);
-
 
   const getArticleLine = useCallback(
     (collectionId: string, articleId: string): LocalOrderLine | undefined => {
@@ -883,11 +881,14 @@ export function Workshop2LocalStateProvider({ children }: { children: ReactNode 
       const cid = collectionId.trim();
       const empty = { added: 0, skippedDuplicates: 0, publishedCount: 0, dossiersHydrated: 0 };
       if (!cid) return empty;
-      const { articles, dossiersHydrated } = await hydrateWorkshop2PlatformCoreCollectionFromPg(cid, {
-        preferApi: workshop2PgServerAvailable,
-        localInventory: loadLocalCollectionInventory(),
-        seedLines: seedOrderLines,
-      });
+      const { articles, dossiersHydrated } = await hydrateWorkshop2PlatformCoreCollectionFromPg(
+        cid,
+        {
+          preferApi: workshop2PgServerAvailable,
+          localInventory: loadLocalCollectionInventory(),
+          seedLines: seedOrderLines,
+        }
+      );
       const pgAuthoritative = isWorkshop2PgAuthoritativeCollection(cid, workshop2PgServerAvailable);
       const leaf = getHandbookCategoryLeaves()[0]?.leafId ?? 'catalog-apparel-g0-l0';
       const rows = articles.map((a) => ({

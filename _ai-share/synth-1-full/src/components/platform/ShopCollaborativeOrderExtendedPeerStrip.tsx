@@ -14,7 +14,10 @@ export function ShopCollaborativeOrderExtendedPeerStrip({ collectionId, orderId 
   const session = buildShopCollaborativeOrderSession({ collectionId, orderId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="shop-collaborative-order-extended-peer-strip">
+    <div
+      className={hubGadget.goldenPath}
+      data-testid="shop-collaborative-order-extended-peer-strip"
+    >
       <Link
         href={session.matrixHref}
         data-testid="shop-collaborative-matrix-peer-link"
@@ -45,19 +48,31 @@ export function ShopCollaborativeOrderExtendedPeerStrip({ collectionId, orderId 
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.landedMarginHref} data-testid="shop-collaborative-margin-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.landedMarginHref}
+        data-testid="shop-collaborative-margin-link"
+        className={hubGadget.goldenLink}
+      >
         Маржа
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.brandOrderChatHref} data-testid="shop-collaborative-brand-chat-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandOrderChatHref}
+        data-testid="shop-collaborative-brand-chat-link"
+        className={hubGadget.goldenLink}
+      >
         Чат бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.checkoutHref} data-testid="shop-collaborative-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.checkoutHref}
+        data-testid="shop-collaborative-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
     </div>

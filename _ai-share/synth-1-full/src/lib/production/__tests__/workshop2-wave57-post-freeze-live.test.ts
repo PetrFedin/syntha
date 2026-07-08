@@ -20,9 +20,7 @@ import {
   isWorkshop2OpsAppliedChecklistReady,
   readWorkshop2OpsAppliedStatus,
 } from '@/lib/production/workshop2-wave-ops-applied-status';
-import {
-  buildWorkshop2Wave57PostFreezeLiveProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+import { buildWorkshop2Wave57PostFreezeLiveProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave57PostFreezeLiveProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 import { WORKSHOP2_B2B_OFFLINE_QUEUE_KEY } from '@/components/shop/b2b/B2bRepOfflineSyncClient';
 
@@ -188,9 +186,9 @@ describe('wave57 — JOOR OAuth prod inbound', () => {
   });
 
   it('maps joor order id from token response', () => {
-    expect(
-      mapWorkshop2JoorOrderIdFromOAuthResponse({ joorOrderId: 'JOOR-12345' })
-    ).toBe('JOOR-12345');
+    expect(mapWorkshop2JoorOrderIdFromOAuthResponse({ joorOrderId: 'JOOR-12345' })).toBe(
+      'JOOR-12345'
+    );
     const stub = exchangeWorkshop2B2bOAuthCodeStub({
       code: 'abc',
       provider: 'joor',

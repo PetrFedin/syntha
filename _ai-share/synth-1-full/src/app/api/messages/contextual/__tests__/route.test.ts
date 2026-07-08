@@ -18,18 +18,16 @@ jest.mock('@/lib/server/workshop2-contextual-messages-repository', () => ({
       sender: 'Магазин',
     },
   ]),
-  appendWorkshop2ContextualMessage: jest.fn(async (input: {
-    contextType: string;
-    contextId: string;
-    message: string;
-  }) => ({
-    id: 'msg-new',
-    contextType: input.contextType,
-    contextId: input.contextId,
-    message: input.message,
-    createdAt: '2026-01-02T00:00:00.000Z',
-    sender: 'Brand QA',
-  })),
+  appendWorkshop2ContextualMessage: jest.fn(
+    async (input: { contextType: string; contextId: string; message: string }) => ({
+      id: 'msg-new',
+      contextType: input.contextType,
+      contextId: input.contextId,
+      message: input.message,
+      createdAt: '2026-01-02T00:00:00.000Z',
+      sender: 'Brand QA',
+    })
+  ),
 }));
 
 import { GET, POST } from '../route';

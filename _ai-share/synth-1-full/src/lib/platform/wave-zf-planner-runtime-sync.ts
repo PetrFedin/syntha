@@ -12,15 +12,7 @@ import {
 export const WAVE_ZF_E2E_SPEC = 'core-247-wave-zf-planner.spec.ts' as const;
 
 /** Closed wave letter codes YY … ZE (core-240 … core-246). */
-export const WAVE_ZF_CLOSED_WAVE_CODES = [
-  'YY',
-  'YZ',
-  'ZA',
-  'ZB',
-  'ZC',
-  'ZD',
-  'ZE',
-] as const;
+export const WAVE_ZF_CLOSED_WAVE_CODES = ['YY', 'YZ', 'ZA', 'ZB', 'ZC', 'ZD', 'ZE'] as const;
 
 export type WaveZfCrossCuttingAxis = 'S1' | 'S2' | 'S3' | 'S4' | 'S5';
 

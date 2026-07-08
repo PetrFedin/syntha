@@ -14,9 +14,7 @@ import {
   summarizeWorkshop2Wave55InvestorFreezeSignoff,
   loadWorkshop2Ss27UatSignoffJournal,
 } from '@/lib/production/workshop2-ss27-uat-signoff-journal';
-import {
-  buildWorkshop2Wave55InvestorFreezeReadyProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+import { buildWorkshop2Wave55InvestorFreezeReadyProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave55InvestorFreezeReadyProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 
 const root = process.cwd();
@@ -66,7 +64,9 @@ describe('wave55 — signoff ops + product gate', () => {
   it('wave55FreezeComplete when ops and product signed', () => {
     appendWorkshop2Ss27UatSignoff({ role: 'ops', signedBy: 'ops@test.ru' });
     appendWorkshop2Ss27UatSignoff({ role: 'product', signedBy: 'product@test.ru' });
-    const freeze = summarizeWorkshop2Wave55InvestorFreezeSignoff(loadWorkshop2Ss27UatSignoffJournal());
+    const freeze = summarizeWorkshop2Wave55InvestorFreezeSignoff(
+      loadWorkshop2Ss27UatSignoffJournal()
+    );
     expect(freeze.wave55FreezeComplete).toBe(true);
   });
 
@@ -101,18 +101,27 @@ describe('wave55 — investor freeze artifacts on disk', () => {
   });
 
   it('ack restore drill writes last.json path', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('workshop2-ack-restore-drill-last.json');
   });
 
   it('ops applied checklist RU', () => {
-    const md = fs.readFileSync(path.join(root, '.planning/workshop2-wave55-ops-applied-checklist.md'), 'utf8');
+    const md = fs.readFileSync(
+      path.join(root, '.planning/workshop2-wave55-ops-applied-checklist.md'),
+      'utf8'
+    );
     expect(md).toContain('PagerDuty');
     expect(md).toContain('Sentry');
   });
 
   it('orders export includes invoiceStubUrl', () => {
-    const route = fs.readFileSync(path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'), 'utf8');
+    const route = fs.readFileSync(
+      path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'),
+      'utf8'
+    );
     expect(route).toContain('invoiceStubUrl');
   });
 
@@ -123,7 +132,10 @@ describe('wave55 — investor freeze artifacts on disk', () => {
   });
 
   it('investor-demo-full optional wave55 step', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-investor-demo-full.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-investor-demo-full.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('wave55-investor-freeze');
     expect(mjs).toContain('WORKSHOP2_INVESTOR_DEMO_WAVE55_FREEZE');
   });

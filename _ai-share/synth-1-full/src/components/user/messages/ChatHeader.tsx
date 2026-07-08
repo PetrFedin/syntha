@@ -102,12 +102,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           </div>
           <div className="mt-1 flex items-center gap-2">
             {!slimCore ? (
-            <div className="flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-1.5 py-0.5">
-              <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
-              <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-600">
-                Active Thread
-              </span>
-            </div>
+              <div className="flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-1.5 py-0.5">
+                <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
+                <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-600">
+                  Active Thread
+                </span>
+              </div>
             ) : null}
             <span className="text-text-muted truncate text-[8px] font-bold uppercase tracking-widest opacity-60">
               {activeChat.subtitle}
@@ -141,94 +141,94 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       {!slimCore ? (
-      <div className="flex items-center gap-1.5">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  'border-accent-primary/20 bg-accent-primary/10 text-accent-primary hover:bg-accent-primary size-8 rounded-lg border shadow-sm transition-all hover:text-white',
-                  isSummarizing && 'animate-pulse'
-                )}
-                onClick={onGenerateSummary}
-                disabled={isSummarizing}
-              >
-                <Sparkles className="size-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
-              AI Summary
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
-                onClick={() => onOpenCallSetup('audio')}
-              >
-                <Phone className="size-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
-              Audio Call
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
-                onClick={() => onOpenCallSetup('video')}
-              >
-                <Video className="size-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
-              Video Meeting
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex items-center gap-1.5">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={cn(
+                    'border-accent-primary/20 bg-accent-primary/10 text-accent-primary hover:bg-accent-primary size-8 rounded-lg border shadow-sm transition-all hover:text-white',
+                    isSummarizing && 'animate-pulse'
+                  )}
+                  onClick={onGenerateSummary}
+                  disabled={isSummarizing}
+                >
+                  <Sparkles className="size-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
+                AI Summary
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
+                  onClick={() => onOpenCallSetup('audio')}
+                >
+                  <Phone className="size-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
+                Audio Call
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
+                  onClick={() => onOpenCallSetup('video')}
+                >
+                  <Video className="size-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-text-primary border-none text-[9px] font-bold uppercase tracking-widest text-white">
+                Video Meeting
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="border-border-default text-text-muted hover:border-text-primary hover:bg-text-primary/90 size-8 rounded-lg border bg-white shadow-sm transition-all hover:text-white"
+              >
+                <MoreVertical className="size-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="border-border-subtle min-w-[180px] rounded-xl p-1 shadow-xl"
             >
-              <MoreVertical className="size-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="border-border-subtle min-w-[180px] rounded-xl p-1 shadow-xl"
-          >
-            <DropdownMenuItem
-              className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
-              onClick={onOpenParticipants}
-            >
-              <Users className="mr-2.5 size-3.5" /> Manage Participants
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
-              onClick={onOpenArchive}
-            >
-              <Archive className="mr-2.5 size-3.5" /> Content Archive
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
-              onClick={onOpenSettings}
-            >
-              <Settings className="mr-2.5 size-3.5" /> Chat Settings
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              <DropdownMenuItem
+                className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
+                onClick={onOpenParticipants}
+              >
+                <Users className="mr-2.5 size-3.5" /> Manage Participants
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
+                onClick={onOpenArchive}
+              >
+                <Archive className="mr-2.5 size-3.5" /> Content Archive
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer rounded-lg p-2.5 text-xs font-bold uppercase tracking-widest transition-colors"
+                onClick={onOpenSettings}
+              >
+                <Settings className="mr-2.5 size-3.5" /> Chat Settings
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ) : null}
     </header>
   );

@@ -50,44 +50,44 @@ export function FactoryProductionLegacyPage() {
   return (
     <div className="space-y-10">
       <>
-          <HubTodayPanel
-            e2eVariant="factory"
-            hubLabel="производственный хаб"
-            accentClass="text-emerald-600"
-            kpis={kpis}
-            actions={[
-              { label: 'Производство', href: ROUTES.brand.production, desc: 'Смены и маршруты' },
-              { label: B2B_ORDERS_REGISTRY_LABEL, href: ROUTES.brand.b2bOrders, desc: 'От брендов' },
-              { label: 'QC и Compliance', href: ROUTES.brand.compliance, desc: 'Контроль качества' },
-            ]}
-            alerts={alerts}
-          />
+        <HubTodayPanel
+          e2eVariant="factory"
+          hubLabel="производственный хаб"
+          accentClass="text-emerald-600"
+          kpis={kpis}
+          actions={[
+            { label: 'Производство', href: ROUTES.brand.production, desc: 'Смены и маршруты' },
+            { label: B2B_ORDERS_REGISTRY_LABEL, href: ROUTES.brand.b2bOrders, desc: 'От брендов' },
+            { label: 'QC и Compliance', href: ROUTES.brand.compliance, desc: 'Контроль качества' },
+          ]}
+          alerts={alerts}
+        />
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" className="text-[10px] font-black uppercase" asChild>
-              <Link href={ROUTES.shop.b2bWorkspaceMap}>
-                <Map className="mr-2 size-3.5" />
-                Карта процессов B2B
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-text-muted text-[10px] font-black uppercase"
-              asChild
-            >
-              <Link href={ROUTES.shop.home}>Кабинет магазина</Link>
-            </Button>
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" className="text-[10px] font-black uppercase" asChild>
+            <Link href={ROUTES.shop.b2bWorkspaceMap}>
+              <Map className="mr-2 size-3.5" />
+              Карта процессов B2B
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-text-muted text-[10px] font-black uppercase"
+            asChild
+          >
+            <Link href={ROUTES.shop.home}>Кабинет магазина</Link>
+          </Button>
+        </div>
 
-          <div>
-            <h2 className="text-text-secondary mb-1 text-[11px] font-black uppercase tracking-[0.2em]">
-              Все разделы
-            </h2>
-            <p className="text-text-primary text-sm">
-              Производство, заказы и QC — навигация слева и ссылки ниже.
-            </p>
-          </div>
+        <div>
+          <h2 className="text-text-secondary mb-1 text-[11px] font-black uppercase tracking-[0.2em]">
+            Все разделы
+          </h2>
+          <p className="text-text-primary text-sm">
+            Производство, заказы и QC — навигация слева и ссылки ниже.
+          </p>
+        </div>
       </>
 
       <FactoryWorkshop2SampleQueuePanel factoryId="fact-1" />
@@ -134,4 +134,3 @@ export function FactoryProductionLegacyPage() {
     </div>
   );
 }
-

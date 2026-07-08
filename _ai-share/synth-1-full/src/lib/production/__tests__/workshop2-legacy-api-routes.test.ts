@@ -1,6 +1,9 @@
 /** @jest-environment node */
 
-import { GET as taGet, PATCH as taPatch } from '@/app/api/brand/workshop2/phase1-dossier/time-and-action/route';
+import {
+  GET as taGet,
+  PATCH as taPatch,
+} from '@/app/api/brand/workshop2/phase1-dossier/time-and-action/route';
 import { GET as labGet } from '@/app/api/brand/workshop2/materials/lab-dips/route';
 import { GET as testingGet } from '@/app/api/brand/workshop2/materials/testing/route';
 import { POST as reqPost } from '@/app/api/brand/workshop2/phase1-dossier/requisitions/route';
@@ -49,9 +52,7 @@ describe('workshop2 legacy mock routes removed', () => {
       },
     } as Awaited<ReturnType<typeof getWorkshop2ServerDossierRecord>>);
 
-    const res = await taGet(
-      new Request('http://localhost/api/ta?collectionId=c1&articleId=a1')
-    );
+    const res = await taGet(new Request('http://localhost/api/ta?collectionId=c1&articleId=a1'));
     expect(res.status).toBe(200);
     const json = (await res.json()) as { milestones: { id: string }[] };
     expect(json.milestones).toHaveLength(1);
@@ -125,9 +126,7 @@ describe('workshop2 legacy mock routes removed', () => {
     } as Awaited<ReturnType<typeof getWorkshop2ServerDossierRecord>>);
 
     const res = await testingGet(
-      new Request(
-        'http://localhost/api/testing?collectionId=c1&articleId=a1&materialId=mat-1'
-      )
+      new Request('http://localhost/api/testing?collectionId=c1&articleId=a1&materialId=mat-1')
     );
     expect(res.status).toBe(200);
     const json = (await res.json()) as { testingLogs: { id: string }[] };

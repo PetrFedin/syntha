@@ -59,7 +59,9 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      sendRaw(formatPlatformCoreHandoffQueueSseData({ type: 'ping', ts: new Date().toISOString() }));
+      sendRaw(
+        formatPlatformCoreHandoffQueueSseData({ type: 'ping', ts: new Date().toISOString() })
+      );
       void poll();
 
       const onBump = () => void poll();

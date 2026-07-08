@@ -1,10 +1,8 @@
 /** Wave TP · Shop 2.2 working order version diff (client-safe). Wave XL polish. */
 
-export const SHOP_WORKING_ORDER_DIFF_API_PATH =
-  '/api/shop/b2b/working-order/diff' as const;
+export const SHOP_WORKING_ORDER_DIFF_API_PATH = '/api/shop/b2b/working-order/diff' as const;
 
-export const SHOP_WORKING_ORDER_VERSION_DIFF_LEGACY_PATH =
-  '/api/shop/b2b/working-order' as const;
+export const SHOP_WORKING_ORDER_VERSION_DIFF_LEGACY_PATH = '/api/shop/b2b/working-order' as const;
 
 export const SHOP_WORKING_ORDER_MERGE_TO_MATRIX_PATH_SUFFIX = '/merge-to-matrix' as const;
 
@@ -53,27 +51,17 @@ export type ShopWorkingOrderVersionDiffSnapshot = {
 };
 
 export function shopWorkingOrderVersionDiffChangedSkuCount(
-  diff: Pick<
-    ShopWorkingOrderVersionDiffSnapshot,
-    'addedLines' | 'removedLines' | 'changedLines'
-  >
+  diff: Pick<ShopWorkingOrderVersionDiffSnapshot, 'addedLines' | 'removedLines' | 'changedLines'>
 ): number {
   return diff.addedLines.length + diff.removedLines.length + diff.changedLines.length;
 }
 
 /** Flat preview for UI strip (changed → added → removed). */
 export function shopWorkingOrderVersionDiffLinePreview(
-  diff: Pick<
-    ShopWorkingOrderVersionDiffSnapshot,
-    'addedLines' | 'removedLines' | 'changedLines'
-  >,
+  diff: Pick<ShopWorkingOrderVersionDiffSnapshot, 'addedLines' | 'removedLines' | 'changedLines'>,
   limit = SHOP_WORKING_ORDER_DIFF_LINE_PREVIEW_LIMIT
 ): ShopWorkingOrderVersionLineDiff[] {
-  return [
-    ...diff.changedLines,
-    ...diff.addedLines,
-    ...diff.removedLines,
-  ].slice(0, limit);
+  return [...diff.changedLines, ...diff.addedLines, ...diff.removedLines].slice(0, limit);
 }
 
 export function shopWorkingOrderVersionDiffLegacyPath(wholesaleOrderId: string): string {

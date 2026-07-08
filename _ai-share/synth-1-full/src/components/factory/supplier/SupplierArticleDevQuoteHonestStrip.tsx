@@ -7,7 +7,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { PLATFORM_CORE_B2B_MESSAGE_TEMPLATES } from '@/lib/communications/platform-core-b2b-message-templates';
-import { factorySupplierMessagesWorkshop2ArticleContextHref, factorySupplierRfqInboxHref } from '@/lib/routes';
+import {
+  factorySupplierMessagesWorkshop2ArticleContextHref,
+  factorySupplierRfqInboxHref,
+} from '@/lib/routes';
 import { SUP_CM_ARTICLE_QUOTE_RFQ_INBOX_LINK_TESTID } from '@/lib/fashion/supplier-logistics-wave-vo';
 
 /** sup-cm-article · quote card UI (не только template) на article context. */
@@ -23,9 +26,11 @@ export function SupplierArticleDevQuoteHonestStrip() {
   });
 
   const bomPreviews =
-    snapshot?.pillarId === 'development' ? snapshot.development.bomMaterialPreviews ?? [] : [];
+    snapshot?.pillarId === 'development' ? (snapshot.development.bomMaterialPreviews ?? []) : [];
 
-  const quoteTemplate = PLATFORM_CORE_B2B_MESSAGE_TEMPLATES.find((t) => t.id === 'article-price-quote');
+  const quoteTemplate = PLATFORM_CORE_B2B_MESSAGE_TEMPLATES.find(
+    (t) => t.id === 'article-price-quote'
+  );
   const quotePreview = quoteTemplate?.buildBody({ collectionId, articleId }) ?? '';
   const rfqInboxHref = factorySupplierRfqInboxHref({ collectionId, articleId });
 
@@ -54,7 +59,10 @@ export function SupplierArticleDevQuoteHonestStrip() {
             BOM из dossier PG — уточните цену в чате.
           </p>
         )}
-        <p className="text-text-muted line-clamp-2 text-[10px]" data-testid="sup-cm-article-quote-preview">
+        <p
+          className="text-text-muted line-clamp-2 text-[10px]"
+          data-testid="sup-cm-article-quote-preview"
+        >
           {quotePreview.slice(0, 160)}
         </p>
         <div className="flex flex-wrap gap-1.5">

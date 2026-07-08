@@ -23,9 +23,7 @@ export function collectWorkshop2B2bCartPackViolations(input: {
     const pack = input.casePackByArticleKey.get(key);
     if (!pack || pack <= 1) continue;
     if (row.qty % pack !== 0) {
-      violations.push(
-        `${row.articleId}: кратно ${pack} шт. (pack rule), указано ${row.qty}`
-      );
+      violations.push(`${row.articleId}: кратно ${pack} шт. (pack rule), указано ${row.qty}`);
     }
   }
   return violations;

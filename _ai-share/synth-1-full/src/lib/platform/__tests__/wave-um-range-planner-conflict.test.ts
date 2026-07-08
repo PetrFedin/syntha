@@ -23,7 +23,9 @@ describe('wave UM — range planner conflict resolver + bulk tier POST', () => {
     });
     const overlay = overlayDocFromPgSnapshot(snap);
     overlay.tiers = overlay.tiers.map((row) =>
-      row.id === 'core' ? { ...row, pgSkuCount: row.pgSkuCount + 2, planSkuCount: row.planSkuCount + 1 } : row
+      row.id === 'core'
+        ? { ...row, pgSkuCount: row.pgSkuCount + 2, planSkuCount: row.planSkuCount + 1 }
+        : row
     );
 
     const conflict = detectRangePlannerOverlayConflict(snap, overlay);

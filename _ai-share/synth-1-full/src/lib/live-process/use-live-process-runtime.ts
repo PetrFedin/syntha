@@ -114,11 +114,14 @@ export function useLiveProcessRuntime(processId: string, contextId: string) {
       if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
       persistTimerRef.current = setTimeout(() => {
         const ctx = contextId || 'default';
-        void fetch(`/api/processes/${encodeURIComponent(processId)}/runtime?contextId=${encodeURIComponent(ctx)}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ runtimes }),
-        });
+        void fetch(
+          `/api/processes/${encodeURIComponent(processId)}/runtime?contextId=${encodeURIComponent(ctx)}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ runtimes }),
+          }
+        );
       }, 400);
       window.dispatchEvent(new CustomEvent('live-process-runtime-updated'));
       return () => {
@@ -145,5 +148,9 @@ export function useLiveProcessRuntime(processId: string, contextId: string) {
     []
   );
 
-  return { runtimes, updateStageRuntime, persistMode: coreApiOnly ? ('postgres' as const) : ('local' as const) };
+  return {
+    runtimes,
+    updateStageRuntime,
+    persistMode: coreApiOnly ? ('postgres' as const) : ('local' as const),
+  };
 }

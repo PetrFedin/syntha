@@ -38,7 +38,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence() || memoryPlans.length > 0) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as PersistedB2bIntakeAllocationPlan[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as PersistedB2bIntakeAllocationPlan[];
     if (Array.isArray(parsed)) memoryPlans.push(...parsed);
   } catch {
     /* ignore */
@@ -144,7 +146,14 @@ export async function persistB2bIntakeAllocationPlan(input: {
         `INSERT INTO workshop2_b2b_intake_allocations
            (id, organization_id, batch_id, plan, demand_fingerprint, created_at)
          VALUES ($1, $2, $3, $4::jsonb, $5, $6::timestamptz)`,
-        [planId, organizationId, batchId, JSON.stringify(input.plan), demandFingerprint, row.createdAt]
+        [
+          planId,
+          organizationId,
+          batchId,
+          JSON.stringify(input.plan),
+          demandFingerprint,
+          row.createdAt,
+        ]
       );
       await client.query('COMMIT');
       return { ok: true, planId, mode: 'postgres', idempotent: false };
@@ -166,7 +175,9 @@ export async function persistB2bIntakeAllocationPlan(input: {
   return { ok: true, planId, mode: canUseDiskPersistence() ? 'file' : 'memory' };
 }
 
-export async function getLatestB2bIntakeAllocationPlan(batchId: string): Promise<PersistedB2bIntakeAllocationPlan | null> {
+export async function getLatestB2bIntakeAllocationPlan(
+  batchId: string
+): Promise<PersistedB2bIntakeAllocationPlan | null> {
   const id = batchId.trim();
   if (!id) return null;
 

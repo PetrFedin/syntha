@@ -32,7 +32,9 @@ function fastApiBase(): string {
 export async function runPlatformAiTaskDev(
   task: string,
   context?: PlatformAiTaskContext
-): Promise<{ ok: true; data: PlatformAiTaskResult } | { ok: false; error: string; status?: number }> {
+): Promise<
+  { ok: true; data: PlatformAiTaskResult } | { ok: false; error: string; status?: number }
+> {
   const url = `${fastApiBase()}/ai/task/dev`;
   try {
     const res = await fetch(url, {

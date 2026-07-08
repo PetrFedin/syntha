@@ -36,10 +36,16 @@ export function resolvePlatformCoreB2bNavView(
   pathname: string | null | undefined
 ): PlatformCoreB2bNavView {
   const base = pathname?.split('#')[0] ?? pathname ?? '';
-  if (base === PLATFORM_CORE_B2B_MARKETROOM_HREF || base.startsWith(`${PLATFORM_CORE_B2B_MARKETROOM_HREF}?`)) {
+  if (
+    base === PLATFORM_CORE_B2B_MARKETROOM_HREF ||
+    base.startsWith(`${PLATFORM_CORE_B2B_MARKETROOM_HREF}?`)
+  ) {
     return 'marketroom';
   }
-  if (base === PLATFORM_CORE_B2B_PARTNERS_HREF || base.startsWith(`${PLATFORM_CORE_B2B_PARTNERS_HREF}?`)) {
+  if (
+    base === PLATFORM_CORE_B2B_PARTNERS_HREF ||
+    base.startsWith(`${PLATFORM_CORE_B2B_PARTNERS_HREF}?`)
+  ) {
     return 'partners';
   }
   return 'hub';

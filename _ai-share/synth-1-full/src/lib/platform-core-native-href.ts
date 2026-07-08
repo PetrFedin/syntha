@@ -108,11 +108,7 @@ function factoryCoreHref(
   return `${base}?${sp.toString()}`;
 }
 
-function platformB2bFeatureHref(
-  collectionId: string,
-  feature: string,
-  orderId?: string
-): string {
+function platformB2bFeatureHref(collectionId: string, feature: string, orderId?: string): string {
   void platformB2bFeatureHref;
   const sp = new URLSearchParams({
     collection: collectionId,
@@ -143,10 +139,7 @@ export function platformCoreNativeCheckoutHref(
 }
 
 /** Native matrix — shop collection_order embedded section + feature matrix. */
-export function platformCoreNativeMatrixHref(
-  collectionId: string,
-  orderId?: string
-): string {
+export function platformCoreNativeMatrixHref(collectionId: string, orderId?: string): string {
   const extra: Record<string, string> = {
     section: SHOP_CO_MATRIX_SECTION,
     [PILLAR_CAPABILITY_FEATURE_PARAM]: 'matrix',
@@ -181,10 +174,7 @@ export function coercePlatformCoreNativeHref(
   const { pathname, search, hash } = parseHref(href);
   const path = pathname.replace(/\/$/, '') || '/';
   const collectionId = collectionFromHref(path, search, demo);
-  const orderId =
-    readParam(search, 'order') ??
-    readParam(search, 'orderId') ??
-    demo.demoOrderId;
+  const orderId = readParam(search, 'order') ?? readParam(search, 'orderId') ?? demo.demoOrderId;
   const articleId = readParam(search, 'article') ?? demo.demoArticleId;
 
   // Hub
@@ -198,9 +188,11 @@ export function coercePlatformCoreNativeHref(
     if (articleId) {
       return brandDevelopmentArticleHref(collectionId, articleId) + hash;
     }
-    return brandDevelopmentCabinetHref(collectionId, undefined, {
-      create: create === '1',
-    }) + hash;
+    return (
+      brandDevelopmentCabinetHref(collectionId, undefined, {
+        create: create === '1',
+      }) + hash
+    );
   }
 
   if (path === '/brand/core' || path.startsWith('/brand/core/')) return href;
@@ -225,7 +217,10 @@ export function coercePlatformCoreNativeHref(
       }) + hash
     );
   }
-  if (path === ROUTES.brand.launchReadiness || path.startsWith(`${ROUTES.brand.launchReadiness}/`)) {
+  if (
+    path === ROUTES.brand.launchReadiness ||
+    path.startsWith(`${ROUTES.brand.launchReadiness}/`)
+  ) {
     const feature = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? 'checklist';
     return (
       brandCoreHref('sample_collection', collectionId, {
@@ -243,8 +238,14 @@ export function coercePlatformCoreNativeHref(
   if (path === ROUTES.brand.tasks || path.startsWith(`${ROUTES.brand.tasks}/`)) {
     return brandCoreHref('development', collectionId) + hash;
   }
-  if (path === ROUTES.brand.productionGantt || path.startsWith(`${ROUTES.brand.productionGantt}/`)) {
-    return brandCoreHref('order_production', collectionId, orderId ? { order: orderId } : undefined) + hash;
+  if (
+    path === ROUTES.brand.productionGantt ||
+    path.startsWith(`${ROUTES.brand.productionGantt}/`)
+  ) {
+    return (
+      brandCoreHref('order_production', collectionId, orderId ? { order: orderId } : undefined) +
+      hash
+    );
   }
 
   // Shop B2B long tail → core / platform b2b
@@ -255,10 +256,12 @@ export function coercePlatformCoreNativeHref(
     return platformCoreNativeShowroomHref(collectionId, orderId) + hash;
   }
   if (path === ROUTES.shop.b2bCheckout || path.startsWith(`${ROUTES.shop.b2bCheckout}/`)) {
-    return platformCoreNativeCheckoutHref(collectionId, {
-      buyerId: readParam(search, 'buyer'),
-      orderId,
-    }) + hash;
+    return (
+      platformCoreNativeCheckoutHref(collectionId, {
+        buyerId: readParam(search, 'buyer'),
+        orderId,
+      }) + hash
+    );
   }
   if (path === ROUTES.shop.b2bOrders || path.startsWith(`${ROUTES.shop.b2bOrders}/`)) {
     if (path.match(/^\/shop\/b2b\/orders\/[^/]+$/)) {
@@ -268,7 +271,10 @@ export function coercePlatformCoreNativeHref(
     return shopCoreHref('collection_order', collectionId) + hash;
   }
   if (path === ROUTES.shop.b2bTracking) {
-    return shopCoreHref('order_production', collectionId, orderId ? { order: orderId } : undefined) + hash;
+    return (
+      shopCoreHref('order_production', collectionId, orderId ? { order: orderId } : undefined) +
+      hash
+    );
   }
   if (path === ROUTES.shop.b2bDiscover || path === ROUTES.shop.b2bPartnersDiscover) {
     return `${PLATFORM_CORE_B2B_PARTNERS_HREF}?collection=${encodeURIComponent(collectionId)}${hash}`;
@@ -290,7 +296,8 @@ export function coercePlatformCoreNativeHref(
     );
   }
   if (path === '/shop/b2b/landed-margin' || path.startsWith('/shop/b2b/landed-margin/')) {
-    const tab = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? readParam(search, 'tab') ?? 'pricelist';
+    const tab =
+      readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? readParam(search, 'tab') ?? 'pricelist';
     return (
       shopCoreHref('collection_order', collectionId, {
         [PILLAR_CAPABILITY_FEATURE_PARAM]: `margin-${tab}`,
@@ -298,7 +305,10 @@ export function coercePlatformCoreNativeHref(
       }) + hash
     );
   }
-  if (path === ROUTES.shop.b2bMarginAnalysis || path.startsWith(`${ROUTES.shop.b2bMarginAnalysis}/`)) {
+  if (
+    path === ROUTES.shop.b2bMarginAnalysis ||
+    path.startsWith(`${ROUTES.shop.b2bMarginAnalysis}/`)
+  ) {
     const feature = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? 'pricelist';
     return (
       shopCoreHref('collection_order', collectionId, {
@@ -307,7 +317,10 @@ export function coercePlatformCoreNativeHref(
       }) + hash
     );
   }
-  if (path === ROUTES.shop.b2bReplenishment || path.startsWith(`${ROUTES.shop.b2bReplenishment}/`)) {
+  if (
+    path === ROUTES.shop.b2bReplenishment ||
+    path.startsWith(`${ROUTES.shop.b2bReplenishment}/`)
+  ) {
     const feature = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? 'stock-atp';
     return (
       shopCoreHref('collection_order', collectionId, {
@@ -340,20 +353,33 @@ export function coercePlatformCoreNativeHref(
   if (path.startsWith('/factory/production/dossier/')) {
     return href;
   }
-  if (path === ROUTES.factory.supplierRfqInbox || path.startsWith(`${ROUTES.factory.supplierRfqInbox}/`)) {
+  if (
+    path === ROUTES.factory.supplierRfqInbox ||
+    path.startsWith(`${ROUTES.factory.supplierRfqInbox}/`)
+  ) {
     return href;
   }
 
-  if (path === ROUTES.factory.productionMaterials || path.startsWith(`${ROUTES.factory.productionMaterials}/`)) {
+  if (
+    path === ROUTES.factory.productionMaterials ||
+    path.startsWith(`${ROUTES.factory.productionMaterials}/`)
+  ) {
     const role = readParam(search, 'role') === 'supplier' ? 'supplier' : 'manufacturer';
     const view = readParam(search, 'view');
     const feature =
-      view === 'procurement' ? 'procurement' : view === 'development' ? 'materials-dev' : 'materials';
+      view === 'procurement'
+        ? 'procurement'
+        : view === 'development'
+          ? 'materials-dev'
+          : 'materials';
     const extra: Record<string, string> = { [PILLAR_CAPABILITY_FEATURE_PARAM]: feature };
     if (orderId) extra.order = orderId;
     return factoryCoreHref(role, 'order_production', collectionId, extra) + hash;
   }
-  if (path === ROUTES.factory.productionCatalog || path.startsWith(`${ROUTES.factory.productionCatalog}/`)) {
+  if (
+    path === ROUTES.factory.productionCatalog ||
+    path.startsWith(`${ROUTES.factory.productionCatalog}/`)
+  ) {
     return (
       factoryCoreHref('supplier', 'order_production', collectionId, {
         [PILLAR_CAPABILITY_FEATURE_PARAM]: 'materials-catalog',
@@ -368,14 +394,27 @@ export function coercePlatformCoreNativeHref(
   if (path === ROUTES.shop.messages || path.startsWith(`${ROUTES.shop.messages}/`)) {
     return shopCoreHref('comms', collectionId, orderId ? { order: orderId } : undefined) + hash;
   }
-  if (path === ROUTES.factory.supplierMessages || path.startsWith(`${ROUTES.factory.supplierMessages}/`)) {
-    return factoryCoreHref('supplier', 'comms', collectionId, orderId ? { order: orderId } : undefined) + hash;
+  if (
+    path === ROUTES.factory.supplierMessages ||
+    path.startsWith(`${ROUTES.factory.supplierMessages}/`)
+  ) {
+    return (
+      factoryCoreHref('supplier', 'comms', collectionId, orderId ? { order: orderId } : undefined) +
+      hash
+    );
   }
   if (
     path === ROUTES.factory.productionMessages ||
     path.startsWith(`${ROUTES.factory.productionMessages}/`)
   ) {
-    return factoryCoreHref('manufacturer', 'comms', collectionId, orderId ? { order: orderId } : undefined) + hash;
+    return (
+      factoryCoreHref(
+        'manufacturer',
+        'comms',
+        collectionId,
+        orderId ? { order: orderId } : undefined
+      ) + hash
+    );
   }
 
   // Fallback: unknown legacy shop/brand/factory section → hub с контекстом

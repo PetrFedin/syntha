@@ -48,7 +48,11 @@ function mergeWmsAtpIntoRows(input: {
   return [...bySku.values()].sort((a, b) => a.sku.localeCompare(b.sku)).slice(0, input.limit);
 }
 
-function applyLedgerAdjustments(grains: InventoryGrain[], shopId: string, adjustments: Awaited<ReturnType<typeof listShopInventoryLedgerAdjustments>>): InventoryGrain[] {
+function applyLedgerAdjustments(
+  grains: InventoryGrain[],
+  shopId: string,
+  adjustments: Awaited<ReturnType<typeof listShopInventoryLedgerAdjustments>>
+): InventoryGrain[] {
   const deltaBySku = new Map<string, number>();
   for (const adj of adjustments) {
     if (adj.shopId !== shopId) continue;

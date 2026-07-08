@@ -106,9 +106,7 @@ export function buildShopCollaborativeParticipants(
 ): ShopCollaborativeParticipant[] {
   const state =
     approvalState ?? defaultShopCollaborativeApprovalState({ buyerId, orderId: 'pending' });
-  const leadStatus: ShopCollaborativeParticipantStatus = state.matrixDone
-    ? 'approved'
-    : 'editing';
+  const leadStatus: ShopCollaborativeParticipantStatus = state.matrixDone ? 'approved' : 'editing';
   const categoryStatus: ShopCollaborativeParticipantStatus = !state.matrixDone
     ? 'pending'
     : state.marginDone
@@ -137,8 +135,7 @@ export function buildShopCollaborativeOrderSession(input?: {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const buyerId = input?.buyerId?.trim() || 'shop1';
   const approvalState =
-    input?.approvalState ??
-    defaultShopCollaborativeApprovalState({ buyerId, orderId });
+    input?.approvalState ?? defaultShopCollaborativeApprovalState({ buyerId, orderId });
 
   return {
     orderId,

@@ -1,4 +1,8 @@
-import type { CoreChainRoleId, CoreHubPillarId, PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
+import type {
+  CoreChainRoleId,
+  CoreHubPillarId,
+  PlatformCoreDemoContext,
+} from '@/lib/platform-core-hub-matrix';
 import type { ReadinessSubItem } from '@/lib/platform-core-readiness-audit';
 
 export type SectionAuditTemplate = Omit<ReadinessSubItem, 'href'> & {

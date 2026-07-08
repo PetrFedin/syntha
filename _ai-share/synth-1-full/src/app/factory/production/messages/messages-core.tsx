@@ -79,9 +79,7 @@ function FactoryProductionMessagesWorkspaceBody() {
   const demo = getPlatformCoreDemo(collectionId);
   const factoryId = searchParams.get('factoryId')?.trim() || demo.factoryId;
   const orderId =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    undefined;
+    searchParams.get('order')?.trim() || searchParams.get('orderId')?.trim() || undefined;
   const ctx = { collectionId, orderId, factoryId };
   const { activeFeatureId } = usePillarCapabilityWorkspace('manufacturer-comms-workspace');
 
@@ -101,13 +99,15 @@ function FactoryProductionMessagesWorkspaceBody() {
       </div>
       {orderId ? (
         <div className="mb-4">
-          <MfrCmOrderContextPeerStrip collectionId={collectionId} orderId={orderId} factoryId={factoryId} />
+          <MfrCmOrderContextPeerStrip
+            collectionId={collectionId}
+            orderId={orderId}
+            factoryId={factoryId}
+          />
         </div>
       ) : null}
       <FactoryCommsAttachTzComposeStrip variant="manufacturer" />
-      {activeFeatureId === 'inbox' ? (
-        <MessagesPage initialRole="manufacturer" slimCore />
-      ) : null}
+      {activeFeatureId === 'inbox' ? <MessagesPage initialRole="manufacturer" slimCore /> : null}
       {activeFeatureId === 'entities' ? (
         <FactoryCommsEntityThreadsPanel variant="manufacturer" />
       ) : null}
@@ -168,9 +168,7 @@ function FactoryProductionMessagesCorePageInner() {
 
 export function FactoryProductionMessagesCorePage() {
   return (
-    <Suspense
-      fallback={<div className="text-text-secondary p-6 text-sm">Загрузка сообщений…</div>}
-    >
+    <Suspense fallback={<div className="text-text-secondary p-6 text-sm">Загрузка сообщений…</div>}>
       <FactoryProductionMessagesCorePageInner />
     </Suspense>
   );

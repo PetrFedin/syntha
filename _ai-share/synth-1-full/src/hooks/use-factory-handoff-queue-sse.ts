@@ -4,7 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { platformCoreSsePollIntervalMs } from '@/lib/platform-core-sse-poll-intervals';
 
 /** SSE + poll fallback for factory production handoff queue refresh. */
-export function useFactoryHandoffQueueSse(factoryId: string, enabled: boolean): {
+export function useFactoryHandoffQueueSse(
+  factoryId: string,
+  enabled: boolean
+): {
   tick: number;
   refresh: () => void;
   sseConnected: boolean;

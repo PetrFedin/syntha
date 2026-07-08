@@ -22,9 +22,9 @@ describe('wave TJ — supplier comms logistics calendar ETA/map', () => {
 
   it('delivery window label prefers label then estimatedDelivery', () => {
     expect(formatSupplierLogisticsDeliveryWindowLabel({ label: 'W12–14' })).toBe('W12–14');
-    expect(
-      formatSupplierLogisticsDeliveryWindowLabel({ estimatedDelivery: '2026-07-01' })
-    ).toBe('2026-07-01');
+    expect(formatSupplierLogisticsDeliveryWindowLabel({ estimatedDelivery: '2026-07-01' })).toBe(
+      '2026-07-01'
+    );
     expect(formatSupplierLogisticsDeliveryWindowLabel(null)).toBeNull();
   });
 

@@ -22,9 +22,7 @@ function PlatformB2bHubWorkspaceBody() {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
   const orderId =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    undefined;
+    searchParams.get('order')?.trim() || searchParams.get('orderId')?.trim() || undefined;
   const ctx = { collectionId, orderId, surface: 'platform' as const, role: 'shop' as const };
   const { activeFeatureId } = usePillarCapabilityWorkspace('platform-b2b-hub');
 
@@ -42,7 +40,9 @@ function PlatformB2bHubWorkspaceBody() {
         />
         <PlatformB2bHubCoSpinePeerStrip collectionId={collectionId} orderId={orderId} />
       </div>
-      {activeFeatureId === 'hub' ? <PlatformB2bHubOverviewPanel collectionId={collectionId} /> : null}
+      {activeFeatureId === 'hub' ? (
+        <PlatformB2bHubOverviewPanel collectionId={collectionId} />
+      ) : null}
       {activeFeatureId === 'marketroom' ? (
         <PlatformB2bHubMarketroomBridgePanel collectionId={collectionId} />
       ) : null}

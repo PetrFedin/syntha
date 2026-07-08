@@ -47,7 +47,8 @@ export function PlatformCoreSegmentError({
         </div>
         <h2 className="text-lg font-bold">{title}</h2>
         <p className="text-text-muted text-sm">
-          Попробуйте снова или вернитесь в кабинет столпа — данные заказа и коллекции сохранены в PG.
+          Попробуйте снова или вернитесь в кабинет столпа — данные заказа и коллекции сохранены в
+          PG.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Button type="button" onClick={reset} className="gap-2" size="sm">
@@ -55,7 +56,10 @@ export function PlatformCoreSegmentError({
             Повторить
           </Button>
           <Button type="button" variant="outline" size="sm" asChild>
-            <Link href={cabinetHref} data-testid={`platform-core-${role}-segment-error-cabinet-link`}>
+            <Link
+              href={cabinetHref}
+              data-testid={`platform-core-${role}-segment-error-cabinet-link`}
+            >
               Кабинет столпа
             </Link>
           </Button>

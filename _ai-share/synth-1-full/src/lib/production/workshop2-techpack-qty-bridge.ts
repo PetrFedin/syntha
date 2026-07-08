@@ -115,11 +115,7 @@ function dossierSizeQtyRows(dossier: Workshop2DossierPhase1): { sizeLabel: strin
     const qtyRaw = dossier.sampleBasePerSizePieceQty?.[hb.parameterId];
     if (typeof qtyRaw !== 'number' || !Number.isFinite(qtyRaw) || qtyRaw <= 0) continue;
     out.push({
-      sizeLabel: resolvedHandbookDisplayLabel(
-        'sampleBaseSize',
-        hb.parameterId,
-        hb.displayLabel
-      ),
+      sizeLabel: resolvedHandbookDisplayLabel('sampleBaseSize', hb.parameterId, hb.displayLabel),
       qty: Math.floor(qtyRaw),
     });
   }

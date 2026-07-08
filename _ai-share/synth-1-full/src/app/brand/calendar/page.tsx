@@ -6,10 +6,7 @@ import { getPlatformCoreB2bCalendarEvents } from '@/lib/server/platform-core-cal
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-function pickSearchParam(
-  searchParams: SearchParams,
-  key: string
-): string | undefined {
+function pickSearchParam(searchParams: SearchParams, key: string): string | undefined {
   const raw = searchParams[key];
   if (typeof raw === 'string') return raw.trim() || undefined;
   if (Array.isArray(raw)) return raw[0]?.trim() || undefined;

@@ -253,7 +253,9 @@ export async function appendPlannerDiscoveredItems(input: {
   return state;
 }
 
-export async function setPlannerAgentDispatch(dispatch: PlannerAgentDispatch): Promise<PlannerRuntimeState> {
+export async function setPlannerAgentDispatch(
+  dispatch: PlannerAgentDispatch
+): Promise<PlannerRuntimeState> {
   const state = await readPlannerRuntimeState();
   state.agentDispatch = dispatch;
   state.lastAgentAt = dispatch.startedAt;

@@ -34,7 +34,7 @@ OUT: wholesale matrix/checkout (use syntha-b2b-order), full platform e2e matrix 
 
 <verify>
 ```bash
-cd /Users/petr/Projects/_ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
+cd _ai-share/synth-1-full && npm test -- --testPathPattern=platform-core-hub-matrix
 npm run audit:platform-core-ui   # if UI in platform/core paths
 ```
 </verify>

@@ -98,7 +98,11 @@ export function buildPillarRegistryCrossLinks(
   }
 
   if (roleId === 'brand' && pillarId === 'order_production' && orderId) {
-    const session = buildBrandProductionHandoffSession({ orderId, collectionId, factoryId: demo.factoryId });
+    const session = buildBrandProductionHandoffSession({
+      orderId,
+      collectionId,
+      factoryId: demo.factoryId,
+    });
     links.push(
       {
         id: 'brand-op-handoff',

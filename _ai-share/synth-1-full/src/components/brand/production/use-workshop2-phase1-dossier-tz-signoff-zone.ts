@@ -12,9 +12,7 @@ import { isWorkshop2TzSectionFullySigned } from '@/lib/production/workshop2-tz-s
 import { workshop2TzSectionSignoffByLabelMeaningful } from '@/lib/production/workshop2-tz-signoff-actor';
 import { W2_TZ_HINT_PRODUCTION_EDIT_SIGN_REVOKE } from '@/lib/production/workshop2-tz-rbac-hints';
 import { WORKSHOP2_TZ_DIGITAL_SIGNOFF_DEFAULT_CAPABILITIES } from '@/lib/production/workshop2-tz-digital-signoff';
-import {
-  canRevokeTzSignoff,
-} from '@/components/brand/production/workshop2-phase1-dossier-panel-tz-action-log';
+import { canRevokeTzSignoff } from '@/components/brand/production/workshop2-phase1-dossier-panel-tz-action-log';
 import { SECTION_LABEL_BY_ID } from '@/components/brand/production/workshop2-phase1-dossier-panel-dossier-constants';
 import type {
   Workshop2DossierPhase1,
@@ -22,25 +20,15 @@ import type {
 } from '@/lib/production/workshop2-dossier-phase1.types';
 import type { Workshop2TzDigitalSignoffCapabilities } from '@/lib/production/workshop2-tz-digital-signoff';
 
-type PersistFn = (
-  dossier: Workshop2DossierPhase1,
-  opts?: { freezeUpdatedAt?: boolean }
-) => void;
+type PersistFn = (dossier: Workshop2DossierPhase1, opts?: { freezeUpdatedAt?: boolean }) => void;
 
-type SectionReadinessUi = Record<
-  Workshop2TzSignoffSectionKey,
-  { pct: number; label?: string }
->;
+type SectionReadinessUi = Record<Workshop2TzSignoffSectionKey, { pct: number; label?: string }>;
 
 export type UseWorkshop2Phase1DossierTzSignoffZoneInput = {
   dossier: Workshop2DossierPhase1;
   setDossier: Dispatch<SetStateAction<Workshop2DossierPhase1>>;
   persist: PersistFn;
-  toast: (p: {
-    title: string;
-    description?: string;
-    variant?: 'default' | 'destructive';
-  }) => void;
+  toast: (p: { title: string; description?: string; variant?: 'default' | 'destructive' }) => void;
   tzWriteDisabled: boolean;
   updatedByLabel: string;
   sectionSignoffOrganizationLabel: string;
@@ -154,12 +142,7 @@ export function useWorkshop2Phase1DossierTzSignoffZone({
             : undefined,
       };
     });
-  }, [
-    tzDigitalSignoffRows,
-    activeSectionSignGateMeets,
-    tzSignoffBlockHint,
-    tzWriteDisabled,
-  ]);
+  }, [tzDigitalSignoffRows, activeSectionSignGateMeets, tzSignoffBlockHint, tzWriteDisabled]);
 
   const allSectionSignoffPairsDone = useMemo(
     () =>

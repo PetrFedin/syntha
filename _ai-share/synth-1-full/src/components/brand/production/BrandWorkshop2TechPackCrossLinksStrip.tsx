@@ -12,18 +12,16 @@ export function BrandWorkshop2TechPackCrossLinksStrip({
 }) {
   return (
     <div
-      className="border-border-default bg-muted/30 space-y-2 rounded-lg border p-3"
+      className="border-border-default space-y-2 rounded-lg border bg-muted/30 p-3"
       data-testid="brand-techpack-cross-links-strip"
     >
-      <p className="text-text-primary text-[11px] font-semibold">
-        P1 · сквозные связи (5×4)
-      </p>
+      <p className="text-text-primary text-[11px] font-semibold">P1 · сквозные связи (5×4)</p>
       <ul className="grid gap-2 sm:grid-cols-2">
         {links.map((link) => (
           <li key={link.id} className="text-xs leading-snug">
             <Link
               href={link.href}
-              className="text-primary font-medium underline-offset-2 hover:underline"
+              className="font-medium text-primary underline-offset-2 hover:underline"
               data-testid={`brand-techpack-cross-link-${link.id}`}
             >
               {link.labelRu}

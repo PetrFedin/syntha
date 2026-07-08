@@ -23,8 +23,8 @@ export function trimReadinessAuditLists<T extends { good: string[]; bad: string[
   };
 }
 
-export function trimReadinessSectionLists<T extends { good: string[]; bad: string[]; fix: string[] }>(
-  entry: T
-): T {
+export function trimReadinessSectionLists<
+  T extends { good: string[]; bad: string[]; fix: string[] },
+>(entry: T): T {
   return trimReadinessAuditLists(entry, READINESS_SECTION_LIST_LIMITS);
 }

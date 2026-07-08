@@ -31,9 +31,7 @@ export function brandDevelopmentSamplePeerLabelShort(
   return isBrandSampleDispatched(opts?.sampleStatus) ? 'Статус образца' : 'Образец в цех';
 }
 
-export function brandDevelopmentSamplePeerLabelLong(
-  opts?: BrandDevelopmentSamplePeerOpts
-): string {
+export function brandDevelopmentSamplePeerLabelLong(opts?: BrandDevelopmentSamplePeerOpts): string {
   return isBrandSampleDispatched(opts?.sampleStatus)
     ? 'Статус образца в цехе →'
     : 'Образец в цех →';

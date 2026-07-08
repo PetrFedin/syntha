@@ -58,7 +58,9 @@ export function BrandOpOperationsHandoffPeerStrip({
       {links.map((link, index) => (
         <span key={link.testId} className="inline-flex items-center gap-1">
           {index > 0 ? (
-            <span className={hubGadget.goldenSep} aria-hidden>·</span>
+            <span className={hubGadget.goldenSep} aria-hidden>
+              ·
+            </span>
           ) : null}
           <Link href={link.href} data-testid={link.testId} className={hubGadget.goldenLink}>
             {link.label}

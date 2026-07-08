@@ -10,7 +10,6 @@ function isWorkshop2ArticlePath(path: string): boolean {
   return path === '/brand/production/workshop2' || path.startsWith('/brand/production/workshop2/');
 }
 
-
 import {
   buildWorkshop2LegacyArticleRedirectPath,
   parseWorkshop2LegacyArticlePath,
@@ -33,7 +32,9 @@ function middlewarePlatformCoreMode(): boolean {
 }
 
 function middlewarePlatformCoreStrict(): boolean {
-  return middlewarePlatformCoreMode() && middlewareEnvOn(process.env.NEXT_PUBLIC_PLATFORM_CORE_STRICT);
+  return (
+    middlewarePlatformCoreMode() && middlewareEnvOn(process.env.NEXT_PUBLIC_PLATFORM_CORE_STRICT)
+  );
 }
 
 export function middleware(req: NextRequest) {
@@ -139,10 +140,7 @@ export function middleware(req: NextRequest) {
   }
 
   /** Wave 53: B2B cart/orders API — no-store (см. .planning/workshop2-cdn-routing.md). */
-  if (
-    path.startsWith('/api/shop/b2b/cart') ||
-    path.startsWith('/api/shop/b2b/orders')
-  ) {
+  if (path.startsWith('/api/shop/b2b/cart') || path.startsWith('/api/shop/b2b/orders')) {
     const res = NextResponse.next();
     res.headers.set('Cache-Control', 'no-store');
     return res;

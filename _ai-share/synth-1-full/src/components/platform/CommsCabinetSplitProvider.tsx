@@ -11,10 +11,7 @@ const CommsCabinetSplitContext = createContext<CommsCabinetSplitContextValue | n
 
 export function CommsCabinetSplitProvider({ children }: { children: ReactNode }) {
   const [selectedThreadKey, setSelectedThreadKey] = useState<string | null>(null);
-  const value = useMemo(
-    () => ({ selectedThreadKey, setSelectedThreadKey }),
-    [selectedThreadKey]
-  );
+  const value = useMemo(() => ({ selectedThreadKey, setSelectedThreadKey }), [selectedThreadKey]);
   return (
     <CommsCabinetSplitContext.Provider value={value}>{children}</CommsCabinetSplitContext.Provider>
   );

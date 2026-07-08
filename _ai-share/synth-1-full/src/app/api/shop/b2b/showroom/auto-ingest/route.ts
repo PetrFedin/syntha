@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
     req,
     String(body.buyerId ?? checkoutAuth.buyerId)
   );
-  const collectionId =
-    String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
+  const collectionId = String(body.collectionId ?? '').trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleIds = Array.isArray(body.articleIds)
     ? body.articleIds.map((id) => String(id).trim()).filter(Boolean)
     : [];

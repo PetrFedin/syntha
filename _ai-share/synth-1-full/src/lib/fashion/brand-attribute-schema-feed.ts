@@ -1,5 +1,8 @@
 import type { BrandAttributeSchemaRow } from '@/lib/fashion/brand-attribute-schema';
-import type { BrandSizeChartGradeRow, BrandSizeChartGradeState } from '@/lib/fashion/brand-size-chart-grade';
+import type {
+  BrandSizeChartGradeRow,
+  BrandSizeChartGradeState,
+} from '@/lib/fashion/brand-size-chart-grade';
 import type { Product } from '@/lib/types';
 import { buildBrandAttributeSchemaRows } from '@/lib/fashion/brand-attribute-schema';
 import { buildBrandSizeChartGradeRows } from '@/lib/fashion/brand-size-chart-grade';
@@ -16,12 +19,22 @@ export type BrandSizeChartGradeFeedRow = BrandSizeChartGradeRow & {
 
 export type BrandAttributeSchemaFeedStorageMode = 'pg' | 'file' | 'memory' | 'demo';
 
-export function buildBrandAttributeSchemaFeedRows(products: Product[]): BrandAttributeSchemaFeedRow[] {
-  return buildBrandAttributeSchemaRows(products).map((row) => ({ ...row, source: 'catalog' as const }));
+export function buildBrandAttributeSchemaFeedRows(
+  products: Product[]
+): BrandAttributeSchemaFeedRow[] {
+  return buildBrandAttributeSchemaRows(products).map((row) => ({
+    ...row,
+    source: 'catalog' as const,
+  }));
 }
 
-export function buildBrandSizeChartGradeFeedRows(products: Product[]): BrandSizeChartGradeFeedRow[] {
-  return buildBrandSizeChartGradeRows(products).map((row) => ({ ...row, source: 'catalog' as const }));
+export function buildBrandSizeChartGradeFeedRows(
+  products: Product[]
+): BrandSizeChartGradeFeedRow[] {
+  return buildBrandSizeChartGradeRows(products).map((row) => ({
+    ...row,
+    source: 'catalog' as const,
+  }));
 }
 
 export function mergeBrandSizeChartGradeFeedRows(

@@ -52,7 +52,10 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof Error && err.message === 'THREAD_KIND_UNSUPPORTED') {
       return NextResponse.json(
-        { ok: false, error: { code: 'THREAD_KIND_UNSUPPORTED', message: 'Thread kind not attachable' } },
+        {
+          ok: false,
+          error: { code: 'THREAD_KIND_UNSUPPORTED', message: 'Thread kind not attachable' },
+        },
         { status: 400 }
       );
     }

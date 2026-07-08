@@ -39,7 +39,9 @@ describe('wave UE — brand SC cross-matrix open shop', () => {
     });
     expect(href).toContain('/shop/b2b/matrix');
     expect(href).toContain('collection=SS27');
-    expect(href).toContain(`${BRAND_SC_CROSS_MATRIX_LINESHEET_ARTICLE_IDS_PARAM}=demo-ss27-01%2Cdemo-ss27-02`);
+    expect(href).toContain(
+      `${BRAND_SC_CROSS_MATRIX_LINESHEET_ARTICLE_IDS_PARAM}=demo-ss27-01%2Cdemo-ss27-02`
+    );
     expect(href).toContain(`${BRAND_SC_CROSS_MATRIX_PREFILL_APPLY_PARAM}=1`);
     expect(href).toContain(`${BRAND_SC_CROSS_MATRIX_CARRY_QTY_TOTAL_PARAM}=12`);
     expect(href).toContain('buyer=shop2');
@@ -53,7 +55,9 @@ describe('wave UE — brand SC cross-matrix open shop', () => {
   it('mini matrix hint RU with qty carry', () => {
     expect(brandScCrossMatrixMiniMatrixHintRu(0)).toMatch(/Опубликуйте/i);
     expect(brandScCrossMatrixMiniMatrixHintRu(3, 9)).toContain('3 SKU');
-    expect(brandScCrossMatrixMiniMatrixHintRu(2)).toContain(BRAND_SC_CROSS_MATRIX_MINI_MATRIX_HINT_RU);
+    expect(brandScCrossMatrixMiniMatrixHintRu(2)).toContain(
+      BRAND_SC_CROSS_MATRIX_MINI_MATRIX_HINT_RU
+    );
   });
 
   it('publishedArticlesReadPath=api badge honesty', () => {

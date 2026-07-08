@@ -23,17 +23,15 @@ export async function ensurePlatformCoreSupplierDeliveryConfirmEvent(input: {
   if (!collectionId || !b2bOrderId || !articleId) return { created: false };
 
   const stableId = supplierDeliveryConfirmTaskId(b2bOrderId);
-  const existing = (await listPlatformCoreUserCalendarTasks({ collectionId, orderId: b2bOrderId })).some(
-    (e) => e.id === stableId
-  );
+  const existing = (
+    await listPlatformCoreUserCalendarTasks({ collectionId, orderId: b2bOrderId })
+  ).some((e) => e.id === stableId);
   if (existing) return { created: false };
 
   const now = new Date();
   const startAt = now.toISOString();
   const endAt = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
-  const poSuffix = input.productionOrderId?.trim()
-    ? ` · ${input.productionOrderId.trim()}`
-    : '';
+  const poSuffix = input.productionOrderId?.trim() ? ` · ${input.productionOrderId.trim()}` : '';
 
   await createPlatformCoreUserCalendarTask({
     id: stableId,

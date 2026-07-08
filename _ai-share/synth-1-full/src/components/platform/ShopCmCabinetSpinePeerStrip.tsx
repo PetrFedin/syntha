@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { brandCrmSegmentationFeatureHref } from '@/lib/platform-core-ports/b2b/brand-crm-segmentation';
 import { buildShopOrderCommsSession } from '@/lib/platform-core-ports/b2b/shop-order-comms';
-import { shopB2bCheckoutCollectionHref, shopB2bOrdersCollectionRegistryHref } from '@/lib/platform-core-routes';
+import {
+  shopB2bCheckoutCollectionHref,
+  shopB2bOrdersCollectionRegistryHref,
+} from '@/lib/platform-core-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
@@ -30,13 +33,21 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
     >
       {resolvedOrderId ? (
         <>
-          <Link href={shopB2bOrdersCollectionRegistryHref(resolvedOrderId)} data-testid="shop-cm-cabinet-registry-link" className={hubGadget.goldenLink}>
+          <Link
+            href={shopB2bOrdersCollectionRegistryHref(resolvedOrderId)}
+            data-testid="shop-cm-cabinet-registry-link"
+            className={hubGadget.goldenLink}
+          >
             Реестр
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.trackingHref} data-testid="shop-cm-cabinet-tracking-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.trackingHref}
+            data-testid="shop-cm-cabinet-tracking-link"
+            className={hubGadget.goldenLink}
+          >
             Трекинг
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
@@ -44,25 +55,41 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
           </span>
         </>
       ) : null}
-      <Link href={session.matrixHref} data-testid="shop-cm-cabinet-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.matrixHref}
+        data-testid="shop-cm-cabinet-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={checkoutHref} data-testid="shop-cm-cabinet-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={checkoutHref}
+        data-testid="shop-cm-cabinet-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="shop-cm-cabinet-brand-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="shop-cm-cabinet-brand-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.replenishmentAtpHref} data-testid="shop-cm-cabinet-replenishment-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.replenishmentAtpHref}
+        data-testid="shop-cm-cabinet-replenishment-link"
+        className={hubGadget.goldenLink}
+      >
         ATP
       </Link>
       {resolvedOrderId ? (
@@ -70,7 +97,11 @@ export function ShopCmCabinetSpinePeerStrip({ collectionId, orderId }: Props) {
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.brandOrderChatHref} data-testid="shop-cm-cabinet-brand-chat-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.brandOrderChatHref}
+            data-testid="shop-cm-cabinet-brand-chat-link"
+            className={hubGadget.goldenLink}
+          >
             Чат бренда
           </Link>
         </>

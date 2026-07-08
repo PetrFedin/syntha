@@ -21,7 +21,9 @@ export type LinesheetGenResult = {
   sources: Array<'w2_published' | 'centric_pxm'>;
 };
 
-export async function generateCollectionLinesheet(collectionId: string): Promise<LinesheetGenRecord> {
+export async function generateCollectionLinesheet(
+  collectionId: string
+): Promise<LinesheetGenRecord> {
   const cid = collectionId.trim();
   const raw = await listWorkshop2PublishedShowroomArticles(cid);
   const articles = mergePxmMediaIntoPublishedArticles(raw);
@@ -39,6 +41,8 @@ export async function generateCollectionLinesheet(collectionId: string): Promise
   return persistLinesheetGen(result);
 }
 
-export function getCollectionLinesheetSnapshot(collectionId: string): LinesheetGenRecord | undefined {
+export function getCollectionLinesheetSnapshot(
+  collectionId: string
+): LinesheetGenRecord | undefined {
   return getLatestLinesheetForCollection(collectionId);
 }

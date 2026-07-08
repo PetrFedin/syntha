@@ -24,9 +24,9 @@ describe('wave TL — shop SC showroom eligible-for-matrix + partner logo', () =
 
   it('matrix qty carry href when partial cart', () => {
     expect(shopShowroomMatrixHrefWithCarryQty('SS27', 'demo-ss27-01', 6)).toContain('carryQty=6');
-    expect(shopShowroomMatrixHrefWithCarry('SS27', 'demo-ss27-01', { carryQty: 6, carrySize: 'M' })).toContain(
-      'carrySize=M'
-    );
+    expect(
+      shopShowroomMatrixHrefWithCarry('SS27', 'demo-ss27-01', { carryQty: 6, carrySize: 'M' })
+    ).toContain('carrySize=M');
     expect(shopShowroomMatrixHrefWithCarryQty('SS27', 'demo-ss27-01')).not.toContain('carryQty');
   });
 

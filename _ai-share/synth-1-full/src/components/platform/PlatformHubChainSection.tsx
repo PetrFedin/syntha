@@ -7,9 +7,7 @@ type Props = {
   collectionId?: string;
 };
 
-export function PlatformHubChainSection({
-  collectionId = PLATFORM_CORE_DEMO.collectionId,
-}: Props) {
+export function PlatformHubChainSection({ collectionId = PLATFORM_CORE_DEMO.collectionId }: Props) {
   return (
     <section className="space-y-2">
       <p className="text-text-muted text-[11px] font-semibold uppercase tracking-wide">

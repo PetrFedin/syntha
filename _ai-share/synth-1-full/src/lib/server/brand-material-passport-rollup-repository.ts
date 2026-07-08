@@ -40,7 +40,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as BrandMaterialPassportRollupRow[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as BrandMaterialPassportRollupRow[];
     if (Array.isArray(parsed)) {
       for (const row of parsed) memoryByKey.set(rollupKey(DEFAULT_COLLECTION, row.sku), row);
     }
@@ -59,7 +61,10 @@ function persistFile(): void {
   }
 }
 
-function catalogRowsForCollection(collectionId: string, limit = 60): BrandMaterialPassportRollupRow[] {
+function catalogRowsForCollection(
+  collectionId: string,
+  limit = 60
+): BrandMaterialPassportRollupRow[] {
   const seasonHint = collectionId.replace(/^\D+/, '').toUpperCase();
   const filtered = products.filter((p) => {
     const season = p.season?.toUpperCase() ?? '';
@@ -120,7 +125,10 @@ async function listDossierCompositionBySlug(
   return out;
 }
 
-async function listPersistedPg(org: string, collectionId: string): Promise<BrandMaterialPassportRollupRow[]> {
+async function listPersistedPg(
+  org: string,
+  collectionId: string
+): Promise<BrandMaterialPassportRollupRow[]> {
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query(
     `SELECT sku, slug, name, color, season, composition_text, care_ids, source

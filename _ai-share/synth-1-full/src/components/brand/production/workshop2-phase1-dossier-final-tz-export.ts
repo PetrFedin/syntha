@@ -112,7 +112,9 @@ export function buildWorkshop2Phase1DossierFinalTzSpecDocumentHtml(
   return buildWorkshop2FinalTzSpecDocumentHtml(dossier, exportContext);
 }
 
-export function estimateWorkshop2Phase1DossierJsonUtf8Bytes(dossier: Workshop2DossierPhase1): number {
+export function estimateWorkshop2Phase1DossierJsonUtf8Bytes(
+  dossier: Workshop2DossierPhase1
+): number {
   try {
     return new Blob([JSON.stringify(dossier)]).size;
   } catch {

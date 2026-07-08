@@ -33,8 +33,8 @@ describe('workshop2-dossier-material-preview', () => {
         consumptionLabel: '2.5 м/изд.',
       },
     ]);
-    expect(formatDossierMaterialPreviewLine(extractWorkshop2DossierMaterialPreviews(dossier)[1])).toBe(
-      'Пуговицы · шт'
-    );
+    expect(
+      formatDossierMaterialPreviewLine(extractWorkshop2DossierMaterialPreviews(dossier)[1])
+    ).toBe('Пуговицы · шт');
   });
 });

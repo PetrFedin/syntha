@@ -31,19 +31,21 @@ describe('brand-pricelist-tier-sync', () => {
     ]);
     expect(summary.synced).toBe(1);
     expect(summary.pending).toBe(1);
-    expect(shopTierMultiplierFromSync(
-      [
-        {
-          tierId: 'retail_b',
-          priceListId: 'pl-1',
-          priceListName: 'Retail B',
-          multiplier: 0.96,
-          shopSynced: true,
-          collectionId: 'SS27',
-        },
-      ],
-      'retail_b'
-    )).toBe(0.96);
+    expect(
+      shopTierMultiplierFromSync(
+        [
+          {
+            tierId: 'retail_b',
+            priceListId: 'pl-1',
+            priceListName: 'Retail B',
+            multiplier: 0.96,
+            shopSynced: true,
+            collectionId: 'SS27',
+          },
+        ],
+        'retail_b'
+      )
+    ).toBe(0.96);
   });
 });
 

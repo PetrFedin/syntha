@@ -74,7 +74,9 @@ export function SupplierCommsBrandPushStrip({
       setPushOk(true);
       setPushMessage(
         json.messageRu ??
-          (allIdempotent ? 'Уже отправлено · inbox/SSE bump активен.' : 'Push → чат бренда отправлен.')
+          (allIdempotent
+            ? 'Уже отправлено · inbox/SSE bump активен.'
+            : 'Push → чат бренда отправлен.')
       );
     } catch {
       setPushOk(false);
@@ -86,7 +88,7 @@ export function SupplierCommsBrandPushStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 space-y-2 rounded-md border px-3 py-2 text-xs"
       data-testid="sup-cm-cabinet-brand-push-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -123,12 +125,18 @@ export function SupplierCommsBrandPushStrip({
           </Link>
         </Button>
         <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-          <Link href={session.shopTrackingHref} data-testid="sup-cm-cabinet-brand-push-tracking-link">
+          <Link
+            href={session.shopTrackingHref}
+            data-testid="sup-cm-cabinet-brand-push-tracking-link"
+          >
             Трекинг магазина
           </Link>
         </Button>
         <Button size="sm" variant="ghost" className="h-7 text-[10px]" asChild>
-          <Link href={session.brandOrderHandoffHref} data-testid="sup-cm-cabinet-brand-push-handoff-link">
+          <Link
+            href={session.brandOrderHandoffHref}
+            data-testid="sup-cm-cabinet-brand-push-handoff-link"
+          >
             Передача бренда
           </Link>
         </Button>

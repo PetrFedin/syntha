@@ -55,10 +55,7 @@ export function BrandWssiGoldenPathStrip({ collectionId, activeStep }: Props) {
           ) : null}
           <Link
             href={hrefFor(step.id)}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === step.id && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === step.id && 'font-bold underline')}
             data-testid={`brand-wssi-golden-${step.id}-link`}
           >
             {step.label}

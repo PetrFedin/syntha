@@ -10,7 +10,10 @@ export type BrandSupplierBomFeedRow = BrandSupplierBomLineRow & {
 
 export type BrandSupplierBomFeedStorageMode = 'pg' | 'file' | 'memory' | 'demo';
 
-export const DEFAULT_BRAND_SUPPLIER_BOM_SEED: Omit<BrandSupplierBomFeedRow, 'lineId' | 'filled' | 'source'>[] = [
+export const DEFAULT_BRAND_SUPPLIER_BOM_SEED: Omit<
+  BrandSupplierBomFeedRow,
+  'lineId' | 'filled' | 'source'
+>[] = [
   { materialName: 'Main fabric · cotton blend', qty: 1.8, unit: 'm' },
   { materialName: 'Lining · viscose', qty: 1.2, unit: 'm' },
   { materialName: 'Thread · polyester', qty: 120, unit: 'm' },
@@ -40,7 +43,10 @@ export function mergeBrandSupplierBomFeedRows(
   persistedRows: readonly BrandSupplierBomFeedRow[]
 ): BrandSupplierBomFeedRow[] {
   if (persistedRows.length) {
-    return persistedRows.map((row) => ({ ...row, source: row.source === 'seed' ? 'pg' : row.source }));
+    return persistedRows.map((row) => ({
+      ...row,
+      source: row.source === 'seed' ? 'pg' : row.source,
+    }));
   }
   if (snapshotRows.length) return [...snapshotRows];
   return buildBrandSupplierBomSeedFeedRows().map((row) => ({ ...row, source: 'pg' as const }));

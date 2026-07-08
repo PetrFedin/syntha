@@ -44,9 +44,7 @@ export function BrandAttributeSchemaPanel({ collectionId }: Props) {
   const reload = useCallback(async () => {
     const res = await fetchBrandAttributeSchemaFeed(collectionId);
     setRows(res.schemas ?? []);
-    setSummary(
-      res.schemaSummary ?? { total: 0, weak: 0, leafCount: 0, pgSourced: 0 }
-    );
+    setSummary(res.schemaSummary ?? { total: 0, weak: 0, leafCount: 0, pgSourced: 0 });
     setStorageMode(res.storageMode ?? 'demo');
   }, [collectionId]);
 
@@ -92,7 +90,9 @@ export function BrandAttributeSchemaPanel({ collectionId }: Props) {
           CSV schemas
         </Button>
         <Badge variant="secondary">Листов: {summary.leafCount}</Badge>
-        <Badge variant="outline">С пробелами: {summary.weak} / {summary.total}</Badge>
+        <Badge variant="outline">
+          С пробелами: {summary.weak} / {summary.total}
+        </Badge>
         <Badge variant="outline" data-testid={`brand-attribute-schema-source-${storageMode}`}>
           {storageMode === 'pg' ? 'PG schema feed' : `Local ${storageMode}`}
         </Badge>
@@ -114,9 +114,7 @@ export function BrandAttributeSchemaPanel({ collectionId }: Props) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Category attribute schema</CardTitle>
-            <CardDescription>
-              Handbook attrs по leaf SKU · PG sync + W2 fix links.
-            </CardDescription>
+            <CardDescription>Handbook attrs по leaf SKU · PG sync + W2 fix links.</CardDescription>
           </CardHeader>
           <CardContent className="max-h-[480px] overflow-x-auto overflow-y-auto p-0">
             <Table>

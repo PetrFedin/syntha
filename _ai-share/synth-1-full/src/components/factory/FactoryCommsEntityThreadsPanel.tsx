@@ -8,9 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePlatformCoreCommsInboxPoll } from '@/hooks/use-platform-core-comms-inbox-poll';
-import {
-  attachFactoryCommsEntityThreadTz,
-} from '@/lib/fashion/factory-comms-entity-thread-attach-tz-store';
+import { attachFactoryCommsEntityThreadTz } from '@/lib/fashion/factory-comms-entity-thread-attach-tz-store';
 import {
   manufacturerCommsEntityThreadSupportsAttachTz,
   supplierCommsEntityThreadSupportsAttachTz,
@@ -39,7 +37,8 @@ type Props = {
 export function FactoryCommsEntityThreadsPanel({ variant }: Props) {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({ collection: searchParams.get('collection') });
-  const articleId = searchParams.get('article')?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
+  const articleId =
+    searchParams.get('article')?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
   const orderId =
     searchParams.get('order')?.trim() ||
     searchParams.get('orderId')?.trim() ||
@@ -78,12 +77,14 @@ export function FactoryCommsEntityThreadsPanel({ variant }: Props) {
     orderId,
   });
 
-  const supportsAttach = (threadId: typeof rows[number]['id']) =>
+  const supportsAttach = (threadId: (typeof rows)[number]['id']) =>
     variant === 'manufacturer'
-      ? manufacturerCommsEntityThreadSupportsAttachTz(threadId as 'dossier' | 'sample' | 'handoff' | 'qc')
+      ? manufacturerCommsEntityThreadSupportsAttachTz(
+          threadId as 'dossier' | 'sample' | 'handoff' | 'qc'
+        )
       : supplierCommsEntityThreadSupportsAttachTz(threadId as 'bom' | 'rfq' | 'handoff' | 'qc');
 
-  const attachTz = async (threadId: typeof rows[number]['id']) => {
+  const attachTz = async (threadId: (typeof rows)[number]['id']) => {
     if (!supportsAttach(threadId)) return;
     setBusyId(threadId);
     try {

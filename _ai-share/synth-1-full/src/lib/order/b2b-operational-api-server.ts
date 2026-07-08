@@ -89,8 +89,6 @@ export async function toV1DetailDto(order: B2BOrder) {
 
 export async function toV1ListDto(orders: B2BOrder[]) {
   return Promise.all(
-    orders.map(async (o) =>
-      applyOperationalOverlaysAsync(toOperationalOrderListRowDto(o))
-    )
+    orders.map(async (o) => applyOperationalOverlaysAsync(toOperationalOrderListRowDto(o)))
   );
 }

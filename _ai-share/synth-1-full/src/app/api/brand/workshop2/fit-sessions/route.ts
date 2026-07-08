@@ -25,8 +25,7 @@ function resolveContext(
   body?: Record<string, unknown>
 ): { collectionId: string; articleId: string } | null {
   const { searchParams } = new URL(req.url);
-  const collectionId =
-    String(body?.collectionId ?? searchParams.get('collectionId') ?? '').trim();
+  const collectionId = String(body?.collectionId ?? searchParams.get('collectionId') ?? '').trim();
   const articleId = String(body?.articleId ?? searchParams.get('articleId') ?? '').trim();
   if (!collectionId || !articleId) return null;
   return { collectionId, articleId };
@@ -65,11 +64,7 @@ export const POST = withWorkshop2ApiErrorRu(async function postFitSession(req: N
 
   const session = body as Partial<FitSession>;
   const sampleType = session.sampleType;
-  if (
-    !sampleType ||
-    !['proto', 'sms', 'pps', 'top'].includes(sampleType) ||
-    !session.dateStr
-  ) {
+  if (!sampleType || !['proto', 'sms', 'pps', 'top'].includes(sampleType) || !session.dateStr) {
     return jsonWorkshop2ErrorRu(400, 'invalid_body', {
       messageRu: 'Нужны sampleType и dateStr.',
     });

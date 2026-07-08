@@ -14,8 +14,7 @@ import { buildPillarRegistryCrossLinks } from '@/lib/pillar-cross-links';
 import { filterCabinetSectionsForArticleSpine } from '@/lib/platform-core-article-spine';
 import { filterReadinessSubItemsForTwoRoleBaseline } from '@/lib/platform-core-two-role-sections';
 
-const CABINET_SECTION_EXCLUDE_ID_RE =
-  /-(cabinet|banner|cross|pg-sync|investor)(?:-|$)/i;
+const CABINET_SECTION_EXCLUDE_ID_RE = /-(cabinet|banner|cross|pg-sync|investor)(?:-|$)/i;
 
 const CABINET_SECTION_MAX = 12;
 const RELATED_LINK_MAX = 3;

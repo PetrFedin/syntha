@@ -24,7 +24,11 @@ export async function fetchBrandMaterialPassportRollup(
   });
   const json = (await res.json()) as BrandMaterialPassportRollupResponse;
   if (!res.ok || !json.ok) {
-    return { ok: false, rows: [], summary: { total: 0, withComposition: 0, dossierSourced: 0, pgSourced: 0 } };
+    return {
+      ok: false,
+      rows: [],
+      summary: { total: 0, withComposition: 0, dossierSourced: 0, pgSourced: 0 },
+    };
   }
   return json;
 }

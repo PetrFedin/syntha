@@ -4,7 +4,17 @@ import { formatWorkshop2HubActivityDetailRu } from '@/lib/production/workshop2-h
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CircleCheck, Clock3, History, LayoutGrid, MessageSquare, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  CircleCheck,
+  Clock3,
+  History,
+  LayoutGrid,
+  MessageSquare,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -993,7 +1003,7 @@ export function Workshop2TabContent({
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 {COLLECTION_DEV_HUB_TITLE_RU}
               </h1>
-              <p className="text-slate-600 line-clamp-1 max-w-2xl text-xs sm:line-clamp-none sm:text-sm">
+              <p className="line-clamp-1 max-w-2xl text-xs text-slate-600 sm:line-clamp-none sm:text-sm">
                 {WORKSHOP2_TAB_CONTENT_PAGE_SUBTITLE}
               </p>
             </div>

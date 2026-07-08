@@ -18,13 +18,10 @@ export async function fetchPlatformCoreEntityThreadTemplates(input: {
   if (input.threadKind) params.set('threadKind', input.threadKind);
   if (input.ownerKey?.trim()) params.set('ownerKey', input.ownerKey.trim());
   const qs = params.toString();
-  const res = await fetch(
-    `/api/platform-core/comms/entity-thread-templates${qs ? `?${qs}` : ''}`,
-    {
-      headers: buildWorkshop2ApiRequestHeaders(),
-      cache: 'no-store',
-    }
-  );
+  const res = await fetch(`/api/platform-core/comms/entity-thread-templates${qs ? `?${qs}` : ''}`, {
+    headers: buildWorkshop2ApiRequestHeaders(),
+    cache: 'no-store',
+  });
   if (!res.ok) return { templates: [], storageMode: 'error' };
   const json = (await res.json()) as {
     templates?: SavedPlatformCoreEntityThreadTemplate[];

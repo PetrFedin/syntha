@@ -46,9 +46,11 @@ function curveFromSizeKeys(sizeKeys: string[]): Record<string, number> | null {
 }
 
 /** Extract weights from W2 dossier (sample grid / POM), else default Aptos curve. */
-export function extractShopMatrixSizeCurveFromDossier(
-  dossier: Workshop2DossierPhase1
-): { curve: Record<string, number>; sizes: string[]; source: ShopMatrixSizeCurveSource } {
+export function extractShopMatrixSizeCurveFromDossier(dossier: Workshop2DossierPhase1): {
+  curve: Record<string, number>;
+  sizes: string[];
+  source: ShopMatrixSizeCurveSource;
+} {
   const gridKeys = Object.keys(dossier.sampleBasePerSizeDimensions ?? {});
   const fromGrid = curveFromSizeKeys(gridKeys);
   if (fromGrid) {
@@ -61,7 +63,9 @@ export function extractShopMatrixSizeCurveFromDossier(
 
   const model = ensureWorkshop2ProductionModel(dossier);
   const pomSizes = [
-    ...new Set((model.measurements ?? []).map((m) => normalizeShopMatrixSizeLabel(m.size)).filter(Boolean)),
+    ...new Set(
+      (model.measurements ?? []).map((m) => normalizeShopMatrixSizeLabel(m.size)).filter(Boolean)
+    ),
   ];
   const fromPom = curveFromSizeKeys(pomSizes);
   if (fromPom) {

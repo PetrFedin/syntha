@@ -51,7 +51,9 @@ export function useWorkshop2Phase1DossierPanelShellZone({
     : formatWorkshop2InternalArticleCodePlaceholder();
 
   const showCompactPassportContextRibbon =
-    isPhase1 && activeSection !== 'general' && Boolean(dossierViewUiCaps.showCompactPassportContextRibbon);
+    isPhase1 &&
+    activeSection !== 'general' &&
+    Boolean(dossierViewUiCaps.showCompactPassportContextRibbon);
 
   const asideHasContent = dossierViewProfile === 'factory' || dossierViewProfile === 'finance';
   const hideTzGlobalRoleSignoffBlock = isPhase1;

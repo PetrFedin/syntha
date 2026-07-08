@@ -28,7 +28,10 @@ export function usePlatformCoreChainStatusPoll(
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
   const orderIdsKey = useMemo(
-    () => capOrderIdsForSse(orderIds ?? []).sort().join(','),
+    () =>
+      capOrderIdsForSse(orderIds ?? [])
+        .sort()
+        .join(','),
     [orderIds]
   );
 

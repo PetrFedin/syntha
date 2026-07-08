@@ -59,7 +59,7 @@ export function SupCmLogisticsEtaMapOverlayStrip({ orderId }: Props) {
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border border-dashed bg-bg-surface2/50 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/50 flex flex-wrap items-center gap-2 rounded-md border border-dashed px-3 py-2 text-xs"
       data-testid={SUP_CM_LOGISTICS_ETA_STRIP_TESTID}
       {...{ [WAVE_YO_SUP_CM_LOGISTICS_ETA_COMPACT_ATTR]: '1' }}
       title={supCmLogisticsEtaCompactTitleRu()}
@@ -74,7 +74,10 @@ export function SupCmLogisticsEtaMapOverlayStrip({ orderId }: Props) {
             {supCmLogisticsEtaBadgeRu(deliveryLabel)}
           </Badge>
         ) : (
-          <span className="text-text-muted text-[10px]" data-testid={SUP_CM_LOGISTICS_ETA_HONEST_HINT_TESTID}>
+          <span
+            className="text-text-muted text-[10px]"
+            data-testid={SUP_CM_LOGISTICS_ETA_HONEST_HINT_TESTID}
+          >
             {supCmLogisticsEtaHonestHintRu()}
           </span>
         )
@@ -83,13 +86,13 @@ export function SupCmLogisticsEtaMapOverlayStrip({ orderId }: Props) {
       )}
 
       <div
-        className="border-border-subtle flex items-center gap-1.5 rounded border bg-bg-surface px-2 py-1"
+        className="border-border-subtle bg-bg-surface flex items-center gap-1.5 rounded border px-2 py-1"
         data-testid={SUP_CM_LOGISTICS_ETA_MAP_STUB_TESTID}
         title={`${mapStub.originRu} → ${mapStub.destinationRu}`}
       >
         <svg
           viewBox="0 0 72 20"
-          className="h-4 w-[4.5rem] shrink-0 text-accent-primary"
+          className="text-accent-primary h-4 w-[4.5rem] shrink-0"
           aria-hidden
           data-testid={SUP_CM_LOGISTICS_ETA_MAP_ROUTE_TESTID}
         >

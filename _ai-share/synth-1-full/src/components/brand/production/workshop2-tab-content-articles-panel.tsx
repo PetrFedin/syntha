@@ -171,10 +171,8 @@ export function Workshop2TabContentArticlesPanel({
     return tb - ta;
   });
   const facetSourceRows = open.articleRows;
-  const selectedL1 =
-    articleFacetL1.size === 1 ? [...articleFacetL1][0] : undefined;
-  const selectedL2 =
-    articleFacetL2.size === 1 ? [...articleFacetL2][0] : undefined;
+  const selectedL1 = articleFacetL1.size === 1 ? [...articleFacetL1][0] : undefined;
+  const selectedL2 = articleFacetL2.size === 1 ? [...articleFacetL2][0] : undefined;
   const audienceOpts = collectWorkshop2AudienceOptions(facetSourceRows);
   const l1Opts = collectWorkshop2CategoryL1Options(facetSourceRows);
   const l2Opts = collectWorkshop2CategoryL2Options(facetSourceRows, selectedL1);
@@ -461,74 +459,74 @@ export function Workshop2TabContentArticlesPanel({
                 data-testid="brand-dev-w2-hub-gates-strip"
               >
                 <div className="max-md:overflow-x-auto max-md:pb-0.5">
-                <div className="flex flex-wrap items-end gap-1 max-md:flex-nowrap">
-                  {WORKSHOP2_PIPELINE_STEP_IDS.map((sid, idx) => {
-                    const step = COLLECTION_STEP_BY_ID.get(sid);
-                    const n = articleIds.length;
-                    const done = aggregateSkuDoneCount(flowDoc, articleIds, sid);
-                    const fillPct = n ? Math.round((done / n) * 100) : 0;
-                    const active = articlePanelStageFilter === sid;
-                    const split = WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX;
-                    const showLaneSep =
-                      idx === split && split > 0 && split < WORKSHOP2_PIPELINE_STEP_IDS.length;
-                    const laneHint = idx < split ? 'Разработка и ТЗ' : 'Сэмплы и выпуск';
-                    return (
-                      <Fragment key={sid}>
-                        {showLaneSep ? (
-                          <div
-                            className="flex h-11 w-1 shrink-0 flex-col items-center justify-end px-0.5"
-                            role="separator"
-                            aria-orientation="vertical"
-                            aria-label="Разработка и ТЗ · сэмплы и выпуск"
-                          >
-                            <div className="bg-border-default h-9 w-px" />
-                          </div>
-                        ) : null}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className={cn(
-                                'flex h-11 w-8 shrink-0 flex-col items-stretch justify-end rounded-sm border px-0.5 pb-0.5 transition-colors',
-                                active
-                                  ? 'border-accent-primary bg-accent-primary/15 shadow-sm'
-                                  : 'border-border-default/90 hover:border-border-default hover:bg-bg-surface2 bg-white'
-                              )}
-                              aria-pressed={active}
-                              aria-label={`${step?.title ?? sid}: закрыли этап ${done} из ${n}`}
-                              onClick={() =>
-                                setArticlePanelStageFilter((prev) => (prev === sid ? null : sid))
-                              }
+                  <div className="flex flex-wrap items-end gap-1 max-md:flex-nowrap">
+                    {WORKSHOP2_PIPELINE_STEP_IDS.map((sid, idx) => {
+                      const step = COLLECTION_STEP_BY_ID.get(sid);
+                      const n = articleIds.length;
+                      const done = aggregateSkuDoneCount(flowDoc, articleIds, sid);
+                      const fillPct = n ? Math.round((done / n) * 100) : 0;
+                      const active = articlePanelStageFilter === sid;
+                      const split = WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX;
+                      const showLaneSep =
+                        idx === split && split > 0 && split < WORKSHOP2_PIPELINE_STEP_IDS.length;
+                      const laneHint = idx < split ? 'Разработка и ТЗ' : 'Сэмплы и выпуск';
+                      return (
+                        <Fragment key={sid}>
+                          {showLaneSep ? (
+                            <div
+                              className="flex h-11 w-1 shrink-0 flex-col items-center justify-end px-0.5"
+                              role="separator"
+                              aria-orientation="vertical"
+                              aria-label="Разработка и ТЗ · сэмплы и выпуск"
                             >
-                              <div className="bg-border-subtle/90 relative mx-auto mt-1 flex h-7 w-5 flex-1 overflow-hidden rounded-sm">
-                                <div
-                                  className="bg-accent-primary absolute bottom-0 left-0 right-0 transition-all"
-                                  style={{ height: `${fillPct}%` }}
-                                />
-                              </div>
-                              <span className="text-text-secondary text-center text-[8px] font-bold tabular-nums">
-                                {idx + 1}
-                              </span>
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="top"
-                            className="max-w-[260px] text-[11px] leading-snug"
-                          >
-                            <p className="font-semibold">{step?.title ?? sid}</p>
-                            <p className="text-text-secondary">{laneHint}</p>
-                            <p className="text-text-secondary">
-                              Закрыли этап: {done}/{n} арт.
-                            </p>
-                            <p className="text-text-secondary mt-1">
-                              Повторный клик снимает подсветку строк.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </Fragment>
-                    );
-                  })}
-                </div>
+                              <div className="bg-border-default h-9 w-px" />
+                            </div>
+                          ) : null}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className={cn(
+                                  'flex h-11 w-8 shrink-0 flex-col items-stretch justify-end rounded-sm border px-0.5 pb-0.5 transition-colors',
+                                  active
+                                    ? 'border-accent-primary bg-accent-primary/15 shadow-sm'
+                                    : 'border-border-default/90 hover:border-border-default hover:bg-bg-surface2 bg-white'
+                                )}
+                                aria-pressed={active}
+                                aria-label={`${step?.title ?? sid}: закрыли этап ${done} из ${n}`}
+                                onClick={() =>
+                                  setArticlePanelStageFilter((prev) => (prev === sid ? null : sid))
+                                }
+                              >
+                                <div className="bg-border-subtle/90 relative mx-auto mt-1 flex h-7 w-5 flex-1 overflow-hidden rounded-sm">
+                                  <div
+                                    className="bg-accent-primary absolute bottom-0 left-0 right-0 transition-all"
+                                    style={{ height: `${fillPct}%` }}
+                                  />
+                                </div>
+                                <span className="text-text-secondary text-center text-[8px] font-bold tabular-nums">
+                                  {idx + 1}
+                                </span>
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              className="max-w-[260px] text-[11px] leading-snug"
+                            >
+                              <p className="font-semibold">{step?.title ?? sid}</p>
+                              <p className="text-text-secondary">{laneHint}</p>
+                              <p className="text-text-secondary">
+                                Закрыли этап: {done}/{n} арт.
+                              </p>
+                              <p className="text-text-secondary mt-1">
+                                Повторный клик снимает подсветку строк.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </Fragment>
+                      );
+                    })}
+                  </div>
                 </div>
                 {WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX > 0 &&
                 WORKSHOP2_PIPELINE_SAMPLES_LANE_START_INDEX < WORKSHOP2_PIPELINE_STEP_IDS.length ? (
@@ -628,7 +626,7 @@ export function Workshop2TabContentArticlesPanel({
                       type="button"
                       aria-label={openArticleAriaLabel}
                       className={cn(
-                        'flex min-h-0 min-w-0 flex-1 flex-col md:flex-row md:items-stretch md:justify-between md:gap-2 overflow-hidden px-4 py-3 text-left transition-colors max-md:min-h-11',
+                        'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-4 py-3 text-left transition-colors max-md:min-h-11 md:flex-row md:items-stretch md:justify-between md:gap-2',
                         'hover:bg-accent-primary/10 active:bg-accent-primary/15',
                         isHighlight && 'bg-amber-50/90 ring-2 ring-inset ring-amber-200/90',
                         stageHighlight &&

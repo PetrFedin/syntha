@@ -53,9 +53,7 @@ describe('wave YQ — hub matrix 5×4 routes + peer strip minimums', () => {
   it.each(WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS)('$id — hub testids + url pattern', (cell) => {
     expect(cell.hubCellTestId).toBe(`readiness-cell-${cell.roleId}-${cell.pillarId}`);
     expect(cell.hubScoreTestId).toBe(`readiness-score-${cell.roleId}-${cell.pillarId}`);
-    expect(cell.hubWorkspaceLinkTestId).toBe(
-      `readiness-workspace-${cell.roleId}-${cell.pillarId}`
-    );
+    expect(cell.hubWorkspaceLinkTestId).toBe(`readiness-workspace-${cell.roleId}-${cell.pillarId}`);
     expect(cell.anchorTestIds.length).toBeGreaterThan(0);
     expect(cell.urlPattern.test(cell.workspaceHref)).toBe(true);
   });
