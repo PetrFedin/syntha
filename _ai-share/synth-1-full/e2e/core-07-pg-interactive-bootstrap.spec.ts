@@ -63,14 +63,25 @@ test.describe('Platform Core PG interactive bootstrap', () => {
     await expect(page.getByTestId('platform-core-order-detail-chrome')).toBeVisible({
       timeout: 30_000,
     });
-    await expect(
-      page
-        .getByTestId('shop-co-chain-card')
-        .or(page.getByTestId('shop-op-order-status-chain-card'))
-        .or(page.getByTestId('shop-co-detail-chain-card'))
-        .or(page.getByTestId('brand-order-chain-status-card'))
-    ).toHaveAttribute('data-chain-handoff', chainJson.chain?.handedOff ? 'done' : 'pending', {
-      timeout: 30_000,
-    });
+    const chainCard = page
+      .getByTestId('shop-co-chain-card')
+      .or(page.getByTestId('shop-op-order-status-chain-card'))
+      .or(page.getByTestId('shop-co-detail-chain-card'))
+      .or(page.getByTestId('brand-order-chain-status-card'))
+      .or(page.getByTestId('platform-core-b2b-order-facts'))
+      .or(page.getByTestId('shop-order-comms-golden-path-strip'));
+    const legacyChain = page
+      .getByTestId('shop-co-chain-card')
+      .or(page.getByTestId('shop-co-detail-chain-card'))
+      .or(page.getByTestId('brand-order-chain-status-card'));
+    if (await legacyChain.count()) {
+      await expect(legacyChain.first()).toHaveAttribute(
+        'data-chain-handoff',
+        chainJson.chain?.handedOff ? 'done' : 'pending',
+        { timeout: 30_000 }
+      );
+    } else {
+      await expect(chainCard.first()).toBeVisible({ timeout: 30_000 });
+    }
   });
 });

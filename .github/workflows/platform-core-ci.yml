@@ -23,7 +23,7 @@ on:
       - '_ai-share/synth-1-full/playwright.core.config.ts'
       - 'scripts/core-*.sh'
       - 'scripts/ci-platform-core-verify.sh'
-- 'scripts/ci-platform-core-no-bootstrap-verify.sh'
+      - 'scripts/ci-platform-core-no-bootstrap-verify.sh'
       - '.github/workflows/platform-core-ci.yml'
   pull_request:
     branches: [main]
@@ -45,7 +45,7 @@ on:
       - '_ai-share/synth-1-full/playwright.core.config.ts'
       - 'scripts/core-*.sh'
       - 'scripts/ci-platform-core-verify.sh'
-- 'scripts/ci-platform-core-no-bootstrap-verify.sh'
+      - 'scripts/ci-platform-core-no-bootstrap-verify.sh'
       - '.github/workflows/platform-core-ci.yml'
 
 concurrency:

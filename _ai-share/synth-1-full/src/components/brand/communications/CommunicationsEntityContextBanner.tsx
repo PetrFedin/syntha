@@ -99,17 +99,6 @@ export function CommunicationsEntityContextBanner({
   /** Рабочий экран столпа «Связь» с ListChrome — без дубля CTA и shortcuts. */
   platformCoreWorkspace?: boolean;
 }) {
-  if (isFactoryCommsVariant(variant)) {
-    return (
-      <CommunicationsFactoryEntityContextBanner
-        variant={variant}
-        className={className}
-        showArtifactPolicy={showArtifactPolicy && !platformCoreWorkspace}
-        platformCoreWorkspace={platformCoreWorkspace}
-      />
-    );
-  }
-
   const searchParams = useSearchParams();
   const ctx = parseSynthaOverlayContext(searchParams);
   const hasUrlContext = hasCommunicationsUrlContext(searchParams);
@@ -128,6 +117,17 @@ export function CommunicationsEntityContextBanner({
     resolveFrom: urlOrderId || pinGoldenOrder ? [] : ['allocation', 'operational'],
     actorRole: variant === 'brand' ? 'brand' : 'shop',
   });
+
+  if (isFactoryCommsVariant(variant)) {
+    return (
+      <CommunicationsFactoryEntityContextBanner
+        variant={variant}
+        className={className}
+        showArtifactPolicy={showArtifactPolicy && !platformCoreWorkspace}
+        platformCoreWorkspace={platformCoreWorkspace}
+      />
+    );
+  }
   const slimWorkspace = platformCoreWorkspace && coreMode;
   const workspaceShortcuts = showWorkspaceShortcuts && !slimWorkspace && !coreMode;
   const orderId = urlOrderId || (coreMode ? (pinGoldenOrder ? goldenFallback : spineOrderId) : '');

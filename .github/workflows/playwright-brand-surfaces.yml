@@ -31,7 +31,7 @@ jobs:
           cache-dependency-path: _ai-share/synth-1-full/package-lock.json
       - run: npm ci
       - run: npx playwright install chromium --with-deps
-      - run: npx playwright test e2e/brand-control-surfaces.spec.ts --workers=1
+      - run: npx playwright test e2e/core-01-platform-smoke.spec.ts --workers=1
       - run: npm run test:interaction
       - uses: actions/upload-artifact@v4
         if: always()

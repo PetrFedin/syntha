@@ -20,7 +20,7 @@ test.describe('core-12: bulk accept в реестре production-orders', () => 
       'нет pending_erp (норма после приёмки — interactive seed для полного прогона)'
     );
 
-    const res = await page.goto('/factory/production/orders', GOTO);
+    const res = await page.goto('/factory/production/orders?pillarCapabilityFeature=orders', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
     await expect(page.getByTestId('factory-production-orders-core')).toBeVisible({
       timeout: 60_000,
@@ -61,7 +61,7 @@ test.describe('core-12: bulk accept в реестре production-orders', () => 
     const pending = (queue.items ?? []).filter((i) => i.status === 'pending_erp');
     test.skip(pending.length > 0, 'только когда нет pending_erp');
 
-    const res = await page.goto('/factory/production/orders', GOTO);
+    const res = await page.goto('/factory/production/orders?pillarCapabilityFeature=orders', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
     await expect(page.getByTestId('factory-production-orders-core')).toBeVisible({
       timeout: 60_000,

@@ -21,8 +21,8 @@ type ThreadRow = {
 
 /** Не монтирует RU-баннер при URL-контексте (избегаем лишнего fetch и дубля с entity banner). */
 export function BrandMessagesRuWorkspaceBannerWhenNoUrl() {
-  if (isPlatformCoreMode()) return null;
   const searchParams = useSearchParams();
+  if (isPlatformCoreMode()) return null;
   if (hasCommunicationsUrlContext(searchParams)) return null;
   return <BrandMessagesRuWorkspaceBanner />;
 }

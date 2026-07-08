@@ -25,6 +25,7 @@ import {
 import { SupplierBomDrawer } from '@/components/platform/SupplierBomDrawer';
 import { PlatformCoreTerm } from '@/components/platform/PlatformCoreTerm';
 import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
+import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
 import {
   PLATFORM_CORE_BOM_UNAVAILABLE_RU,
   PLATFORM_CORE_SUPPLIER_BOM_EMPTY_RU,

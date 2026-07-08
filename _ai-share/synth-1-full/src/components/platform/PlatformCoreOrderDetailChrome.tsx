@@ -27,21 +27,21 @@ type Props = {
 
 function PlatformCoreOrderDetailChromeInner({ orderId, variant, children }: Props) {
   const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
+  const pillarId = usePlatformCoreOrderDetailPillarId();
+  usePlatformCoreHashScroll(['production-handoff', 'production-dossier', 'order-production']);
+
   if (embeddedWorkspace) {
     return <div className="min-w-0 space-y-4">{children}</div>;
   }
   const highlightRole: CoreChainRoleId = variant;
   const collectionId = getPlatformCoreDemoByOrderId(orderId).collectionId;
   const entityLabel = `Оптовый заказ · ${getPlatformCoreCollectionLabel(collectionId)}`;
-  const pillarId = usePlatformCoreOrderDetailPillarId();
   const collectionParam = collectionId !== 'SS27' ? collectionId : undefined;
   const cabinetHref = platformCoreRolePillarHref(
     highlightRole,
     pillarId ?? getDefaultPillarForRole(highlightRole),
     collectionParam
   );
-
-  usePlatformCoreHashScroll(['production-handoff', 'production-dossier', 'order-production']);
 
   return (
     <div data-testid="platform-core-order-detail-chrome" className={hubCabinet.orderDetailLayout}>
