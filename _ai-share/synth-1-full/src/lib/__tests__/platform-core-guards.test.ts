@@ -203,6 +203,58 @@ describe('Platform Core UI surface manifest', () => {
   });
 });
 
+describe('Platform Core UI action contracts', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actions = require('@/lib/platform-core-ui-action-contracts') as typeof import('@/lib/platform-core-ui-action-contracts');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const surfaceManifest = require('@/lib/platform-core-ui-surface-manifest') as typeof import('@/lib/platform-core-ui-surface-manifest');
+
+  it('defines every action id exactly once', () => {
+    const ids = actions.PLATFORM_CORE_UI_ACTION_CONTRACTS.map((action) => action.actionId);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('requires every action to declare a primary section and concrete user result', () => {
+    for (const action of actions.PLATFORM_CORE_UI_ACTION_CONTRACTS) {
+      expect(action.primarySectionId).toBeTruthy();
+      expect(action.userResultRu.length).toBeGreaterThan(30);
+      expect(['single_primary', 'secondary_links_only']).toContain(action.duplicatePolicy);
+    }
+  });
+
+  it('keeps active action primary sections inside the visible surface manifest', () => {
+    const visible = new Set(surfaceManifest.getPlatformCoreVisibleSurfaceIds());
+    const leaked = actions
+      .getPlatformCoreActivePrimaryActionSectionIds()
+      .filter((sectionId) => !visible.has(sectionId));
+    expect(leaked).toEqual([]);
+  });
+
+  it('keeps pending action primary sections out of visible surfaces until implemented', () => {
+    const visible = new Set(surfaceManifest.getPlatformCoreVisibleSurfaceIds());
+    const leaked = actions
+      .getPlatformCorePendingPrimaryActionSectionIds()
+      .filter((sectionId) => visible.has(sectionId));
+    expect(leaked).toEqual([]);
+  });
+
+  it('keeps commercial P0 actions explicit instead of hidden in generic backlog', () => {
+    const pendingIds = actions.PLATFORM_CORE_UI_ACTION_CONTRACTS.filter(
+      (action) => action.status === 'PENDING_P0'
+    ).map((action) => action.actionId);
+    expect(pendingIds).toEqual(
+      expect.arrayContaining([
+        'request_revision',
+        'write_qc_gate',
+        'create_packing_list',
+        'accept_delivery',
+        'close_order',
+        'open_collection_chat',
+      ])
+    );
+  });
+});
+
 describe('Platform Core canonical snapshot types', () => {
   it('chain snapshot types live in platform-core-chain-snapshot.types.ts', () => {
     const types = readRepo('src/lib/platform-core-chain-snapshot.types.ts');
