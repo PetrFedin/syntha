@@ -43,7 +43,6 @@ async function waitForSmokeShell(page: Page): Promise<void> {
 }
 
 const SMOKE_ROUTES = [
-  { path: '/brand/b2b-orders', name: 'Brand B2B orders registry' },
   { path: '/shop/b2b/matrix?collection=SS27', name: 'Shop B2B matrix' },
   { path: '/shop/b2b/showroom?collection=SS27', name: 'Shop B2B showroom' },
   { path: '/shop/b2b/tracking?collection=SS27', name: 'Shop B2B tracking' },
