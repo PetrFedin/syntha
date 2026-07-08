@@ -22,6 +22,10 @@ test.describe('core-12: bulk accept в реестре production-orders', () => 
 
     const res = await page.goto('/factory/production/orders?pillarCapabilityFeature=orders', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
+    const ordersTab = page.getByTestId('manufacturer-production-feature-orders');
+    if (await ordersTab.count()) {
+      await ordersTab.click();
+    }
     await expect(page.getByTestId('factory-production-orders-core')).toBeVisible({
       timeout: 60_000,
     });
@@ -63,6 +67,10 @@ test.describe('core-12: bulk accept в реестре production-orders', () => 
 
     const res = await page.goto('/factory/production/orders?pillarCapabilityFeature=orders', GOTO);
     expect(res?.status() ?? 599).toBeLessThan(500);
+    const ordersTab = page.getByTestId('manufacturer-production-feature-orders');
+    if (await ordersTab.count()) {
+      await ordersTab.click();
+    }
     await expect(page.getByTestId('factory-production-orders-core')).toBeVisible({
       timeout: 60_000,
     });
