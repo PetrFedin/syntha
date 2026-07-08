@@ -35,6 +35,7 @@ import { usePlatformCoreHubAuditLegacyAttrs } from '@/hooks/use-platform-core-hu
 import { shouldShowHubCabinetPublishedCountSyncBadge } from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { PillarInsightHeader } from '@/components/platform/PillarInsightPrimitives';
+import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
 import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
 import { PLATFORM_CORE_EMPTY_CHAIN_COLLECTION_ID } from '@/lib/platform-core-demo-context';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';

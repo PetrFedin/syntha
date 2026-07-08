@@ -176,8 +176,8 @@ export function usePlatformCoreChainOverview(
   collectionId = PLATFORM_CORE_DEMO.collectionId
 ): PlatformCoreChainOverviewValue {
   const ctx = useContext(ChainOverviewContext);
-  if (ctx) return ctx;
-  return useChainOverviewState(collectionId);
+  const fallback = useChainOverviewState(collectionId);
+  return ctx ?? fallback;
 }
 
 /** Demo SS27/FW27 из provider или fallback. */

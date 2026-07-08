@@ -48,11 +48,11 @@ export function PillarCapabilityWorkspaceChrome({
     () => (workspace ? buildPillarWorkspaceContext(workspaceId, ctx) : ctx),
     [workspaceId, ctx, workspace]
   );
+  const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
 
   if (!workspace) return <>{children}</>;
 
   const coreMode = isPlatformCoreMode();
-  const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
   /** В embedded hub родитель уже узкий — lg-sidebar grid схлопывает content-колонку в 0px. */
   const coreSideNav = coreMode && !embeddedWorkspace;
   const effectiveShowCrossLinks = showCrossLinks && !coreMode;

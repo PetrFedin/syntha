@@ -41,14 +41,14 @@ function contextualFallbackBlocked(): boolean {
   return isPlatformCoreMode() && process.env.PLATFORM_CORE_SPINE_PG_PRIMARY !== '0';
 }
 
-function useContextualPostgresStore(): boolean {
+function isContextualPostgresStoreEnabled(): boolean {
   return isWorkshop2PostgresEnabled();
 }
 
 function canUseDiskPersistence(): boolean {
   return (
     process.env.NODE_ENV !== 'test' &&
-    !useContextualPostgresStore() &&
+    !isContextualPostgresStoreEnabled() &&
     shouldWorkshop2PersistAuxiliaryJsonToFile()
   );
 }

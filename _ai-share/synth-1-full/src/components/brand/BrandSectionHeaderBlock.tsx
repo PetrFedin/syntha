@@ -15,11 +15,11 @@ import { shouldSuppressCabinetHubLayoutChrome } from '@/lib/platform-core-ui-sur
  * Устраняет дублирование SectionInfoCard и короткого пути.
  */
 export function BrandSectionHeaderBlock() {
-  if (shouldSuppressCabinetHubLayoutChrome()) return null;
-
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { actions: contextActions } = useBrandSectionActions();
+
+  if (shouldSuppressCabinetHubLayoutChrome()) return null;
   const meta = getBrandSectionMeta(pathname || '/brand/profile', searchParams?.toString());
 
   const isBrandHome =

@@ -55,11 +55,13 @@ class OrchestratorAgent:
         ctx = dict(context or {})
         ctx.setdefault("task", task_description)
 
-        platform_agents = agents_for_platform_context(
-            pillar=ctx.get("pillar"),
-            role=ctx.get("role"),
-            section_id=ctx.get("section_id"),
-        )
+        platform_agents = []
+        if ctx.get("pillar") or ctx.get("role") or ctx.get("section_id"):
+            platform_agents = agents_for_platform_context(
+                pillar=ctx.get("pillar"),
+                role=ctx.get("role"),
+                section_id=ctx.get("section_id"),
+            )
         if platform_agents:
             logger.info(
                 "Platform stack agents for pillar=%s role=%s section=%s: %s",

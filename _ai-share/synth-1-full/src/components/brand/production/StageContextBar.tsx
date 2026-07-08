@@ -44,8 +44,6 @@ function stepStatusRu(
  * Вешается из layout бренд-центра; на матрице этапов и в разработке коллекции скрыт, чтобы не дублировать UI.
  */
 export function StageContextBar() {
-  if (shouldSuppressCabinetHubLayoutChrome()) return null;
-
   const router = useRouter();
   const pathname = usePathname();
   const rawSearch = useSearchParams();
@@ -119,6 +117,7 @@ export function StageContextBar() {
     return id || '';
   }, [parsed.productId, parsed.skuCode, parsed.stagesSku]);
 
+  if (shouldSuppressCabinetHubLayoutChrome()) return null;
   if (!showFlowBanner || hideOnProductionSubviews) return null;
 
   const backMatrixHref = buildBackToStagesMatrixHref(parsed);

@@ -1,4 +1,11 @@
+import os
+
 import pytest
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("CI") == "true" and not os.environ.get("OLLAMA_BASE_URL"),
+    reason="Agent LLM tests need Ollama in CI or run outside CI",
+)
 from app.agents.orchestrator_agent import orchestrator_agent
 from app.agents.docs_agent import docs_agent
 from app.agents.code_agent import code_agent
