@@ -39,15 +39,14 @@ async function waitForSmokeShell(page: Page): Promise<void> {
     .or(page.getByTestId('platform-core-hub-main-column'))
     .or(page.getByTestId('role-core-cabinet-brand'))
     .or(page.getByTestId('role-core-cabinet-shop'));
-  await expect(shell).toBeVisible({ timeout: 90_000 });
+  await expect(shell.first()).toBeVisible({ timeout: 90_000 });
 }
 
 const SMOKE_ROUTES = [
-  { path: '/platform', name: 'Platform hub' },
-  { path: '/brand/core', name: 'Brand core cabinet' },
-  { path: '/shop/core', name: 'Shop core cabinet' },
+  { path: '/brand/b2b-orders', name: 'Brand B2B orders registry' },
   { path: '/shop/b2b/matrix?collection=SS27', name: 'Shop B2B matrix' },
   { path: '/shop/b2b/showroom?collection=SS27', name: 'Shop B2B showroom' },
+  { path: '/shop/b2b/tracking?collection=SS27', name: 'Shop B2B tracking' },
   { path: '/factory/production/core', name: 'Manufacturer core cabinet' },
   { path: '/factory/supplier/core', name: 'Supplier core cabinet' },
 ] as const;
