@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
@@ -26,7 +28,7 @@ type Props = {
 /** Блок доверия: последний обмен с учётом; данные с GET `/api/shop/erp-sync-status`. */
 export function ErpAccountingSyncBanner({
   className,
-  settingsHref = ROUTES.shop.b2bShopifySync,
+  settingsHref = LEGACY_ROUTES.shop.b2bShopifySync,
   hideSettingsLink = false,
 }: Props) {
   const [status, setStatus] = useState<ErpAccountingSyncStatus | null>(null);

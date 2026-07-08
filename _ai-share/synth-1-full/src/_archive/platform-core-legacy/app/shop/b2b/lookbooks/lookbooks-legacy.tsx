@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -78,7 +80,7 @@ export function ShopB2bLookbooksLegacyPage() {
                     </Button>
                     <Button size="sm" asChild>
                       <Link
-                        href={`${ROUTES.shop.b2bOrderByCollection}?${SHOP_B2B_COLLECTION_QUERY_PARAM}=${encodeURIComponent(p.collectionId ?? p.id)}&brand=${encodeURIComponent(p.brandName)}`}
+                        href={`${LEGACY_ROUTES.shop.b2bOrderByCollection}?${SHOP_B2B_COLLECTION_QUERY_PARAM}=${encodeURIComponent(p.collectionId ?? p.id)}&brand=${encodeURIComponent(p.brandName)}`}
                       >
                         <ShoppingBag className="mr-1 h-3.5 w-3.5" /> Заказ из лукбука
                       </Link>
@@ -98,7 +100,7 @@ export function ShopB2bLookbooksLegacyPage() {
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>Каталог</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>Каталог</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={ROUTES.shop.b2bCreateOrder}>Создать заказ</Link>

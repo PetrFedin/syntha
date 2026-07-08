@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,7 +89,7 @@ export function ShopB2bTrackingLegacyPage() {
       <RelatedModulesBlock
         title="Связанные разделы"
         links={getShopB2BHubLinks().filter(
-          (l) => l.href === ROUTES.shop.b2bOrders || l.href === ROUTES.shop.b2bDeliveryCalendar
+          (l) => l.href === ROUTES.shop.b2bOrders || l.href === LEGACY_ROUTES.shop.b2bDeliveryCalendar
         )}
       />
     </CabinetPageContent>

@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +38,7 @@ export function ShopB2bCollaborativeOrderLegacyPage() {
               <Link href={ROUTES.shop.b2bMatrix}>Открыть матрицу заказа</Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href={ROUTES.shop.b2bMarginCalculator}>Margin Calculator</Link>
+              <Link href={LEGACY_ROUTES.shop.b2bMarginCalculator}>Margin Calculator</Link>
             </Button>
           </CardContent>
         </Card>

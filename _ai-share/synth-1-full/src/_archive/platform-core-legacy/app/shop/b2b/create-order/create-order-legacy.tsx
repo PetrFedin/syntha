@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -141,7 +143,7 @@ export function ShopB2bCreateOrderLegacyPage() {
           </CardHeader>
           <CardContent>
             <Button variant="outline" size="sm" className="rounded-lg" asChild>
-              <Link href={ROUTES.shop.b2bDeliveryCalendar}>Выбрать в календаре поставок</Link>
+              <Link href={LEGACY_ROUTES.shop.b2bDeliveryCalendar}>Выбрать в календаре поставок</Link>
             </Button>
           </CardContent>
         </Card>

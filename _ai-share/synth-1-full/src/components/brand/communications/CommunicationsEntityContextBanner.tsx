@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 /**
  * Единый баннер контекста для сообщений и календаря (ядро №3): B2B-заказ + опционально коллекция/артикул/этап (ядро №1).
  *
@@ -266,7 +268,7 @@ export function CommunicationsEntityContextBanner({
                       ·
                     </span>
                     <Link
-                      href={ROUTES.factory.production}
+                      href={EXTENDED_ROUTES.factory.production}
                       className="underline-offset-2 hover:text-foreground hover:underline"
                     >
                       Очередь цеха

@@ -2,16 +2,8 @@ import type { Workshop2B2bCalendarEvent } from '@/lib/production/workshop2-b2b-c
 import { WORKSHOP2_ARTICLE_CONTEXT_TYPE } from '@/lib/production/workshop2-domain-event-types';
 import { buildPgB2bOrderChatId } from '@/lib/brand/brand-messages-pg-threads';
 import type { UserRole } from '@/lib/types';
-import {
-  brandMessagesB2bOrderContextHref,
-  brandMessagesWorkshop2ArticleContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  shopMessagesB2bOrderContextHref,
-  shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/platform-core-routes';
+import { brandMessagesB2bOrderContextHref, brandMessagesWorkshop2ArticleContextHref, shopMessagesB2bOrderContextHref, shopMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
+import { factoryMessagesB2bOrderContextHref, factoryMessagesWorkshop2ArticleContextHref, factorySupplierMessagesB2bOrderContextHref, factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-extended-routes';
 
 /** PG chat id (`w2ctx:…`) для события B2B-календаря Platform Core. */
 export function resolvePlatformCoreCalendarThreadChatId(

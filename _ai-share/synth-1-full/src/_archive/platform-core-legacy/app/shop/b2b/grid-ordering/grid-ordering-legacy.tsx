@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -140,7 +142,7 @@ export function ShopB2bGridOrderingLegacyPage() {
           <Link href={ROUTES.shop.b2bMatrix}>Матрица заказа</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bQuickOrder}>Быстрый заказ</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bQuickOrder}>Быстрый заказ</Link>
         </Button>
       </div>
     </CabinetPageContent>

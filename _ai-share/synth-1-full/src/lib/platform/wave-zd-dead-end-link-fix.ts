@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Wave ZD — hub navigation dead-end href fixes (YQ matrix + cross-role + distributor nav).
  * SoT for core-245-wave-zd-links.spec.ts + unit contract tests.
@@ -121,13 +122,13 @@ export const WAVE_ZD_DEAD_END_LINK_FIXES: readonly WaveZdDeadEndLinkFix[] = [
   },
   {
     id: 'distributor-partners-marketplace-discover',
-    was: 'ROUTES.shop.b2bDiscover legacy tail (/shop/b2b/discover)',
+    was: 'LEGACY_ROUTES.shop.b2bDiscover legacy tail (/shop/b2b/discover)',
     now: 'ROUTES.shop.b2bPartnersDiscover — hub matrix SC canonical',
     testids: ['distributor-nav-partners-marketplace'],
     sourceFile: 'lib/data/distributor-navigation.ts',
     sourceMustContain: ["value: 'marketplace'", 'ROUTES.shop.b2bPartnersDiscover'],
     sourceMustNotContain: [
-      "{ href: ROUTES.shop.b2bDiscover, label: 'Подбор брендов', value: 'marketplace' }",
+      "{ href: LEGACY_ROUTES.shop.b2bDiscover, label: 'Подбор брендов', value: 'marketplace' }",
     ],
   },
   {
@@ -141,21 +142,21 @@ export const WAVE_ZD_DEAD_END_LINK_FIXES: readonly WaveZdDeadEndLinkFix[] = [
   },
   {
     id: 'distributor-order-mode-matrix',
-    was: 'ROUTES.shop.b2bOrderMode legacy redirect tail',
+    was: 'LEGACY_ROUTES.shop.b2bOrderMode legacy redirect tail',
     now: 'ROUTES.shop.b2bMatrix — matrix golden path',
     testids: ['distributor-nav-order-mode'],
     sourceFile: 'lib/data/distributor-navigation.ts',
     sourceMustContain: ["value: 'order-mode'", 'ROUTES.shop.b2bMatrix'],
-    sourceMustNotContain: ['ROUTES.shop.b2bOrderMode'],
+    sourceMustNotContain: ['LEGACY_ROUTES.shop.b2bOrderMode'],
   },
   {
     id: 'distributor-order-drafts-registry',
-    was: 'ROUTES.shop.b2bOrderDrafts legacy redirect tail',
+    was: 'LEGACY_ROUTES.shop.b2bOrderDrafts legacy redirect tail',
     now: 'ROUTES.shop.b2bOrders — orders registry golden path',
     testids: ['distributor-nav-order-drafts'],
     sourceFile: 'lib/data/distributor-navigation.ts',
     sourceMustContain: ["value: 'order-drafts'", 'ROUTES.shop.b2bOrders'],
-    sourceMustNotContain: ['ROUTES.shop.b2bOrderDrafts'],
+    sourceMustNotContain: ['LEGACY_ROUTES.shop.b2bOrderDrafts'],
   },
 ] as const;
 
@@ -169,9 +170,9 @@ export function scanWaveYqMatrixHrefDeadEnds(cells = WAVE_YQ_HUB_MATRIX_ACTIVE_C
   const blocked = [
     '/404',
     '/brand/merch/linesheet',
-    ROUTES.shop.b2bDiscover,
-    ROUTES.shop.b2bOrderMode,
-    ROUTES.shop.b2bOrderDrafts,
+    LEGACY_ROUTES.shop.b2bDiscover,
+    LEGACY_ROUTES.shop.b2bOrderMode,
+    LEGACY_ROUTES.shop.b2bOrderDrafts,
   ];
   for (const cell of cells) {
     const href = cell.workspaceHref.split('#')[0] ?? cell.workspaceHref;

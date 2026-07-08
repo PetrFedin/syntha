@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Перекрёстные ссылки между модулями Brand OS.
  * Используется в RelatedModulesBlock на страницах disputes, compliance, production и др.
@@ -45,14 +47,14 @@ const PLATFORM_CORE_ENTITY_LINK_HIDDEN = platformCoreEntityLinkHiddenSet();
 function rewriteEntityLinkForPlatformCore(link: EntityLink): EntityLink | null {
   const href = link.href as string;
   if (PLATFORM_CORE_ENTITY_LINK_HIDDEN.has(href)) return null;
-  if (href === ROUTES.shop.b2bDiscover) {
+  if (href === LEGACY_ROUTES.shop.b2bDiscover) {
     return {
       ...link,
       href: ROUTES.shop.b2bPartnersDiscover,
       label: link.label.toLowerCase().includes('discover') ? 'Партнёры брендов' : link.label,
     };
   }
-  if (href === ROUTES.shop.b2bCatalog) {
+  if (href === LEGACY_ROUTES.shop.b2bCatalog) {
     return {
       ...link,
       href: `${ROUTES.shop.b2bShowroom}?collection=${PLATFORM_CORE_DEMO.collectionId}`,
@@ -60,7 +62,7 @@ function rewriteEntityLinkForPlatformCore(link: EntityLink): EntityLink | null {
     };
   }
   if (href === ROUTES.brand.production || href === ROUTES.brand.productionOperations) {
-    return { ...link, href: ROUTES.factory.production, label: 'Очередь цеха' };
+    return { ...link, href: EXTENDED_ROUTES.factory.production, label: 'Очередь цеха' };
   }
   if (link.label.includes('JOOR Pay')) {
     return null;
@@ -90,7 +92,7 @@ function filterB2B(links: EntityLink[]): EntityLink[] {
 /** Ссылки для Dispute Hub — арбитраж, претензии, Escrow */
 export function getArbitrationLinks(): EntityLink[] {
   return filterB2B([
-    { label: 'Заявки на изменение', href: ROUTES.brand.orderAmendments },
+    { label: 'Заявки на изменение', href: LEGACY_ROUTES.brand.orderAmendments },
     { label: 'Возвраты', href: ROUTES.brand.returnsClaims },
     { label: 'Escrow', href: ROUTES.brand.financeEscrow },
     { label: 'LIVE QC', href: ROUTES.brand.processLiveQc },
@@ -310,13 +312,13 @@ export function getB2BLinks(): EntityLink[] {
   return finalizeRelatedModuleLinks(
     filterB2B([
       { label: 'Предзаказы', href: ROUTES.brand.preOrders },
-      { label: 'Прайс-листы', href: ROUTES.brand.priceLists },
+      { label: 'Прайс-листы', href: LEGACY_ROUTES.brand.priceLists },
       { label: 'RFQ поставщиков', href: ROUTES.brand.suppliersRfq },
       { label: 'Net terms (РФ)', href: ROUTES.brand.financeRf },
       { label: 'Лайншиты', href: ROUTES.brand.b2bLinesheets },
       { label: 'Production', href: ROUTES.brand.production },
       { label: 'LIVE B2B', href: ROUTES.brand.processLiveB2b },
-      { label: 'Заявки на изменение', href: ROUTES.brand.orderAmendments },
+      { label: 'Заявки на изменение', href: LEGACY_ROUTES.brand.orderAmendments },
       { label: 'ЭДО и Compliance', href: ROUTES.brand.compliance },
       { label: 'Склад', href: ROUTES.brand.warehouse },
       { label: 'Логистика', href: ROUTES.brand.logistics },
@@ -326,7 +328,7 @@ export function getB2BLinks(): EntityLink[] {
       /** Надстройка: коммуникации и сроки поверх ядра заказа ↔ производство */
       { label: 'Сообщения', href: ROUTES.brand.messages },
       { label: 'Календарь', href: ROUTES.brand.calendar },
-      { label: 'Выставки', href: ROUTES.brand.tradeShows },
+      { label: 'Выставки', href: LEGACY_ROUTES.brand.tradeShows },
       { label: 'Партнёры', href: ROUTES.brand.retailers },
     ])
   );
@@ -369,7 +371,7 @@ export function getSynthaThreeCoresQuickLinksForBrand(): EntityLink[] {
         href: `${ROUTES.brand.productionWorkshop2}?${WORKSHOP2_COL_PARAM}=${PLATFORM_CORE_DEMO.collectionId}`,
       },
       { label: 'Реестр B2B', href: ROUTES.brand.b2bOrders },
-      { label: 'Очередь цеха', href: ROUTES.factory.production },
+      { label: 'Очередь цеха', href: EXTENDED_ROUTES.factory.production },
       { label: 'Сообщения', href: ROUTES.brand.messages },
       {
         label: 'Календарь',
@@ -388,7 +390,7 @@ export function getSynthaThreeCoresQuickLinksForBrand(): EntityLink[] {
 
 export function getB2bOrderVerticalCoreLinks(styleId?: string): EntityLink[] {
   const floorHref = isPlatformCoreMode()
-    ? ROUTES.factory.production
+    ? EXTENDED_ROUTES.factory.production
     : ROUTES.brand.productionOperations;
   const out: EntityLink[] = [
     { label: 'Цех: задания и PO', href: floorHref },
@@ -406,13 +408,13 @@ export function getB2bOrderVerticalCoreLinks(styleId?: string): EntityLink[] {
 }
 
 /**
- * Рёбра B2B-заказа между ролями (без `ROUTES.factory.productionOrders` — тот же реестр, что и у бренда).
+ * Рёбра B2B-заказа между ролями (без `EXTENDED_ROUTES.factory.productionOrders` — тот же реестр, что и у бренда).
  * Склеивается с `getB2BLinks()` через `dedupeEntityLinksByHref` + `finalizeRelatedModuleLinks`.
  */
 export function getBrandB2bOrdersCrossRoleLinks(): EntityLink[] {
   return [
     { label: 'Заказы байера (ритейл)', href: ROUTES.shop.b2bOrders },
-    { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
+    { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
   ];
 }
 
@@ -420,28 +422,28 @@ export function getBrandB2bOrdersCrossRoleLinks(): EntityLink[] {
 export function getShopB2bOrdersCrossRoleLinks(): EntityLink[] {
   return [
     { label: 'Заказы бренда (исполнение)', href: ROUTES.brand.b2bOrders },
-    { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
+    { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
   ];
 }
 
 /** Дашборд ритейла: связь с исполнителем, качеством каталога и цехом. */
 export function getShopB2bDashboardCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
-    { label: 'Карта процессов B2B', href: ROUTES.shop.b2bWorkspaceMap },
-    { label: 'Fulfillment (SLA)', href: ROUTES.shop.b2bFulfillmentDashboard },
-    { label: 'RFQ и тендеры (витрина)', href: ROUTES.shop.b2bRfq },
+    { label: 'Карта процессов B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Fulfillment (SLA)', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'RFQ и тендеры (витрина)', href: LEGACY_ROUTES.shop.b2bRfq },
     { label: 'Аналитика розницы', href: ROUTES.shop.analytics },
     { label: 'Трафик по зонам (footfall)', href: ROUTES.shop.analyticsFootfall },
-    { label: 'Хаб маржи (B2B)', href: ROUTES.shop.b2bMarginAnalysis },
+    { label: 'Хаб маржи (B2B)', href: LEGACY_ROUTES.shop.b2bMarginAnalysis },
     { label: 'Landed cost', href: ROUTES.shop.b2bLandedCost },
     { label: 'Финансы партнёра', href: ROUTES.shop.b2bFinance },
-    { label: 'Календарь поставок (ритейл)', href: ROUTES.shop.b2bDeliveryCalendar },
+    { label: 'Календарь поставок (ритейл)', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
     { label: 'Заказы бренда (исполнение)', href: ROUTES.brand.b2bOrders },
     { label: 'RFQ материалов (бренд)', href: ROUTES.brand.suppliersRfq },
-    { label: 'Качество B2B-каталога', href: ROUTES.brand.catalogQuality },
-    { label: 'Синдикация (бренд)', href: ROUTES.brand.contentSyndication },
-    { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
-    { label: 'Discover брендов', href: ROUTES.shop.b2bDiscover },
+    { label: 'Качество B2B-каталога', href: LEGACY_ROUTES.brand.catalogQuality },
+    { label: 'Синдикация (бренд)', href: LEGACY_ROUTES.brand.contentSyndication },
+    { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
+    { label: 'Discover брендов', href: LEGACY_ROUTES.shop.b2bDiscover },
   ]);
 }
 
@@ -449,24 +451,24 @@ export function getShopB2bDashboardCrossRoleLinks(): EntityLink[] {
 export function getBrandPartnerRetailCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
     { label: 'Кабинет магазина', href: ROUTES.shop.home },
-    { label: 'Карта процессов B2B (ритейл)', href: ROUTES.shop.b2bWorkspaceMap },
-    { label: 'Fulfillment (ритейл)', href: ROUTES.shop.b2bFulfillmentDashboard },
-    { label: 'RFQ витрина (ритейл)', href: ROUTES.shop.b2bRfq },
-    { label: 'Discover байеров', href: ROUTES.shop.b2bDiscover },
-    { label: 'B2B каталог закупки', href: ROUTES.shop.b2bCatalog },
+    { label: 'Карта процессов B2B (ритейл)', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Fulfillment (ритейл)', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'RFQ витрина (ритейл)', href: LEGACY_ROUTES.shop.b2bRfq },
+    { label: 'Discover байеров', href: LEGACY_ROUTES.shop.b2bDiscover },
+    { label: 'B2B каталог закупки', href: LEGACY_ROUTES.shop.b2bCatalog },
   ]);
 }
 
 /** Factory: связь с брендом и ритейлом при исполнении. */
 export function getFactoryHubCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
-    { label: 'Карта B2B (ритейл)', href: ROUTES.shop.b2bWorkspaceMap },
-    { label: 'RFQ витрина (байер)', href: ROUTES.shop.b2bRfq },
-    { label: 'Тендеры B2B (площадка)', href: ROUTES.shop.b2bTenders },
+    { label: 'Карта B2B (ритейл)', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+    { label: 'RFQ витрина (байер)', href: LEGACY_ROUTES.shop.b2bRfq },
+    { label: 'Тендеры B2B (площадка)', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'RFQ материалов (бренд)', href: ROUTES.brand.suppliersRfq },
     { label: 'B2B заказы бренда', href: ROUTES.brand.b2bOrders },
-    { label: 'Качество каталога (бренд)', href: ROUTES.brand.catalogQuality },
-    { label: 'Discover (ритейл)', href: ROUTES.shop.b2bDiscover },
+    { label: 'Качество каталога (бренд)', href: LEGACY_ROUTES.brand.catalogQuality },
+    { label: 'Discover (ритейл)', href: LEGACY_ROUTES.shop.b2bDiscover },
     { label: 'Кабинет магазина', href: ROUTES.shop.home },
   ]);
 }
@@ -474,14 +476,14 @@ export function getFactoryHubCrossRoleLinks(): EntityLink[] {
 /** Дистрибьютор: ритейл, бренд-исполнение, производство. */
 export function getDistributorCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
-    { label: 'Карта процессов B2B', href: ROUTES.shop.b2bWorkspaceMap },
-    { label: 'Fulfillment', href: ROUTES.shop.b2bFulfillmentDashboard },
-    { label: 'RFQ', href: ROUTES.shop.b2bRfq },
+    { label: 'Карта процессов B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Fulfillment', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'RFQ', href: LEGACY_ROUTES.shop.b2bRfq },
     { label: 'Кабинет магазина', href: ROUTES.shop.home },
-    { label: 'Discover байеров', href: ROUTES.shop.b2bDiscover },
-    { label: 'B2B каталог', href: ROUTES.shop.b2bCatalog },
+    { label: 'Discover байеров', href: LEGACY_ROUTES.shop.b2bDiscover },
+    { label: 'B2B каталог', href: LEGACY_ROUTES.shop.b2bCatalog },
     { label: 'Заказы бренда (исполнение)', href: ROUTES.brand.b2bOrders },
-    { label: 'Производственный хаб', href: ROUTES.factory.production },
+    { label: 'Производственный хаб', href: EXTENDED_ROUTES.factory.production },
   ]);
 }
 
@@ -492,9 +494,9 @@ export function getFulfillmentDashboardCrossRoleLinks(): EntityLink[] {
     { label: 'Трекинг поставок', href: ROUTES.shop.b2bTracking },
     { label: 'Заказы бренда (исполнение)', href: ROUTES.brand.b2bOrders },
     { label: 'Производство (бренд)', href: ROUTES.brand.production },
-    { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
+    { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
     { label: 'Рекламации', href: ROUTES.shop.b2bClaims },
-    { label: 'Карта процессов B2B', href: ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Карта процессов B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
   ]);
 }
 
@@ -502,11 +504,11 @@ export function getFulfillmentDashboardCrossRoleLinks(): EntityLink[] {
 export function getShopB2bRfqCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
     { label: 'Поиск поставщиков', href: ROUTES.shop.b2bSupplierDiscovery },
-    { label: 'Тендеры B2B', href: ROUTES.shop.b2bTenders },
+    { label: 'Тендеры B2B', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'RFQ материалов (бренд)', href: ROUTES.brand.suppliersRfq },
     { label: 'Реестр поставщиков (бренд)', href: ROUTES.brand.suppliers },
     { label: 'Материалы (бренд)', href: ROUTES.brand.materials },
-    { label: 'Производственный хаб', href: ROUTES.factory.production },
+    { label: 'Производственный хаб', href: EXTENDED_ROUTES.factory.production },
     { label: 'Заказы бренда', href: ROUTES.brand.b2bOrders },
   ]);
 }
@@ -514,26 +516,26 @@ export function getShopB2bRfqCrossRoleLinks(): EntityLink[] {
 /** `/shop/b2b/tenders` — торги площадки ↔ RFQ, бренд, исполнение. */
 export function getShopB2bTendersCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
-    { label: 'RFQ', href: ROUTES.shop.b2bRfq },
+    { label: 'RFQ', href: LEGACY_ROUTES.shop.b2bRfq },
     { label: 'Поиск поставщиков', href: ROUTES.shop.b2bSupplierDiscovery },
-    { label: 'Fulfillment', href: ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'Fulfillment', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
     { label: 'RFQ материалов (бренд)', href: ROUTES.brand.suppliersRfq },
     { label: 'Поставщики (бренд)', href: ROUTES.brand.suppliers },
-    { label: 'Производственный хаб', href: ROUTES.factory.production },
-    { label: 'Карта B2B', href: ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Производственный хаб', href: EXTENDED_ROUTES.factory.production },
+    { label: 'Карта B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
   ]);
 }
 
 /** `/shop/b2b/supplier-discovery` — матчинг → RFQ/тендер и контур бренда. */
 export function getShopB2bSupplierDiscoveryCrossRoleLinks(): EntityLink[] {
   return dedupeEntityLinksByHref([
-    { label: 'RFQ', href: ROUTES.shop.b2bRfq },
-    { label: 'Тендеры B2B', href: ROUTES.shop.b2bTenders },
+    { label: 'RFQ', href: LEGACY_ROUTES.shop.b2bRfq },
+    { label: 'Тендеры B2B', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'RFQ материалов (бренд)', href: ROUTES.brand.suppliersRfq },
     { label: 'Материалы (бренд)', href: ROUTES.brand.materials },
-    { label: 'Fulfillment', href: ROUTES.shop.b2bFulfillmentDashboard },
-    { label: 'Производственный хаб', href: ROUTES.factory.production },
-    { label: 'Карта B2B', href: ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Fulfillment', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'Производственный хаб', href: EXTENDED_ROUTES.factory.production },
+    { label: 'Карта B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
   ]);
 }
 
@@ -541,12 +543,12 @@ export function getShopB2bSupplierDiscoveryCrossRoleLinks(): EntityLink[] {
 const SHOP_B2B_CATALOG_RELATED_HUB_HREFS = new Set<string>([
   ROUTES.shop.b2bShowroom,
   ROUTES.shop.b2bMatrix,
-  ROUTES.shop.b2bWhiteboard,
+  LEGACY_ROUTES.shop.b2bWhiteboard,
   ROUTES.shop.inventory,
   ROUTES.shop.b2bFinance,
-  ROUTES.shop.b2bReplenishment,
-  ROUTES.shop.b2bDocuments,
-  ROUTES.shop.b2bFulfillmentDashboard,
+  LEGACY_ROUTES.shop.b2bReplenishment,
+  LEGACY_ROUTES.shop.b2bDocuments,
+  LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
 ]);
 
 /** Рёбра PIM / исполнение / factory вокруг каталога закупки. */
@@ -555,9 +557,9 @@ export function getShopB2bCatalogCrossRoleLinks(): EntityLink[] {
     { label: 'Создать заказ', href: ROUTES.shop.b2bCreateOrder },
     { label: 'Заказы B2B', href: ROUTES.shop.b2bOrders },
     { label: 'PIM / товары (бренд)', href: ROUTES.brand.products },
-    { label: 'Качество B2B-каталога', href: ROUTES.brand.catalogQuality },
+    { label: 'Качество B2B-каталога', href: LEGACY_ROUTES.brand.catalogQuality },
     { label: 'Лайншиты (бренд)', href: ROUTES.brand.b2bLinesheets },
-    { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
+    { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
     { label: 'Discover брендов', href: ROUTES.shop.b2bPartnersDiscover },
   ];
 }
@@ -565,7 +567,7 @@ export function getShopB2bCatalogCrossRoleLinks(): EntityLink[] {
 export function getShopB2bCatalogRelatedLinks(): EntityLink[] {
   const hubSlice = getShopB2BHubLinks().filter((l) => {
     const h = String(l.href);
-    return SHOP_B2B_CATALOG_RELATED_HUB_HREFS.has(h) && h !== ROUTES.shop.b2bCatalog;
+    return SHOP_B2B_CATALOG_RELATED_HUB_HREFS.has(h) && h !== LEGACY_ROUTES.shop.b2bCatalog;
   });
   return finalizeRelatedModuleLinks(
     dedupeEntityLinksByHref([...hubSlice, ...getShopB2bCatalogCrossRoleLinks()])
@@ -576,9 +578,9 @@ export function getShopB2bCatalogRelatedLinks(): EntityLink[] {
 export function getSupplierShopB2bPlatformLinks(): EntityLink[] {
   return [
     { label: 'Ритейл-центр (дашборд)', href: ROUTES.shop.home },
-    { label: 'Discover (маркетплейс)', href: ROUTES.shop.b2bDiscover },
-    { label: 'Карта процессов B2B', href: ROUTES.shop.b2bWorkspaceMap },
-    { label: 'Тендеры B2B', href: ROUTES.shop.b2bTenders },
+    { label: 'Discover (маркетплейс)', href: LEGACY_ROUTES.shop.b2bDiscover },
+    { label: 'Карта процессов B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+    { label: 'Тендеры B2B', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'Поиск поставщиков', href: ROUTES.shop.b2bSupplierDiscovery },
   ];
 }
@@ -599,7 +601,7 @@ export function getAdminB2bLifecycleOverviewItems(): AdminB2bLifecycleItem[] {
       desc: 'Исполнение и согласования со стороны бренда',
     },
     {
-      href: ROUTES.factory.production,
+      href: EXTENDED_ROUTES.factory.production,
       label: 'Производственный хаб',
       desc: 'Shell цеха и поставщика материалов',
     },
@@ -615,12 +617,12 @@ export function getAdminB2bLifecycleOverviewItems(): AdminB2bLifecycleItem[] {
     },
     { href: ROUTES.admin.disputes, label: 'Споры B2B', desc: 'Арбитраж и эскалации' },
     {
-      href: ROUTES.shop.b2bFulfillmentDashboard,
+      href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
       label: 'Fulfillment (ритейл)',
       desc: 'Сводка исполнения заказов и логистических SLA',
     },
     {
-      href: ROUTES.shop.b2bWorkspaceMap,
+      href: LEGACY_ROUTES.shop.b2bWorkspaceMap,
       label: 'Карта B2B (ритейл)',
       desc: 'Сквозная визуализация модулей закупок и ролей',
     },
@@ -784,7 +786,7 @@ export function getAuctionLinks(): EntityLink[] {
   return filterB2B([
     { label: 'Поставщики', href: ROUTES.brand.suppliers },
     { label: 'Supplier RFQ', href: ROUTES.brand.suppliersRfq },
-    { label: 'Тендеры', href: ROUTES.shop.b2bTenders },
+    { label: 'Тендеры', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'Production', href: ROUTES.brand.production },
     { label: 'Инвентарь (матрица)', href: ROUTES.brand.inventory },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
@@ -817,10 +819,10 @@ export function getBnplLinks(): EntityLink[] {
 export function getBuyerOnboardingLinks(): EntityLink[] {
   return filterB2B([
     { label: 'Партнёры', href: ROUTES.brand.retailers },
-    { label: 'Заявки байеров', href: ROUTES.brand.buyerApplications },
+    { label: 'Заявки байеров', href: LEGACY_ROUTES.brand.buyerApplications },
     { label: 'Инвентарь (матрица)', href: ROUTES.brand.inventory },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
-    { label: 'Выставки', href: ROUTES.brand.tradeShows },
+    { label: 'Выставки', href: LEGACY_ROUTES.brand.tradeShows },
   ]);
 }
 
@@ -991,7 +993,7 @@ export function getLinesheetCampaignsLinks(): EntityLink[] {
     { label: 'Лайншиты', href: ROUTES.brand.b2bLinesheets },
     { label: 'Инвентарь (матрица)', href: ROUTES.brand.inventory },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
-    { label: 'Выставки', href: ROUTES.brand.tradeShows },
+    { label: 'Выставки', href: LEGACY_ROUTES.brand.tradeShows },
     { label: 'Партнёры', href: ROUTES.brand.retailers },
   ]);
 }
@@ -1040,8 +1042,8 @@ export function getPartnerLinks(): EntityLink[] {
   return filterB2B([
     { label: 'Инвентарь (матрица)', href: ROUTES.brand.inventory },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
-    { label: 'Выставки', href: ROUTES.brand.tradeShows },
-    { label: 'Заявки байеров', href: ROUTES.brand.buyerApplications },
+    { label: 'Выставки', href: LEGACY_ROUTES.brand.tradeShows },
+    { label: 'Заявки байеров', href: LEGACY_ROUTES.brand.buyerApplications },
     { label: 'Дистрибьюторы', href: ROUTES.brand.distributors },
   ]);
 }
@@ -1087,80 +1089,80 @@ export function getShopB2BHubLinks(): EntityLink[] {
     return finalizeRelatedModuleLinks(getShopB2BHubLinksForPlatformCore());
   }
   return filterB2B([
-    { label: 'Каталог', href: ROUTES.shop.b2bCatalog },
+    { label: 'Каталог', href: LEGACY_ROUTES.shop.b2bCatalog },
     { label: 'Виртуальный шоурум', href: ROUTES.shop.b2bShowroom },
     { label: 'Заказы', href: ROUTES.shop.b2bOrders },
     { label: 'Финансы партнёра', href: ROUTES.shop.b2bFinance },
-    { label: 'Оплата B2B', href: ROUTES.shop.b2bPayment },
-    { label: 'Документы B2B', href: ROUTES.shop.b2bDocuments },
+    { label: 'Оплата B2B', href: LEGACY_ROUTES.shop.b2bPayment },
+    { label: 'Документы B2B', href: LEGACY_ROUTES.shop.b2bDocuments },
     { label: 'Контракты B2B', href: ROUTES.shop.b2bContracts },
-    { label: 'Аналитика закупок', href: ROUTES.shop.b2bAnalytics },
+    { label: 'Аналитика закупок', href: LEGACY_ROUTES.shop.b2bAnalytics },
     { label: 'Аналитика по заказам', href: ROUTES.shop.b2bOrderAnalytics },
-    { label: 'Fulfillment Dashboard', href: ROUTES.shop.b2bFulfillmentDashboard },
-    { label: 'Replenishment', href: ROUTES.shop.b2bReplenishment },
+    { label: 'Fulfillment Dashboard', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
+    { label: 'Replenishment', href: LEGACY_ROUTES.shop.b2bReplenishment },
     { label: 'Трекинг заказов', href: ROUTES.shop.b2bTracking },
-    { label: 'Календарь поставок', href: ROUTES.shop.b2bDeliveryCalendar },
+    { label: 'Календарь поставок', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
     { label: 'Рекламации (RMA)', href: ROUTES.shop.b2bClaims },
-    { label: 'Отчёты партнёра', href: ROUTES.shop.b2bReports },
+    { label: 'Отчёты партнёра', href: LEGACY_ROUTES.shop.b2bReports },
     { label: 'Landed Cost', href: ROUTES.shop.b2bLandedCost },
-    { label: 'Карта стока', href: ROUTES.shop.b2bStockMap },
+    { label: 'Карта стока', href: LEGACY_ROUTES.shop.b2bStockMap },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
-    { label: 'Доска ассортимента', href: ROUTES.shop.b2bWhiteboard },
+    { label: 'Доска ассортимента', href: LEGACY_ROUTES.shop.b2bWhiteboard },
     { label: 'Академия и обучение', href: ROUTES.shop.b2bAcademy },
     { label: 'Календарь закупок', href: ROUTES.shop.b2bPurchaseCalendar },
     { label: 'Условия по коллекциям', href: ROUTES.shop.b2bCollectionTerms },
-    { label: 'Заказ по коллекции', href: ROUTES.shop.b2bOrderByCollection },
-    { label: 'Шаблоны заказов', href: ROUTES.shop.b2bOrderTemplates },
-    { label: 'Черновики заказов', href: ROUTES.shop.b2bOrderDrafts },
-    { label: 'Быстрый заказ', href: ROUTES.shop.b2bQuickOrder },
-    { label: 'Reorder', href: ROUTES.shop.b2bReorder },
-    { label: 'Pre-order', href: ROUTES.shop.b2bPreOrder },
+    { label: 'Заказ по коллекции', href: LEGACY_ROUTES.shop.b2bOrderByCollection },
+    { label: 'Шаблоны заказов', href: LEGACY_ROUTES.shop.b2bOrderTemplates },
+    { label: 'Черновики заказов', href: LEGACY_ROUTES.shop.b2bOrderDrafts },
+    { label: 'Быстрый заказ', href: LEGACY_ROUTES.shop.b2bQuickOrder },
+    { label: 'Reorder', href: LEGACY_ROUTES.shop.b2bReorder },
+    { label: 'Pre-order', href: LEGACY_ROUTES.shop.b2bPreOrder },
     { label: 'Маржа по брендам', href: ROUTES.shop.b2bMarginReport },
-    { label: 'Режим заказа', href: ROUTES.shop.b2bOrderMode },
+    { label: 'Режим заказа', href: LEGACY_ROUTES.shop.b2bOrderMode },
     { label: 'Working Order', href: ROUTES.shop.b2bWorkingOrder },
-    { label: 'Лукбуки', href: ROUTES.shop.b2bLookbooks },
-    { label: 'Кабинет агента', href: ROUTES.shop.b2bAgentCabinet },
+    { label: 'Лукбуки', href: LEGACY_ROUTES.shop.b2bLookbooks },
+    { label: 'Кабинет агента', href: LEGACY_ROUTES.shop.b2bAgentCabinet },
     { label: 'Сводный заказ агента', href: ROUTES.shop.b2bAgentConsolidatedOrder },
-    { label: 'Grid Ordering', href: ROUTES.shop.b2bGridOrdering },
-    { label: 'Quote-to-Order', href: ROUTES.shop.b2bQuoteToOrder },
-    { label: 'Синхронизация Shopify', href: ROUTES.shop.b2bShopifySync },
-    { label: 'Режимы заказа (список)', href: ROUTES.shop.b2bOrderModes },
-    { label: 'EZ Order', href: ROUTES.shop.b2bEzOrder },
-    { label: 'AI Smart Order', href: ROUTES.shop.b2bAiSmartOrder },
-    { label: 'Sales Rep Portal', href: ROUTES.shop.b2bSalesRepPortal },
+    { label: 'Grid Ordering', href: LEGACY_ROUTES.shop.b2bGridOrdering },
+    { label: 'Quote-to-Order', href: LEGACY_ROUTES.shop.b2bQuoteToOrder },
+    { label: 'Синхронизация Shopify', href: LEGACY_ROUTES.shop.b2bShopifySync },
+    { label: 'Режимы заказа (список)', href: LEGACY_ROUTES.shop.b2bOrderModes },
+    { label: 'EZ Order', href: LEGACY_ROUTES.shop.b2bEzOrder },
+    { label: 'AI Smart Order', href: LEGACY_ROUTES.shop.b2bAiSmartOrder },
+    { label: 'Sales Rep Portal', href: LEGACY_ROUTES.shop.b2bSalesRepPortal },
     { label: 'Онбординг партнёра', href: ROUTES.shop.b2bPartnerOnboarding },
     { label: 'Мультивалютность', href: ROUTES.shop.b2bMultiCurrency },
     { label: 'Маппинг размеров', href: ROUTES.shop.b2bSizeMapping },
-    { label: 'Custom assortments', href: ROUTES.shop.b2bCustomAssortments },
+    { label: 'Custom assortments', href: LEGACY_ROUTES.shop.b2bCustomAssortments },
     { label: 'Подбор размера', href: ROUTES.shop.b2bSizeFinder },
     { label: 'Рейтинг брендов', href: ROUTES.shop.b2bRating },
-    { label: 'Челленджи и бейджи', href: ROUTES.shop.b2bGamification },
-    { label: 'Лента брендов', href: ROUTES.shop.b2bSocialFeed },
-    { label: 'Видео-консультация', href: ROUTES.shop.b2bVideoConsultation },
-    { label: 'VIP шоурум', href: ROUTES.shop.b2bVipRoomBooking },
+    { label: 'Челленджи и бейджи', href: LEGACY_ROUTES.shop.b2bGamification },
+    { label: 'Лента брендов', href: LEGACY_ROUTES.shop.b2bSocialFeed },
+    { label: 'Видео-консультация', href: LEGACY_ROUTES.shop.b2bVideoConsultation },
+    { label: 'VIP шоурум', href: LEGACY_ROUTES.shop.b2bVipRoomBooking },
     { label: 'Шаринг лукбука', href: ROUTES.shop.b2bLookbookShare },
-    { label: 'Планирование ассортимента', href: ROUTES.shop.b2bAssortmentPlanning },
+    { label: 'Планирование ассортимента', href: LEGACY_ROUTES.shop.b2bAssortmentPlanning },
     { label: 'OTB бюджет', href: ROUTES.shop.b2bBudget },
-    { label: 'Анализ маржи', href: ROUTES.shop.b2bMarginAnalysis },
+    { label: 'Анализ маржи', href: LEGACY_ROUTES.shop.b2bMarginAnalysis },
     { label: 'Shoppable lookbook', href: ROUTES.shop.shoppableLookbook('lb-fw26-1') },
     { label: 'Настройки B2B', href: ROUTES.shop.b2bSettings },
     { label: 'Checkout B2B', href: ROUTES.shop.b2bCheckout },
-    { label: 'Passport выставки', href: ROUTES.shop.b2bPassport },
+    { label: 'Passport выставки', href: LEGACY_ROUTES.shop.b2bPassport },
     { label: 'Партнёры', href: ROUTES.shop.b2bPartners },
-    { label: 'Discover брендов', href: ROUTES.shop.b2bDiscover },
+    { label: 'Discover брендов', href: LEGACY_ROUTES.shop.b2bDiscover },
     { label: 'AI Discovery Radar', href: ROUTES.shop.b2bPartnersDiscover },
-    { label: 'Заявка на партнёрство', href: ROUTES.shop.b2bApply },
-    { label: 'Тендеры B2B', href: ROUTES.shop.b2bTenders },
+    { label: 'Заявка на партнёрство', href: LEGACY_ROUTES.shop.b2bApply },
+    { label: 'Тендеры B2B', href: LEGACY_ROUTES.shop.b2bTenders },
     { label: 'Поиск поставщиков', href: ROUTES.shop.b2bSupplierDiscovery },
-    { label: 'Collaborative Order', href: ROUTES.shop.b2bCollaborativeOrder },
-    { label: 'Margin Calculator', href: ROUTES.shop.b2bMarginCalculator },
+    { label: 'Collaborative Order', href: LEGACY_ROUTES.shop.b2bCollaborativeOrder },
+    { label: 'Margin Calculator', href: LEGACY_ROUTES.shop.b2bMarginCalculator },
     { label: 'AI-поиск', href: ROUTES.shop.b2bAiSearch },
-    { label: 'Формирование селекции', href: ROUTES.shop.b2bSelectionBuilder },
+    { label: 'Формирование селекции', href: LEGACY_ROUTES.shop.b2bSelectionBuilder },
     { label: 'Sales App', href: ROUTES.shop.b2bScanner },
     { label: 'Личный кабинет дилера', href: ROUTES.shop.b2bDealerCabinet },
-    { label: 'Мои выставки', href: ROUTES.shop.b2bTradeShows },
-    { label: 'Запись на встречи', href: ROUTES.shop.b2bTradeShowAppointments },
-    { label: 'Выставки (бренд)', href: ROUTES.brand.tradeShows },
+    { label: 'Мои выставки', href: LEGACY_ROUTES.shop.b2bTradeShows },
+    { label: 'Запись на встречи', href: LEGACY_ROUTES.shop.b2bTradeShowAppointments },
+    { label: 'Выставки (бренд)', href: LEGACY_ROUTES.brand.tradeShows },
   ]);
 }
 
@@ -1224,7 +1226,7 @@ export function getTerritoryProtectionLinks(): EntityLink[] {
 export function getTradeShowLinks(): EntityLink[] {
   return filterB2B([
     { label: 'Шоурум', href: ROUTES.brand.showroom },
-    { label: 'Заявки байеров', href: ROUTES.brand.buyerApplications },
+    { label: 'Заявки байеров', href: LEGACY_ROUTES.brand.buyerApplications },
     { label: 'Партнёры', href: ROUTES.brand.retailers },
     { label: 'Инвентарь (матрица)', href: ROUTES.brand.inventory },
     { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },

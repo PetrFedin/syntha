@@ -6,7 +6,8 @@ import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factoryProductionOrdersOrderContextHref } from '@/lib/platform-core-routes';
+
+import { factoryProductionOrdersOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { cn } from '@/lib/utils';
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
@@ -23,7 +25,7 @@ export function BrandFactoryDetailCorePage({ contractorId }: Props) {
             </Link>
           </Button>
           <Button variant="outline" size="sm" className="h-7 text-[9px]" asChild>
-            <Link href={ROUTES.factory.production}>Очередь цеха</Link>
+            <Link href={EXTENDED_ROUTES.factory.production}>Очередь цеха</Link>
           </Button>
         </div>
         <FactoryWorkshop2SampleQueuePanel factoryId={contractorId} />

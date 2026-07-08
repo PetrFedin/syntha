@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import {
   ROUTES,
   factorySupplierMessagesWorkshop2ArticleContextHref,
@@ -45,7 +46,7 @@ export function supplierProcurementTabHref(
   if (orderId && (featureId === 'order' || featureId === 'supply' || featureId === 'forecast')) {
     sp.set('order', orderId);
   }
-  return `${ROUTES.factory.supplierMessages}?${sp.toString()}`;
+  return `${EXTENDED_ROUTES.factory.supplierMessages}?${sp.toString()}`;
 }
 
 export function buildSupplierProcurementSession(input?: {

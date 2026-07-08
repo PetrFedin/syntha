@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -38,7 +40,7 @@ function SupplierRfqInboxBody() {
           </Link>
           {' · '}
           <Link
-            href={`${ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}`}
+            href={`${EXTENDED_ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}`}
             className="text-accent-primary underline"
             data-testid="supplier-rfq-inbox-messages-link"
           >

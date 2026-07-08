@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Карта синхронизации профиля бренда.
  * Связи: Profile Tab ↔ Legal, B2B, entity-links, ROUTES.
@@ -24,5 +25,5 @@ export const PROFILE_RELATED_ROUTES = {
   stores: ROUTES.brand.retailers,
   pricing: ROUTES.brand.pricing,
   priceComparison: ROUTES.brand.pricingPriceComparison,
-  customerGroups: ROUTES.brand.customerGroups,
+  customerGroups: LEGACY_ROUTES.brand.customerGroups,
 } as const;

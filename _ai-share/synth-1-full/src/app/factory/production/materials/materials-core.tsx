@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -465,10 +467,10 @@ export function FactoryMaterialsCorePage() {
     activeRole === 'supplier'
       ? view === 'procurement'
         ? factorySupplierCoreOrderProductionCabinetHref(collectionId)
-        : `${ROUTES.factory.supplierCoreCabinet}?pillar=development&collection=${encodeURIComponent(collectionId)}`
+        : `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=development&collection=${encodeURIComponent(collectionId)}`
       : view === 'procurement'
         ? factoryCoreOrderProductionCabinetHref(collectionId)
-        : `${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(collectionId)}`;
+        : `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(collectionId)}`;
   const cabinetBackLabel =
     activeRole === 'supplier'
       ? 'Кабинет · закупка'
@@ -534,7 +536,7 @@ export function FactoryMaterialsCorePage() {
     params.set('order', orderId);
     params.set('orderId', orderId);
     if (activeRole === 'supplier') params.set('role', 'supplier');
-    return `${ROUTES.factory.productionMaterials}?${params.toString()}`;
+    return `${EXTENDED_ROUTES.factory.productionMaterials}?${params.toString()}`;
   }
 
   async function confirmMaterialSupply() {

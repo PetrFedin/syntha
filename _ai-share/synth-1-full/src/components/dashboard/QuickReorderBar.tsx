@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -129,7 +131,7 @@ export function QuickReorderBar() {
                     asChild
                   >
                     <Link
-                      href={`${ROUTES.shop.b2bCatalog}?sku=${encodeURIComponent(item.sku)}`}
+                      href={`${LEGACY_ROUTES.shop.b2bCatalog}?sku=${encodeURIComponent(item.sku)}`}
                       title="Открыть в B2B каталоге"
                     >
                       <Eye className="h-4 w-4" />

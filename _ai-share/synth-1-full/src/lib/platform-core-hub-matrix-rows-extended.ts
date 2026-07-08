@@ -26,7 +26,7 @@ import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+} from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 
 const { collectionId, demoOrderId, demoArticleId } = PLATFORM_CORE_DEMO;
 

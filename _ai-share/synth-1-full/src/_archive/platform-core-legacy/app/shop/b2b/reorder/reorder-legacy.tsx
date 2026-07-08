@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import { useSearchParamsNonNull } from '@/hooks/use-search-params-non-null';
 import Link from 'next/link';
@@ -139,7 +141,7 @@ export function ShopB2bReorderLegacyPage() {
           <Link href={ROUTES.shop.b2bMatrix}>Матрица заказа</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>
             <Package className="mr-1 h-3.5 w-3.5" /> Каталог
           </Link>
         </Button>

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 /**
  * Сайдбар factory/production layout — manufacturerNavGroups в отдельном chunk.
  */
@@ -48,7 +50,7 @@ export function FactoryProductionLayoutSidebarPanel({
   return (
     <HubSidebarLazy
       groups={groups}
-      basePath={ROUTES.factory.production}
+      basePath={EXTENDED_ROUTES.factory.production}
       ariaLabel="Меню производства"
       accentClass="text-emerald-600"
       activeBgClass="bg-emerald-600"

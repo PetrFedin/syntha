@@ -7,15 +7,9 @@ import { Download, MessageSquare, Printer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import {
-  ROUTES,
-  factoryCoreOrderProductionCabinetHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factoryProductionHandoffQueueHref,
-  factoryProductionOrdersOrderContextHref,
-  shopB2bTrackingOrderHref,
-} from '@/lib/platform-core-routes';
+import { ROUTES, shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
+import { factoryCoreOrderProductionCabinetHref, factoryMessagesB2bOrderContextHref, factoryMessagesWorkshop2ArticleContextHref, factoryProductionHandoffQueueHref, factoryProductionOrdersOrderContextHref } from '@/lib/platform-core-extended-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
@@ -93,8 +87,8 @@ function FactoryDossierCoreChromeInner({
   const cabinetBackHref = demo
     ? productionPillar
       ? factoryCoreOrderProductionCabinetHref(demo.collectionId)
-      : `${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`
-    : ROUTES.factory.productionCoreCabinet;
+      : `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`
+    : EXTENDED_ROUTES.factory.productionCoreCabinet;
 
   useEffect(() => {
     if (!productionPillar || !orderId) {
@@ -217,7 +211,7 @@ function FactoryDossierCoreChromeInner({
               ·
             </span>
             <Link
-              href={`${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`}
+              href={`${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`}
               data-testid="mfr-dev-dossier-cabinet-link"
               className={hubGadget.goldenLink}
             >

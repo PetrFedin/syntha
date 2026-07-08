@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { brandOrderCommsFeatureHref } from '@/lib/b2b/brand-order-comms';
 import {
   brandLandedMarginTabHref,
@@ -43,8 +44,8 @@ export function buildManufacturerOrderCommsSession(input?: {
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const factoryId = input?.factoryId?.trim() || PLATFORM_CORE_DEMO.factoryId;
-  const base = `${ROUTES.factory.messages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}`;
-  const opsBase = `${ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`;
+  const base = `${EXTENDED_ROUTES.factory.messages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}`;
+  const opsBase = `${EXTENDED_ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`;
 
   return {
     orderId,
@@ -61,7 +62,7 @@ export function buildManufacturerOrderCommsSession(input?: {
     shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),
     brandLandedMarginHref: brandLandedMarginTabHref('simulator', collectionId, orderId),
     productionOpsCutTicketHref: `${opsBase}&${PILLAR_CAPABILITY_FEATURE_PARAM}=cut-ticket`,
-    entitiesHref: `${ROUTES.factory.messages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(collectionId)}`,
+    entitiesHref: `${EXTENDED_ROUTES.factory.messages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(collectionId)}`,
   };
 }
 

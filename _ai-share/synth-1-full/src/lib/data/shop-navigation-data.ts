@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ROUTES } from '@/lib/routes';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -208,11 +210,11 @@ export const shopNavGroups = [
         icon: Handshake,
         description: 'Бренды, заявки, договоры и документы',
         subsections: [
-          { href: ROUTES.shop.b2bDiscover, label: 'Поиск брендов', value: 'discover' },
-          { href: ROUTES.shop.b2bApply, label: 'Заявка на доступ', value: 'apply' },
+          { href: LEGACY_ROUTES.shop.b2bDiscover, label: 'Поиск брендов', value: 'discover' },
+          { href: LEGACY_ROUTES.shop.b2bApply, label: 'Заявка на доступ', value: 'apply' },
           { href: ROUTES.shop.b2bPartners, label: 'Портфель', value: 'portfolio' },
           { href: ROUTES.shop.b2bContracts, label: 'Договоры', value: 'contracts' },
-          { href: ROUTES.shop.b2bDocuments, label: 'Документы', value: 'documents' },
+          { href: LEGACY_ROUTES.shop.b2bDocuments, label: 'Документы', value: 'documents' },
           { href: ROUTES.shop.b2bRating, label: 'Рейтинг брендов', value: 'rating' },
         ],
       },
@@ -225,7 +227,7 @@ export const shopNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.shop.b2bCatalog,
+        href: LEGACY_ROUTES.shop.b2bCatalog,
         value: 'b2b-catalog',
         label: 'Каталог опта',
         icon: Package,
@@ -252,12 +254,12 @@ export const shopNavGroups = [
             value: 'collection-terms',
           },
           {
-            href: ROUTES.shop.b2bAssortmentPlanning,
+            href: LEGACY_ROUTES.shop.b2bAssortmentPlanning,
             label: 'План ассортимента',
             value: 'assortment-planning',
           },
           {
-            href: ROUTES.shop.b2bSelectionBuilder,
+            href: LEGACY_ROUTES.shop.b2bSelectionBuilder,
             label: 'Отбор коллекции',
             value: 'selection-builder',
           },
@@ -272,7 +274,7 @@ export const shopNavGroups = [
         subsections: [
           { href: ROUTES.shop.b2bShowroom, label: 'Шоурум', value: 'showroom' },
           {
-            href: ROUTES.shop.b2bVideoConsultation,
+            href: LEGACY_ROUTES.shop.b2bVideoConsultation,
             label: 'Видеосвязь',
             value: 'video-consultation',
           },
@@ -307,12 +309,12 @@ export const shopNavGroups = [
             value: 'confirmed',
           },
           { href: `${ROUTES.shop.b2bOrders}?status=shipped`, label: 'В пути', value: 'shipped' },
-          { href: ROUTES.shop.b2bOrderMode, label: 'Режим заказа', value: 'order-mode' },
+          { href: LEGACY_ROUTES.shop.b2bOrderMode, label: 'Режим заказа', value: 'order-mode' },
           { href: ROUTES.shop.b2bCreateOrder, label: 'Мастер заказа', value: 'create-order' },
-          { href: ROUTES.shop.b2bQuickOrder, label: 'Быстрый заказ', value: 'quick-order' },
-          { href: ROUTES.shop.b2bOrderDrafts, label: 'Черновики (личные)', value: 'order-drafts' },
-          { href: ROUTES.shop.b2bOrderTemplates, label: 'Шаблоны', value: 'order-templates' },
-          { href: ROUTES.shop.b2bReorder, label: 'Повтор заказа', value: 'reorder' },
+          { href: LEGACY_ROUTES.shop.b2bQuickOrder, label: 'Быстрый заказ', value: 'quick-order' },
+          { href: LEGACY_ROUTES.shop.b2bOrderDrafts, label: 'Черновики (личные)', value: 'order-drafts' },
+          { href: LEGACY_ROUTES.shop.b2bOrderTemplates, label: 'Шаблоны', value: 'order-templates' },
+          { href: LEGACY_ROUTES.shop.b2bReorder, label: 'Повтор заказа', value: 'reorder' },
         ],
       },
     ],
@@ -334,18 +336,18 @@ export const shopNavGroups = [
           { href: ROUTES.shop.inventory, label: 'Текущие остатки', value: 'current' },
           { href: ROUTES.shop.inventoryArchive, label: 'Архив остатков', value: 'inv-archive' },
           {
-            href: ROUTES.shop.b2bFulfillmentDashboard,
+            href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
             label: 'Поставки и сроки',
             value: 'fulfillment-dashboard',
           },
           {
-            href: ROUTES.shop.b2bDeliveryCalendar,
+            href: LEGACY_ROUTES.shop.b2bDeliveryCalendar,
             label: 'Календарь поставок',
             value: 'delivery-calendar',
           },
-          { href: ROUTES.shop.b2bReplenishment, label: 'Автопополнение', value: 'replenishment' },
+          { href: LEGACY_ROUTES.shop.b2bReplenishment, label: 'Автопополнение', value: 'replenishment' },
           { href: ROUTES.shop.b2bTracking, label: 'Отслеживание', value: 'tracking' },
-          { href: ROUTES.shop.b2bStockMap, label: 'Остатки по сети', value: 'stock-map' },
+          { href: LEGACY_ROUTES.shop.b2bStockMap, label: 'Остатки по сети', value: 'stock-map' },
         ],
       },
     ],
@@ -357,7 +359,7 @@ export const shopNavGroups = [
     clusterId: 'archive' as const,
     links: [
       {
-        href: ROUTES.shop.b2bTradeShows,
+        href: LEGACY_ROUTES.shop.b2bTradeShows,
         value: 'trade-events',
         label: 'Выставки и события',
         icon: CalendarDays,
@@ -365,7 +367,7 @@ export const shopNavGroups = [
         navTier: 'phase2' as const,
       },
       {
-        href: ROUTES.shop.b2bWhiteboard,
+        href: LEGACY_ROUTES.shop.b2bWhiteboard,
         value: 'whiteboard',
         label: 'Визуальная доска',
         icon: LayoutGrid,
@@ -373,7 +375,7 @@ export const shopNavGroups = [
         navTier: 'phase2' as const,
       },
       {
-        href: ROUTES.shop.b2bPayment,
+        href: LEGACY_ROUTES.shop.b2bPayment,
         value: 'payment',
         label: 'Оплата заказов',
         icon: CreditCard,
@@ -408,15 +410,15 @@ export const shopNavGroups = [
         description: 'Сетки размеров',
       },
       {
-        href: ROUTES.shop.b2bTenders,
+        href: LEGACY_ROUTES.shop.b2bTenders,
         value: 'indirect-procurement',
         label: 'Тендеры и RFQ',
         icon: Gavel,
         description: 'Вне опта у бренда',
         navTier: 'phase2' as const,
         subsections: [
-          { href: ROUTES.shop.b2bTenders, label: 'Тендеры', value: 'tenders' },
-          { href: ROUTES.shop.b2bRfq, label: 'Запрос цен', value: 'rfq' },
+          { href: LEGACY_ROUTES.shop.b2bTenders, label: 'Тендеры', value: 'tenders' },
+          { href: LEGACY_ROUTES.shop.b2bRfq, label: 'Запрос цен', value: 'rfq' },
           {
             href: ROUTES.shop.b2bSupplierDiscovery,
             label: 'Поставщики',
@@ -433,7 +435,7 @@ export const shopNavGroups = [
         navTier: 'phase2' as const,
         subsections: [
           { href: ROUTES.shop.b2bAiSearch, label: 'Поиск', value: 'ai-search' },
-          { href: ROUTES.shop.b2bAiSmartOrder, label: 'Заказ из текста', value: 'ai-smart-order' },
+          { href: LEGACY_ROUTES.shop.b2bAiSmartOrder, label: 'Заказ из текста', value: 'ai-smart-order' },
         ],
       },
       {
@@ -444,7 +446,7 @@ export const shopNavGroups = [
         description: 'Заказ с пола',
       },
       {
-        href: ROUTES.shop.b2bSocialFeed,
+        href: LEGACY_ROUTES.shop.b2bSocialFeed,
         value: 'social-feed',
         label: 'Лента брендов',
         icon: MessageSquare,
@@ -452,7 +454,7 @@ export const shopNavGroups = [
         navTier: 'phase2' as const,
       },
       {
-        href: ROUTES.shop.b2bVipRoomBooking,
+        href: LEGACY_ROUTES.shop.b2bVipRoomBooking,
         value: 'vip-room-booking',
         label: 'Зал для встреч',
         icon: Store,
@@ -474,7 +476,7 @@ export const shopNavGroups = [
         navTier: 'phase2' as const,
       },
       {
-        href: ROUTES.shop.b2bShopifySync,
+        href: LEGACY_ROUTES.shop.b2bShopifySync,
         value: 'shopify-sync',
         label: 'Учёт и каналы',
         icon: Package,
@@ -500,30 +502,30 @@ export const shopNavGroups = [
         ],
       },
       {
-        href: ROUTES.shop.b2bAnalytics,
+        href: LEGACY_ROUTES.shop.b2bAnalytics,
         value: 'b2b-analytics',
         label: 'Опт',
         icon: Sigma,
         description: 'Закупки у брендов',
         subsections: [
-          { href: ROUTES.shop.b2bAnalytics, label: 'Аналитика закупок', value: 'b2b-analytics' },
+          { href: LEGACY_ROUTES.shop.b2bAnalytics, label: 'Аналитика закупок', value: 'b2b-analytics' },
           { href: ROUTES.shop.b2bOrderAnalytics, label: 'По заказам', value: 'order-analytics' },
-          { href: ROUTES.shop.b2bReports, label: 'Отчёты партнёра', value: 'b2b-reports' },
+          { href: LEGACY_ROUTES.shop.b2bReports, label: 'Отчёты партнёра', value: 'b2b-reports' },
           { href: ROUTES.shop.b2bFinance, label: 'Финансы партнёра', value: 'b2b-finance' },
-          { href: ROUTES.shop.b2bPayment, label: 'Оплата (JOOR Pay)', value: 'b2b-payment' },
+          { href: LEGACY_ROUTES.shop.b2bPayment, label: 'Оплата (JOOR Pay)', value: 'b2b-payment' },
         ],
       },
       {
-        href: ROUTES.shop.b2bMarginAnalysis,
+        href: LEGACY_ROUTES.shop.b2bMarginAnalysis,
         value: 'margin-suite',
         label: 'Маржа и рентабельность',
         icon: TrendingUp,
         description: 'Маржа, отчёты, калькулятор',
         subsections: [
-          { href: ROUTES.shop.b2bMarginAnalysis, label: 'Хаб маржи', value: 'margin-analysis' },
+          { href: LEGACY_ROUTES.shop.b2bMarginAnalysis, label: 'Хаб маржи', value: 'margin-analysis' },
           { href: ROUTES.shop.b2bMarginReport, label: 'По брендам', value: 'margin-report' },
           {
-            href: ROUTES.shop.b2bMarginCalculator,
+            href: LEGACY_ROUTES.shop.b2bMarginCalculator,
             label: 'Калькулятор',
             value: 'margin-calculator',
           },
@@ -539,7 +541,7 @@ export const shopNavGroups = [
     clusterId: 'archive' as const,
     links: [
       {
-        href: ROUTES.shop.b2bWorkspaceMap,
+        href: LEGACY_ROUTES.shop.b2bWorkspaceMap,
         value: 'b2b-workspace-map',
         label: 'Схема процессов опта',
         icon: Map,
@@ -580,7 +582,7 @@ export const shopNavGroups = [
         description: 'Точки, часы, маршрут',
       },
       {
-        href: ROUTES.shop.b2bGamification,
+        href: LEGACY_ROUTES.shop.b2bGamification,
         value: 'gamification',
         label: 'Соревнования и награды',
         icon: Star,
@@ -595,7 +597,7 @@ export const shopNavGroups = [
         description: 'Те же сценарии в кабинетах бренда, дистрибутора и платформы',
         subsections: [
           { href: ROUTES.brand.b2bOrders, label: 'Заказы опта (бренд)', value: 'brand-b2b-orders' },
-          { href: ROUTES.brand.tradeShows, label: 'Выставки (бренд)', value: 'brand-tradeshows' },
+          { href: LEGACY_ROUTES.brand.tradeShows, label: 'Выставки (бренд)', value: 'brand-tradeshows' },
           { href: ROUTES.distributor.home, label: 'Дистрибутор', value: 'distributor-home' },
           { href: ROUTES.admin.home, label: 'Админ платформы', value: 'admin-home' },
         ],
@@ -654,15 +656,15 @@ export const b2bHubTabLinks = [
   },
   { href: ROUTES.shop.b2bMatrix, value: 'matrix', label: 'Матрица', icon: Edit },
   { href: ROUTES.shop.b2bOrders, value: 'b2b-orders', label: 'Заказы опта', icon: ListOrdered },
-  { href: ROUTES.shop.b2bPayment, value: 'payment', label: 'Оплата', icon: CreditCard },
+  { href: LEGACY_ROUTES.shop.b2bPayment, value: 'payment', label: 'Оплата', icon: CreditCard },
   {
-    href: ROUTES.shop.b2bFulfillmentDashboard,
+    href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
     value: 'fulfillment-dashboard',
     label: 'Поставки',
     icon: Truck,
   },
   {
-    href: ROUTES.shop.b2bAnalytics,
+    href: LEGACY_ROUTES.shop.b2bAnalytics,
     value: 'b2b-analytics',
     label: 'Аналитика опта',
     icon: BarChart2,

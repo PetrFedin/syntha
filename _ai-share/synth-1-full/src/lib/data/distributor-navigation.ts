@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import {
   LayoutDashboard,
   Package,
@@ -74,13 +76,13 @@ export const distributorNavGroups = [
         description: 'Бренды, каталог, договоры и документы',
         subsections: [
           { href: ROUTES.shop.b2bPartners, label: 'Портфель брендов', value: 'portfolio' },
-          { href: ROUTES.shop.b2bCatalog, label: 'Каталог опта', value: 'catalog' },
+          { href: LEGACY_ROUTES.shop.b2bCatalog, label: 'Каталог опта', value: 'catalog' },
           { href: ROUTES.shop.b2bPartnersDiscover, label: 'Поиск брендов', value: 'discover' },
           { href: ROUTES.shop.b2bContracts, label: 'Контракты', value: 'contracts' },
-          { href: ROUTES.shop.b2bDocuments, label: 'Документы', value: 'documents' },
+          { href: LEGACY_ROUTES.shop.b2bDocuments, label: 'Документы', value: 'documents' },
           { href: ROUTES.shop.b2bPartnersDiscover, label: 'Подбор брендов', value: 'marketplace' },
           {
-            href: ROUTES.shop.b2bTradeShows,
+            href: LEGACY_ROUTES.shop.b2bTradeShows,
             label: 'Выставки и события',
             value: 'trade-shows',
           },
@@ -115,8 +117,8 @@ export const distributorNavGroups = [
           },
           { href: ROUTES.shop.b2bMatrix, label: 'Режим заказа', value: 'order-mode' },
           { href: ROUTES.shop.b2bCreateOrder, label: 'Создать заказ', value: 'create-order' },
-          { href: ROUTES.shop.b2bQuickOrder, label: 'Быстрый заказ', value: 'quick-order' },
-          { href: ROUTES.shop.b2bReorder, label: 'Повтор заказа', value: 'reorder' },
+          { href: LEGACY_ROUTES.shop.b2bQuickOrder, label: 'Быстрый заказ', value: 'quick-order' },
+          { href: LEGACY_ROUTES.shop.b2bReorder, label: 'Повтор заказа', value: 'reorder' },
           { href: ROUTES.shop.b2bOrders, label: 'Черновики (личные)', value: 'order-drafts' },
         ],
       },
@@ -137,7 +139,7 @@ export const distributorNavGroups = [
         subsections: [
           { href: ROUTES.shop.b2bTracking, label: 'Карта поставок', value: 'tracking' },
           {
-            href: ROUTES.shop.b2bReplenishment,
+            href: LEGACY_ROUTES.shop.b2bReplenishment,
             label: 'Автопополнение',
             value: 'replenishment',
           },
@@ -182,14 +184,14 @@ export const distributorNavGroups = [
         description: 'Планирование бюджета',
       },
       {
-        href: ROUTES.shop.b2bPayment,
+        href: LEGACY_ROUTES.shop.b2bPayment,
         value: 'payment',
         label: 'Оплата заказов',
         icon: CreditCard,
         description: 'Инвойсы и этапы оплаты',
       },
       {
-        href: ROUTES.shop.b2bMarginCalculator,
+        href: LEGACY_ROUTES.shop.b2bMarginCalculator,
         value: 'margin-calculator',
         label: 'Калькулятор маржи',
         icon: Calculator,
@@ -211,7 +213,7 @@ export const distributorNavGroups = [
         description: 'Отчёты и метрики',
       },
       {
-        href: ROUTES.shop.b2bAnalytics,
+        href: LEGACY_ROUTES.shop.b2bAnalytics,
         value: 'b2b-analytics',
         label: 'Закупки B2B',
         icon: BarChart2,

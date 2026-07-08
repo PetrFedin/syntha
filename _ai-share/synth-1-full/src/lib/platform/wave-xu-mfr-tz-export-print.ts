@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Wave XU — mfr OP dossier TZ export print route + PO TZ PDF cross-link (UN/UY polish).
  */
@@ -85,7 +86,7 @@ export function buildMfrOpPoTzPdfPeerHref(
   const factoryId = opts?.factoryId?.trim();
   if (factoryId) sp.set('factoryId', factoryId);
   sp.set('tzPdf', '1');
-  return `${ROUTES.factory.productionOrders}?${sp.toString()}${WAVE_XU_MFR_PO_TZ_PDF_PEER_HASH}`;
+  return `${EXTENDED_ROUTES.factory.productionOrders}?${sp.toString()}${WAVE_XU_MFR_PO_TZ_PDF_PEER_HASH}`;
 }
 
 export function buildMfrOpDossierAttachTzPdfPoSession(input: {

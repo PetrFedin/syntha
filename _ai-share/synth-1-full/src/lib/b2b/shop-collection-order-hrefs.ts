@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import {
@@ -21,7 +22,7 @@ export function shopReplenishmentTabHref(
     sp.set('order', id);
     sp.set('orderId', id);
   }
-  return `${ROUTES.shop.b2bReplenishment}?${sp.toString()}`;
+  return `${LEGACY_ROUTES.shop.b2bReplenishment}?${sp.toString()}`;
 }
 
 export function shopMatrixWorkspaceTabHref(
@@ -92,7 +93,7 @@ export function shopCollaborativeTabHref(
   if (collectionId?.trim()) {
     sp.set('collection', collectionId.trim());
   }
-  return `${ROUTES.shop.b2bCollaborativeOrder}?${sp.toString()}`;
+  return `${LEGACY_ROUTES.shop.b2bCollaborativeOrder}?${sp.toString()}`;
 }
 
 /** Brand oversight · read-only mirror of shop collaborative session (wave VI). */
@@ -110,7 +111,7 @@ export function shopLandedMarginTabHref(
   orderId?: string
 ): string {
   const resolvedOrderId = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
-  const base = `${ROUTES.shop.b2bMarginAnalysis}?collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(resolvedOrderId)}`;
+  const base = `${LEGACY_ROUTES.shop.b2bMarginAnalysis}?collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(resolvedOrderId)}`;
   return `${base}&${PILLAR_CAPABILITY_FEATURE_PARAM}=${featureId}`;
 }
 

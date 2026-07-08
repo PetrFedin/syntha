@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { ROUTES } from '@/lib/platform-core-routes';
 import { PLATFORM_CORE_SHOP_B2B_LEGACY_REDIRECTS } from '@/lib/platform-core-shop-b2b-legacy-redirects';
 
@@ -15,10 +16,10 @@ const SHOP_B2B_GOLDEN_EXACT = new Set([
   ROUTES.shop.b2bCalendar,
   ROUTES.shop.b2bPartners,
   ROUTES.shop.b2bPartnersDiscover,
-  ROUTES.shop.b2bCollaborativeOrder,
-  ROUTES.shop.b2bReplenishment,
-  ROUTES.shop.b2bMarginAnalysis,
-  ROUTES.shop.b2bSalesRepPortal,
+  LEGACY_ROUTES.shop.b2bCollaborativeOrder,
+  LEGACY_ROUTES.shop.b2bReplenishment,
+  LEGACY_ROUTES.shop.b2bMarginAnalysis,
+  LEGACY_ROUTES.shop.b2bSalesRepPortal,
   ROUTES.shop.b2bWorkingOrder,
 ]);
 

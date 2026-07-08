@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -59,7 +61,7 @@ export function FactoryCommsEntityThreadsPanel({ variant }: Props) {
   const inboxHref =
     variant === 'manufacturer'
       ? manufacturerCommsInboxHref()
-      : `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=inbox&collection=${encodeURIComponent(collectionId)}`;
+      : `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=inbox&collection=${encodeURIComponent(collectionId)}`;
 
   const manufacturerHandoffHref = manufacturerHandoffFeatureHref('handoff', {
     factoryId,

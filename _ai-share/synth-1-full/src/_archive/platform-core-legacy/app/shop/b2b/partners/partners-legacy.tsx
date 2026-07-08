@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useSearchParamsNonNull } from '@/hooks/use-search-params-non-null';
 import {
@@ -120,7 +122,7 @@ export function ShopB2bPartnersLegacyPage() {
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href={ROUTES.shop.b2bApply}>
+                <Link href={LEGACY_ROUTES.shop.b2bApply}>
                   <UserPlus className="mr-2 h-4 w-4" /> Подать заявку
                 </Link>
               </Button>
@@ -152,7 +154,7 @@ export function ShopB2bPartnersLegacyPage() {
               className="flex h-auto flex-col items-center gap-1 py-3 text-center"
               asChild
             >
-              <Link href={ROUTES.shop.b2bApply}>
+              <Link href={LEGACY_ROUTES.shop.b2bApply}>
                 <UserPlus className="h-5 w-5" /> Заявка на партнёрство
               </Link>
             </Button>
@@ -321,7 +323,7 @@ export function ShopB2bPartnersLegacyPage() {
               <p className="text-text-secondary text-sm">
                 Заявки на сотрудничество с брендами. После одобрения бренд появится в «Мои
                 партнёры».{' '}
-                <Link href={ROUTES.shop.b2bApply} className="text-accent-primary hover:underline">
+                <Link href={LEGACY_ROUTES.shop.b2bApply} className="text-accent-primary hover:underline">
                   Подать новую заявку
                 </Link>
                 .

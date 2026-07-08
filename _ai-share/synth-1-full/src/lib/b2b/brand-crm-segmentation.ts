@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import {
   brandLandedMarginTabHref,
   brandOrderCommsTabHref,
@@ -50,7 +51,7 @@ export function buildBrandCrmSegmentationSession(input?: {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const orderId = PLATFORM_CORE_DEMO.demoOrderId;
   const groupId = input?.groupId?.trim();
-  const base = ROUTES.brand.customerGroups;
+  const base = LEGACY_ROUTES.brand.customerGroups;
   const demo = getPlatformCoreDemo(collectionId);
   const showroom = brandShowroomHrefForDemo(demo);
   const groupQ = groupId ? `&group=${encodeURIComponent(groupId)}` : '';
@@ -60,10 +61,10 @@ export function buildBrandCrmSegmentationSession(input?: {
     segmentsHref: `${base}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
     pricelistHref: `${base}?${PILLAR_CAPABILITY_FEATURE_PARAM}=pricelist${groupQ}`,
     showroomHref: `${base}?${PILLAR_CAPABILITY_FEATURE_PARAM}=showroom&collection=${encodeURIComponent(collectionId)}`,
-    priceListsHref: `${ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=versions${groupQ}`,
+    priceListsHref: `${LEGACY_ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=versions${groupQ}`,
     brandShowroomPreviewHref: `${showroom}&${PILLAR_CAPABILITY_FEATURE_PARAM}=preview`,
     shopShowroomHref: `${ROUTES.shop.b2bShowroom}?${PILLAR_CAPABILITY_FEATURE_PARAM}=showroom&collection=${encodeURIComponent(collectionId)}`,
-    companyAccountsHref: ROUTES.brand.companyAccounts,
+    companyAccountsHref: LEGACY_ROUTES.brand.companyAccounts,
     agentRepHref: `${ROUTES.brand.distributor.commissions}?${PILLAR_CAPABILITY_FEATURE_PARAM}=ledger`,
     retailersHref: ROUTES.brand.retailers,
     shopMarginPricelistHref: shopLandedMarginTabHref('pricelist', collectionId),

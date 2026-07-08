@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { brandLandedMarginFeatureHref } from '@/lib/b2b/brand-landed-margin';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import { platformB2bMarketroomFeatureHref } from '@/lib/b2b/platform-b2b-marketroom';
@@ -48,7 +49,7 @@ export function buildBrandPricelistSession(input?: {
 }): BrandPricelistSession {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
-  const base = `${ROUTES.brand.priceLists}?collection=${encodeURIComponent(collectionId)}`;
+  const base = `${LEGACY_ROUTES.brand.priceLists}?collection=${encodeURIComponent(collectionId)}`;
   const groupQ = input?.groupId?.trim() ? `&group=${encodeURIComponent(input.groupId.trim())}` : '';
 
   return {
@@ -62,7 +63,7 @@ export function buildBrandPricelistSession(input?: {
       : `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`,
     shopMarginPricelistHref: shopLandedMarginFeatureHref('pricelist', collectionId, orderId),
     brandLandedMarginHref: brandLandedMarginFeatureHref('pricelist', collectionId, orderId),
-    brandCrmSegmentsHref: `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments&collection=${encodeURIComponent(collectionId)}`,
+    brandCrmSegmentsHref: `${LEGACY_ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments&collection=${encodeURIComponent(collectionId)}`,
     platformMarketroomHref: platformB2bMarketroomFeatureHref('showcase', collectionId),
     platformPartnersHref: platformB2bPartnersFeatureHref('directory', collectionId),
     platformHubHref: `${PLATFORM_CORE_B2B_BASE}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=hub`,

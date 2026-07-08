@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
@@ -110,7 +112,7 @@ export function BrandB2bOrdersLegacyPage() {
               className="h-8 text-[10px] font-bold uppercase"
               asChild
             >
-              <Link href={ROUTES.brand.tradeShows}>Выставки</Link>
+              <Link href={LEGACY_ROUTES.brand.tradeShows}>Выставки</Link>
             </Button>
           </>
         }

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { ROUTES } from '@/lib/routes';
 import type { LiveProcessDefinition } from './types';
 
@@ -123,7 +124,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: true,
         dependsOn: [],
-        href: ROUTES.brand.buyerApplications,
+        href: LEGACY_ROUTES.brand.buyerApplications,
       },
       {
         id: 'partner-approval',
@@ -149,7 +150,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: true,
         dependsOn: ['draft-order'],
-        href: ROUTES.brand.orderApprovalWorkflow,
+        href: LEGACY_ROUTES.brand.orderApprovalWorkflow,
       },
       {
         id: 'order-confirmed',
@@ -175,7 +176,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'Логистика',
         mandatory: true,
         dependsOn: ['payment'],
-        href: ROUTES.brand.b2bShipments,
+        href: LEGACY_ROUTES.brand.b2bShipments,
       },
       {
         id: 'documents',
@@ -471,7 +472,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: true,
         dependsOn: ['buyer-submit'],
-        href: ROUTES.brand.orderApprovalWorkflow,
+        href: LEGACY_ROUTES.brand.orderApprovalWorkflow,
       },
       {
         id: 'brand-review',
@@ -480,7 +481,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: true,
         dependsOn: ['shop-review'],
-        href: ROUTES.brand.orderApprovalWorkflow,
+        href: LEGACY_ROUTES.brand.orderApprovalWorkflow,
       },
       {
         id: 'approved-rejected',
@@ -489,7 +490,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: true,
         dependsOn: ['brand-review'],
-        href: ROUTES.brand.orderAmendments,
+        href: LEGACY_ROUTES.brand.orderAmendments,
       },
       {
         id: 'amendments',
@@ -498,7 +499,7 @@ export const LIVE_PROCESS_DEFINITIONS: LiveProcessDefinition[] = [
         area: 'B2B',
         mandatory: false,
         dependsOn: ['approved-rejected'],
-        href: ROUTES.brand.orderAmendments,
+        href: LEGACY_ROUTES.brand.orderAmendments,
       },
     ],
   },

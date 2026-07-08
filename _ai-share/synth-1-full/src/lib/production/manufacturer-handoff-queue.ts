@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import {
   shopLandedMarginTabHref,
@@ -41,7 +42,7 @@ export function buildManufacturerHandoffQueueSession(input?: {
   const factoryId = input?.factoryId?.trim() || PLATFORM_CORE_DEMO.factoryId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
-  const base = `${ROUTES.factory.production}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}`;
+  const base = `${EXTENDED_ROUTES.factory.production}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}`;
 
   return {
     factoryId,
@@ -57,9 +58,9 @@ export function buildManufacturerHandoffQueueSession(input?: {
     shopTrackingHref: `${shopB2bTrackingOrderHref(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=tracking`,
     shopOrderCommsHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
     shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),
-    manufacturerOrderCommsHref: `${ROUTES.factory.messages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=order`,
-    productionOpsCutTicketHref: `${ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=cut-ticket`,
-    materialsHref: `${ROUTES.factory.productionMaterials}?factoryId=${encodeURIComponent(factoryId)}&order=${encodeURIComponent(orderId)}`,
+    manufacturerOrderCommsHref: `${EXTENDED_ROUTES.factory.messages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=order`,
+    productionOpsCutTicketHref: `${EXTENDED_ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=cut-ticket`,
+    materialsHref: `${EXTENDED_ROUTES.factory.productionMaterials}?factoryId=${encodeURIComponent(factoryId)}&order=${encodeURIComponent(orderId)}`,
     techpackAckHref: `${base}&${PILLAR_CAPABILITY_FEATURE_PARAM}=techpack-ack&article=${encodeURIComponent(PLATFORM_CORE_DEMO.demoArticleId)}`,
   };
 }
@@ -78,7 +79,7 @@ export function manufacturerHandoffFeatureHref(
       article: opts?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId,
     });
     if (opts?.orderId?.trim()) sp.set('order', opts.orderId.trim());
-    return `${ROUTES.factory.production}?${sp.toString()}`;
+    return `${EXTENDED_ROUTES.factory.production}?${sp.toString()}`;
   }
   const sp = new URLSearchParams({
     factoryId: session.factoryId,
@@ -86,6 +87,6 @@ export function manufacturerHandoffFeatureHref(
   });
   if (opts?.orderId?.trim()) sp.set('order', opts.orderId.trim());
   sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, featureId);
-  const url = `${ROUTES.factory.production}?${sp.toString()}`;
+  const url = `${EXTENDED_ROUTES.factory.production}?${sp.toString()}`;
   return url;
 }

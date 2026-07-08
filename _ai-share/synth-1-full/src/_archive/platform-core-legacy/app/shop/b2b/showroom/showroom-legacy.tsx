@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -179,7 +181,7 @@ export function ShopB2bShowroomLegacyPage() {
                     asChild
                   >
                     <Link
-                      href={`${ROUTES.shop.b2bOrderByCollection}?collection=${p.collectionId ?? p.id}&brand=${encodeURIComponent(p.brandName)}`}
+                      href={`${LEGACY_ROUTES.shop.b2bOrderByCollection}?collection=${p.collectionId ?? p.id}&brand=${encodeURIComponent(p.brandName)}`}
                     >
                       Заказ из лукбука (матрица)
                     </Link>
@@ -191,7 +193,7 @@ export function ShopB2bShowroomLegacyPage() {
                     asChild
                   >
                     <Link
-                      href={`${ROUTES.shop.b2bCatalog}?brand=${encodeURIComponent(p.brandName)}`}
+                      href={`${LEGACY_ROUTES.shop.b2bCatalog}?brand=${encodeURIComponent(p.brandName)}`}
                     >
                       <FileText className="mr-1.5 h-3.5 w-3.5" /> В каталог
                     </Link>
@@ -235,10 +237,10 @@ export function ShopB2bShowroomLegacyPage() {
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bLookbooks}>Все лукбуки</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bLookbooks}>Все лукбуки</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>Каталог</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>Каталог</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={ROUTES.shop.b2bMatrix}>Матрица заказа</Link>

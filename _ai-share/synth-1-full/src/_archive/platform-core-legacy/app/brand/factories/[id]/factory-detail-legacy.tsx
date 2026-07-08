@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { ChevronLeft, Factory, Package } from 'lucide-react';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
@@ -189,7 +191,7 @@ export function BrandFactoryDetailLegacyPage({ id, contractorId }: Props) {
                 Склад материалов — в кабинете поставщика на фабрике.
               </p>
               <Button variant="outline" size="sm" asChild>
-                <Link href={ROUTES.factory.productionMaterials}>Материалы цеха</Link>
+                <Link href={EXTENDED_ROUTES.factory.productionMaterials}>Материалы цеха</Link>
               </Button>
             </CardContent>
           </Card>

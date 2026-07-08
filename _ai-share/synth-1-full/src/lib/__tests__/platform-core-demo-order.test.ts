@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import {
   isLegacyOperationalB2bOrderId,
   isPlatformCoreDemoB2bOrder,
@@ -49,7 +50,7 @@ describe('platform-core-brand-b2b-legacy-redirects', () => {
   });
 
   it('redirects trade-shows and showroom legacy tabs with collection context', () => {
-    const tradeShows = resolveBrandB2bLegacyRedirect(ROUTES.brand.tradeShows, 'FW27');
+    const tradeShows = resolveBrandB2bLegacyRedirect(LEGACY_ROUTES.brand.tradeShows, 'FW27');
     expect(tradeShows?.href).toBe('/brand/linesheets?collection=FW27');
     expect(tradeShows?.testId).toBe('platform-core-brand-trade-shows-legacy-redirect');
 
@@ -57,7 +58,7 @@ describe('platform-core-brand-b2b-legacy-redirects', () => {
     expect(banners?.href).toBe(`${ROUTES.brand.showroom}?collection=FW27`);
     expect(banners?.testId).toBe('platform-core-brand-showroom-banners-legacy-redirect');
 
-    const vr = resolveBrandB2bLegacyRedirect(ROUTES.brand.showroomVr, null);
+    const vr = resolveBrandB2bLegacyRedirect(LEGACY_ROUTES.brand.showroomVr, null);
     expect(vr?.href).toBe(`${ROUTES.brand.showroom}?collection=SS27`);
 
     expect(resolveBrandB2bLegacyRedirect(ROUTES.brand.showroom, null)).toBeNull();

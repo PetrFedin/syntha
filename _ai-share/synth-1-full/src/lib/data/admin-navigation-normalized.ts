@@ -1,5 +1,8 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import {
   Store,
   Settings,
@@ -92,28 +95,28 @@ export const adminNavGroups = [
         description: 'Кабинет магазина (B2C/B2B контур)',
       },
       {
-        href: ROUTES.shop.b2bDiscover,
+        href: LEGACY_ROUTES.shop.b2bDiscover,
         value: 'bridge-b2b-discover',
         label: 'B2B Discover',
         icon: Globe,
         description: 'Точка входа байера на площадке',
       },
       {
-        href: ROUTES.shop.b2bWorkspaceMap,
+        href: LEGACY_ROUTES.shop.b2bWorkspaceMap,
         value: 'bridge-b2b-workspace-map',
         label: 'Карта B2B (ритейл)',
         icon: Map,
         description: 'Digital Workplace — модули закупки',
       },
       {
-        href: ROUTES.shop.b2bRfq,
+        href: LEGACY_ROUTES.shop.b2bRfq,
         value: 'bridge-shop-rfq',
         label: 'RFQ (витрина)',
         icon: FileText,
         description: 'Запросы котировок в кабинете магазина',
       },
       {
-        href: ROUTES.shop.b2bTenders,
+        href: LEGACY_ROUTES.shop.b2bTenders,
         value: 'bridge-shop-tenders',
         label: 'Тендеры B2B',
         icon: Gavel,
@@ -127,7 +130,7 @@ export const adminNavGroups = [
         description: 'Реестр и матчинг в контуре магазина',
       },
       {
-        href: ROUTES.shop.b2bFulfillmentDashboard,
+        href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
         value: 'bridge-fulfillment',
         label: 'Fulfillment (ритейл)',
         icon: Truck,
@@ -148,7 +151,7 @@ export const adminNavGroups = [
         description: 'Запросы бренда к поставщикам',
       },
       {
-        href: ROUTES.factory.production,
+        href: EXTENDED_ROUTES.factory.production,
         value: 'bridge-factory',
         label: 'Производство',
         icon: Factory,

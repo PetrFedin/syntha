@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ROUTES } from '@/lib/routes';
@@ -115,16 +116,16 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  if (path === ROUTES.factory.home && url.searchParams.get('role') === 'supplier') {
+  if (path === EXTENDED_ROUTES.factory.home && url.searchParams.get('role') === 'supplier') {
     const next = url.clone();
-    next.pathname = ROUTES.factory.supplier;
+    next.pathname = EXTENDED_ROUTES.factory.supplier;
     next.searchParams.delete('role');
     return NextResponse.redirect(next);
   }
 
   if (path === '/supplier' || path.startsWith('/supplier/')) {
     const next = url.clone();
-    next.pathname = path.replace(/^\/supplier/, ROUTES.factory.supplier) || ROUTES.factory.supplier;
+    next.pathname = path.replace(/^\/supplier/, EXTENDED_ROUTES.factory.supplier) || EXTENDED_ROUTES.factory.supplier;
     return NextResponse.redirect(next);
   }
 

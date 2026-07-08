@@ -17,17 +17,8 @@ import {
 import { isPlatformCoreDemoPinOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 import { isPlatformCorePgB2bOrder } from '@/lib/platform-core-demo-order';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
-import {
-  brandCalendarB2bOrderContextHref,
-  brandMessagesB2bOrderContextHref,
-  factoryCalendarB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  shopCalendarB2bOrderContextHref,
-  shopMessagesB2bOrderContextHref,
-  shopB2bTrackingOrderHref,
-} from '@/lib/platform-core-routes';
+import { brandCalendarB2bOrderContextHref, brandMessagesB2bOrderContextHref, shopCalendarB2bOrderContextHref, shopMessagesB2bOrderContextHref, shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
+import { factoryCalendarB2bOrderContextHref, factoryMessagesB2bOrderContextHref, factorySupplierCalendarB2bOrderContextHref, factorySupplierMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { PlatformCoreCommsNotificationPrefsStrip } from '@/components/platform/PlatformCoreShopCommsNotificationPrefsStrip';
 import {
   platformCoreCalendarPcTaskHref,

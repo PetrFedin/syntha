@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Platform Core — фокус на трёх столпах (ТЗ→образец, B2B, связь).
  * Включается через `NEXT_PUBLIC_PLATFORM_CORE_MODE=1` (см. `env.core.example`).
@@ -252,9 +253,9 @@ export function getCoreRoleLandingHref(roleKey: string): string | null {
     case 'shop':
       return ROUTES.shop.coreCabinet;
     case 'manufacturer':
-      return ROUTES.factory.productionCoreCabinet;
+      return EXTENDED_ROUTES.factory.productionCoreCabinet;
     case 'supplier':
-      return ROUTES.factory.supplierCoreCabinet;
+      return EXTENDED_ROUTES.factory.supplierCoreCabinet;
     default:
       return null;
   }

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 /**
  * Manufacturer / Supplier: столпы как у бренда (`FACTORY_MFR_CORE_GROUP_ORDER` / `FACTORY_SUP_CORE_GROUP_ORDER`).
  * Ядро уплотнено: один столбец «Производство» (операции, Гант, выработка, навыки, раскрой — в подразделах),
@@ -50,7 +52,7 @@ export const manufacturerNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.factory.staff,
+        href: EXTENDED_ROUTES.factory.staff,
         value: 'team',
         label: 'Команда',
         icon: Users,
@@ -87,13 +89,13 @@ export const manufacturerNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.factory.production,
+        href: EXTENDED_ROUTES.factory.production,
         value: 'factories',
         label: 'Партнёры и сеть',
         icon: Factory,
         description: 'Очередь цеха и субподряд — без реестра бренда.',
         subsections: [
-          { href: ROUTES.factory.production, label: 'Очередь цеха', value: 'factories-list' },
+          { href: EXTENDED_ROUTES.factory.production, label: 'Очередь цеха', value: 'factories-list' },
           {
             href: ROUTES.brand.productionSubcontractor,
             label: 'Субподряд',
@@ -267,7 +269,7 @@ export const supplierNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.factory.staff,
+        href: EXTENDED_ROUTES.factory.staff,
         value: 'team',
         label: 'Команда',
         icon: Users,
@@ -319,31 +321,31 @@ export const supplierNavGroups = [
     clusterId: 'syntha-cores' as const,
     links: [
       {
-        href: ROUTES.factory.productionCatalog,
+        href: EXTENDED_ROUTES.factory.productionCatalog,
         value: 'materials-catalog',
         label: 'Каталог материалов',
         icon: Layers,
         description: 'Листинги и остатки материалов поставщика (PG).',
       },
       {
-        href: ROUTES.factory.productionMaterials,
+        href: EXTENDED_ROUTES.factory.productionMaterials,
         value: 'materials-hub',
         label: 'BOM · спецификация',
         icon: Layers,
         description: 'Материалы из досье — RFQ и закупка.',
         subsections: [
           {
-            href: ROUTES.factory.productionMaterials,
+            href: EXTENDED_ROUTES.factory.productionMaterials,
             label: 'BOM из досье',
             value: 'materials-bom',
           },
           {
-            href: ROUTES.factory.productionCatalog,
+            href: EXTENDED_ROUTES.factory.productionCatalog,
             label: 'Каталог материалов',
             value: 'materials-catalog',
           },
           {
-            href: ROUTES.factory.productionMaterials,
+            href: EXTENDED_ROUTES.factory.productionMaterials,
             label: 'Закупка под PO',
             value: 'procurement',
           },

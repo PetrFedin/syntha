@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -405,7 +407,7 @@ export function ManufacturerDashboard() {
                 className="border-border-default hover:bg-bg-surface2 w-full rounded-xl text-[10px] font-black uppercase tracking-widest"
                 asChild
               >
-                <Link href={ROUTES.factory.productionOrders}>
+                <Link href={EXTENDED_ROUTES.factory.productionOrders}>
                   Все заказы <ArrowRight className="ml-2 h-3 w-3" />
                 </Link>
               </Button>
@@ -438,7 +440,7 @@ export function ManufacturerDashboard() {
             size="sm"
             className="text-accent-primary hover:bg-accent-primary relative z-10 mt-4 h-8 w-full rounded-lg bg-white text-[9px] font-black uppercase shadow-md transition-all hover:text-white"
           >
-            <Link href={ROUTES.factory.productionInventoryRfidGates}>Управление воротами</Link>
+            <Link href={EXTENDED_ROUTES.factory.productionInventoryRfidGates}>Управление воротами</Link>
           </Button>
         </Card>
 
@@ -465,7 +467,7 @@ export function ManufacturerDashboard() {
             size="sm"
             className="border-border-default text-text-primary hover:bg-bg-surface2 relative z-10 mt-4 h-8 w-full rounded-lg text-[9px] font-black uppercase transition-all"
           >
-            <Link href={ROUTES.factory.qc}>Открыть инспекции</Link>
+            <Link href={EXTENDED_ROUTES.factory.qc}>Открыть инспекции</Link>
           </Button>
         </Card>
 
@@ -491,7 +493,7 @@ export function ManufacturerDashboard() {
             size="sm"
             className="text-accent-primary hover:bg-accent-primary relative z-10 mt-4 h-8 w-full rounded-lg bg-white text-[9px] font-black uppercase shadow-md transition-all hover:text-white"
           >
-            <Link href={ROUTES.factory.productionIotMonitoring}>Мониторинг парка</Link>
+            <Link href={EXTENDED_ROUTES.factory.productionIotMonitoring}>Мониторинг парка</Link>
           </Button>
         </Card>
 
@@ -518,7 +520,7 @@ export function ManufacturerDashboard() {
             size="sm"
             className="border-border-default text-text-primary hover:bg-text-primary/90 relative z-10 mt-4 h-8 w-full rounded-lg text-[9px] font-black uppercase transition-all hover:text-white"
           >
-            <Link href={ROUTES.factory.productionCustomization}>Очередь пошива</Link>
+            <Link href={EXTENDED_ROUTES.factory.productionCustomization}>Очередь пошива</Link>
           </Button>
         </Card>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -81,7 +83,7 @@ export function ShopB2bQuickOrderLegacyPage() {
   return (
     <ShopB2bNuOrderScope>
       <ShopB2bContentHeader
-        backHref={ROUTES.shop.b2bOrderMode}
+        backHref={LEGACY_ROUTES.shop.b2bOrderMode}
         lead="NuOrder / JOOR: артикулы стилей, размеры и количество — затем матрица для проверки и отправки."
       />
 
@@ -203,10 +205,10 @@ export function ShopB2bQuickOrderLegacyPage() {
           <Link href={ROUTES.shop.b2bCreateOrder}>Написание по коллекции</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bReorder}>Reorder из истории</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bReorder}>Reorder из истории</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bEzOrder}>EZ Order</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bEzOrder}>EZ Order</Link>
         </Button>
       </div>
       <RelatedModulesBlock links={getShopB2BHubLinks()} title="Матрица, EZ Order, шаблоны" />

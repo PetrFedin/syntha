@@ -5,12 +5,8 @@ import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/Platf
 import { usePlatformCoreDevelopmentStatusPoll } from '@/hooks/use-platform-core-development-status-poll';
 import { brandSampleLifecycleFeatureHref } from '@/lib/platform-core-ports/fashion/brand-sample-lifecycle-workspace';
 import { brandAttributeSchemaFeatureHref } from '@/lib/platform-core-ports/fashion/brand-attribute-schema-workspace';
-import {
-  ROUTES,
-  brandDevelopmentArticleHref,
-  brandMessagesWorkshop2ArticleContextHref,
-  factoryProductionDossierHref,
-} from '@/lib/platform-core-routes';
+import { ROUTES, brandDevelopmentArticleHref, brandMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
+import { factoryProductionDossierHref } from '@/lib/platform-core-extended-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';

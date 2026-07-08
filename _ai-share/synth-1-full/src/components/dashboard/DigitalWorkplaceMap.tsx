@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -114,20 +116,20 @@ export function DigitalWorkplaceMap({ onClose, primaryRole }: DigitalWorkplaceMa
 
   const getRolePath = (role: B2BUserRole, item: any) => {
     const paths: Record<string, string> = {
-      'video-consultation': ROUTES.shop.b2bVideoConsultation,
-      'vip-room-booking': ROUTES.shop.b2bVipRoomBooking,
+      'video-consultation': LEGACY_ROUTES.shop.b2bVideoConsultation,
+      'vip-room-booking': LEGACY_ROUTES.shop.b2bVipRoomBooking,
       'store-locator': ROUTES.storeLocator,
-      'margin-calculator': ROUTES.shop.b2bMarginCalculator,
+      'margin-calculator': LEGACY_ROUTES.shop.b2bMarginCalculator,
       'multi-currency': ROUTES.shop.b2bMultiCurrency,
-      'order-modes': ROUTES.shop.b2bOrderModes,
-      'shopify-sync': ROUTES.shop.b2bShopifySync,
+      'order-modes': LEGACY_ROUTES.shop.b2bOrderModes,
+      'shopify-sync': LEGACY_ROUTES.shop.b2bShopifySync,
       'partner-onboarding': ROUTES.shop.b2bPartnerOnboarding,
-      'social-feed': ROUTES.shop.b2bSocialFeed,
-      gamification: ROUTES.shop.b2bGamification,
+      'social-feed': LEGACY_ROUTES.shop.b2bSocialFeed,
+      gamification: LEGACY_ROUTES.shop.b2bGamification,
       'flash-deals': ROUTES.brand.lastCall,
-      'fulfillment-dashboard': ROUTES.shop.b2bFulfillmentDashboard,
-      'b2b-rfq': ROUTES.shop.b2bRfq,
-      'b2b-tenders': ROUTES.shop.b2bTenders,
+      'fulfillment-dashboard': LEGACY_ROUTES.shop.b2bFulfillmentDashboard,
+      'b2b-rfq': LEGACY_ROUTES.shop.b2bRfq,
+      'b2b-tenders': LEGACY_ROUTES.shop.b2bTenders,
       'supplier-discovery': ROUTES.shop.b2bSupplierDiscovery,
     };
     if (paths[item.id]) return paths[item.id];

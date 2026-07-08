@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import { Button } from '@/components/ui/button';
 import {
@@ -194,8 +196,8 @@ export function ShopB2bOrderDetailLegacyPage({ orderId }: ShopB2bOrderDetailLega
     orderStatusSteps.some(
       (s, i) => (s.status === 'Согласован' || s.status === 'Подтверждён') && s.date != null
     ) || currentStatusIndex >= 2;
-  const reorderHref = `${ROUTES.shop.b2bReorder}?copyFrom=${orderId}`;
-  const saveAsTemplateHref = `${ROUTES.shop.b2bOrderTemplates}?saveFrom=${orderId}`;
+  const reorderHref = `${LEGACY_ROUTES.shop.b2bReorder}?copyFrom=${orderId}`;
+  const saveAsTemplateHref = `${LEGACY_ROUTES.shop.b2bOrderTemplates}?saveFrom=${orderId}`;
   const workingOrderHref = `${ROUTES.shop.b2bWorkingOrder}?wholesaleOrderId=${encodeURIComponent(orderId)}`;
   const paymentStatus = orderFromList?.paymentStatus;
   const paidAmount = orderFromList?.paidAmount;
@@ -260,7 +262,7 @@ export function ShopB2bOrderDetailLegacyPage({ orderId }: ShopB2bOrderDetailLega
                       asChild
                     >
                       <Link
-                        href={`${ROUTES.shop.b2bPayment}?orderId=${encodeURIComponent(orderId)}`}
+                        href={`${LEGACY_ROUTES.shop.b2bPayment}?orderId=${encodeURIComponent(orderId)}`}
                       >
                         <CreditCard className="h-3.5 w-3" /> Оплатить
                       </Link>

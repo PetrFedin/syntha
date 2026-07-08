@@ -73,16 +73,7 @@ import {
 import { isPlatformCoreArticleSpineMode } from '@/lib/platform-core-article-spine';
 import { RoleCorePillarInsightCards } from '@/components/platform/RoleCorePillarInsightCards';
 import { PlatformCorePillarInsightSkeleton } from '@/components/platform/PlatformCorePillarInsightSkeleton';
-import {
-  brandB2bOrderHref,
-  brandMessagesB2bOrderContextHref,
-  brandMessagesWorkshop2ArticleContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  shopB2bOrderHref,
-  shopMessagesB2bOrderContextHref,
-  shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/platform-core-routes';
+import { brandB2bOrderHref, brandMessagesB2bOrderContextHref, brandMessagesWorkshop2ArticleContextHref, shopB2bOrderHref, shopMessagesB2bOrderContextHref, shopMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
 import { formatWholesaleOrderDisplayId } from '@/lib/integrations/spine/integration-ui-utils';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 
@@ -101,10 +92,10 @@ const PlatformCoreEmptyCellPanels = dynamic(
   }
 );
 
-const SupplierDevPillarMaterialCatalogNav = dynamic(
+const RoleCoreCabinetHubExtendedBridge = dynamic(
   () =>
-    import('@/components/factory/supplier/SupplierDevPillarMaterialCatalogNav').then((m) => ({
-      default: m.SupplierDevPillarMaterialCatalogNav,
+    import('@/components/platform/extended/RoleCoreCabinetHubExtendedBridge').then((m) => ({
+      default: m.SupplierDevPillarMaterialCatalogNavGate,
     })),
   { ssr: false }
 );
@@ -281,8 +272,8 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
         : roleId === 'brand'
           ? brandMessagesB2bOrderContextHref(orderId)
           : roleId === 'supplier'
-            ? factorySupplierMessagesB2bOrderContextHref(orderId)
-            : factoryMessagesB2bOrderContextHref(orderId, { role: 'manufacturer' });
+            ? `/factory/supplier/messages?contextType=b2b_order&contextId=${encodeURIComponent(orderId)}&order=${encodeURIComponent(orderId)}&orderId=${encodeURIComponent(orderId)}&q=${encodeURIComponent(`B2B ${orderId}`)}`
+            : `/factory/messages?contextType=b2b_order&contextId=${encodeURIComponent(orderId)}&order=${encodeURIComponent(orderId)}&orderId=${encodeURIComponent(orderId)}&q=${encodeURIComponent(`B2B ${orderId}`)}&role=manufacturer`;
     if (
       selectedPillar === 'comms' ||
       selectedPillar === 'collection_order' ||
@@ -473,7 +464,7 @@ function RoleCoreCabinetHubInner({ roleId }: Props) {
               {renderPillarAsideButtons()}
               {roleId === 'supplier' && selectedPillar === 'development' ? (
                 <div className="border-border-subtle mt-1 space-y-1 border-t px-2 pt-2">
-                  <SupplierDevPillarMaterialCatalogNav demo={demo} showPeers />
+                  <RoleCoreCabinetHubExtendedBridge demo={demo} showPeers />
                 </div>
               ) : null}
             </nav>

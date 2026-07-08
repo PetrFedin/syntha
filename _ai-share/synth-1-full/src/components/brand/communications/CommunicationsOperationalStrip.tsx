@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 /**
  * Быстрый операционный контур рядом с чатом/календарём: B2B, ЭДО РФ, задачи —
  * профессиональный слой поверх «просто переписки».
@@ -23,10 +25,10 @@ const BRAND_LINKS: { label: string; href: string }[] = [
 
 const SHOP_LINKS: { label: string; href: string }[] = [
   { label: 'B2B-заказы', href: ROUTES.shop.b2bOrders },
-  { label: 'Календарь поставок', href: ROUTES.shop.b2bDeliveryCalendar },
-  { label: 'Документы', href: ROUTES.shop.b2bDocuments },
+  { label: 'Календарь поставок', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
+  { label: 'Документы', href: LEGACY_ROUTES.shop.b2bDocuments },
   { label: 'Контракты', href: ROUTES.shop.b2bContracts },
-  { label: 'Карта B2B', href: ROUTES.shop.b2bWorkspaceMap },
+  { label: 'Карта B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
 ];
 
 export function CommunicationsOperationalStrip({

@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import {
   ROUTES,
   shopB2bOrderHref,
@@ -343,7 +345,7 @@ describe('platform-core-hub-matrix', () => {
       const sHref = sComms.actions.map((a) => a.href).join(' ');
       expect(mHref).toContain('/factory/messages');
       expect(mHref).not.toContain('/brand/messages');
-      expect(mComms.actions.some((a) => a.href === ROUTES.factory.messages)).toBe(false);
+      expect(mComms.actions.some((a) => a.href === EXTENDED_ROUTES.factory.messages)).toBe(false);
       expect(sHref).toContain('/factory/messages');
       expect(sHref).toContain('role=supplier');
       expect(sHref).toContain('/factory/calendar');
@@ -432,8 +434,8 @@ describe('platform-core-hub-matrix', () => {
       const cell = shop.pillars[pillar.id];
       if (cell.kind === 'active') {
         expect(cell.actions.length).toBeLessThanOrEqual(3);
-        expect(cell.actions.some((a) => a.href === ROUTES.shop.b2bCatalog)).toBe(false);
-        expect(cell.actions.some((a) => a.href === ROUTES.shop.b2bDiscover)).toBe(false);
+        expect(cell.actions.some((a) => a.href === LEGACY_ROUTES.shop.b2bCatalog)).toBe(false);
+        expect(cell.actions.some((a) => a.href === LEGACY_ROUTES.shop.b2bDiscover)).toBe(false);
       }
     }
   });
@@ -786,32 +788,32 @@ describe('platform-core-hub-matrix', () => {
   });
 
   it('resolves shop B2B legacy redirects to showroom or matrix', () => {
-    const catalog = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bCatalog, 'FW27');
+    const catalog = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bCatalog, 'FW27');
     expect(catalog?.href).toBe(`${ROUTES.shop.b2bShowroom}?collection=FW27`);
-    const quick = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bQuickOrder, null);
+    const quick = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bQuickOrder, null);
     expect(quick?.href).toBe(`${ROUTES.shop.b2bMatrix}?collection=SS27`);
     expect(resolveShopB2bLegacyRedirect(ROUTES.shop.b2bShowroom, null)).toBeNull();
-    const payment = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bPayment, null);
+    const payment = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bPayment, null);
     expect(payment?.href).toBe(ROUTES.shop.b2bOrders);
     expect(payment?.testId).toBe('platform-core-payment-legacy-redirect');
-    const whiteboard = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bWhiteboard, 'SS27');
+    const whiteboard = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bWhiteboard, 'SS27');
     expect(whiteboard?.href).toBe(`${ROUTES.shop.b2bShowroom}?collection=SS27`);
-    const drafts = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bOrderDrafts, null);
+    const drafts = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bOrderDrafts, null);
     expect(drafts?.href).toBe(ROUTES.shop.b2bOrders);
-    const templates = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bOrderTemplates, 'FW27');
+    const templates = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bOrderTemplates, 'FW27');
     expect(templates?.href).toBe(`${ROUTES.shop.b2bMatrix}?collection=FW27`);
-    const social = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bSocialFeed, null);
+    const social = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bSocialFeed, null);
     expect(social?.href).toBe(ROUTES.shop.b2bPartnersDiscover);
     expect(social?.testId).toBe('platform-core-social-feed-legacy-redirect');
-    const rep = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bSalesRepPortal, 'FW27');
+    const rep = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bSalesRepPortal, 'FW27');
     expect(rep).toBeNull();
-    const apply = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bApply, null);
+    const apply = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bApply, null);
     expect(apply?.href).toBe(ROUTES.shop.b2bPartnersDiscover);
     expect(apply?.testId).toBe('platform-core-apply-legacy-redirect');
-    const agent = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bAgentCabinet, 'FW27');
+    const agent = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bAgentCabinet, 'FW27');
     expect(agent?.href).toBe(`${ROUTES.shop.b2bMatrix}?collection=FW27`);
     expect(agent?.testId).toBe('platform-core-agent-cabinet-legacy-redirect');
-    const vip = resolveShopB2bLegacyRedirect(ROUTES.shop.b2bVipRoomBooking, 'SS27');
+    const vip = resolveShopB2bLegacyRedirect(LEGACY_ROUTES.shop.b2bVipRoomBooking, 'SS27');
     expect(vip?.testId).toBe('platform-core-vip-room-legacy-redirect');
   });
 

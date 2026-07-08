@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
 import { manufacturerCommsEntityThreadSupportsAttachTz } from '@/lib/fashion/factory-comms-entity-thread-attach-tz';
@@ -112,9 +113,9 @@ export function buildManufacturerCommsEntityThreads(input?: {
 }
 
 export function manufacturerCommsInboxHref(): string {
-  return `${ROUTES.factory.messages}?role=manufacturer&${PILLAR_CAPABILITY_FEATURE_PARAM}=inbox`;
+  return `${EXTENDED_ROUTES.factory.messages}?role=manufacturer&${PILLAR_CAPABILITY_FEATURE_PARAM}=inbox`;
 }
 
 export function manufacturerCommsEntitiesHref(): string {
-  return `${ROUTES.factory.messages}?role=manufacturer&${PILLAR_CAPABILITY_FEATURE_PARAM}=entities`;
+  return `${EXTENDED_ROUTES.factory.messages}?role=manufacturer&${PILLAR_CAPABILITY_FEATURE_PARAM}=entities`;
 }

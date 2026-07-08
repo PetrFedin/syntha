@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { manufacturerOrderCommsFeatureHref } from '@/lib/b2b/manufacturer-order-comms';
 import { shopOrderCommsTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -24,7 +25,7 @@ export function buildManufacturerCommsWorkspaceSession(input?: {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const factoryId = input?.factoryId?.trim() || PLATFORM_CORE_DEMO.factoryId;
-  const base = `${ROUTES.factory.messages}?collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}`;
+  const base = `${EXTENDED_ROUTES.factory.messages}?collection=${encodeURIComponent(collectionId)}&factoryId=${encodeURIComponent(factoryId)}`;
 
   return {
     collectionId,

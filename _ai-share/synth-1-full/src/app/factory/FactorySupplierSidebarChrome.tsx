@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { Warehouse } from 'lucide-react';
 import { HubSidebarHeaderGate } from '@/components/hub/HubSidebarHeaderGate';
 import { FactorySupplierLayoutSidebarPanel } from '@/app/factory/supplier/FactorySupplierLayoutSidebarPanel';
@@ -10,7 +12,7 @@ export function FactorySupplierSidebarChrome() {
   return (
     <>
       <HubSidebarHeaderGate
-        href={ROUTES.factory.supplier}
+        href={EXTENDED_ROUTES.factory.supplier}
         icon={Warehouse}
         title="Кабинет поставщика"
         badge="Поставщик"

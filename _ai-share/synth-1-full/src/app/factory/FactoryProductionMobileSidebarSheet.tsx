@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { Factory } from 'lucide-react';
 import { HubMobileSidebarSheet } from '@/components/layout/HubMobileSidebarSheet';
 import { HubSidebarHeader } from '@/components/hub/HubSidebarHeader';
@@ -17,7 +19,7 @@ export function FactoryProductionMobileSidebarSheet({
 }: FactoryProductionMobileSidebarSheetProps) {
   const header = (
     <HubSidebarHeader
-      href={ROUTES.factory.production}
+      href={EXTENDED_ROUTES.factory.production}
       icon={Factory}
       title="Кабинет производства"
       badge="Производство"

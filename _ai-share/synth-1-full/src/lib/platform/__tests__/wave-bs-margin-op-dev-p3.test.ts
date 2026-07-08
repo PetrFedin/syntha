@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { buildShopLandedMarginSession } from '@/lib/b2b/shop-landed-margin';
 import { shopLandedMarginTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
 import { ROUTES } from '@/lib/routes';
@@ -5,7 +6,7 @@ import { ROUTES } from '@/lib/routes';
 describe('wave BS — margin host + OP/dev/supplier spine peers', () => {
   it('margin-analysis href resolves to host page', () => {
     const href = shopLandedMarginTabHref('hub', 'SS27', 'B2B-DEMO-1');
-    expect(href).toContain(ROUTES.shop.b2bMarginAnalysis);
+    expect(href).toContain(LEGACY_ROUTES.shop.b2bMarginAnalysis);
     expect(href).toContain('pcf=hub');
     expect('shop-landed-margin-hub-panel').toContain('hub');
   });

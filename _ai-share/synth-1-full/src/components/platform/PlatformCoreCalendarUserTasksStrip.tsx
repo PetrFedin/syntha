@@ -4,12 +4,8 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  brandMessagesB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  shopMessagesB2bOrderContextHref,
-} from '@/lib/platform-core-routes';
+import { brandMessagesB2bOrderContextHref, shopMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
+import { factoryMessagesB2bOrderContextHref, factorySupplierMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { platformCoreCalendarPcTaskHref } from '@/lib/platform-core-ports/platform/platform-core-comms-pctask-deeplinks';
 
 type CalendarUserTaskRow = {

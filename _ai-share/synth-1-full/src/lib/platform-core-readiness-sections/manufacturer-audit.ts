@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -95,7 +96,7 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: () => `${ROUTES.factory.production}#sample-queue`,
+      resolveHref: () => `${EXTENDED_ROUTES.factory.production}#sample-queue`,
     },
     {
       id: 'mfr-dev-status',
@@ -137,7 +138,7 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(d.collectionId)}`,
+        `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(d.collectionId)}`,
     },
   ],
   order_production: [
@@ -378,7 +379,7 @@ export const MANUFACTURER_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: () =>
-        `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
+        `${EXTENDED_ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
     },
     {
       id: 'mfr-cm-cabinet',

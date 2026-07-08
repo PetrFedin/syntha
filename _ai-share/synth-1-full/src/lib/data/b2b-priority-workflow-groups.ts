@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { ROUTES } from '@/lib/routes';
 import { COLLECTION_DEV_HUB_TITLE_RU } from '@/lib/production/collection-development-labels';
 import type { EntityLink } from '@/lib/data/entity-links';
@@ -49,10 +51,10 @@ export function getBrandB2bOrderPriorityGroups(styleId?: string): PriorityWorkfl
       subtitle: 'Ядро №2 · JOOR / NuOrder · заказ и коммерция',
       variant: 'commerce',
       links: [
-        { label: 'Прайс-листы', href: ROUTES.brand.priceLists },
+        { label: 'Прайс-листы', href: LEGACY_ROUTES.brand.priceLists },
         { label: 'Лайншиты', href: ROUTES.brand.b2bLinesheets },
         { label: 'Предзаказы', href: ROUTES.brand.preOrders },
-        { label: 'Заявки на изменение', href: ROUTES.brand.orderAmendments },
+        { label: 'Заявки на изменение', href: LEGACY_ROUTES.brand.orderAmendments },
         { label: 'LIVE B2B', href: ROUTES.brand.processLiveB2b },
         { label: 'Production (хаб)', href: ROUTES.brand.production },
       ],
@@ -109,10 +111,10 @@ export function getBrandB2bOrderPriorityGroups(styleId?: string): PriorityWorkfl
       links: [
         { label: 'Контроль-центр', href: ROUTES.brand.controlCenter },
         { label: 'Интеграции', href: ROUTES.brand.integrations },
-        { label: 'B2B Passport · выставки', href: ROUTES.brand.b2bPassport },
-        { label: 'Согласование заказа', href: ROUTES.brand.orderApprovalWorkflow },
-        { label: 'Качество каталога', href: ROUTES.brand.catalogQuality },
-        { label: 'Синдикация контента', href: ROUTES.brand.contentSyndication },
+        { label: 'B2B Passport · выставки', href: LEGACY_ROUTES.brand.b2bPassport },
+        { label: 'Согласование заказа', href: LEGACY_ROUTES.brand.orderApprovalWorkflow },
+        { label: 'Качество каталога', href: LEGACY_ROUTES.brand.catalogQuality },
+        { label: 'Синдикация контента', href: LEGACY_ROUTES.brand.contentSyndication },
       ],
     },
   ]);
@@ -136,12 +138,12 @@ export function getShopB2bOrderPriorityGroups(styleId?: string): PriorityWorkflo
       subtitle: 'Ядро №2 · каталог · fulfillment · оплата',
       variant: 'commerce',
       links: [
-        { label: 'Каталог B2B', href: ROUTES.shop.b2bCatalog },
+        { label: 'Каталог B2B', href: LEGACY_ROUTES.shop.b2bCatalog },
         { label: 'Реестр заказов', href: ROUTES.shop.b2bOrders },
-        { label: 'Fulfillment', href: ROUTES.shop.b2bFulfillmentDashboard },
+        { label: 'Fulfillment', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
         { label: 'Трекинг', href: ROUTES.shop.b2bTracking },
-        { label: 'Календарь поставок', href: ROUTES.shop.b2bDeliveryCalendar },
-        { label: 'Оплата (JOOR Pay)', href: ROUTES.shop.b2bPayment },
+        { label: 'Календарь поставок', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
+        { label: 'Оплата (JOOR Pay)', href: LEGACY_ROUTES.shop.b2bPayment },
       ],
     },
     {
@@ -180,10 +182,10 @@ export function getShopB2bOrderPriorityGroups(styleId?: string): PriorityWorkflo
       subtitle: 'Договоры · отчётность · прозрачность',
       variant: 'rf',
       links: [
-        { label: 'Документы B2B', href: ROUTES.shop.b2bDocuments },
+        { label: 'Документы B2B', href: LEGACY_ROUTES.shop.b2bDocuments },
         { label: 'Контракты B2B', href: ROUTES.shop.b2bContracts },
-        { label: 'Отчёты партнёра', href: ROUTES.shop.b2bReports },
-        { label: 'Аналитика закупок', href: ROUTES.shop.b2bAnalytics },
+        { label: 'Отчёты партнёра', href: LEGACY_ROUTES.shop.b2bReports },
+        { label: 'Аналитика закупок', href: LEGACY_ROUTES.shop.b2bAnalytics },
       ],
     },
     {
@@ -192,10 +194,10 @@ export function getShopB2bOrderPriorityGroups(styleId?: string): PriorityWorkflo
       subtitle: 'Видимость ТЗ у бренда · SLA · маржа',
       variant: 'differentiator',
       links: [
-        { label: 'Карта процессов B2B', href: ROUTES.shop.b2bWorkspaceMap },
+        { label: 'Карта процессов B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
         { label: 'Маржа по брендам', href: ROUTES.shop.b2bMarginReport },
         { label: 'Discover брендов', href: ROUTES.shop.b2bPartnersDiscover },
-        { label: 'Качество каталога (бренд)', href: ROUTES.brand.catalogQuality },
+        { label: 'Качество каталога (бренд)', href: LEGACY_ROUTES.brand.catalogQuality },
       ],
     },
   ]);
@@ -259,7 +261,7 @@ export function getShopB2bCollaborationProcessGroups(): PriorityWorkflowGroup[] 
       links: [
         { label: 'Сообщения', href: ROUTES.shop.messages },
         { label: 'Календарь', href: ROUTES.shop.calendar },
-        { label: 'Календарь поставок', href: ROUTES.shop.b2bDeliveryCalendar },
+        { label: 'Календарь поставок', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
         { label: 'Календарь закупок', href: ROUTES.shop.b2bPurchaseCalendar },
       ],
     },
@@ -271,10 +273,10 @@ export function getShopB2bCollaborationProcessGroups(): PriorityWorkflowGroup[] 
       links: [
         { label: 'Создать заказ', href: ROUTES.shop.b2bCreateOrder },
         { label: 'Матрица заказа', href: ROUTES.shop.b2bMatrix },
-        { label: 'Подборки (selection)', href: ROUTES.shop.b2bSelectionBuilder },
-        { label: 'Доска ассортимента', href: ROUTES.shop.b2bWhiteboard },
+        { label: 'Подборки (selection)', href: LEGACY_ROUTES.shop.b2bSelectionBuilder },
+        { label: 'Доска ассортимента', href: LEGACY_ROUTES.shop.b2bWhiteboard },
         { label: 'Working Order (Excel)', href: ROUTES.shop.b2bWorkingOrder },
-        { label: 'Каталог B2B', href: ROUTES.shop.b2bCatalog },
+        { label: 'Каталог B2B', href: LEGACY_ROUTES.shop.b2bCatalog },
       ],
     },
     {
@@ -283,7 +285,7 @@ export function getShopB2bCollaborationProcessGroups(): PriorityWorkflowGroup[] 
       subtitle: 'Replenishment · маржа · розница · сезон',
       variant: 'execution',
       links: [
-        { label: 'Replenishment workspace', href: ROUTES.shop.b2bReplenishment },
+        { label: 'Replenishment workspace', href: LEGACY_ROUTES.shop.b2bReplenishment },
         { label: 'Аналитика по заказам', href: ROUTES.shop.b2bOrderAnalytics },
         { label: 'Маржа по брендам', href: ROUTES.shop.b2bMarginReport },
         { label: 'Аналитика розницы', href: ROUTES.shop.analytics },
@@ -373,7 +375,7 @@ export function getSynthaThreeCoresFullMatrixGroups(): PriorityWorkflowGroup[] {
         { label: 'Создать заказ (байер)', href: ROUTES.shop.b2bCreateOrder },
         { label: 'Реестр заказов (байер)', href: ROUTES.shop.b2bOrders },
         { label: 'Матрица заказа', href: ROUTES.shop.b2bMatrix },
-        { label: 'Подборки (selection)', href: ROUTES.shop.b2bSelectionBuilder },
+        { label: 'Подборки (selection)', href: LEGACY_ROUTES.shop.b2bSelectionBuilder },
         { label: 'Working Order · Excel', href: ROUTES.shop.b2bWorkingOrder },
         { label: 'LIVE B2B', href: ROUTES.brand.processLiveB2b },
       ],
@@ -388,7 +390,7 @@ export function getSynthaThreeCoresFullMatrixGroups(): PriorityWorkflowGroup[] {
         { label: 'Сообщения · байер', href: ROUTES.shop.messages },
         { label: 'Календарь · задачи (бренд)', href: `${ROUTES.brand.calendar}?layers=tasks` },
         { label: 'Календарь · задачи (байер)', href: `${ROUTES.shop.calendar}?layers=tasks` },
-        { label: 'Календарь поставок', href: ROUTES.shop.b2bDeliveryCalendar },
+        { label: 'Календарь поставок', href: LEGACY_ROUTES.shop.b2bDeliveryCalendar },
         { label: 'Календарь закупок', href: ROUTES.shop.b2bPurchaseCalendar },
       ],
     },
@@ -400,7 +402,7 @@ export function getSynthaThreeCoresFullMatrixGroups(): PriorityWorkflowGroup[] {
       links: [
         { label: 'Заказы байера (ритейл)', href: ROUTES.shop.b2bOrders },
         { label: 'Заказы бренда (исполнение)', href: ROUTES.brand.b2bOrders },
-        { label: 'Производственный хаб (factory)', href: ROUTES.factory.production },
+        { label: 'Производственный хаб (factory)', href: EXTENDED_ROUTES.factory.production },
         { label: 'Контроль-центр', href: ROUTES.brand.controlCenter },
         { label: 'Интеграции', href: ROUTES.brand.integrations },
       ],

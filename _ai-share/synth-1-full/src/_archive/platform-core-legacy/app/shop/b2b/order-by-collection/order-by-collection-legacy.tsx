@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,14 +75,14 @@ export function ShopB2bOrderByCollectionLegacyPage() {
           variant="outline"
           className="rounded-xl text-[10px] font-black uppercase tracking-widest"
         >
-          <Link href={ROUTES.shop.b2bLookbooks}>Мои лукбуки</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bLookbooks}>Мои лукбуки</Link>
         </Button>
       </div>
 
       <RelatedModulesBlock
         title="Связанные разделы"
         links={getShopB2BHubLinks().filter((l) =>
-          [ROUTES.shop.b2bShowroom, ROUTES.shop.b2bLookbooks, ROUTES.shop.b2bCreateOrder].includes(
+          [ROUTES.shop.b2bShowroom, LEGACY_ROUTES.shop.b2bLookbooks, ROUTES.shop.b2bCreateOrder].includes(
             l.href as string
           )
         )}

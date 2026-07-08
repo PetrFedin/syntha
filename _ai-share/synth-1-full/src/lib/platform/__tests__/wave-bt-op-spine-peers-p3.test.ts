@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { buildBrandProductionHandoffSession } from '@/lib/brand-production/brand-production-handoff';
 import { buildManufacturerProductionOpsSession } from '@/lib/production/manufacturer-production-ops';
 import { buildSupplierProcurementSession } from '@/lib/fashion/supplier-procurement-workspace';
@@ -30,7 +31,7 @@ describe('wave BT — OP spine peers wired (brand/mfr/supplier)', () => {
       orderId: 'B2B-DEMO-1',
       factoryId: 'FACTORY-1',
     });
-    expect(session.handoffQueueHref).toContain(ROUTES.factory.production);
+    expect(session.handoffQueueHref).toContain(EXTENDED_ROUTES.factory.production);
     expect('mfr-op-cabinet-spine-peer-strip').toContain('spine-peer');
     expect('mfr-op-cabinet-handoff-link').toContain('handoff');
     expect('mfr-op-cabinet-chat-link').toContain('chat');

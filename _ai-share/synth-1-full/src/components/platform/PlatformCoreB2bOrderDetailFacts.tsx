@@ -18,25 +18,8 @@ import { usePlatformCoreOrderDetailPillarId } from '@/hooks/use-platform-core-or
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
-import {
-  ROUTES,
-  brandB2bOrderChainContextHref,
-  brandB2bOrderHandoffContextHref,
-  brandCalendarB2bOrderContextHref,
-  brandMessagesB2bOrderContextHref,
-  brandW2ProductionTzHref,
-  factoryProductionDossierHref,
-  factoryProductionHandoffQueueHref,
-  factoryProductionOrdersOrderContextHref,
-  shopCalendarB2bOrderContextHref,
-  shopB2bTrackingOrderHref,
-  shopB2bMatrixReorderHref,
-  shopB2bOrderProductionContextHref,
-  shopB2bOrdersCollectionRegistryHref,
-  shopB2bOrdersProductionRegistryHref,
-  shopMessagesB2bOrderContextHref,
-  brandB2bOrdersCollectionRegistryHref,
-} from '@/lib/platform-core-routes';
+import { ROUTES, brandB2bOrderChainContextHref, brandB2bOrderHandoffContextHref, brandCalendarB2bOrderContextHref, brandMessagesB2bOrderContextHref, brandW2ProductionTzHref, shopCalendarB2bOrderContextHref, shopB2bTrackingOrderHref, shopB2bMatrixReorderHref, shopB2bOrderProductionContextHref, shopB2bOrdersCollectionRegistryHref, shopB2bOrdersProductionRegistryHref, shopMessagesB2bOrderContextHref, brandB2bOrdersCollectionRegistryHref } from '@/lib/platform-core-routes';
+import { factoryProductionDossierHref, factoryProductionHandoffQueueHref, factoryProductionOrdersOrderContextHref } from '@/lib/platform-core-extended-routes';
 import {
   getPlatformCoreCollectionLabel,
   getPlatformCoreDemoByOrderId,

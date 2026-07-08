@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { brandAgentRepShopPortalReadOnlyHref } from '@/lib/fashion/brand-agent-rep-oversight';
 import { SHOP_AGENT_REP_COMMISSION_PAYOUT_API } from '@/lib/b2b/shop-agent-rep-wave-ws';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -30,7 +31,7 @@ export function brandAgentRepShopRepPayoutPeerHref(input?: {
     params.set('rep', input.repId.trim());
   }
   params.set('payoutPeer', 'brand-dispute');
-  return `${ROUTES.shop.b2bSalesRepPortal}?${params.toString()}`;
+  return `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${params.toString()}`;
 }
 
 export function brandAgentRepShopPortalReadOnlyLinkHref(): string {

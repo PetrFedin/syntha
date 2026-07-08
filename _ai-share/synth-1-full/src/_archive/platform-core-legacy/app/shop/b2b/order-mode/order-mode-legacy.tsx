@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +38,7 @@ const modes: Array<{
     description:
       'Повтор заказа из прошлого сезона. Скопируйте прошлый заказ и измените позиции или количество.',
     icon: RefreshCcw,
-    href: ROUTES.shop.b2bReorder,
+    href: LEGACY_ROUTES.shop.b2bReorder,
     iconBg: 'bg-accent-primary/15',
     iconColor: 'text-accent-primary',
   },
@@ -89,12 +91,12 @@ export function ShopB2bOrderModeLegacyPage() {
       </div>
       <div className="mt-6 flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>
             <Package className="mr-1 h-3 w-3" /> Каталог
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bAssortmentPlanning}>
+          <Link href={LEGACY_ROUTES.shop.b2bAssortmentPlanning}>
             <Layers className="mr-1 h-3 w-3" /> Планирование ассортимента
           </Link>
         </Button>

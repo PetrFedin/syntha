@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Куда «относится» B2B-функционал в иерархии кабинетов и с кем стык.
  * Раньше рендерилось на `/shop/b2b` (сейчас корень редиректит на `/shop`); данные можно использовать в админке/доках.
@@ -33,7 +35,7 @@ export const CABINET_B2B_ROUTING_MATRIX: CabinetB2bRoutingRow[] = [
     anchors: buildShopCabinetAnchors(),
     peers: [
       { label: 'Реестр B2B заказов (бренд)', href: ROUTES.brand.b2bOrders },
-      { label: 'Выставки (бренд)', href: ROUTES.brand.tradeShows },
+      { label: 'Выставки (бренд)', href: LEGACY_ROUTES.brand.tradeShows },
       { label: 'Кабинет дистрибутора', href: ROUTES.distributor.home },
       { label: 'Админ: мосты B2B', href: ROUTES.admin.home },
     ],
@@ -46,7 +48,7 @@ export const CABINET_B2B_ROUTING_MATRIX: CabinetB2bRoutingRow[] = [
     homeHref: ROUTES.brand.home,
     anchors: buildBrandCabinetAnchors(),
     peers: [
-      { label: 'Discover (ритейл)', href: ROUTES.shop.b2bDiscover },
+      { label: 'Discover (ритейл)', href: LEGACY_ROUTES.shop.b2bDiscover },
       { label: 'Заказы байера', href: ROUTES.shop.b2bOrders },
       { label: 'Загрузка остатков ритейла', href: ROUTES.shop.inventory },
       { label: 'Производство', href: ROUTES.brand.production },
@@ -61,8 +63,8 @@ export const CABINET_B2B_ROUTING_MATRIX: CabinetB2bRoutingRow[] = [
     anchors: [
       { label: 'Дашборд DIST', href: ROUTES.distributor.home },
       { label: 'B2B заказы', href: ROUTES.shop.b2bOrders },
-      { label: 'Каталог', href: ROUTES.shop.b2bCatalog },
-      { label: 'Карта процессов', href: ROUTES.shop.b2bWorkspaceMap },
+      { label: 'Каталог', href: LEGACY_ROUTES.shop.b2bCatalog },
+      { label: 'Карта процессов', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
     ],
     peers: [
       { label: 'Ритейл-центр', href: ROUTES.shop.home },
@@ -74,9 +76,9 @@ export const CABINET_B2B_ROUTING_MATRIX: CabinetB2bRoutingRow[] = [
     title: 'Производство / поставщик',
     blurb:
       'Исполнение, QC, материалы и RFQ; стыкуется с заказами бренда и загрузкой остатков у ритейлера.',
-    homeHref: ROUTES.factory.production,
+    homeHref: EXTENDED_ROUTES.factory.production,
     anchors: [
-      { label: 'Хаб factory', href: ROUTES.factory.production },
+      { label: 'Хаб factory', href: EXTENDED_ROUTES.factory.production },
       { label: 'Production (бренд)', href: ROUTES.brand.production },
       { label: 'Supplier RFQ', href: ROUTES.brand.suppliersRfq },
       { label: 'Поиск поставщиков (ритейл)', href: ROUTES.shop.b2bSupplierDiscovery },
@@ -94,11 +96,11 @@ export const CABINET_B2B_ROUTING_MATRIX: CabinetB2bRoutingRow[] = [
     homeHref: ROUTES.admin.home,
     anchors: [
       { label: 'Админ', href: ROUTES.admin.home },
-      { label: 'Discover (контроль)', href: ROUTES.shop.b2bDiscover },
-      { label: 'Карта B2B', href: ROUTES.shop.b2bWorkspaceMap },
-      { label: 'RFQ', href: ROUTES.shop.b2bRfq },
-      { label: 'Тендеры', href: ROUTES.shop.b2bTenders },
-      { label: 'Fulfillment', href: ROUTES.shop.b2bFulfillmentDashboard },
+      { label: 'Discover (контроль)', href: LEGACY_ROUTES.shop.b2bDiscover },
+      { label: 'Карта B2B', href: LEGACY_ROUTES.shop.b2bWorkspaceMap },
+      { label: 'RFQ', href: LEGACY_ROUTES.shop.b2bRfq },
+      { label: 'Тендеры', href: LEGACY_ROUTES.shop.b2bTenders },
+      { label: 'Fulfillment', href: LEGACY_ROUTES.shop.b2bFulfillmentDashboard },
     ],
     peers: [
       { label: 'Ритейл', href: ROUTES.shop.home },

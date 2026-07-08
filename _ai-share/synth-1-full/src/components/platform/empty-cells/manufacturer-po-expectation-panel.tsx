@@ -11,7 +11,8 @@ import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factoryMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
+
+import { factoryMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { RolePillarCrossRoleLinks } from '@/components/platform/RolePillarCrossRoleLinks';
 import { MfrEmptyCoPeerStrip } from '@/components/platform/empty-cells/MfrEmptyCoPeerStrip';
 import { MfrEmptyHandoffCountBadge } from '@/components/platform/empty-cells/MfrEmptyHandoffCountBadge';

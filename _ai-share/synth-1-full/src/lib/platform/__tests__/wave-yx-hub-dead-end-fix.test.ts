@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import fs from 'node:fs';
 import path from 'node:path';
 import { WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS } from '@/lib/platform/wave-yq-hub-matrix-5x4';
@@ -70,8 +71,8 @@ describe('wave YX — hub dead-end + broken href audit fix (all roles)', () => {
   it('distributor navigation — no legacy discover / order-mode / order-drafts tails', () => {
     const text = read('lib/data/distributor-navigation.ts');
     expect(text).not.toMatch(/ROUTES\.shop\.b2bDiscover[^P]/);
-    expect(text).not.toContain('ROUTES.shop.b2bOrderMode');
-    expect(text).not.toContain('ROUTES.shop.b2bOrderDrafts');
+    expect(text).not.toContain('LEGACY_ROUTES.shop.b2bOrderMode');
+    expect(text).not.toContain('LEGACY_ROUTES.shop.b2bOrderDrafts');
     expect(text).toContain('ROUTES.shop.b2bPartnersDiscover');
     expect(text).toContain('ROUTES.shop.b2bCalendar');
     expect(text).toContain('ROUTES.shop.b2bMatrix');

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useAuth } from '@/providers/auth-provider';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, type ReactNode } from 'react';
@@ -64,8 +66,8 @@ const ROUTE_ROLES: Record<string, string[]> = {
    * Не использовать общий префикс `/factory`: он совпал бы и с `/factory/supplier`, и с `/factory/production`.
    * Порядок: более длинные префиксы не нужны — `supplier` и `production` не пересекаются.
    */
-  [ROUTES.factory.supplier]: ['supplier', 'admin', 'platform_admin'],
-  [ROUTES.factory.production]: [
+  [EXTENDED_ROUTES.factory.supplier]: ['supplier', 'admin', 'platform_admin'],
+  [EXTENDED_ROUTES.factory.production]: [
     'manufacturer',
     'designer',
     'technologist',

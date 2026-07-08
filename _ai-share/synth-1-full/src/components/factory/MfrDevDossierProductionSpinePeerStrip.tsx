@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';
 import { factoryMessagesWorkshop2ArticleContextHref } from '@/lib/routes';
@@ -20,7 +22,7 @@ export function MfrDevDossierProductionSpinePeerStrip({
   collectionId,
   articleId,
 }: Props) {
-  const sampleQueueHref = `${ROUTES.factory.production}#sample-queue`;
+  const sampleQueueHref = `${EXTENDED_ROUTES.factory.production}#sample-queue`;
   const techpackHref = manufacturerHandoffFeatureHref('techpack-ack', {
     factoryId,
     collectionId,

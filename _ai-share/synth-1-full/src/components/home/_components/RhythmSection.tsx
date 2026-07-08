@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -100,9 +102,9 @@ export function RhythmSection() {
     }
 
     if (role === 'manufacturer' || role === 'supplier') {
-      if (title.includes('Производ')) return ROUTES.factory.production;
-      if (title.includes('Сорсинг')) return ROUTES.factory.productionMaterials;
-      return ROUTES.factory.productionCalendar;
+      if (title.includes('Производ')) return EXTENDED_ROUTES.factory.production;
+      if (title.includes('Сорсинг')) return EXTENDED_ROUTES.factory.productionMaterials;
+      return EXTENDED_ROUTES.factory.productionCalendar;
     }
 
     if (role === 'distributor') {

@@ -1,4 +1,4 @@
-import { factoryProductionDossierHref } from '@/lib/platform-core-routes';
+import { brandDevelopmentFactoryDossierPeerHref } from '@/lib/platform-core-baseline-peer-hrefs';
 import { workshop2ArticleHref } from '@/lib/production/workshop2-url';
 
 export type BrandDevelopmentSamplePeerOpts = {
@@ -17,7 +17,7 @@ export function brandDevelopmentSamplePeerHref(
   opts?: BrandDevelopmentSamplePeerOpts
 ): string {
   if (isBrandSampleDispatched(opts?.sampleStatus)) {
-    return factoryProductionDossierHref(articleId, { collectionId });
+    return brandDevelopmentFactoryDossierPeerHref(articleId, { collectionId });
   }
   return workshop2ArticleHref(collectionId, articleId, {
     w2pane: 'sample',

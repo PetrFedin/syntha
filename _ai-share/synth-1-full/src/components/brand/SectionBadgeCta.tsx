@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/routes';
@@ -57,7 +59,7 @@ export function B2BShowroomPartnersBuyersBadges() {
       <SectionBadgeLink href={ROUTES.brand.showroom}>Шоурум</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.retailers}>Партнёры</SectionBadgeLink>
-      <SectionBadgeLink href={ROUTES.brand.buyerApplications}>Заявки байеров</SectionBadgeLink>
+      <SectionBadgeLink href={LEGACY_ROUTES.brand.buyerApplications}>Заявки байеров</SectionBadgeLink>
     </>
   );
 }
@@ -89,7 +91,7 @@ export function B2BOrdersAmendmentsFinanceBadges() {
   return (
     <>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
-      <SectionBadgeLink href={ROUTES.brand.orderAmendments}>Заявки на изменение</SectionBadgeLink>
+      <SectionBadgeLink href={LEGACY_ROUTES.brand.orderAmendments}>Заявки на изменение</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.finance}>Финансы</SectionBadgeLink>
     </>
   );
@@ -100,7 +102,7 @@ export function B2BOrdersApprovalBadges() {
   return (
     <>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
-      <SectionBadgeLink href={ROUTES.brand.orderApprovalWorkflow}>
+      <SectionBadgeLink href={LEGACY_ROUTES.brand.orderApprovalWorkflow}>
         Согласование заказов
       </SectionBadgeLink>
     </>
@@ -142,7 +144,7 @@ export function MaterialsSuppliersBadges() {
 export function PreOrderQuotaBadges() {
   return (
     <>
-      <SectionBadgeLink href={ROUTES.shop.b2bPreOrder}>Предзаказ</SectionBadgeLink>
+      <SectionBadgeLink href={LEGACY_ROUTES.shop.b2bPreOrder}>Предзаказ</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.b2bOrders}>{B2B_ORDERS_REGISTRY_LABEL}</SectionBadgeLink>
       <SectionBadgeLink href={ROUTES.brand.planning}>Планирование</SectionBadgeLink>
     </>

@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { buildShopInventoryOpsSession } from '@/lib/b2b/shop-inventory-ops';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import {
@@ -72,6 +73,6 @@ export function buildShopReplenishmentSession(input?: {
     brandOrderChatHref: brandOrderCommsTabHref('chat', orderId, collectionId),
     shopShowroomHref: shopShowroomTabHref('showroom', collectionId, orderId),
     platformMarketroomHref: `${PLATFORM_CORE_B2B_MARKETROOM_HREF}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=showcase`,
-    supplierForecastHref: `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`,
+    supplierForecastHref: `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`,
   };
 }

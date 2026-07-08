@@ -9,10 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
-import {
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-} from '@/lib/platform-core-routes';
+
+import { factorySupplierMessagesWorkshop2ArticleContextHref, factorySupplierCalendarB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { PLATFORM_CORE_B2B_MESSAGE_TEMPLATES } from '@/lib/platform-core-ports/communications/platform-core-b2b-message-templates';
 import type { SupplierProcurementBomLine } from '@/lib/platform-core-pillar-snapshot.types';
 

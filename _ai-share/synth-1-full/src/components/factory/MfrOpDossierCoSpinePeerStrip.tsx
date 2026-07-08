@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { buildManufacturerHandoffQueueSession } from '@/lib/production/manufacturer-handoff-queue';
 import {
@@ -27,7 +29,7 @@ export function MfrOpDossierCoSpinePeerStrip({ factoryId, collectionId, orderId 
     demoOrderId: orderId,
   };
   const procurementHref = factoryMaterialsProcurementHrefForDemo(demo, { role: 'manufacturer' });
-  const sampleQueueHref = `${ROUTES.factory.production}#sample-queue`;
+  const sampleQueueHref = `${EXTENDED_ROUTES.factory.production}#sample-queue`;
 
   return (
     <div

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import React, { useState, Suspense, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -59,7 +61,7 @@ function SupplierLayoutContent({ children }: { children: React.ReactNode }) {
       hub: 'distributor' as const,
     },
     {
-      href: ROUTES.factory.production,
+      href: EXTENDED_ROUTES.factory.production,
       label: 'Производство',
       icon: Factory,
       hub: 'factory' as const,
@@ -106,7 +108,7 @@ function SupplierLayoutContent({ children }: { children: React.ReactNode }) {
           className={cn(cabinetHubLayout.asideChrome, cabinetSidebarLayout.asideWidthStandard)}
         >
           <HubSidebarHeader
-            href={ROUTES.factory.supplier}
+            href={EXTENDED_ROUTES.factory.supplier}
             icon={Warehouse}
             title="Кабинет поставщика"
             badge="Поставщик"
@@ -119,7 +121,7 @@ function SupplierLayoutContent({ children }: { children: React.ReactNode }) {
             ) : (
               <HubSidebar
                 groups={adjustedSupplierNavGroups}
-                basePath={ROUTES.factory.supplier}
+                basePath={EXTENDED_ROUTES.factory.supplier}
                 accentClass="text-emerald-600"
                 activeBgClass="bg-emerald-600"
                 sidebarClusters={SYNTHA_SIDEBAR_CLUSTERS}
@@ -134,7 +136,7 @@ function SupplierLayoutContent({ children }: { children: React.ReactNode }) {
           <SheetContent side="left" className="flex w-72 flex-col gap-0 p-0">
             <div className="shrink-0 pb-0 pt-12">
               <HubSidebarHeader
-                href={ROUTES.factory.supplier}
+                href={EXTENDED_ROUTES.factory.supplier}
                 icon={Warehouse}
                 title="Кабинет поставщика"
                 badge="Поставщик"
@@ -153,7 +155,7 @@ function SupplierLayoutContent({ children }: { children: React.ReactNode }) {
               ) : (
                 <HubSidebar
                   groups={adjustedSupplierNavGroups}
-                  basePath={ROUTES.factory.supplier}
+                  basePath={EXTENDED_ROUTES.factory.supplier}
                   accentClass="text-emerald-600"
                   activeBgClass="bg-emerald-600"
                   onNavigate={() => setSidebarOpen(false)}

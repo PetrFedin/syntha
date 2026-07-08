@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Wave YO — supplier comms 4.3: quote peer RFQ dedupe, chain-status materials_supplied push,
  * calendar logistics ETA strip polish (extends wave VO/XD).
@@ -78,5 +79,5 @@ export function supCmQuotePeerHrefsForDemo(
 }
 
 export function supCmRfqInboxRoutePath(): string {
-  return ROUTES.factory.supplierRfqInbox;
+  return EXTENDED_ROUTES.factory.supplierRfqInbox;
 }

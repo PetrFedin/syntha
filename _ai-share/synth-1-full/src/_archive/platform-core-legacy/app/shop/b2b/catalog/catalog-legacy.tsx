@@ -1,5 +1,8 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -363,7 +366,7 @@ export function ShopB2bCatalogLegacyPage() {
                   </Link>
                 </Button>
                 <Button size="sm" variant="ghost" className="text-xs" asChild>
-                  <Link href={ROUTES.factory.production}>
+                  <Link href={EXTENDED_ROUTES.factory.production}>
                     <Factory className="mr-1 size-3" /> Factory
                   </Link>
                 </Button>
@@ -380,7 +383,7 @@ export function ShopB2bCatalogLegacyPage() {
             бренда.
           </p>
           <Button variant="outline" className="mt-4" asChild>
-            <Link href={ROUTES.shop.b2bDiscover}>Discover</Link>
+            <Link href={LEGACY_ROUTES.shop.b2bDiscover}>Discover</Link>
           </Button>
         </Card>
       )}

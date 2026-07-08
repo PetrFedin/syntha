@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { ArrowUpRight, Map } from 'lucide-react';
 import { ROUTES } from '@/lib/routes';
@@ -62,7 +64,7 @@ export function FactorySupplierLegacyPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" className="text-[10px] font-black uppercase" asChild>
-            <Link href={ROUTES.shop.b2bWorkspaceMap}>
+            <Link href={LEGACY_ROUTES.shop.b2bWorkspaceMap}>
               <Map className="mr-2 size-3.5" />
               Карта процессов B2B
             </Link>

@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import 'server-only';
 
 import {
@@ -73,7 +74,7 @@ async function notifySupplierLinesheetBomPreview(input: {
 }): Promise<void> {
   const collectionId = input.collectionId.trim();
   if (!collectionId || input.articleIds.length === 0) return;
-  const href = `${ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(collectionId)}`;
+  const href = `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(collectionId)}`;
   await appendPlatformCoreNotificationEvent({
     role: 'supplier',
     scopeKey: `linesheet:${collectionId}`,

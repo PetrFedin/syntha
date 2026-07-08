@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -493,10 +495,10 @@ export function ShopB2bSelectionBuilderLegacyPage() {
           <Link href={ROUTES.shop.b2bMatrix}>Открыть матрицу заказа</Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={ROUTES.shop.b2bAssortmentPlanning}>Планирование ассортимента</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bAssortmentPlanning}>Планирование ассортимента</Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>B2B каталог</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>B2B каталог</Link>
         </Button>
       </div>
       <RelatedModulesBlock

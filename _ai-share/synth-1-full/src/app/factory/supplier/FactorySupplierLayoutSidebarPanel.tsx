@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 /**
  * Сайдбар factory/supplier layout — supplierNavGroups в отдельном chunk.
  */
@@ -46,7 +48,7 @@ export function FactorySupplierLayoutSidebarPanel({
   return (
     <HubSidebarLazy
       groups={groups}
-      basePath={ROUTES.factory.supplier}
+      basePath={EXTENDED_ROUTES.factory.supplier}
       ariaLabel="Меню поставщика"
       accentClass="text-emerald-600"
       activeBgClass="bg-emerald-600"

@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
-import { ROUTES } from '@/lib/platform-core-routes';
+import { ROUTES } from '@/lib/platform-core-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 type Props = {
@@ -63,7 +64,7 @@ export function SupEmptyScLinesheetNotifyStrip({ collectionId, articleId }: Prop
     void reload();
   }, [reload]);
 
-  const bomHref = `${ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(collectionId)}${articleId ? `&article=${encodeURIComponent(articleId)}` : ''}`;
+  const bomHref = `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(collectionId)}${articleId ? `&article=${encodeURIComponent(articleId)}` : ''}`;
 
   return (
     <div

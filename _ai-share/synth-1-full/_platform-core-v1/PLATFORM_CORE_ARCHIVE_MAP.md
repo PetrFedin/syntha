@@ -150,3 +150,31 @@ E2E: `core-249-wave-5-golden-cross-role-embedded.spec.ts` — counts 12/15 си�
 Зону можно вернуть, только если она напрямую обслуживает один из 5 столпов для
 `brand`/`shop` и проходит: PG live + audit без `bad` + сквозной переход без
 dead-link. Иначе остаётся в `_archive`/`_extended`.
+
+## Сделано в партии №11 (routes cleanup + import boundaries)
+
+| Что | Откуда | Куда / результат |
+|-----|--------|------------------|
+| Baseline `ROUTES` | monolith `platform-core-routes.ts` | только brand/shop keys |
+| Factory routes + helpers | `platform-core-routes.ts` | `platform-core-extended-routes.ts` |
+| Advanced B2B paths | `ROUTES.brand/shop.*` | `LEGACY_ROUTES` в `platform-core-legacy-routes.ts` |
+| `/brand/core`, `/shop/core` | `@/lib/routes` fallback | `fallbackHref="/platform"` |
+| Import guard | — | `src/lib/__tests__/platform-core-boundaries.test.ts` |
+| RoleCoreCabinetHub supplier nav | direct `@/components/factory` | `components/platform/extended/*` (dynamic) |
+| Backend plan | — | `docs/BACKEND_PLATFORM_CORE_BASELINE.md` |
+
+**Правило:** baseline Platform Core не импортирует `@/lib/routes`, `_archive`, `_extended`,
+`platform-core-extended-routes`, `platform-core-legacy-routes`, factory/supplier components.
+
+## Сделано в партии №12 (Phase 18 — architectural separation)
+
+| Что | Результат |
+|-----|-----------|
+| Backend baseline router | `app/api/platform_core_baseline.py` + flag `PLATFORM_CORE_BASELINE` |
+| Backend extended router | `app/api/platform_core_extended.py` |
+| Readiness routes bridge | `platform-core-readiness-routes.ts` — audits без `@/lib/routes` |
+| Dependency graph | `docs/PLATFORM_CORE_DEPENDENCY_GRAPH.md` |
+| Full architecture audit | `docs/FULL_ARCHITECTURE_AUDIT.md` |
+| Readiness report | `docs/PLATFORM_CORE_READINESS.md` |
+| Cabinet workspace | extended paths as literals — no `extended-routes` import |
+| Handoff notification server | `platform-core-extended-routes` instead of `@/lib/routes` |

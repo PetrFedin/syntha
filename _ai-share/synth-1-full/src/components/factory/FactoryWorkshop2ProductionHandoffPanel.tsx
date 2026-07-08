@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -288,7 +290,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
             <CardDescription className="text-xs">
               Быстрая bulk-приёмка здесь · MES, ERP и полный реестр —{' '}
               <Link
-                href={ROUTES.factory.productionOrders}
+                href={EXTENDED_ROUTES.factory.productionOrders}
                 data-testid="mfr-op-handoff-queue-registry-link"
                 className="text-accent-primary font-medium hover:underline"
               >
@@ -332,14 +334,14 @@ export function FactoryWorkshop2ProductionHandoffPanel({
             ) : null}
           </div>
         </div>
-        <MfrOpHandoffQueueRegistrySoTStrip registryHref={ROUTES.factory.productionOrders} />
+        <MfrOpHandoffQueueRegistrySoTStrip registryHref={EXTENDED_ROUTES.factory.productionOrders} />
         <MfrOpWipGanttSoTStrip
           variant="handoff-owner"
-          registryHref={ROUTES.factory.productionOrders}
+          registryHref={EXTENDED_ROUTES.factory.productionOrders}
         />
         <MfrOpWipFloorTabletSoTStrip
           variant="handoff-owner"
-          registryHref={ROUTES.factory.productionOrders}
+          registryHref={EXTENDED_ROUTES.factory.productionOrders}
         />
         {spineCollectionId ? (
           <MfrOpHandoffQueueCoSpinePeerStrip

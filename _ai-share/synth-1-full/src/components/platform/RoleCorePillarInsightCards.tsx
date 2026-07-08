@@ -7,10 +7,51 @@ import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { pillarInsight } from '@/lib/platform-core-cabinet-chrome';
 
-const DevelopmentPillarCard = dynamic(
+/** Baseline chunks — brand/shop не тянут factory/@/components/factory. */
+const DevelopmentPillarCardBrand = dynamic(
   () =>
-    import('@/components/platform/DevelopmentPillarCard').then((m) => ({
-      default: m.DevelopmentPillarCard,
+    import('@/components/platform/pillars/DevelopmentPillarCardBrand').then((m) => ({
+      default: m.DevelopmentPillarCardBrand,
+    })),
+  { ssr: false }
+);
+
+const DevelopmentPillarCardManufacturer = dynamic(
+  () =>
+    import('@/components/platform/pillars/DevelopmentPillarCardManufacturer').then((m) => ({
+      default: m.DevelopmentPillarCardManufacturer,
+    })),
+  { ssr: false }
+);
+
+const CommsPillarCardBaseline = dynamic(
+  () =>
+    import('@/components/platform/pillars/CommsPillarCardBaseline').then((m) => ({
+      default: m.CommsPillarCardBaseline,
+    })),
+  { ssr: false }
+);
+
+const CommsPillarCardExtended = dynamic(
+  () =>
+    import('@/components/platform/pillars/CommsPillarCardExtended').then((m) => ({
+      default: m.CommsPillarCardExtended,
+    })),
+  { ssr: false }
+);
+
+const OrderProductionPillarCardBrand = dynamic(
+  () =>
+    import('@/components/platform/pillars/OrderProductionPillarCardBrand').then((m) => ({
+      default: m.OrderProductionPillarCardBrand,
+    })),
+  { ssr: false }
+);
+
+const OrderProductionPillarCardManufacturer = dynamic(
+  () =>
+    import('@/components/platform/pillars/OrderProductionPillarCardManufacturer').then((m) => ({
+      default: m.OrderProductionPillarCardManufacturer,
     })),
   { ssr: false }
 );
@@ -19,14 +60,6 @@ const CollectionOrderPillarCard = dynamic(
   () =>
     import('@/components/platform/CollectionOrderPillarCard').then((m) => ({
       default: m.CollectionOrderPillarCard,
-    })),
-  { ssr: false }
-);
-
-const CommsPillarCard = dynamic(
-  () =>
-    import('@/components/platform/CommsPillarCard').then((m) => ({
-      default: m.CommsPillarCard,
     })),
   { ssr: false }
 );
@@ -51,14 +84,6 @@ const ShopShowroomMini = dynamic(
   () =>
     import('@/components/platform/ShopShowroomMini').then((m) => ({
       default: m.ShopShowroomMini,
-    })),
-  { ssr: false }
-);
-
-const OrderProductionPillarCard = dynamic(
-  () =>
-    import('@/components/platform/OrderProductionPillarCard').then((m) => ({
-      default: m.OrderProductionPillarCard,
     })),
   { ssr: false }
 );
@@ -97,7 +122,7 @@ export function RoleCorePillarInsightCards({
 
   if (roleId === 'brand' && pillarId === 'development') {
     card = (
-      <DevelopmentPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />
+      <DevelopmentPillarCardBrand compact={compact} minimalChrome={minimalChrome} />
     );
   } else if (roleId === 'brand' && pillarId === 'sample_collection') {
     card = (
@@ -114,10 +139,12 @@ export function RoleCorePillarInsightCards({
     );
   } else if (roleId === 'brand' && pillarId === 'order_production') {
     card = (
-      <OrderProductionPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />
+      <OrderProductionPillarCardBrand compact={compact} minimalChrome={minimalChrome} />
     );
   } else if (roleId === 'brand' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="brand" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CommsPillarCardBaseline variant="brand" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'shop' && pillarId === 'collection_order') {
     card = (
       <CollectionOrderPillarCard variant="shop" compact={compact} minimalChrome={minimalChrome} />
@@ -132,12 +159,14 @@ export function RoleCorePillarInsightCards({
       />
     );
   } else if (roleId === 'shop' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="shop" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CommsPillarCardBaseline variant="shop" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'shop' && pillarId === 'order_production') {
     card = <ShopOrderProductionPillarCard compact={compact} minimalChrome={minimalChrome} />;
   } else if (roleId === 'manufacturer' && pillarId === 'development') {
     card = (
-      <DevelopmentPillarCard
+      <DevelopmentPillarCardManufacturer
         variant="manufacturer"
         compact={compact}
         minimalChrome={minimalChrome}
@@ -145,7 +174,7 @@ export function RoleCorePillarInsightCards({
     );
   } else if (roleId === 'manufacturer' && pillarId === 'order_production') {
     card = (
-      <OrderProductionPillarCard
+      <OrderProductionPillarCardManufacturer
         variant="manufacturer"
         compact={compact}
         minimalChrome={minimalChrome}
@@ -153,12 +182,18 @@ export function RoleCorePillarInsightCards({
     );
   } else if (roleId === 'manufacturer' && pillarId === 'comms') {
     card = (
-      <CommsPillarCard variant="manufacturer" compact={compact} minimalChrome={minimalChrome} />
+      <CommsPillarCardExtended
+        variant="manufacturer"
+        compact={compact}
+        minimalChrome={minimalChrome}
+      />
     );
   } else if (roleId === 'supplier' && pillarId === 'order_production') {
     card = <SupplierProcurementPillarCard compact={compact} minimalChrome={minimalChrome} />;
   } else if (roleId === 'supplier' && pillarId === 'comms') {
-    card = <CommsPillarCard variant="supplier" compact={compact} minimalChrome={minimalChrome} />;
+    card = (
+      <CommsPillarCardExtended variant="supplier" compact={compact} minimalChrome={minimalChrome} />
+    );
   } else if (roleId === 'supplier' && pillarId === 'collection_order') {
     card = <SupplierCollectionOrderForecast demo={demo} hideLead embedCrossRole={false} />;
   } else if (roleId === 'supplier' && pillarId === 'development') {

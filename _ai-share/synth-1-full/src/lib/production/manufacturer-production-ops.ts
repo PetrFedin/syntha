@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import { manufacturerOrderCommsFeatureHref } from '@/lib/b2b/manufacturer-order-comms';
@@ -45,7 +46,7 @@ export function buildManufacturerProductionOpsSession(input?: {
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
-  const base = `${ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`;
+  const base = `${EXTENDED_ROUTES.factory.productionOrders}?factoryId=${encodeURIComponent(factoryId)}&collection=${encodeURIComponent(collectionId)}&order=${encodeURIComponent(orderId)}`;
 
   return {
     factoryId,
@@ -61,7 +62,7 @@ export function buildManufacturerProductionOpsSession(input?: {
     dossierHref: factoryProductionDossierContextHref(articleId, { collectionId, orderId }),
     shopTrackingHref: `${shopB2bTrackingOrderHref(orderId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=tracking`,
     shopOrderCommsHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
-    materialsHref: `${ROUTES.factory.productionMaterials}?factoryId=${encodeURIComponent(factoryId)}&order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}`,
+    materialsHref: `${EXTENDED_ROUTES.factory.productionMaterials}?factoryId=${encodeURIComponent(factoryId)}&order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}`,
     brandOrderHandoffHref: brandOrderCommsTabHref('handoff', orderId, collectionId),
     manufacturerOrderCommsHref: manufacturerOrderCommsFeatureHref(orderId, collectionId, factoryId),
     shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),

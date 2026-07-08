@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import type { CommissionRecord } from '@/lib/distributor/sub-agent-commission';
 import type { BrandCrmSegmentObject } from '@/lib/b2b/brand-crm-segment-object';
 import { summarizeBrandCrmSegmentQuery } from '@/lib/b2b/brand-crm-segment-object';
@@ -20,7 +21,7 @@ export function summarizeBrandAgentRepLedger(records: readonly CommissionRecord[
 }
 
 export function brandAgentRepShopPortalHref(): string {
-  return `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`;
+  return `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`;
 }
 
 /** Brand oversight · read-only mirror of shop rep portal (wave UC). */
@@ -29,7 +30,7 @@ export function brandAgentRepShopPortalReadOnlyHref(): string {
 }
 
 export function brandAgentRepShopCommissionHref(): string {
-  return `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission`;
+  return `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission`;
 }
 
 export function brandAgentRepLedgerHref(): string {

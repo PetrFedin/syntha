@@ -1,7 +1,9 @@
 # _archive — вне ядра Platform Core v1
 
 Отдельные продукты и второстепенные advanced-фичи, отключённые от Platform Core.
-Не показывать в core-навигации, не импортировать в baseline. Карта —
+Не показывать в core-навигации, **не импортировать в baseline** (`platform-core-routes`,
+hub-rows, `/brand/core`, `/shop/core`). Advanced B2B/B2C физически лежит здесь;
+redirect/compatibility — через `platform-core-legacy-routes.ts` (middleware, stubs, tests).
 `_platform-core-v1/PLATFORM_CORE_ARCHIVE_MAP.md`, границы —
 `_platform-core-v1/CURSOR_PLATFORM_CORE_DENYLIST.md`.
 

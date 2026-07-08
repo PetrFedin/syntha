@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Wave XN — mfr dev dossier: comment-only annotations (read-only ТЗ, PG journal).
  */
@@ -64,7 +65,7 @@ export function buildMfrDossierAnnotationChatHref(collectionId: string, articleI
 }
 
 export function buildMfrDossierCommentMaterialsHref(collectionId: string): string {
-  return `${ROUTES.factory.productionMaterials}?collection=${encodeURIComponent(collectionId.trim())}`;
+  return `${EXTENDED_ROUTES.factory.productionMaterials}?collection=${encodeURIComponent(collectionId.trim())}`;
 }
 
 export function isWaveXnMfrDossierCommentId(commentId: string): boolean {

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Shop CO golden path — native `/shop/core?section=…` (без legacy `/shop/b2b/*`).
  */
@@ -48,7 +49,7 @@ function shopReplenishmentHref(collectionId: string, orderId: string): string {
     [PILLAR_CAPABILITY_FEATURE_PARAM]: 'replenishment',
   });
   if (orderId.trim()) sp.set('order', orderId.trim());
-  return `${ROUTES.shop.b2bReplenishment}?${sp.toString()}`;
+  return `${LEGACY_ROUTES.shop.b2bReplenishment}?${sp.toString()}`;
 }
 
 export function buildPlatformCoreShopCoGoldenPathSession(input?: {

@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -390,7 +391,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: () => `${ROUTES.factory.calendar}?role=supplier&layers=tasks,orders,logistics`,
+      resolveHref: () => `${EXTENDED_ROUTES.factory.calendar}?role=supplier&layers=tasks,orders,logistics`,
     },
     {
       id: 'sup-cm-cabinet',

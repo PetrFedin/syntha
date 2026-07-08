@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { LucideIcon } from 'lucide-react';
@@ -109,7 +111,7 @@ export function DistributorCabinetSectionHeader(overrides: Override = {}) {
 /** Производство — из `manufacturerNavGroups`. */
 export function FactoryProductionCabinetSectionHeader(overrides: Override = {}) {
   const pathname = usePathname();
-  const onBack = useCabinetBack(ROUTES.factory.production);
+  const onBack = useCabinetBack(EXTENDED_ROUTES.factory.production);
   const link = resolveCabinetActiveNavLink(pathname, manufacturerNavGroups);
   const showBack = overrides.showBack !== false;
   return (
@@ -122,7 +124,7 @@ export function FactoryProductionCabinetSectionHeader(overrides: Override = {}) 
 /** Поставщик — из `supplierNavGroups`. */
 export function FactorySupplierCabinetSectionHeader(overrides: Override = {}) {
   const pathname = usePathname();
-  const onBack = useCabinetBack(ROUTES.factory.supplier);
+  const onBack = useCabinetBack(EXTENDED_ROUTES.factory.supplier);
   const link = resolveCabinetActiveNavLink(pathname, supplierNavGroups);
   const showBack = overrides.showBack !== false;
   return (

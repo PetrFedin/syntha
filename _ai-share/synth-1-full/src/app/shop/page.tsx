@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import Link from 'next/link';
 import { useMemo } from 'react';
@@ -84,7 +86,7 @@ const overviewSections: { title: string; items: OverviewItem[] }[] = [
         testId: 'shop-dashboard-b2b-orders-link',
       },
       {
-        href: ROUTES.shop.b2bDiscover,
+        href: LEGACY_ROUTES.shop.b2bDiscover,
         label: 'Discover',
         desc: 'Поиск и доступ к брендам',
         testId: 'shop-dashboard-b2b-discover-link',
@@ -113,13 +115,13 @@ const overviewSections: { title: string; items: OverviewItem[] }[] = [
         testId: 'shop-dashboard-analytics-footfall-link',
       },
       {
-        href: ROUTES.shop.b2bAnalytics,
+        href: LEGACY_ROUTES.shop.b2bAnalytics,
         label: 'Опт',
         desc: 'Закупка, партнёры, KPI',
         testId: 'shop-dashboard-analytics-b2b-link',
       },
       {
-        href: ROUTES.shop.b2bMarginAnalysis,
+        href: LEGACY_ROUTES.shop.b2bMarginAnalysis,
         label: 'Маржа',
         desc: 'Хаб маржи, калькулятор, отчёты',
         testId: 'shop-dashboard-analytics-margin-link',
@@ -142,7 +144,7 @@ export default function ShopHubPage() {
     ? getShopCoreHubTodayActions()
     : [
         { label: 'Открыть B2B заказы', href: ROUTES.shop.b2bOrders, desc: 'Статусы и отгрузки' },
-        { label: 'Discover брендов', href: ROUTES.shop.b2bDiscover, desc: 'Поиск и доступ' },
+        { label: 'Discover брендов', href: LEGACY_ROUTES.shop.b2bDiscover, desc: 'Поиск и доступ' },
         { label: 'Создать заказ', href: ROUTES.shop.b2bCreateOrder, desc: 'По коллекции' },
       ];
   const sectionsForOverview = coreMode ? getShopCoreOverviewSections() : overviewSections;
@@ -181,7 +183,7 @@ export default function ShopHubPage() {
       {!coreMode ? (
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="text-[10px] font-black uppercase" asChild>
-            <Link href={ROUTES.shop.b2bWorkspaceMap}>
+            <Link href={LEGACY_ROUTES.shop.b2bWorkspaceMap}>
               <Map className="mr-2 size-3.5" />
               Карта процессов B2B
             </Link>

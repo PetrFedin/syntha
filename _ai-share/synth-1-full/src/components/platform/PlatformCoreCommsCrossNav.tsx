@@ -6,17 +6,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { Calendar, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CommunicationsEntityContextVariant } from '@/components/brand/communications/CommunicationsEntityContextBanner';
-import {
-  brandCalendarB2bOrderContextHref,
-  brandMessagesB2bOrderContextHref,
-  factoryCalendarB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  shopCalendarB2bOrderContextHref,
-  shopMessagesB2bOrderContextHref,
-  type FactoryMessagesRole,
-} from '@/lib/platform-core-routes';
+import { brandCalendarB2bOrderContextHref, brandMessagesB2bOrderContextHref, shopCalendarB2bOrderContextHref, shopMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
+import { factoryCalendarB2bOrderContextHref, factoryMessagesB2bOrderContextHref, factorySupplierCalendarB2bOrderContextHref, factorySupplierMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';
 

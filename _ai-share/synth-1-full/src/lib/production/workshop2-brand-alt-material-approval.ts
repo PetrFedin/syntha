@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { ROUTES } from '@/lib/routes';
 import {
   buildSupplierAltMaterialApprovalKey,
@@ -68,7 +69,7 @@ export function buildSupplierDevBomCabinetHref(input: {
   });
   const articleId = input.articleId?.trim();
   if (articleId) params.set('article', articleId);
-  return `${ROUTES.factory.supplierCoreCabinet}?${params.toString()}`;
+  return `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?${params.toString()}`;
 }
 
 export function brandAltMaterialDecisionKey(primary: string, alternative: string): string {

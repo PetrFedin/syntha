@@ -4,11 +4,8 @@ import Link from 'next/link';
 import { Factory } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  factoryProductionHandoffQueueHref,
-  factoryProductionOrdersOrderContextHref,
-  shopB2bTrackingOrderHref,
-} from '@/lib/platform-core-routes';
+import { shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
+import { factoryProductionHandoffQueueHref, factoryProductionOrdersOrderContextHref } from '@/lib/platform-core-extended-routes';
 import {
   PRODUCTION_HANDOFF_DONE_RU,
   PRODUCTION_HANDOFF_PENDING_RU,

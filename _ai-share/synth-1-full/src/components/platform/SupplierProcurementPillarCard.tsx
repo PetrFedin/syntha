@@ -9,11 +9,8 @@ import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesa
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import {
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  shopB2bTrackingOrderHref,
-} from '@/lib/platform-core-routes';
+import { shopB2bTrackingOrderHref } from '@/lib/platform-core-routes';
+import { factorySupplierMessagesB2bOrderContextHref, factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-extended-routes';
 import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,

@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -56,7 +58,7 @@ export function ShopB2bDiscoverLegacyPage() {
               <Cloud className="text-text-muted h-4 w-4 shrink-0" aria-hidden />
               <span>Обновлено: {lastSyncedFormatted}</span>
               <Button variant="ghost" size="sm" className="text-accent-primary h-7" asChild>
-                <Link href={ROUTES.shop.b2bCatalog}>
+                <Link href={LEGACY_ROUTES.shop.b2bCatalog}>
                   <Package className="mr-1 h-3 w-3" /> B2B-каталог
                 </Link>
               </Button>
@@ -113,7 +115,7 @@ export function ShopB2bDiscoverLegacyPage() {
                 ) : (
                   <Button size="sm" asChild>
                     <Link
-                      href={`${ROUTES.shop.b2bApply}?brandId=${encodeURIComponent(b.id)}&brandName=${encodeURIComponent(b.name)}`}
+                      href={`${LEGACY_ROUTES.shop.b2bApply}?brandId=${encodeURIComponent(b.id)}&brandName=${encodeURIComponent(b.name)}`}
                     >
                       Запросить доступ
                     </Link>
@@ -127,12 +129,12 @@ export function ShopB2bDiscoverLegacyPage() {
 
       <div className="mb-6 flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>
             <Package className="mr-1 h-3 w-3" /> B2B Каталог (PIM)
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bApply}>
+          <Link href={LEGACY_ROUTES.shop.b2bApply}>
             <UserPlus className="mr-1 h-3 w-3" /> Подать заявку
           </Link>
         </Button>

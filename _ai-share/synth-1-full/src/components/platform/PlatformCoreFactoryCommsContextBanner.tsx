@@ -11,16 +11,9 @@ import { useSearchParams } from 'next/navigation';
 import { Calendar, Factory, MessageSquare, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { operationalLayoutContract as o } from '@/lib/ui/operational-layout-contract';
-import {
-  factoryCalendarB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-  shopB2bOrderHref,
-  brandB2bOrderHandoffContextHref,
-  ROUTES,
-  type FactoryMessagesRole,
-} from '@/lib/platform-core-routes';
+import { shopB2bOrderHref, brandB2bOrderHandoffContextHref, ROUTES } from '@/lib/platform-core-routes';
+import { factoryCalendarB2bOrderContextHref, factoryMessagesB2bOrderContextHref, factoryMessagesWorkshop2ArticleContextHref, factorySupplierCalendarB2bOrderContextHref } from '@/lib/platform-core-extended-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { parseSynthaOverlayContext } from '@/lib/platform-core-ports/communications/syntha-overlay-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
@@ -62,7 +55,7 @@ function factoryCalendarRoleContextHref(orderId: string | null, role: FactoryMes
     sp.set('order', orderId);
     sp.set('orderId', orderId);
   }
-  const base = role === 'supplier' ? ROUTES.factory.calendar : ROUTES.factory.productionCalendar;
+  const base = role === 'supplier' ? EXTENDED_ROUTES.factory.calendar : EXTENDED_ROUTES.factory.productionCalendar;
   return `${base}?${sp.toString()}`;
 }
 
@@ -224,7 +217,7 @@ export function PlatformCoreFactoryCommsContextBanner({ variant, className, slim
               </>
             ) : (
               <Link
-                href={ROUTES.factory.supplierCoreCabinet}
+                href={EXTENDED_ROUTES.factory.supplierCoreCabinet}
                 className="text-text-primary hover:bg-bg-surface2 border-border-subtle inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold"
               >
                 Мой кабинет

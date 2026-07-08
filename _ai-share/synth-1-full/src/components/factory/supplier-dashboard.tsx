@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -290,7 +292,7 @@ export function SupplierDashboard() {
                 asChild
                 className="h-11 w-full gap-2 rounded-xl bg-emerald-600 text-[10px] font-black uppercase text-white shadow-lg transition-all hover:bg-emerald-700"
               >
-                <Link href={ROUTES.factory.supplierCircularHub}>
+                <Link href={EXTENDED_ROUTES.factory.supplierCircularHub}>
                   <Leaf className="h-4 w-4" />
                   Circular Economy Hub
                 </Link>
@@ -300,7 +302,7 @@ export function SupplierDashboard() {
                 className="border-border-default hover:bg-bg-surface2 w-full rounded-xl text-[10px] font-black uppercase tracking-widest"
                 asChild
               >
-                <Link href={ROUTES.factory.productionCatalog}>
+                <Link href={EXTENDED_ROUTES.factory.productionCatalog}>
                   Весь каталог <ArrowRight className="ml-2 h-3 w-3" />
                 </Link>
               </Button>

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Platform Core — native href coercion (UI isolation layer).
  * При MODE=1 переписывает legacy long-tail URL в кабинеты /platform/*.
@@ -20,7 +21,8 @@ import {
   brandDevelopmentArticleHref,
   platformHubHref,
   shopB2bOrderHref,
-} from '@/lib/platform-core-routes';
+} from '@/lib/platform-core-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { SHOP_CO_MATRIX_SECTION } from '@/lib/platform-core-cabinet-workspace';
 
 const LEGACY_WORKSHOP2_PREFIX = '/brand/production/workshop2';
@@ -98,7 +100,7 @@ function factoryCoreHref(
   extra?: Record<string, string>
 ): string {
   const base =
-    role === 'supplier' ? ROUTES.factory.supplierCoreCabinet : ROUTES.factory.productionCoreCabinet;
+    role === 'supplier' ? EXTENDED_ROUTES.factory.supplierCoreCabinet : EXTENDED_ROUTES.factory.productionCoreCabinet;
   const sp = new URLSearchParams({ pillar, collection: collectionId });
   if (extra) {
     for (const [k, v] of Object.entries(extra)) {
@@ -197,8 +199,8 @@ export function coercePlatformCoreNativeHref(
 
   if (path === '/brand/core' || path.startsWith('/brand/core/')) return href;
   if (path === '/shop/core' || path.startsWith('/shop/core/')) return href;
-  if (path === ROUTES.factory.productionCoreCabinet) return href;
-  if (path === ROUTES.factory.supplierCoreCabinet) return href;
+  if (path === EXTENDED_ROUTES.factory.productionCoreCabinet) return href;
+  if (path === EXTENDED_ROUTES.factory.supplierCoreCabinet) return href;
 
   // Brand linesheets / showroom → sample_collection cabinet
   if (path === '/brand/linesheets' || path.startsWith('/brand/linesheets/')) {
@@ -276,15 +278,15 @@ export function coercePlatformCoreNativeHref(
       hash
     );
   }
-  if (path === ROUTES.shop.b2bDiscover || path === ROUTES.shop.b2bPartnersDiscover) {
+  if (path === LEGACY_ROUTES.shop.b2bDiscover || path === ROUTES.shop.b2bPartnersDiscover) {
     return `${PLATFORM_CORE_B2B_PARTNERS_HREF}?collection=${encodeURIComponent(collectionId)}${hash}`;
   }
-  if (path === ROUTES.shop.b2bCatalog) {
+  if (path === LEGACY_ROUTES.shop.b2bCatalog) {
     return `${PLATFORM_CORE_B2B_HUB_HREF}?collection=${encodeURIComponent(collectionId)}${hash}`;
   }
   if (
-    path === ROUTES.shop.b2bCollaborativeOrder ||
-    path.startsWith(`${ROUTES.shop.b2bCollaborativeOrder}/`)
+    path === LEGACY_ROUTES.shop.b2bCollaborativeOrder ||
+    path.startsWith(`${LEGACY_ROUTES.shop.b2bCollaborativeOrder}/`)
   ) {
     const tab = readParam(search, 'tab') ?? 'approvals';
     const feature = tab === 'session' ? 'collaborative' : tab;
@@ -306,8 +308,8 @@ export function coercePlatformCoreNativeHref(
     );
   }
   if (
-    path === ROUTES.shop.b2bMarginAnalysis ||
-    path.startsWith(`${ROUTES.shop.b2bMarginAnalysis}/`)
+    path === LEGACY_ROUTES.shop.b2bMarginAnalysis ||
+    path.startsWith(`${LEGACY_ROUTES.shop.b2bMarginAnalysis}/`)
   ) {
     const feature = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? 'pricelist';
     return (
@@ -318,8 +320,8 @@ export function coercePlatformCoreNativeHref(
     );
   }
   if (
-    path === ROUTES.shop.b2bReplenishment ||
-    path.startsWith(`${ROUTES.shop.b2bReplenishment}/`)
+    path === LEGACY_ROUTES.shop.b2bReplenishment ||
+    path.startsWith(`${LEGACY_ROUTES.shop.b2bReplenishment}/`)
   ) {
     const feature = readParam(search, PILLAR_CAPABILITY_FEATURE_PARAM) ?? 'stock-atp';
     return (
@@ -340,11 +342,11 @@ export function coercePlatformCoreNativeHref(
   }
 
   // Factory production home → core cabinet
-  if (path === ROUTES.factory.production && !path.includes('/core')) {
+  if (path === EXTENDED_ROUTES.factory.production && !path.includes('/core')) {
     const pillar = readParam(search, 'pillar') ?? 'order_production';
     return factoryCoreHref('manufacturer', pillar, collectionId) + hash;
   }
-  if (path === ROUTES.factory.supplier && !path.includes('/core')) {
+  if (path === EXTENDED_ROUTES.factory.supplier && !path.includes('/core')) {
     const pillar = readParam(search, 'pillar') ?? 'order_production';
     return factoryCoreHref('supplier', pillar, collectionId) + hash;
   }
@@ -354,15 +356,15 @@ export function coercePlatformCoreNativeHref(
     return href;
   }
   if (
-    path === ROUTES.factory.supplierRfqInbox ||
-    path.startsWith(`${ROUTES.factory.supplierRfqInbox}/`)
+    path === EXTENDED_ROUTES.factory.supplierRfqInbox ||
+    path.startsWith(`${EXTENDED_ROUTES.factory.supplierRfqInbox}/`)
   ) {
     return href;
   }
 
   if (
-    path === ROUTES.factory.productionMaterials ||
-    path.startsWith(`${ROUTES.factory.productionMaterials}/`)
+    path === EXTENDED_ROUTES.factory.productionMaterials ||
+    path.startsWith(`${EXTENDED_ROUTES.factory.productionMaterials}/`)
   ) {
     const role = readParam(search, 'role') === 'supplier' ? 'supplier' : 'manufacturer';
     const view = readParam(search, 'view');
@@ -377,8 +379,8 @@ export function coercePlatformCoreNativeHref(
     return factoryCoreHref(role, 'order_production', collectionId, extra) + hash;
   }
   if (
-    path === ROUTES.factory.productionCatalog ||
-    path.startsWith(`${ROUTES.factory.productionCatalog}/`)
+    path === EXTENDED_ROUTES.factory.productionCatalog ||
+    path.startsWith(`${EXTENDED_ROUTES.factory.productionCatalog}/`)
   ) {
     return (
       factoryCoreHref('supplier', 'order_production', collectionId, {
@@ -395,8 +397,8 @@ export function coercePlatformCoreNativeHref(
     return shopCoreHref('comms', collectionId, orderId ? { order: orderId } : undefined) + hash;
   }
   if (
-    path === ROUTES.factory.supplierMessages ||
-    path.startsWith(`${ROUTES.factory.supplierMessages}/`)
+    path === EXTENDED_ROUTES.factory.supplierMessages ||
+    path.startsWith(`${EXTENDED_ROUTES.factory.supplierMessages}/`)
   ) {
     return (
       factoryCoreHref('supplier', 'comms', collectionId, orderId ? { order: orderId } : undefined) +
@@ -404,8 +406,8 @@ export function coercePlatformCoreNativeHref(
     );
   }
   if (
-    path === ROUTES.factory.productionMessages ||
-    path.startsWith(`${ROUTES.factory.productionMessages}/`)
+    path === EXTENDED_ROUTES.factory.productionMessages ||
+    path.startsWith(`${EXTENDED_ROUTES.factory.productionMessages}/`)
   ) {
     return (
       factoryCoreHref(

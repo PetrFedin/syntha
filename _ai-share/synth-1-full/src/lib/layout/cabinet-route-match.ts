@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Маршруты с собственным cabinet chrome — без global Header/Footer и B2C overlay.
  */
@@ -8,7 +9,7 @@ export const CABINET_PATH_PREFIXES = [
   '/brand',
   ROUTES.admin.home,
   ROUTES.shop.home,
-  ROUTES.factory.home,
+  EXTENDED_ROUTES.factory.home,
   ROUTES.distributor.home,
   ROUTES.client.home,
   ROUTES.client.orders,

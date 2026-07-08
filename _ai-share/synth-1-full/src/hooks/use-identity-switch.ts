@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useAuth } from '@/providers/auth-provider';
 import { organizations } from '@/components/team/_fixtures/team-data';
 import { useUIStateOptional } from '@/providers/ui-state';
@@ -84,8 +86,8 @@ export function useIdentitySwitch() {
         /** Каноничный экран профиля бренда + query, чтобы сразу открылась вкладка «Профиль → Бренд». */
         brand: `${ROUTES.brand.profile}?group=profile&tab=brand`,
         shop: ROUTES.shop.home,
-        manufacturer: ROUTES.factory.production,
-        supplier: ROUTES.factory.supplier,
+        manufacturer: EXTENDED_ROUTES.factory.production,
+        supplier: EXTENDED_ROUTES.factory.supplier,
         distributor: ROUTES.distributor.home,
         client: ROUTES.client.profile,
       };

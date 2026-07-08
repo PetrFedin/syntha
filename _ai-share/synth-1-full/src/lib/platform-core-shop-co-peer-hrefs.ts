@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Shop CO peer hrefs — legacy URL shape → platformCoreUiHref (MODE-aware).
  * Без импорта lib/b2b / lib/routes.
@@ -20,7 +21,7 @@ export function shopCoCollaborativeTabUiHref(
     [PILLAR_CAPABILITY_FEATURE_PARAM]: featureId,
   });
   if (collectionId?.trim()) sp.set('collection', collectionId.trim());
-  return platformCoreUiHref(`${ROUTES.shop.b2bCollaborativeOrder}?${sp.toString()}`);
+  return platformCoreUiHref(`${LEGACY_ROUTES.shop.b2bCollaborativeOrder}?${sp.toString()}`);
 }
 
 export function shopCoLandedMarginTabUiHref(
@@ -34,7 +35,7 @@ export function shopCoLandedMarginTabUiHref(
     [PILLAR_CAPABILITY_FEATURE_PARAM]: featureId,
   });
   if (oid) sp.set('order', oid);
-  return platformCoreUiHref(`${ROUTES.shop.b2bMarginAnalysis}?${sp.toString()}`);
+  return platformCoreUiHref(`${LEGACY_ROUTES.shop.b2bMarginAnalysis}?${sp.toString()}`);
 }
 
 export function shopCoReplenishmentTabUiHref(
@@ -50,7 +51,7 @@ export function shopCoReplenishmentTabUiHref(
     sp.set('order', orderId.trim());
     sp.set('orderId', orderId.trim());
   }
-  return platformCoreUiHref(`${ROUTES.shop.b2bReplenishment}?${sp.toString()}`);
+  return platformCoreUiHref(`${LEGACY_ROUTES.shop.b2bReplenishment}?${sp.toString()}`);
 }
 
 export function shopCoMatrixReorderUiHref(

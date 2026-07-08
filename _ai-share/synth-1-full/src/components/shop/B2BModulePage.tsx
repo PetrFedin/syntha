@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,7 +61,7 @@ export function B2BModulePage({
       )}
       <div className="flex gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bCatalog}>B2B каталог</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bCatalog}>B2B каталог</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={ROUTES.shop.b2bMatrix}>Матрица заказов</Link>

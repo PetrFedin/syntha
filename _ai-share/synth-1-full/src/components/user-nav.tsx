@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { startTransition, useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -58,9 +60,9 @@ export default function UserNav() {
       case 'distributor':
         return ROUTES.distributor.home;
       case 'manufacturer':
-        return ROUTES.factory.production;
+        return EXTENDED_ROUTES.factory.production;
       case 'supplier':
-        return ROUTES.factory.supplier;
+        return EXTENDED_ROUTES.factory.supplier;
       default:
         return ROUTES.client.profileWithTab('profile');
     }
@@ -162,9 +164,9 @@ export default function UserNav() {
             : primaryRole === 'shop'
               ? ROUTES.shop.home
               : primaryRole === 'manufacturer'
-                ? ROUTES.factory.production
+                ? EXTENDED_ROUTES.factory.production
                 : primaryRole === 'supplier'
-                  ? ROUTES.factory.supplier
+                  ? EXTENDED_ROUTES.factory.supplier
                   : primaryRole === 'distributor'
                     ? ROUTES.distributor.home
                     : ROUTES.client.profile;

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -457,7 +458,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.shop.b2bReplenishment}?collection=${encodeURIComponent(d.collectionId)}`,
+          `${LEGACY_ROUTES.shop.b2bReplenishment}?collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'shop-co-agent-rep',
@@ -487,7 +488,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         ],
         bad: [],
         fix: [],
-        resolveHref: () => ROUTES.shop.b2bSalesRepPortal,
+        resolveHref: () => LEGACY_ROUTES.shop.b2bSalesRepPortal,
       },
       {
         id: 'shop-co-landed-margin',
@@ -513,7 +514,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.shop.b2bMarginAnalysis}?collection=${encodeURIComponent(d.collectionId)}`,
+          `${LEGACY_ROUTES.shop.b2bMarginAnalysis}?collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'shop-co-collaborative-order',
@@ -547,7 +548,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.shop.b2bCollaborativeOrder}?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=session`,
+          `${LEGACY_ROUTES.shop.b2bCollaborativeOrder}?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=session`,
       },
       {
         id: 'shop-co-working-order',

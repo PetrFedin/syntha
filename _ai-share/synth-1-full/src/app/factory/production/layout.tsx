@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import React, { useState, Suspense, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -66,7 +68,7 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
       hub: 'distributor' as const,
     },
     {
-      href: ROUTES.factory.supplier,
+      href: EXTENDED_ROUTES.factory.supplier,
       label: 'Поставщик',
       icon: Warehouse,
       hub: 'supplier' as const,
@@ -116,7 +118,7 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
           data-testid="factory-mfr-sidebar"
         >
           <HubSidebarHeader
-            href={ROUTES.factory.production}
+            href={EXTENDED_ROUTES.factory.production}
             icon={Factory}
             title="Кабинет производства"
             badge="Производство"
@@ -129,7 +131,7 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
             ) : (
               <HubSidebar
                 groups={adjustedManufacturerNavGroups}
-                basePath={ROUTES.factory.production}
+                basePath={EXTENDED_ROUTES.factory.production}
                 accentClass="text-emerald-600"
                 activeBgClass="bg-emerald-600"
                 sidebarClusters={SYNTHA_SIDEBAR_CLUSTERS}
@@ -144,7 +146,7 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
           <SheetContent side="left" className="flex w-72 flex-col gap-0 p-0">
             <div className="shrink-0 pb-0 pt-12">
               <HubSidebarHeader
-                href={ROUTES.factory.production}
+                href={EXTENDED_ROUTES.factory.production}
                 icon={Factory}
                 title="Кабинет производства"
                 badge="Производство"
@@ -163,7 +165,7 @@ function FactoryProductionLayoutContent({ children }: { children: React.ReactNod
               ) : (
                 <HubSidebar
                   groups={adjustedManufacturerNavGroups}
-                  basePath={ROUTES.factory.production}
+                  basePath={EXTENDED_ROUTES.factory.production}
                   accentClass="text-emerald-600"
                   activeBgClass="bg-emerald-600"
                   onNavigate={() => setSidebarOpen(false)}

@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, Loader2 } from 'lucide-react';
@@ -31,7 +33,7 @@ function handoffFailedPoFilterHref(factoryId: string, collectionId?: string): st
   if (collectionId?.trim()) sp.set('collection', collectionId.trim());
   sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'handoff');
   sp.set('failedPo', '1');
-  return `${ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
+  return `${EXTENDED_ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
 }
 
 type Props = {

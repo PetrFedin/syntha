@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
@@ -225,7 +227,7 @@ export default function LivePage() {
                   asChild
                   className="text-text-primary h-12 rounded-xl bg-white px-8 text-[10px] font-black uppercase tracking-widest transition-transform hover:scale-105"
                 >
-                  <Link href={role === 'brand' ? ROUTES.brand.live : ROUTES.factory.live}>
+                  <Link href={role === 'brand' ? ROUTES.brand.live : EXTENDED_ROUTES.factory.live}>
                     Открыть Dashboard
                   </Link>
                 </Button>

@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
@@ -163,7 +165,7 @@ export function ShopB2bAiSmartOrderLegacyPage() {
           <Link href={ROUTES.shop.b2bWorkingOrder}>Working Order (Excel)</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bOrderDrafts}>Черновики</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bOrderDrafts}>Черновики</Link>
         </Button>
       </div>
       <RelatedModulesBlock
@@ -171,8 +173,8 @@ export function ShopB2bAiSmartOrderLegacyPage() {
         className="mt-6"
         links={getShopB2BHubLinks().filter(
           (l) =>
-            l.href === ROUTES.shop.b2bQuickOrder ||
-            l.href === ROUTES.shop.b2bGridOrdering ||
+            l.href === LEGACY_ROUTES.shop.b2bQuickOrder ||
+            l.href === LEGACY_ROUTES.shop.b2bGridOrdering ||
             l.href === ROUTES.shop.b2bMatrix
         )}
       />

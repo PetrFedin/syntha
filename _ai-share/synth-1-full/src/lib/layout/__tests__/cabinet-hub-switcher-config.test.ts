@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import {
   DISTRIBUTOR_HUB_SWITCHER,
   FACTORY_PRODUCTION_HUB_SWITCHER,
@@ -10,8 +11,8 @@ describe('cabinet-hub-switcher-config', () => {
     expect(DISTRIBUTOR_HUB_SWITCHER.map((h) => h.href)).toEqual([
       ROUTES.brand.home,
       ROUTES.shop.home,
-      ROUTES.factory.production,
-      ROUTES.factory.supplier,
+      EXTENDED_ROUTES.factory.production,
+      EXTENDED_ROUTES.factory.supplier,
     ]);
     expect(FACTORY_PRODUCTION_HUB_SWITCHER.some((h) => h.hub === 'distributor')).toBe(true);
     expect(FACTORY_SUPPLIER_HUB_SWITCHER.some((h) => h.hub === 'factory')).toBe(true);

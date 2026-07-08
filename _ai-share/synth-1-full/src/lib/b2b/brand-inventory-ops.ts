@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { brandLandedMarginTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import {
   shopLandedMarginTabHref,
@@ -58,8 +59,8 @@ export function buildBrandInventoryOpsSession(input?: {
     productsMatrixHref: '/brand/products/matrix',
     shopInventoryOverviewHref: shopInventoryFeatureHref('overview', collectionId),
     shopInventoryReconcileHref: shopInventoryFeatureHref('reconcile', collectionId),
-    replenishmentAlertsHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&${collectionQ}`,
-    replenishmentAtpHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&${collectionQ}`,
+    replenishmentAlertsHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&${collectionQ}`,
+    replenishmentAtpHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&${collectionQ}`,
     cycleCountHref: ROUTES.shop.cycleCounting,
     legacyMatrixHref: `${base}?legacy=1`,
     shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),

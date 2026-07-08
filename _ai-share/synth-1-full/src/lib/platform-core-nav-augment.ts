@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { Factory, FileText, Handshake, Inbox, LayoutGrid, Package, Truck } from 'lucide-react';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
@@ -26,13 +27,9 @@ import {
   platformCoreShopLogisticsNavHiddenSet,
 } from '@/lib/platform-core-side-paths-registry';
 import { sortCommsNavLinksMessagesFirst } from '@/lib/platform-core-nav-comms-order';
-import {
-  factoryProductionDossierContextHref,
-  factoryProductionOrdersOrderContextHref,
-  factorySupplierCalendarB2bOrderContextHref,
-  factorySupplierRfqInboxHref,
-  ROUTES,
-} from '@/lib/platform-core-routes';
+import { ROUTES } from '@/lib/platform-core-routes';
+import { factoryProductionDossierContextHref, factoryProductionOrdersOrderContextHref, factorySupplierCalendarB2bOrderContextHref, factorySupplierRfqInboxHref } from '@/lib/platform-core-extended-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 
 const coreShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${PLATFORM_CORE_DEMO.collectionId}`;
@@ -102,7 +99,7 @@ function filterShopNavForPlatformCore<T extends NavGroupLike>(groups: readonly T
           {
             label: 'Заявка на доступ',
             value: 'partners-apply-core',
-            href: ROUTES.shop.b2bApply,
+            href: LEGACY_ROUTES.shop.b2bApply,
             icon: FileText,
             description: 'Запрос доступа к витрине бренда.',
           },
@@ -221,14 +218,14 @@ function filterManufacturerNavForPlatformCore<T extends NavGroupLike>(groups: re
               if (link.value === 'calendar') {
                 return {
                   ...link,
-                  href: `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
+                  href: `${EXTENDED_ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
                   description: 'Задачи, заказы и этапы производства — цех.',
                 };
               }
               if (link.value === 'messages') {
                 return {
                   ...link,
-                  href: ROUTES.factory.messages,
+                  href: EXTENDED_ROUTES.factory.messages,
                   description: 'Сообщения цеха и контекст по заказу.',
                 };
               }
@@ -290,7 +287,7 @@ function filterSupplierNavForPlatformCore<T extends NavGroupLike>(groups: readon
             ? [
                 {
                   ...messagesLink,
-                  href: ROUTES.factory.supplierMessages,
+                  href: EXTENDED_ROUTES.factory.supplierMessages,
                   description: 'Сообщения и контекст по артикулу.',
                 },
               ]
@@ -412,7 +409,7 @@ export function augmentShopNavForCoreCabinet<T extends NavGroupLike>(groups: rea
 export function augmentManufacturerNavForCoreCabinet<T extends NavGroupLike>(
   groups: readonly T[]
 ): T[] {
-  let out = prependCabinetLink(groups, 'production', ROUTES.factory.productionCoreCabinet);
+  let out = prependCabinetLink(groups, 'production', EXTENDED_ROUTES.factory.productionCoreCabinet);
   if (!isPlatformCoreMode()) return out;
   return withPlatformCoreNavHrefs(filterManufacturerNavForPlatformCore(out));
 }
@@ -420,7 +417,7 @@ export function augmentManufacturerNavForCoreCabinet<T extends NavGroupLike>(
 export function augmentSupplierNavForCoreCabinet<T extends NavGroupLike>(
   groups: readonly T[]
 ): T[] {
-  let out = prependCabinetLink(groups, 'pim', ROUTES.factory.supplierCoreCabinet);
+  let out = prependCabinetLink(groups, 'pim', EXTENDED_ROUTES.factory.supplierCoreCabinet);
   if (!isPlatformCoreMode()) return out;
   return withPlatformCoreNavHrefs(filterSupplierNavForPlatformCore(out));
 }
@@ -515,12 +512,12 @@ export function getFactoryCoreManufacturerSections(): FactoryOverviewSection[] {
       title: 'Производство',
       items: [
         {
-          href: ROUTES.factory.productionCoreCabinet,
+          href: EXTENDED_ROUTES.factory.productionCoreCabinet,
           label: 'Мой кабинет',
           desc: 'Столпы × роли',
         },
         {
-          href: ROUTES.factory.production,
+          href: EXTENDED_ROUTES.factory.production,
           label: 'Очередь цеха',
           desc: 'Передача подтверждённого заказа в производство',
         },
@@ -529,18 +526,18 @@ export function getFactoryCoreManufacturerSections(): FactoryOverviewSection[] {
           label: `Досье · ${PLATFORM_CORE_DEMO.demoArticleId}`,
           desc: 'ТЗ артикула',
         },
-        { href: ROUTES.factory.productionOrders, label: 'Заказы цеха', desc: 'PO и серии' },
+        { href: EXTENDED_ROUTES.factory.productionOrders, label: 'Заказы цеха', desc: 'PO и серии' },
       ],
     },
     {
       title: 'Связь',
       items: [
         {
-          href: `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
+          href: `${EXTENDED_ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
           label: 'Календарь',
           desc: 'Этапы производства',
         },
-        { href: ROUTES.factory.messages, label: 'Сообщения', desc: 'Чат по заказу и PO' },
+        { href: EXTENDED_ROUTES.factory.messages, label: 'Сообщения', desc: 'Чат по заказу и PO' },
       ],
     },
   ];
@@ -552,7 +549,7 @@ export function getFactoryCoreSupplierSections(): FactoryOverviewSection[] {
       title: 'Поставщик',
       items: [
         {
-          href: ROUTES.factory.supplierCoreCabinet,
+          href: EXTENDED_ROUTES.factory.supplierCoreCabinet,
           label: 'Мой кабинет',
           desc: 'Столпы × роли',
         },
@@ -572,7 +569,7 @@ export function getFactoryCoreSupplierSections(): FactoryOverviewSection[] {
           desc: 'Поставки и логистика',
         },
         {
-          href: `${ROUTES.factory.messages}?role=supplier`,
+          href: `${EXTENDED_ROUTES.factory.messages}?role=supplier`,
           label: 'Сообщения',
           desc: 'Чат по артикулу и заказу',
         },

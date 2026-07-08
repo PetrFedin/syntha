@@ -1,51 +1,162 @@
 /**
  * Platform Core · LEGACY / archived routes.
  *
- * Пути advanced-B2B и B2C-фич, которые НЕ входят в ядро v1 (5 столпов × 2 роли).
- * Они физически ещё лежат в `@/lib/platform-core-routes` (`ROUTES.*`), но не
- * должны появляться в baseline-навигации, hub-строках и audit-разделах.
+ * Advanced-B2B, B2C и experiment-пути вне ядра v1 (5 столпов × 2 роли).
+ * Baseline Platform Core (`platform-core-routes`, hub-rows, `/brand/core`, `/shop/core`)
+ * НЕ импортирует этот модуль.
  *
- * Этот модуль — реестр «что вне ядра» для линтеров/ревью и будущего физического
- * выноса в `_archive/` (см. `_platform-core-v1/migration-notes/`). Импортировать
- * в baseline-коде запрещено (rule: денилист навигации).
+ * Использование: middleware/archive redirects, compatibility stubs, migration tests.
  */
 
-/** Ключи `ROUTES.brand.*` вне ядра v1 → `_archive/b2b-advanced`. */
+/** Ключи `LEGACY_ROUTES.brand.*` вне ядра v1 → `_archive/b2b-advanced`. */
 export const PLATFORM_CORE_LEGACY_BRAND_ROUTE_KEYS = [
   'b2bEngagement',
   'b2bLinesheetCampaigns',
   'b2bLinesheetVersions',
   'b2bPassport',
   'b2bPrivateInvites',
+  'buyerApplications',
+  'catalogQuality',
   'companyAccounts',
   'contentSyndication',
   'customerGroups',
   'lookbookProjects',
+  'orderAmendments',
+  'orderApprovalWorkflow',
   'partnerMap',
   'priceLists',
+  'processLiveOrderApproval',
+  'purchaseOrder',
   'tradeShows',
   'showroomVr',
+  'b2bShipments',
 ] as const;
 
-/** Ключи `ROUTES.shop.*` вне ядра v1 → `_archive/b2b-advanced` | `experiments`. */
+/** Ключи `LEGACY_ROUTES.shop.*` вне ядра v1 → `_archive/b2b-advanced` | `experiments`. */
 export const PLATFORM_CORE_LEGACY_SHOP_ROUTE_KEYS = [
+  'b2bAgentCabinet',
+  'b2bAiSmartOrder',
+  'b2bAnalytics',
+  'b2bApply',
+  'b2bAssortmentCuration',
+  'b2bAssortmentPlanning',
+  'b2bCatalog',
   'b2bCollaborativeOrder',
   'b2bCustomAssortments',
+  'b2bDeliveryCalendar',
+  'b2bDiscover',
+  'b2bDocuments',
+  'b2bEzOrder',
+  'b2bFulfillmentDashboard',
   'b2bGamification',
+  'b2bGridOrdering',
+  'b2bLookbooks',
+  'b2bMarginAnalysis',
+  'b2bMarginCalculator',
+  'b2bOrderByCollection',
+  'b2bOrderDrafts',
+  'b2bOrderMode',
+  'b2bOrderTemplates',
   'b2bPassport',
+  'b2bPayment',
+  'b2bPreOrder',
+  'b2bQuickOrder',
+  'b2bQuoteToOrder',
+  'b2bReorder',
+  'b2bReplenishment',
+  'b2bReports',
   'b2bRfq',
   'b2bRfqCreate',
   'b2bSalesRepPortal',
+  'b2bSelectionBuilder',
   'b2bShopifySync',
   'b2bSocialFeed',
+  'b2bStockMap',
   'b2bTenders',
-  'b2bTradeShows',
   'b2bTradeShowAppointments',
+  'b2bTradeShows',
   'b2bVideoConsultation',
   'b2bVipRoomBooking',
   'b2bWhiteboard',
-  'b2bReplenishment',
+  'b2bWorkspaceMap',
 ] as const;
+
+/** Физические пути advanced/archived B2B — не baseline. */
+export const LEGACY_ROUTES = {
+  brand: {
+    b2bEngagement: '/brand/b2b/engagement',
+    b2bLinesheetCampaigns: '/brand/b2b/linesheet-campaigns',
+    b2bLinesheetVersions: '/brand/b2b/linesheet-versions',
+    b2bPassport: '/brand/b2b/passport',
+    b2bPrivateInvites: '/brand/b2b/private-invites',
+    b2bShipments: '/brand/b2b/shipments',
+    buyerApplications: '/brand/b2b/buyer-applications',
+    catalogQuality: '/brand/b2b/catalog-quality',
+    companyAccounts: '/brand/b2b/company-accounts',
+    contentSyndication: '/brand/b2b/content-syndication',
+    customerGroups: '/brand/b2b/customer-groups',
+    lookbookProjects: '/brand/b2b/lookbook-projects',
+    orderAmendments: '/brand/b2b/order-amendments',
+    orderApprovalWorkflow: '/brand/b2b/order-approval-workflow',
+    partnerMap: '/brand/b2b/partner-map',
+    priceLists: '/brand/b2b/price-lists',
+    processLiveOrderApproval: '/brand/process/order-approval/live',
+    purchaseOrder: '/brand/b2b/po',
+    tradeShows: '/brand/b2b/trade-shows',
+    showroomVr: '/brand/showroom/vr',
+  },
+  shop: {
+    b2bAgentCabinet: '/shop/b2b/agent',
+    b2bAiSmartOrder: '/shop/b2b/ai-smart-order',
+    b2bAnalytics: '/shop/b2b/analytics',
+    b2bApply: '/shop/b2b/apply',
+    b2bAssortmentCuration: '/shop/b2b/assortment-curation',
+    b2bAssortmentPlanning: '/shop/b2b/assortment-planning',
+    b2bCatalog: '/shop/b2b/catalog',
+    b2bCollaborativeOrder: '/shop/b2b/collaborative-order',
+    b2bCustomAssortments: '/shop/b2b/custom-assortments',
+    b2bDeliveryCalendar: '/shop/b2b/delivery-calendar',
+    b2bDiscover: '/shop/b2b/discover',
+    b2bDocuments: '/shop/b2b/documents',
+    b2bEzOrder: '/shop/b2b/ez-order',
+    b2bFulfillmentDashboard: '/shop/b2b/fulfillment-dashboard',
+    b2bGamification: '/shop/b2b/gamification',
+    b2bGridOrdering: '/shop/b2b/grid-ordering',
+    b2bLookbooks: '/shop/b2b/lookbooks',
+    b2bMarginAnalysis: '/shop/b2b/margin-analysis',
+    b2bMarginCalculator: '/shop/b2b/margin-calculator',
+    b2bOrderByCollection: '/shop/b2b/order-by-collection',
+    b2bOrderDrafts: '/shop/b2b/order-drafts',
+    b2bOrderMode: '/shop/b2b/order-mode',
+    b2bOrderTemplates: '/shop/b2b/order-templates',
+    b2bPassport: '/shop/b2b/passport',
+    b2bPayment: '/shop/b2b/payment',
+    b2bPreOrder: '/shop/b2b/pre-order',
+    b2bQuickOrder: '/shop/b2b/quick-order',
+    b2bQuoteToOrder: '/shop/b2b/quote-to-order',
+    b2bReorder: '/shop/b2b/reorder',
+    b2bReplenishment: '/shop/b2b/replenishment',
+    b2bReports: '/shop/b2b/reports',
+    b2bRfq: '/shop/b2b/rfq',
+    b2bRfqCreate: '/shop/b2b/rfq/create',
+    b2bSalesRepPortal: '/shop/b2b/sales-rep-portal',
+    b2bSelectionBuilder: '/shop/b2b/selection-builder',
+    b2bShopifySync: '/shop/b2b/shopify-sync',
+    b2bSocialFeed: '/shop/b2b/social-feed',
+    b2bStockMap: '/shop/b2b/stock-map',
+    b2bTenders: '/shop/b2b/tenders',
+    b2bTradeShowAppointments: '/shop/b2b/trade-shows/appointments',
+    b2bTradeShows: '/shop/b2b/trade-shows',
+    b2bVideoConsultation: '/shop/b2b/video-consultation',
+    b2bVipRoomBooking: '/shop/b2b/vip-room-booking',
+    b2bWhiteboard: '/shop/b2b/whiteboard',
+    b2bWorkspaceMap: '/shop/b2b/workspace-map',
+  },
+  /** B2C / marketing / experiment redirects (compatibility). */
+  client: {
+    home: '/client',
+  },
+} as const;
 
 /** Префиксы путей, запрещённых внутри Platform Core навигации. */
 export const PLATFORM_CORE_DENYLIST_PATH_PREFIXES = [

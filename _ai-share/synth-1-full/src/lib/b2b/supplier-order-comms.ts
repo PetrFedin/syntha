@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { brandOrderCommsFeatureHref } from '@/lib/b2b/brand-order-comms';
 import { appendSupplierOpPoContextToHref } from '@/lib/b2b/supplier-op-po-context-hrefs';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
@@ -54,7 +55,7 @@ export function buildSupplierOrderCommsSession(input?: {
     input?.productionOrderId?.trim() || PLATFORM_CORE_DEMO.productionOrderId;
   const poCtx = { orderId, productionOrderId };
   const base = appendSupplierOpPoContextToHref(
-    `${ROUTES.factory.supplierMessages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
+    `${EXTENDED_ROUTES.factory.supplierMessages}?order=${encodeURIComponent(orderId)}&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
     poCtx
   );
   const supply = buildSupplierMrpSupplySession({ collectionId, articleId, orderId });

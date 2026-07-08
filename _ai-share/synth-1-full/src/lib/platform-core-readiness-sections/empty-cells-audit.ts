@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -158,7 +159,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         fix: [],
         adrBacklog: waveZaAdrBacklogForSection('mfr-empty-sc-status'),
         resolveHref: (d) =>
-          `${ROUTES.factory.productionCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'mfr-empty-sc-brand-linesheet',
@@ -192,7 +193,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.factory.productionCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
       },
     ],
     collection_order: [
@@ -216,7 +217,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         fix: [],
         adrBacklog: waveZaAdrBacklogForSection('mfr-empty-co-po'),
         resolveHref: (d) =>
-          `${ROUTES.factory.productionCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'mfr-empty-co-chain',
@@ -250,7 +251,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.factory.productionCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
       },
     ],
   },
@@ -278,7 +279,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         fix: [],
         adrBacklog: waveZaAdrBacklogForSection('sup-empty-sc-bom'),
         resolveHref: (d) =>
-          `${ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'sup-empty-sc-cross',
@@ -295,7 +296,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=sample_collection&collection=${encodeURIComponent(d.collectionId)}`,
       },
     ],
     collection_order: [
@@ -321,7 +322,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         fix: [],
         adrBacklog: waveZaAdrBacklogForSection('sup-empty-co-forecast'),
         resolveHref: (d) =>
-          `${ROUTES.factory.supplierCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
       },
       {
         id: 'sup-empty-co-cross',
@@ -338,7 +339,7 @@ export const EMPTY_SECTION_AUDIT: Partial<
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.factory.supplierCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
+          `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=collection_order&collection=${encodeURIComponent(d.collectionId)}`,
       },
     ],
   },

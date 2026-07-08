@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ROUTES } from '@/lib/routes';
@@ -43,14 +45,14 @@ export function ShopAnalyticsSegmentNav({ className }: { className?: string }) {
         Розница
       </Link>
       <Link
-        href={ROUTES.shop.b2bAnalytics}
+        href={LEGACY_ROUTES.shop.b2bAnalytics}
         className={tabClass(isOpt)}
         aria-current={isOpt ? 'page' : undefined}
       >
         Опт
       </Link>
       <Link
-        href={ROUTES.shop.b2bMarginAnalysis}
+        href={LEGACY_ROUTES.shop.b2bMarginAnalysis}
         className={tabClass(isMargin)}
         aria-current={isMargin ? 'page' : undefined}
       >

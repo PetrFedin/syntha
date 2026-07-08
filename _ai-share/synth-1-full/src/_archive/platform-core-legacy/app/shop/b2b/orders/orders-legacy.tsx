@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { useMemo } from 'react';
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import { useSearchParams } from 'next/navigation';
@@ -148,7 +150,7 @@ export function ShopB2bOrdersLegacyPage() {
                           <div className="flex flex-wrap justify-end gap-x-2 gap-y-0.5 text-[10px] font-semibold uppercase tracking-wide">
                             <Link
                               className="text-accent-primary hover:underline"
-                              href={`${ROUTES.shop.b2bPayment}?orderId=${encodeURIComponent(o.orderId)}`}
+                              href={`${LEGACY_ROUTES.shop.b2bPayment}?orderId=${encodeURIComponent(o.orderId)}`}
                             >
                               Оплата
                             </Link>
@@ -179,7 +181,7 @@ export function ShopB2bOrdersLegacyPage() {
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <Link href={ROUTES.shop.b2bAgentCabinet}>Агентский кабинет</Link>
+          <Link href={LEGACY_ROUTES.shop.b2bAgentCabinet}>Агентский кабинет</Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={ROUTES.shop.b2bFinance}>Финансы партнёра</Link>

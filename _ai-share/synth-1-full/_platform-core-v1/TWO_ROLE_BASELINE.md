@@ -85,6 +85,26 @@ E2E: `npm run test:e2e:core:golden-cross-role`
 
 Карта: `PLATFORM_CORE_ARCHIVE_MAP.md`
 
+## Phase 11–12 — routes / imports cleanup (2026-07)
+
+| Модуль | Назначение |
+|--------|------------|
+| `src/lib/platform-core-routes.ts` | **baseline only** — `ROUTES.brand` + `ROUTES.shop` + golden-path helpers |
+| `src/lib/platform-core-extended-routes.ts` | factory/supplier `ROUTES.factory.*` + extended helpers |
+| `src/lib/platform-core-legacy-routes.ts` | `LEGACY_ROUTES` — advanced/archived paths (redirects, middleware) |
+| `/brand/core`, `/shop/core` | `fallbackHref="/platform"` — **без** `@/lib/routes` |
+
+Baseline hub (`platform-core-hub-matrix-rows.ts`) импортирует только `platform-core-routes`.
+Extended rows — `platform-core-extended-routes`. Boundary test: `platform-core-boundaries.test.ts`.
+
+**Backend scope (следующий этап):** `docs/BACKEND_PLATFORM_CORE_BASELINE.md`.
+
+## Phase 18 — backend baseline + dependency audit (2026-07)
+
+- Backend: `app/api/platform_core_baseline.py` + `PLATFORM_CORE_BASELINE=true`
+- Import bridge: `platform-core-readiness-routes.ts` (audits без `@/lib/routes`)
+- Docs: `PLATFORM_CORE_DEPENDENCY_GRAPH.md`, `FULL_ARCHITECTURE_AUDIT.md`, `PLATFORM_CORE_READINESS.md`
+
 ## Критерий готовности v1
 
 > Brand creates and publishes. Shop selects and orders. Brand fulfills. Shop tracks. Both communicate.
@@ -95,7 +115,7 @@ E2E: `npm run test:e2e:core:golden-cross-role`
 npm run dev:core          # :3001
 npm run typecheck:ci
 npm run build
-npm test -- --testPathPattern='platform-core-(strict-routes|hub-matrix|readiness-audit|golden-cross-role)'
+npm test -- --testPathPattern='platform-core-(strict-routes|hub-matrix|readiness-audit|golden-cross-role|boundaries)'
 npm run test:e2e:core:golden-cross-role   # нужен dev:core на :3001; PG :5433 для полного 12-stop прогона
 ```
 

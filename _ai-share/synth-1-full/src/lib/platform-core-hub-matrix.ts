@@ -14,14 +14,6 @@ import {
   brandCalendarB2bOrderContextHref,
   brandDevelopmentCabinetHref,
   brandMessagesB2bOrderContextHref,
-  brandW2ProductionTzHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factoryProductionDossierHref,
-  factoryProductionHandoffQueueHref,
-  factoryProductionOrdersOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
 } from '@/lib/platform-core-routes';
@@ -52,12 +44,19 @@ import { isDefaultPlatformCoreCollectionId } from '@/lib/platform-core-url-canon
 import {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
+  shopShowroomHrefForDemo,
+} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+import {
+  factoryDossierHrefForDemo,
   factoryHandoffQueueHrefForDemo,
+  getExtendedCrossRolePeerDemoHrefForDemo,
+  isExtendedCoreRole,
+} from '@/lib/platform-core-hub-matrix-extended-peers';
+import {
   factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
-  shopShowroomHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+} from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 import { getRolePillarDemoHrefForDemo } from '@/lib/platform-core-hub-matrix-role-pillar-hrefs';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { coercePlatformCoreNativeHref } from '@/lib/platform-core-native-href';
@@ -112,12 +111,14 @@ export {
 export {
   brandLinesheetsHrefForDemo,
   brandShowroomHrefForDemo,
+  shopShowroomHrefForDemo,
+} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+export {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
-  shopShowroomHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+} from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 export {
   PLATFORM_CORE_HUB_ROWS,
   PLATFORM_CORE_BASELINE_ROWS,
@@ -155,7 +156,7 @@ export function buildPlatformCoreDemoTrail(
   const brandDevelopmentHref = brandDevelopmentCabinetHref(collectionId);
   const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${collectionId}`;
   const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${collectionId}`;
-  const factoryDossierHref = factoryProductionDossierHref(demoArticleId, { collectionId });
+  const factoryDossierHref = factoryDossierHrefForDemo(demo);
   return [
     { pillarId: 'development', label: 'Цех разработки', href: brandDevelopmentHref },
     { pillarId: 'sample_collection', label: 'Витрина коллекции', href: shopShowroomHref },
@@ -495,8 +496,8 @@ export function getHubCellActionsForDemo(
   const hidePreOrders = options?.hidePreOrders ?? isPlatformCoreMode();
   const mapped = cell.actions
     .filter((action) => !(hidePreOrders && action.href === ROUTES.brand.preOrders))
-    .filter((action) => !(options?.hideCatalogLegacy && action.href === ROUTES.shop.b2bCatalog))
-    .filter((action) => !(options?.hideDiscoverLegacy && action.href === ROUTES.shop.b2bDiscover))
+    .filter((action) => !(options?.hideCatalogLegacy && action.href === '/shop/b2b/catalog'))
+    .filter((action) => !(options?.hideDiscoverLegacy && action.href === '/shop/b2b/discover'))
     .filter(
       (action) =>
         !(
@@ -534,42 +535,22 @@ export function getCrossRolePeerDemoHrefForDemo(
 ): string | undefined {
   const orderId = demo.demoOrderId.trim();
 
+  if (isExtendedCoreRole(viewerRoleId) || isExtendedCoreRole(peerRoleId)) {
+    const extended = getExtendedCrossRolePeerDemoHrefForDemo(
+      viewerRoleId,
+      peerRoleId,
+      pillarId,
+      demo
+    );
+    if (extended) return extended;
+  }
+
   if (pillarId === 'comms') {
     if (viewerRoleId === 'brand' && peerRoleId === 'shop') {
       return shopMessagesB2bOrderContextHref(orderId);
     }
-    if (viewerRoleId === 'brand' && peerRoleId === 'manufacturer') {
-      return factoryMessagesB2bOrderContextHref(orderId, { role: 'manufacturer' });
-    }
-    if (viewerRoleId === 'brand' && peerRoleId === 'supplier') {
-      return factorySupplierMessagesB2bOrderContextHref(orderId);
-    }
     if (viewerRoleId === 'shop' && peerRoleId === 'brand') {
       return brandMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'manufacturer') {
-      return factoryMessagesB2bOrderContextHref(orderId, { role: 'manufacturer' });
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'supplier') {
-      return factorySupplierMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'manufacturer' && peerRoleId === 'brand') {
-      return brandMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'manufacturer' && peerRoleId === 'shop') {
-      return shopMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'manufacturer' && peerRoleId === 'supplier') {
-      return factorySupplierMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'supplier' && peerRoleId === 'brand') {
-      return brandMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'supplier' && peerRoleId === 'shop') {
-      return shopMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'supplier' && peerRoleId === 'manufacturer') {
-      return factoryMessagesB2bOrderContextHref(orderId, { role: 'manufacturer' });
     }
   }
 
@@ -577,28 +558,7 @@ export function getCrossRolePeerDemoHrefForDemo(
     if (viewerRoleId === 'brand' && peerRoleId === 'shop') {
       return shopB2bTrackingOrderHref(orderId);
     }
-    if (viewerRoleId === 'brand' && peerRoleId === 'manufacturer') {
-      return factoryHandoffQueueHrefForDemo(demo);
-    }
     if (viewerRoleId === 'shop' && peerRoleId === 'brand') {
-      return shopB2bOrderHref(orderId);
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'manufacturer') {
-      return factoryHandoffQueueHrefForDemo(demo);
-    }
-  }
-
-  if (pillarId === 'collection_order') {
-    if (viewerRoleId === 'manufacturer' && peerRoleId === 'brand') {
-      return brandB2bOrderHref(orderId);
-    }
-    if (viewerRoleId === 'manufacturer' && peerRoleId === 'shop') {
-      return shopB2bTrackingOrderHref(orderId);
-    }
-    if (viewerRoleId === 'supplier' && peerRoleId === 'brand') {
-      return brandB2bOrderHref(orderId);
-    }
-    if (viewerRoleId === 'supplier' && peerRoleId === 'shop') {
       return shopB2bOrderHref(orderId);
     }
   }
@@ -606,19 +566,8 @@ export function getCrossRolePeerDemoHrefForDemo(
   if (pillarId === 'development') {
     const showroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
     const brandDevHref = brandDevelopmentCabinetHref(demo.collectionId);
-    const dossierHref = factoryProductionDossierHref(demo.demoArticleId, {
-      collectionId: demo.collectionId,
-    });
     if (viewerRoleId === 'brand' && peerRoleId === 'shop') return showroomHref;
-    if (viewerRoleId === 'brand' && peerRoleId === 'manufacturer') return dossierHref;
-    if (viewerRoleId === 'brand' && peerRoleId === 'supplier') {
-      return factoryMaterialsHrefForDemo(demo);
-    }
     if (viewerRoleId === 'shop' && peerRoleId === 'brand') return brandDevHref;
-    if (viewerRoleId === 'shop' && peerRoleId === 'manufacturer') return dossierHref;
-    if (viewerRoleId === 'shop' && peerRoleId === 'supplier') {
-      return factoryMaterialsHrefForDemo(demo);
-    }
   }
 
   if (pillarId === 'sample_collection') {
@@ -641,33 +590,6 @@ export function getCrossRolePeerDemoHrefForDemo(
   }
   if (viewerRoleId === 'brand' && peerRoleId === 'shop' && pillarId === 'sample_collection') {
     return `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
-  }
-  if (
-    viewerRoleId === 'brand' &&
-    peerRoleId === 'manufacturer' &&
-    pillarId === 'order_production'
-  ) {
-    return factoryHandoffQueueHrefForDemo(demo);
-  }
-  if (viewerRoleId === 'manufacturer' && peerRoleId === 'brand' && pillarId === 'development') {
-    return brandDevelopmentCabinetHref(demo.collectionId);
-  }
-  if (
-    viewerRoleId === 'manufacturer' &&
-    peerRoleId === 'supplier' &&
-    pillarId === 'order_production'
-  ) {
-    return factoryMaterialsProcurementHrefForDemo(demo, { role: 'manufacturer' });
-  }
-  if (
-    viewerRoleId === 'supplier' &&
-    peerRoleId === 'manufacturer' &&
-    pillarId === 'order_production'
-  ) {
-    return factoryHandoffQueueHrefForDemo(demo);
-  }
-  if (viewerRoleId === 'supplier' && peerRoleId === 'brand' && pillarId === 'development') {
-    return brandW2ProductionTzHref(demo.collectionId, demo.demoArticleId);
   }
   return getRolePillarDemoHrefForDemo(peerRoleId, pillarId, demo);
 }

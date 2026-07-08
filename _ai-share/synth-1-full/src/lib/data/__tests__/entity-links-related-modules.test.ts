@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import {
   dedupeEntityLinksByHref,
   finalizeRelatedModuleLinks,
@@ -42,8 +43,8 @@ describe('entity-links — RelatedModules / B2B shop hub (full contour)', () => 
       expect(links.length).toBeGreaterThanOrEqual(6);
       const hrefs = links.map((l) => l.href).join(' ');
       expect(hrefs).toContain(ROUTES.shop.b2bPartnersDiscover);
-      expect(hrefs).not.toContain(ROUTES.shop.b2bDiscover);
-      expect(hrefs).not.toContain(ROUTES.shop.b2bCatalog);
+      expect(hrefs).not.toContain(LEGACY_ROUTES.shop.b2bDiscover);
+      expect(hrefs).not.toContain(LEGACY_ROUTES.shop.b2bCatalog);
       expect(hrefs).not.toMatch(/joor|nuorder/i);
       const labels = links.map((l) => l.label).join(' ');
       expect(labels).not.toMatch(/JOOR|NuOrder/i);

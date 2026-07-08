@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import {
   shopLandedMarginTabHref,
@@ -39,7 +41,7 @@ export function buildSupplierMrpSupplySession(input?: {
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const demo = { ...platformCoreDemoForArticle(collectionId, articleId), demoOrderId: orderId };
-  const base = `${ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
+  const base = `${EXTENDED_ROUTES.factory.supplierMessages}?collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`;
 
   return {
     collectionId,
@@ -50,7 +52,7 @@ export function buildSupplierMrpSupplySession(input?: {
     brandBomHref: `${ROUTES.brand.suppliersRfq}?${PILLAR_CAPABILITY_FEATURE_PARAM}=bom&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
     centricRfqHref: `${ROUTES.brand.integrationsCentric}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rfq`,
     w2SupplyHref: workshop2ArticleHref(collectionId, articleId, { w2pane: 'supply' }),
-    replenishmentHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&collection=${encodeURIComponent(collectionId)}`,
+    replenishmentHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&collection=${encodeURIComponent(collectionId)}`,
     brandProductionHref: `${ROUTES.brand.productionOperations}?${PILLAR_CAPABILITY_FEATURE_PARAM}=operations&order=${encodeURIComponent(orderId)}`,
     shopMatrixHref: shopMatrixWorkspaceTabHref('matrix', collectionId, orderId),
     shopLandedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),

@@ -9,7 +9,8 @@ import {
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
+
+import { factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-extended-routes';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
 import { usePillarSnapshot } from '@/hooks/use-pillar-snapshot';
 import { useSpineActiveWholesaleOrderId } from '@/hooks/use-spine-active-wholesale-order-id';

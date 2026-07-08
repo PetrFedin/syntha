@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -683,7 +684,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.customerGroups}?collection=${encodeURIComponent(d.collectionId)}`,
+        `${LEGACY_ROUTES.brand.customerGroups}?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-co-agent-rep',
@@ -727,7 +728,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.priceLists}?collection=${encodeURIComponent(d.collectionId)}`,
+        `${LEGACY_ROUTES.brand.priceLists}?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-co-pack-rules',

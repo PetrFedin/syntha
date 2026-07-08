@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { ROUTES } from '@/lib/routes';
@@ -36,6 +37,6 @@ export function buildBrandSupplierBomSession(input?: {
     procurementHref: `${rfqBase}&${PILLAR_CAPABILITY_FEATURE_PARAM}=procurement`,
     centricRfqHref: `${ROUTES.brand.integrationsCentric}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rfq&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
     materialPassportHref: `${ROUTES.brand.fabricPassportRollup}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rollup&collection=${encodeURIComponent(collectionId)}`,
-    supplierForecastHref: `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
+    supplierForecastHref: `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
   };
 }

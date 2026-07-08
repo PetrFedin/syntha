@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { reportError } from '@/lib/platform-core-ports/legacy/logger';
-import { ROUTES } from '@/lib/platform-core-routes';
+import { ROUTES } from '@/lib/platform-core-routes'
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 
 type Props = {
@@ -33,8 +34,8 @@ export function PlatformCoreSegmentError({
       : role === 'brand'
         ? `${ROUTES.brand.coreCabinet}?pillar=${defaultPillar}`
         : role === 'supplier'
-          ? `${ROUTES.factory.supplierCoreCabinet}?pillar=${defaultPillar}`
-          : `${ROUTES.factory.productionCoreCabinet}?pillar=${defaultPillar}`;
+          ? `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=${defaultPillar}`
+          : `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=${defaultPillar}`;
 
   return (
     <div

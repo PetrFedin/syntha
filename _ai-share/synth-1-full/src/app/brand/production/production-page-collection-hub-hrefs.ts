@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import type { CollectionChainDeepLinkHrefs } from '@/lib/production/collection-chain-hrefs';
 import { ROUTES } from '@/lib/routes';
 
@@ -79,8 +80,8 @@ export function buildBrandProductionWorkshopHubHrefs(
     : ROUTES.brand.warehouse;
 
   const b2bShipmentsHref = collectionQuery
-    ? `${ROUTES.brand.b2bShipments}${collectionQuery}`
-    : ROUTES.brand.b2bShipments;
+    ? `${LEGACY_ROUTES.brand.b2bShipments}${collectionQuery}`
+    : LEGACY_ROUTES.brand.b2bShipments;
 
   const esgHref = collectionQuery ? `${ROUTES.brand.esg}${collectionQuery}` : ROUTES.brand.esg;
 

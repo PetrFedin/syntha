@@ -9,12 +9,8 @@ import {
   platformCoreCommsSectionContextQuery,
 } from '@/lib/platform-core-comms-canon';
 import { SECTION_AUDIT } from '@/lib/platform-core-readiness-sections';
-import {
-  brandMessagesB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  shopMessagesB2bOrderContextHref,
-} from '@/lib/platform-core-routes';
+import { brandMessagesB2bOrderContextHref, shopMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
+import { factoryMessagesB2bOrderContextHref, factorySupplierMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 
 export type CommsSectionGroupRow = {
   pillarId: CoreHubPillarId;

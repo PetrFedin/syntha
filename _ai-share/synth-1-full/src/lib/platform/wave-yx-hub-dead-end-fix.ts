@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Wave YX — hub dead-end + broken href audit fix (all roles × hub matrix + peer workspaces).
  * SoT for core-239-wave-yx-dead-ends.spec.ts + unit contract tests.
@@ -65,9 +66,9 @@ export const WAVE_YX_HUB_DEAD_END_FIX_COUNT = WAVE_YX_HUB_DEAD_END_FIXES.length;
 const BLOCKED_HREF_PREFIXES = [
   '/404',
   '/brand/merch/linesheet',
-  ROUTES.shop.b2bDiscover,
-  ROUTES.shop.b2bOrderMode,
-  ROUTES.shop.b2bOrderDrafts,
+  LEGACY_ROUTES.shop.b2bDiscover,
+  LEGACY_ROUTES.shop.b2bOrderMode,
+  LEGACY_ROUTES.shop.b2bOrderDrafts,
 ] as const;
 
 function isBlockedHref(href: string): string | null {

@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import { ROUTES } from '@/lib/routes';
 import { platformCoreCalendarPcTaskHref } from '@/lib/platform/platform-core-comms-pctask-deeplinks';
 
@@ -19,7 +20,7 @@ export function platformCoreMfrProductionCalendarPcTaskHref(input: {
   const taskId = input.taskId.trim();
   const collectionId = input.collectionId.trim() || 'SS27';
   if (!orderId || !taskId) {
-    return `${ROUTES.factory.productionCalendar}?role=manufacturer&collection=${encodeURIComponent(collectionId)}`;
+    return `${EXTENDED_ROUTES.factory.productionCalendar}?role=manufacturer&collection=${encodeURIComponent(collectionId)}`;
   }
   return platformCoreCalendarPcTaskHref({
     role: 'manufacturer',
@@ -42,5 +43,5 @@ export function mfrCmOrderAttachTzPeerHref(input: {
     pcf: 'order',
   });
   if (input.factoryId?.trim()) sp.set('factoryId', input.factoryId.trim());
-  return `${ROUTES.factory.messages}?${sp.toString()}`;
+  return `${EXTENDED_ROUTES.factory.messages}?${sp.toString()}`;
 }

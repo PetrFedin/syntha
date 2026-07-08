@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Карта интеграционных модулей — Фазы 1–4 (РФ-специфика, коммерция, AI, удобство байеров).
  * Связи между модулями для навигации и RelatedModulesBlock.
@@ -38,7 +39,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'tenders',
     phase: 1,
     label: 'Тендеры B2B',
-    href: ROUTES.shop.b2bTenders,
+    href: LEGACY_ROUTES.shop.b2bTenders,
     description: 'Закупки и аукционы (B2B-Center)',
     reference: 'B2B-Center',
     relatedIds: ['supplier-discovery'],
@@ -57,7 +58,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'collaborative-order',
     phase: 2,
     label: 'Collaborative Buying',
-    href: ROUTES.shop.b2bCollaborativeOrder,
+    href: LEGACY_ROUTES.shop.b2bCollaborativeOrder,
     description: 'Совместное редактирование заказа несколькими байерами',
     reference: 'NuOrder',
     relatedIds: ['margin-calculator', 'trade-show'],
@@ -66,7 +67,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'margin-calculator',
     phase: 2,
     label: 'Margin Calculator',
-    href: ROUTES.shop.b2bMarginCalculator,
+    href: LEGACY_ROUTES.shop.b2bMarginCalculator,
     description: 'Расчёт маржи в корзине',
     reference: 'NuOrder',
     relatedIds: ['collaborative-order', 'trade-show'],
@@ -75,7 +76,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'trade-show',
     phase: 2,
     label: 'Market Week / Trade Show',
-    href: ROUTES.brand.tradeShows,
+    href: LEGACY_ROUTES.brand.tradeShows,
     description: 'CPM, МФН и др. события (JOOR, FashionGo)',
     reference: 'JOOR, FashionGo',
     relatedIds: ['collaborative-order', 'buyer-onboarding'],
@@ -121,7 +122,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'selection-builder',
     phase: 3,
     label: 'Формирование селекции',
-    href: ROUTES.shop.b2bSelectionBuilder,
+    href: LEGACY_ROUTES.shop.b2bSelectionBuilder,
     description: 'Сток, бренд-сезон, кросс-бренд, AI',
     reference: 'Syntha',
     relatedIds: ['ai-recommendations'],
@@ -149,7 +150,7 @@ export const INTEGRATION_MODULES: IntegrationModule[] = [
     id: 'buyer-onboarding',
     phase: 4,
     label: 'Анкета онбординга',
-    href: ROUTES.brand.buyerApplications,
+    href: LEGACY_ROUTES.brand.buyerApplications,
     description: 'Сбор данных о магазине при регистрации (Brandboom)',
     reference: 'Brandboom',
     relatedIds: ['first-order-discount', 'trade-show'],

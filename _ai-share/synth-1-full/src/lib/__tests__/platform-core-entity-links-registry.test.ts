@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { getShopB2BHubLinks, sanitizeEntityLinksForPlatformCore } from '@/lib/data/entity-links';
 import {
   PLATFORM_CORE_ENTITY_LINK_HIDDEN_HREFS,
@@ -9,11 +10,11 @@ describe('platform-core-entity-links-registry', () => {
   it('скрытые href — уникальный набор side-paths', () => {
     const hidden = platformCoreEntityLinkHiddenSet();
     expect(hidden.size).toBe(PLATFORM_CORE_ENTITY_LINK_HIDDEN_HREFS.length);
-    expect(hidden.has(ROUTES.shop.b2bQuickOrder)).toBe(true);
+    expect(hidden.has(LEGACY_ROUTES.shop.b2bQuickOrder)).toBe(true);
     expect(hidden.has(ROUTES.brand.preOrders)).toBe(true);
-    expect(hidden.has(ROUTES.shop.b2bDocuments)).toBe(true);
-    expect(hidden.has(ROUTES.shop.b2bTenders)).toBe(true);
-    expect(hidden.has(ROUTES.shop.b2bAssortmentPlanning)).toBe(true);
+    expect(hidden.has(LEGACY_ROUTES.shop.b2bDocuments)).toBe(true);
+    expect(hidden.has(LEGACY_ROUTES.shop.b2bTenders)).toBe(true);
+    expect(hidden.has(LEGACY_ROUTES.shop.b2bAssortmentPlanning)).toBe(true);
     expect(hidden.has(ROUTES.shop.b2bOrders)).toBe(false);
   });
 });
@@ -28,7 +29,7 @@ describe('sanitizeEntityLinksForPlatformCore', () => {
   it('переписывает catalog → витрина без SS27 в label', () => {
     process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
     const out = sanitizeEntityLinksForPlatformCore([
-      { label: 'Каталог', href: ROUTES.shop.b2bCatalog },
+      { label: 'Каталог', href: LEGACY_ROUTES.shop.b2bCatalog },
     ]);
     expect(out).toHaveLength(1);
     expect(out[0]?.href).toContain('/shop/b2b/showroom');

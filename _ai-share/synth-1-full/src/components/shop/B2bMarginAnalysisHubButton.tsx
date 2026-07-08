@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/routes';
@@ -20,7 +22,7 @@ export function B2bMarginAnalysisHubButton({ className, label = 'Анализ м
       className={cn('text-xs font-black uppercase', className)}
       asChild
     >
-      <Link href={ROUTES.shop.b2bMarginAnalysis} data-testid="b2b-margin-analysis-hub-link">
+      <Link href={LEGACY_ROUTES.shop.b2bMarginAnalysis} data-testid="b2b-margin-analysis-hub-link">
         {label}
       </Link>
     </Button>

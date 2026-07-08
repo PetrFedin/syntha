@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Wave XC — mfr sample queue: factory PATCH, hash-scroll to item, PG mirror bump, RU poll meta.
  */
@@ -71,7 +72,7 @@ export function factorySampleQueueDeepHref(input: {
   const hash = input.orderId?.trim()
     ? factorySampleQueueItemHash(input.orderId)
     : WAVE_XC_FACTORY_SAMPLE_QUEUE_SECTION_HASH;
-  return `${ROUTES.factory.production}?${sp.toString()}#${hash}`;
+  return `${EXTENDED_ROUTES.factory.production}?${sp.toString()}#${hash}`;
 }
 
 export function formatMfrSampleQueueStatusLabelRu(status: string | null | undefined): string {

@@ -1,21 +1,14 @@
-import {
-  ROUTES,
-  brandB2bOrderHandoffContextHref,
-  brandB2bOrderHref,
-  brandMessagesB2bOrderContextHref,
-  brandDevelopmentCabinetHref,
-  factoryProductionDossierHref,
-  shopB2bTrackingOrderHref,
-  shopMessagesB2bOrderContextHref,
-  factoryMessagesB2bOrderContextHref,
-} from '@/lib/platform-core-routes';
+import { ROUTES, brandB2bOrderHandoffContextHref, brandB2bOrderHref, brandMessagesB2bOrderContextHref, brandDevelopmentCabinetHref, shopB2bTrackingOrderHref, shopMessagesB2bOrderContextHref } from '@/lib/platform-core-routes';
+import { factoryProductionDossierHref, factoryMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 import type { PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
 import {
   brandLinesheetsHrefForDemo,
+} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+} from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows-all';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix.types';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';

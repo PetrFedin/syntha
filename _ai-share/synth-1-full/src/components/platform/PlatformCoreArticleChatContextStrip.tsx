@@ -21,17 +21,8 @@ import { brandDevelopmentSamplePeerHref } from '@/lib/platform-core-brand-sample
 import { brandOrderCommsTabHref } from '@/lib/platform-core-ports/b2b/brand-collection-order-hrefs';
 import { brandProductionOpsFeatureHref } from '@/lib/platform-core-ports/brand-production-handoff';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
-import {
-  brandDevelopmentArticleHref,
-  brandMessagesWorkshop2ArticleContextHref,
-  factoryMessagesB2bOrderContextHref,
-  factoryMessagesWorkshop2ArticleContextHref,
-  factoryProductionDossierContextHref,
-  factorySupplierMessagesB2bOrderContextHref,
-  factorySupplierMessagesWorkshop2ArticleContextHref,
-  ROUTES,
-  shopMessagesWorkshop2ArticleContextHref,
-} from '@/lib/platform-core-routes';
+import { brandDevelopmentArticleHref, brandMessagesWorkshop2ArticleContextHref, ROUTES, shopMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-routes';
+import { factoryMessagesB2bOrderContextHref, factoryMessagesWorkshop2ArticleContextHref, factoryProductionDossierContextHref, factorySupplierMessagesB2bOrderContextHref, factorySupplierMessagesWorkshop2ArticleContextHref } from '@/lib/platform-core-extended-routes';
 
 type Props = {
   variant: CommunicationsEntityContextVariant;

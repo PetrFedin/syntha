@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Role-aware resolveHref для возможностей с несколькими ролями.
  * Default (без ctx.role) — shop/brand-safe fallback для audit и hub matrix.
@@ -79,7 +81,7 @@ function supplierProcurementFeatureHref(
   if (order && (featureId === 'order' || featureId === 'supply')) {
     sp.set('order', order);
   }
-  return `${ROUTES.factory.supplierMessages}?${sp.toString()}`;
+  return `${EXTENDED_ROUTES.factory.supplierMessages}?${sp.toString()}`;
 }
 
 export function resolveCommsOrderContextHref(ctx: PillarCapabilityContext): string {
@@ -106,7 +108,7 @@ export function resolveCommsEntityThreadsHref(ctx: PillarCapabilityContext): str
 
   switch (ctx.role) {
     case 'manufacturer':
-      return `${ROUTES.factory.messages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(collection)}`;
+      return `${EXTENDED_ROUTES.factory.messages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(collection)}`;
     case 'supplier':
       return supplierProcurementFeatureHref('entities', ctx);
     case 'brand':
@@ -158,7 +160,7 @@ export function resolveOpHandoffQueueHref(ctx: PillarCapabilityContext): string 
     [PILLAR_CAPABILITY_FEATURE_PARAM]: 'handoff',
   });
   if (order) sp.set('order', order);
-  return `${ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
+  return `${EXTENDED_ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
 }
 
 export function resolveOpFactoryTechpackAckHref(ctx: PillarCapabilityContext): string {
@@ -264,7 +266,7 @@ export function resolveCoAgentRepHref(ctx: PillarCapabilityContext): string {
   if (ctx.role === 'brand') {
     return brandAgentRepLedgerHref();
   }
-  return `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`;
+  return `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`;
 }
 
 export function resolveCoCollaborativeOrderHref(ctx: PillarCapabilityContext): string {

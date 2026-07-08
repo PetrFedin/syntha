@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import {
   shopLandedMarginTabHref,
   shopMatrixWorkspaceTabHref,
@@ -37,9 +38,9 @@ export function buildShopInventoryOpsSession(input?: {
     overviewHref: `${base}?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&${collectionQ}`,
     reconcileHref: `${base}?${PILLAR_CAPABILITY_FEATURE_PARAM}=reconcile&${collectionQ}`,
     cycleCountHref: ROUTES.shop.cycleCounting,
-    replenishmentAlertsHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&${collectionQ}`,
-    replenishmentAtpHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&${collectionQ}`,
-    replenishmentRulesHref: `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rules&${collectionQ}`,
+    replenishmentAlertsHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=alerts&${collectionQ}`,
+    replenishmentAtpHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&${collectionQ}`,
+    replenishmentRulesHref: `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=rules&${collectionQ}`,
     landedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),
     orderCommsHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
     matrixHref: shopMatrixWorkspaceTabHref('matrix', collectionId, orderId),

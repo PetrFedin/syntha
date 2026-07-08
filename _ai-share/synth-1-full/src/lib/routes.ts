@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Константы маршрутов приложения — единый источник правды для href.
  * Использовать вместо строковых литералов в навигации, entity-links и ссылках.
@@ -79,7 +81,7 @@ export function brandCoreCollectionOrderCabinetHref(
 
 /** Заявки на изменение заказа бренда · фильтр по order. */
 export function brandOrderAmendmentsOrderHref(orderId: string): string {
-  return `${ROUTES.brand.orderAmendments}?order=${encodeURIComponent(orderId)}`;
+  return `${LEGACY_ROUTES.brand.orderAmendments}?order=${encodeURIComponent(orderId)}`;
 }
 
 /** Кабинет магазина · столп «Оптовый заказ». */
@@ -136,12 +138,12 @@ export function factoryProductionDossierContextHref(
 
 /** Кабинет цеха · столп «Выпуск». */
 export function factoryCoreOrderProductionCabinetHref(collectionId: string): string {
-  return `${ROUTES.factory.productionCoreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
+  return `${EXTENDED_ROUTES.factory.productionCoreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
 }
 
 /** Кабинет поставщика · столп «Выпуск» (закупка). */
 export function factorySupplierCoreOrderProductionCabinetHref(collectionId: string): string {
-  return `${ROUTES.factory.supplierCoreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
+  return `${EXTENDED_ROUTES.factory.supplierCoreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
 }
 
 /** Карточка B2B-заказа в кабинете байера (`/shop/b2b/orders/[orderId]`). */
@@ -195,7 +197,7 @@ export function factoryProductionOrdersOrderContextHref(
 ): string {
   const sp = new URLSearchParams({ order: orderId });
   if (opts?.factoryId?.trim()) sp.set('factoryId', opts.factoryId.trim());
-  return `${ROUTES.factory.productionOrders}?${sp.toString()}`;
+  return `${EXTENDED_ROUTES.factory.productionOrders}?${sp.toString()}`;
 }
 
 /** Очередь передачи в цех с контекстом B2B-заказа (workspace tab `pcf=handoff`). */
@@ -207,7 +209,7 @@ export function factoryProductionHandoffQueueHref(
   if (opts?.factoryId?.trim()) sp.set('factoryId', opts.factoryId.trim());
   if (opts?.collectionId?.trim()) sp.set('collection', opts.collectionId.trim());
   sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'handoff');
-  return `${ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
+  return `${EXTENDED_ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
 }
 
 /** Checkout магазина с контекстом коллекции (deep-link из бренда). */
@@ -983,7 +985,7 @@ export function calendarHrefForRole(role: UserRole): string {
       return ROUTES.distributor.calendar;
     case 'supplier':
     case 'manufacturer':
-      return ROUTES.factory.productionCalendar;
+      return EXTENDED_ROUTES.factory.productionCalendar;
     case 'b2b':
       return ROUTES.shop.b2bCalendar;
     default:
@@ -1061,7 +1063,7 @@ export function factoryMessagesB2bOrderContextHref(
   orderId: string,
   options?: { role?: FactoryMessagesRole }
 ): string {
-  const base = `${ROUTES.factory.messages}?${b2bOrderMessagesQuery(orderId)}`;
+  const base = `${EXTENDED_ROUTES.factory.messages}?${b2bOrderMessagesQuery(orderId)}`;
   const roleQ = factoryMessagesRoleQuery(options?.role);
   return roleQ ? `${base}&${roleQ}` : base;
 }
@@ -1072,13 +1074,13 @@ export function factoryMessagesWorkshop2ArticleContextHref(
   options?: { role?: FactoryMessagesRole }
 ): string {
   const ctx = encodeURIComponent(`${collectionId}:${articleId}`);
-  const base = `${ROUTES.factory.messages}?contextType=workshop2_article&contextId=${ctx}`;
+  const base = `${EXTENDED_ROUTES.factory.messages}?contextType=workshop2_article&contextId=${ctx}`;
   const roleQ = factoryMessagesRoleQuery(options?.role);
   return roleQ ? `${base}&${roleQ}` : base;
 }
 
 export function factoryMessagesRoleHref(role: FactoryMessagesRole): string {
-  return `${ROUTES.factory.messages}?role=${role}`;
+  return `${EXTENDED_ROUTES.factory.messages}?role=${role}`;
 }
 
 export function factorySupplierRfqInboxHref(input?: {
@@ -1091,12 +1093,12 @@ export function factorySupplierRfqInboxHref(input?: {
   if (collectionId) sp.set('collection', collectionId);
   if (articleId) sp.set('article', articleId);
   const q = sp.toString();
-  return q ? `${ROUTES.factory.supplierRfqInbox}?${q}` : ROUTES.factory.supplierRfqInbox;
+  return q ? `${EXTENDED_ROUTES.factory.supplierRfqInbox}?${q}` : EXTENDED_ROUTES.factory.supplierRfqInbox;
 }
 
 /** `/factory/supplier/messages` с контекстом B2B (pathname → role=supplier). */
 export function factorySupplierMessagesB2bOrderContextHref(orderId: string): string {
-  return `${ROUTES.factory.supplierMessages}?${b2bOrderMessagesQuery(orderId)}`;
+  return `${EXTENDED_ROUTES.factory.supplierMessages}?${b2bOrderMessagesQuery(orderId)}`;
 }
 
 /** `/factory/supplier/messages` с контекстом артикула W2 (запрос цены через чат). */
@@ -1105,7 +1107,7 @@ export function factorySupplierMessagesWorkshop2ArticleContextHref(
   articleId: string
 ): string {
   const ctx = encodeURIComponent(`${collectionId}:${articleId}`);
-  return `${ROUTES.factory.supplierMessages}?contextType=workshop2_article&contextId=${ctx}`;
+  return `${EXTENDED_ROUTES.factory.supplierMessages}?contextType=workshop2_article&contextId=${ctx}`;
 }
 
 /** Календарь с привязкой к заказу (ручной контекст в URL для фильтров/поиска). */
@@ -1130,7 +1132,7 @@ export function shopCanonicalCalendarHref(layers = 'orders,logistics'): string {
 
 export function factoryCalendarB2bOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
-  return `${ROUTES.factory.productionCalendar}?layers=tasks,orders,production&${B2B_CTX.order}=${id}`;
+  return `${EXTENDED_ROUTES.factory.productionCalendar}?layers=tasks,orders,production&${B2B_CTX.order}=${id}`;
 }
 
 /** Календарь поставщика с контекстом B2B-заказа (`/factory/calendar`, не production ACL). */
@@ -1141,7 +1143,7 @@ export function factorySupplierCalendarB2bOrderContextHref(orderId: string): str
   });
   sp.set(B2B_CTX.order, orderId);
   sp.set(B2B_CTX.orderId, orderId);
-  return `${ROUTES.factory.calendar}?${sp.toString()}`;
+  return `${EXTENDED_ROUTES.factory.calendar}?${sp.toString()}`;
 }
 
 /**
@@ -1236,12 +1238,12 @@ export function shopB2bMatrixPrepackApplyHref(
 
 export function shopB2bSelectionBuilderOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
-  return `${ROUTES.shop.b2bSelectionBuilder}?${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
+  return `${LEGACY_ROUTES.shop.b2bSelectionBuilder}?${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
 }
 
 export function shopB2bWhiteboardOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
-  return `${ROUTES.shop.b2bWhiteboard}?${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
+  return `${LEGACY_ROUTES.shop.b2bWhiteboard}?${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
 }
 
 /** Working Order (NuOrder) с привязкой к оптовому заказу — тот же query, что на карточке бренда. */

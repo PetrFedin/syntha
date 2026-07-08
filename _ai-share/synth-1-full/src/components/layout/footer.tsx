@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import Link from 'next/link';
 import { Twitter, Instagram, Facebook } from 'lucide-react';
 import Logo from '@/components/logo';
@@ -10,7 +11,7 @@ const footerLinks = {
     { href: ROUTES.brand.home, label: 'Кабинет бренда' },
     { href: ROUTES.brand.controlCenter, label: 'Центр управления' },
     { href: ROUTES.shop.home, label: 'Кабинет магазина' },
-    { href: ROUTES.shop.b2bDiscover, label: 'B2B закупки (Discover)' },
+    { href: LEGACY_ROUTES.shop.b2bDiscover, label: 'B2B закупки (Discover)' },
     { href: ROUTES.storeLocator, label: 'Карта магазинов' },
     { href: ROUTES.academyPlatform, label: 'Академия' },
   ],

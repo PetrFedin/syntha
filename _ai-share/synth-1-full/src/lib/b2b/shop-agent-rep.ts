@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { platformB2bMarketroomFeatureHref } from '@/lib/b2b/platform-b2b-marketroom';
 import { shopB2bPartnersFeatureHref } from '@/lib/b2b/shop-b2b-partners-workspace';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -48,9 +49,9 @@ export function buildShopAgentRepSession(input?: {
     demoArticleId,
     demoCampaignId,
     matrixHref: shopB2bMatrixOrderContextHref(demoOrderId),
-    collaborativeHref: `${ROUTES.shop.b2bCollaborativeOrder}?${PILLAR_CAPABILITY_FEATURE_PARAM}=session&order=${encodeURIComponent(demoOrderId)}`,
-    commissionTabHref: `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission`,
-    portalTabHref: `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`,
+    collaborativeHref: `${LEGACY_ROUTES.shop.b2bCollaborativeOrder}?${PILLAR_CAPABILITY_FEATURE_PARAM}=session&order=${encodeURIComponent(demoOrderId)}`,
+    commissionTabHref: `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission`,
+    portalTabHref: `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal`,
     brandLedgerHref: brandAgentRepLedgerHref(),
     shopPartnersRosterHref: shopB2bPartnersFeatureHref('roster', demoCollectionId),
     platformMarketroomHref: platformB2bMarketroomFeatureHref('showcase', demoCollectionId),

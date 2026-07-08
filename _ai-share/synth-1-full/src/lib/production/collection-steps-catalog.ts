@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * Каталог этапов коллекции: полный контур от брифа и SKU до ESG.
  * Порядок в COLLECTION_STEPS — единый источник правды: матрица, справка, мини-схема и COLLECTION_BRAND_NARRATIVE_STEP_IDS совпадают с топологией dependsOn.
@@ -278,7 +279,7 @@ export const COLLECTION_STEPS: CollectionStep[] = [
     externalAxisLabel: 'B2B',
     crossLinks: [
       { label: 'Создать linesheet', href: ROUTES.brand.b2bLinesheetsCreate },
-      { label: 'Проекты лукбука', href: ROUTES.brand.lookbookProjects },
+      { label: 'Проекты лукбука', href: LEGACY_ROUTES.brand.lookbookProjects },
       { label: 'Этапы коллекции', href: ROUTES.brand.productionFloorTab('stages') },
       { label: 'Хаб коллекции', href: ROUTES.brand.productionFloorTab('workshop') },
       { label: 'Комплектация B2B · склад', href: ROUTES.brand.warehouse },
@@ -475,7 +476,7 @@ export const COLLECTION_STEPS: CollectionStep[] = [
     mandatory: true,
     canSkipForNow: true,
     dependsOn: ['wholesale-prep'],
-    href: ROUTES.brand.b2bShipments,
+    href: LEGACY_ROUTES.brand.b2bShipments,
     externalAxisLabel: 'B2B · отгрузки',
     crossLinks: [
       { label: 'Склад бренда', href: ROUTES.brand.warehouse },

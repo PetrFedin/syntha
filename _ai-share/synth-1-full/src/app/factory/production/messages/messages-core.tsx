@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -32,8 +34,8 @@ function FactoryCommsFailClosed({
 }) {
   const hubHref =
     variant === 'supplier'
-      ? ROUTES.factory.supplierCoreCabinet
-      : ROUTES.factory.productionCoreCabinet;
+      ? EXTENDED_ROUTES.factory.supplierCoreCabinet
+      : EXTENDED_ROUTES.factory.productionCoreCabinet;
   return (
     <div
       className="rounded-lg border border-amber-200 bg-amber-50/90 p-6 text-sm text-amber-950"

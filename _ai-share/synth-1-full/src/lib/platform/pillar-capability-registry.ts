@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Единый реестр возможностей (Onfinity + PLM/ERP/wholesale референсы) × 5 столпов × 4 роли.
  * SoT для cross-links и audit — не дублировать экраны, улучшать существующие маршруты.
@@ -274,7 +276,7 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'POST /api/b2b/intake/allocate + replenishment ATP tab',
     resolveHref: (ctx) =>
-      `${ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&collection=${encodeURIComponent(demoCollection(ctx))}`,
+      `${LEGACY_ROUTES.shop.b2bReplenishment}?${PILLAR_CAPABILITY_FEATURE_PARAM}=stock-atp&collection=${encodeURIComponent(demoCollection(ctx))}`,
     relatedIds: ['co-replenishment-workspace', 'co-wholesale-matrix', 'op-inventory-atp'],
   },
   {
@@ -446,7 +448,7 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     phase: 'now',
     improves: 'SupplierCollectionOrderForecast + supplier-procurement forecast tab',
     resolveHref: (ctx) =>
-      `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(demoCollection(ctx))}`,
+      `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=forecast&collection=${encodeURIComponent(demoCollection(ctx))}`,
     relatedIds: [
       'co-wholesale-matrix',
       'dev-supplier-model-bom',
@@ -523,7 +525,7 @@ export const PILLAR_CAPABILITY_REGISTRY: readonly PillarCapabilityEntry[] = [
     status: 'enhance',
     phase: 'now',
     improves: 'brand-crm-segmentation workspace on customer-groups',
-    resolveHref: () => `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
+    resolveHref: () => `${LEGACY_ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
     relatedIds: ['sc-showroom-buy', 'co-wholesale-matrix', 'co-agent-rep'],
   },
 ] as const;

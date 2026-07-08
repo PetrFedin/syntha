@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import type { PriceList } from '@/lib/b2b/price-lists';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
@@ -25,9 +26,9 @@ export function brandPricelistShopMatrixHref(
 }
 
 export function brandPricelistLandedMarginHref(): string {
-  return `${ROUTES.shop.b2bMarginAnalysis}?${PILLAR_CAPABILITY_FEATURE_PARAM}=pricelist`;
+  return `${LEGACY_ROUTES.shop.b2bMarginAnalysis}?${PILLAR_CAPABILITY_FEATURE_PARAM}=pricelist`;
 }
 
 export function brandPricelistTiersHref(): string {
-  return `${ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=tiers`;
+  return `${LEGACY_ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=tiers`;
 }

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import {
   brandLandedMarginTabHref,
   brandOrderCommsTabHref,
@@ -81,9 +82,9 @@ export function buildBrandLandedMarginSession(input?: {
     brandOrderCommsChatHref: brandOrderCommsTabHref('chat', orderId, collectionId),
     brandOrderCommsHandoffHref: brandOrderCommsTabHref('handoff', orderId, collectionId),
     agentRepHref: brandAgentRepLedgerHref(),
-    priceListsVersionsHref: `${ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=versions&collection=${encodeURIComponent(collectionId)}`,
+    priceListsVersionsHref: `${LEGACY_ROUTES.brand.priceLists}?${PILLAR_CAPABILITY_FEATURE_PARAM}=versions&collection=${encodeURIComponent(collectionId)}`,
     shopShowroomHref: shopShowroomTabHref('showroom', collectionId, orderId),
-    brandCrmSegmentsHref: `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments&collection=${encodeURIComponent(collectionId)}`,
+    brandCrmSegmentsHref: `${LEGACY_ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments&collection=${encodeURIComponent(collectionId)}`,
     platformMarketroomHref: `${PLATFORM_CORE_B2B_MARKETROOM_HREF}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=showcase`,
     platformHubHref: `${PLATFORM_CORE_B2B_BASE}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=hub`,
   };

@@ -1,3 +1,4 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import { platformB2bMarketroomFeatureHref } from '@/lib/b2b/platform-b2b-marketroom';
@@ -55,10 +56,10 @@ export function buildShopB2bPartnersSession(input?: {
     platformMarketroomHref: platformB2bMarketroomFeatureHref('showcase', collectionId),
     shopShowroomHref: shopShowroomBuyFeatureHref(collectionId, 'showroom'),
     shopMatrixHref: shopMatrixWorkspaceTabHref('matrix', collectionId, orderId),
-    salesRepPortalHref: `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal&${collectionQ}`,
-    shopAgentRepCommissionHref: `${ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission&${collectionQ}`,
-    collaborativeHref: `${ROUTES.shop.b2bCollaborativeOrder}?${PILLAR_CAPABILITY_FEATURE_PARAM}=session&order=${encodeURIComponent(orderId)}`,
-    brandCrmSegmentsHref: `${ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
+    salesRepPortalHref: `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=portal&${collectionQ}`,
+    shopAgentRepCommissionHref: `${LEGACY_ROUTES.shop.b2bSalesRepPortal}?${PILLAR_CAPABILITY_FEATURE_PARAM}=commission&${collectionQ}`,
+    collaborativeHref: `${LEGACY_ROUTES.shop.b2bCollaborativeOrder}?${PILLAR_CAPABILITY_FEATURE_PARAM}=session&order=${encodeURIComponent(orderId)}`,
+    brandCrmSegmentsHref: `${LEGACY_ROUTES.brand.customerGroups}?${PILLAR_CAPABILITY_FEATURE_PARAM}=segments`,
     orderCommsHref: shopOrderCommsTabHref('tracking', orderId, collectionId),
     landedMarginHref: shopLandedMarginTabHref('rollup', collectionId, orderId),
     brandOrderChatHref: brandOrderCommsTabHref('chat', orderId, collectionId),

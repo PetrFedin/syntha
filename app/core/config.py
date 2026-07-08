@@ -80,6 +80,9 @@ class Settings(BaseSettings):
     # MVP mode: keep external APIs disabled by default
     ENABLE_EXTERNAL_APIS: bool = False
 
+    # Platform Core v1: mount only baseline API (brand+shop × 5 pillars)
+    PLATFORM_CORE_BASELINE: bool = False
+
     # AI rate limit (requests per window per user)
     AI_TASK_RATE_LIMIT: int = 20
     AI_TASK_RATE_WINDOW: int = 60

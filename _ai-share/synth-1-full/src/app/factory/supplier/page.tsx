@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -14,7 +16,7 @@ export default function SupplierHubPage() {
     if (!core) return;
     const hash = window.location.hash;
     const search = window.location.search;
-    const target = `${ROUTES.factory.supplierCoreCabinet}${search}${hash}`;
+    const target = `${EXTENDED_ROUTES.factory.supplierCoreCabinet}${search}${hash}`;
     router.replace(target);
   }, [core, router]);
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+
 import { ShopB2bNuOrderScope } from '@/components/shop/ShopB2bNuOrderScope';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -56,7 +58,7 @@ export function ShopB2bEzOrderLegacyPage() {
       data-testid={tid.page('shop-b2b-ez-order')}
     >
       <ShopB2bContentHeader
-        backHref={ROUTES.shop.b2bOrderMode}
+        backHref={LEGACY_ROUTES.shop.b2bOrderMode}
         lead="NuOrder: открыл лайншит → выбрал qty → отправил, без перехода в матрицу (EZ Order)."
       />
 

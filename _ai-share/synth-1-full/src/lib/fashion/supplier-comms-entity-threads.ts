@@ -1,3 +1,4 @@
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 import {
   PLATFORM_CORE_DEMO,
   factoryMaterialsProcurementHrefForDemo,
@@ -74,7 +75,7 @@ export function buildSupplierCommsEntityThreads(input?: {
       'BOM · material line',
       'Строка BOM под PO — quote через чат.',
       `${baseMessages}&q=${encodeURIComponent('BOM material line')}`,
-      `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=bom&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
+      `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=bom&collection=${encodeURIComponent(collectionId)}&article=${encodeURIComponent(articleId)}`,
       'order_production',
       bomTzHref
     ),
@@ -116,5 +117,5 @@ export function buildSupplierCommsEntityThreads(input?: {
 export function supplierCommsEntitiesHref(collectionId?: string, articleId?: string): string {
   const cid = collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const aid = articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
-  return `${ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(cid)}&article=${encodeURIComponent(aid)}`;
+  return `${EXTENDED_ROUTES.factory.supplierMessages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=entities&collection=${encodeURIComponent(cid)}&article=${encodeURIComponent(aid)}`;
 }

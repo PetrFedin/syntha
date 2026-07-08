@@ -1,3 +1,5 @@
+import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * Единый mapping: профили → главные страницы → ресурсы/фичи.
  * Используется для RouteGuard, INVESTOR_DEMO, фильтрации Brand sidebar по RBAC.
@@ -23,8 +25,8 @@ export const PROFILE_MAIN_PAGES: Record<ProfileKey, string[]> = {
     ROUTES.admin.home,
     ROUTES.brand.home,
     ROUTES.shop.home,
-    ROUTES.factory.production,
-    ROUTES.factory.supplier,
+    EXTENDED_ROUTES.factory.production,
+    EXTENDED_ROUTES.factory.supplier,
     ROUTES.distributor.home,
   ],
   brand: [ROUTES.brand.home, '/brand'],
@@ -32,9 +34,9 @@ export const PROFILE_MAIN_PAGES: Record<ProfileKey, string[]> = {
   shop: ['/shop', '/shop/b2b'],
   retailer: ['/shop', '/shop/b2b'],
   distributor: [ROUTES.distributor.home],
-  factory: [ROUTES.factory.production, ROUTES.factory.supplier],
-  manufacturer: [ROUTES.factory.production],
-  supplier: [ROUTES.factory.supplier],
+  factory: [EXTENDED_ROUTES.factory.production, EXTENDED_ROUTES.factory.supplier],
+  manufacturer: [EXTENDED_ROUTES.factory.production],
+  supplier: [EXTENDED_ROUTES.factory.supplier],
   client: [
     '/client',
     '/client/me',
@@ -67,7 +69,7 @@ export const RESOURCE_TO_ROUTES: Record<Resource, string[]> = {
     '/shop/b2b/catalog',
   ],
   warehouse: ['/brand/warehouse', '/brand/logistics', '/brand/inventory', '/brand/materials'],
-  finance: ['/brand/finance', '/brand/pricing', ROUTES.shop.b2bFinance, ROUTES.shop.b2bPayment],
+  finance: ['/brand/finance', '/brand/pricing', ROUTES.shop.b2bFinance, LEGACY_ROUTES.shop.b2bPayment],
   compliance: ['/brand/compliance', '/brand/documents', '/brand/disputes'],
   integrations: ['/brand/integrations'],
   team: [
@@ -88,14 +90,14 @@ export const RESOURCE_TO_ROUTES: Record<Resource, string[]> = {
     '/brand/dashboard',
     ROUTES.shop.analytics,
     ROUTES.shop.analyticsFootfall,
-    ROUTES.shop.b2bAnalytics,
+    LEGACY_ROUTES.shop.b2bAnalytics,
     ROUTES.shop.b2bOrderAnalytics,
-    ROUTES.shop.b2bReports,
-    ROUTES.shop.b2bMarginAnalysis,
+    LEGACY_ROUTES.shop.b2bReports,
+    LEGACY_ROUTES.shop.b2bMarginAnalysis,
     ROUTES.shop.b2bMarginReport,
-    ROUTES.shop.b2bMarginCalculator,
+    LEGACY_ROUTES.shop.b2bMarginCalculator,
     ROUTES.shop.b2bLandedCost,
-    ROUTES.shop.b2bDeliveryCalendar,
+    LEGACY_ROUTES.shop.b2bDeliveryCalendar,
   ],
   /** Кампании, PR-образцы, медиа — группа сайдбара «Маркетинг» (ворота `marketing`). */
   marketing: [

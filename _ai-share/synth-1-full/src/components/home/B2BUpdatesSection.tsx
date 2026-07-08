@@ -1,5 +1,7 @@
 'use client';
 
+import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -101,7 +103,7 @@ export function B2BUpdatesSection() {
     }
 
     if (role === 'manufacturer' || role === 'supplier') {
-      return ROUTES.factory.production;
+      return EXTENDED_ROUTES.factory.production;
     }
 
     if (role === 'distributor') {
