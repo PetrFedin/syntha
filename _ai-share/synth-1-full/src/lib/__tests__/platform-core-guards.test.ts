@@ -255,6 +255,56 @@ describe('Platform Core UI action contracts', () => {
   });
 });
 
+describe('Platform Core lifecycle map', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actions = require('@/lib/platform-core-ui-action-contracts') as typeof import('@/lib/platform-core-ui-action-contracts');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const lifecycle = require('@/lib/platform-core-lifecycle-map') as typeof import('@/lib/platform-core-lifecycle-map');
+
+  it('has a strictly ordered lifecycle with no duplicate step numbers', () => {
+    const steps = lifecycle.PLATFORM_CORE_LIFECYCLE_ACTION_MAP.map((step) => step.step);
+    expect(new Set(steps).size).toBe(steps.length);
+    expect([...steps].sort((a, b) => a - b)).toEqual(steps);
+  });
+
+  it('references only action contracts that exist', () => {
+    const knownActionIds = new Set(actions.PLATFORM_CORE_UI_ACTION_CONTRACTS.map((action) => action.actionId));
+    const missing = lifecycle.PLATFORM_CORE_LIFECYCLE_ACTION_MAP
+      .map((step) => step.actionId)
+      .filter((actionId) => !knownActionIds.has(actionId));
+    expect(missing).toEqual([]);
+  });
+
+  it('keeps lifecycle pending flags in sync with action contract statuses', () => {
+    const actionById = new Map(actions.PLATFORM_CORE_UI_ACTION_CONTRACTS.map((action) => [action.actionId, action]));
+    const mismatches = lifecycle.PLATFORM_CORE_LIFECYCLE_ACTION_MAP.filter((step) => {
+      const action = actionById.get(step.actionId);
+      return Boolean(action) && step.isPending !== action.status.startsWith('PENDING');
+    }).map((step) => step.actionId);
+    expect(mismatches).toEqual([]);
+  });
+
+  it('keeps commercial rollout blockers explicit and countable', () => {
+    expect(lifecycle.getPlatformCoreLifecycleCommercialGapCount()).toBeGreaterThan(0);
+    expect(lifecycle.getPlatformCoreLifecyclePendingActionIds()).toEqual(
+      expect.arrayContaining([
+        'request_revision',
+        'write_qc_gate',
+        'create_packing_list',
+        'accept_delivery',
+        'close_order',
+        'open_collection_chat',
+      ])
+    );
+  });
+
+  it('starts with article creation and ends with communications history', () => {
+    const steps = lifecycle.PLATFORM_CORE_LIFECYCLE_ACTION_MAP;
+    expect(steps[0]?.actionId).toBe('create_article');
+    expect(steps.at(-1)?.actionId).toBe('open_order_chat');
+  });
+});
+
 describe('Platform Core canonical snapshot types', () => {
   it('chain snapshot types live in platform-core-chain-snapshot.types.ts', () => {
     const types = readRepo('src/lib/platform-core-chain-snapshot.types.ts');
