@@ -12,7 +12,7 @@ import { brandDevelopmentSamplePeerHref } from '@/lib/platform-core-brand-sample
 import {
   factoryHandoffQueueHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
+} from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 import {
   factoryProductionDossierHref,
   ROUTES,
