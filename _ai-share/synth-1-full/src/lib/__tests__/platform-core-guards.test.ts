@@ -52,6 +52,12 @@ function isBaselinePlatformFile(relPath: string): boolean {
   return !EXTENDED_PLATFORM_FILE.test(relPath);
 }
 
+function flattenSectionMap(map: Record<string, Record<string, readonly string[]> | undefined>): string[] {
+  return Object.values(map).flatMap((pillarMap) =>
+    Object.values(pillarMap ?? {}).flatMap((sectionIds) => [...sectionIds])
+  );
+}
+
 describe('Platform Core contract docs', () => {
   it('PLATFORM_CORE_CONTRACT.md exists and declares single write-path', () => {
     const doc = readDoc('PLATFORM_CORE_CONTRACT.md');
@@ -91,6 +97,56 @@ describe('Platform Core canonical routes', () => {
     expect(mw).toMatch(/\/shop\/b2b\/orders/);
     expect(mw).toMatch(/\/api\/platform-core\/b2b-message-templates/);
     expect(mw).toMatch(/\/api\/platform-core\/b2b\/message-templates/);
+  });
+});
+
+describe('Platform Core visible section allowlist', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const sections = require('@/lib/platform-core-two-role-sections') as typeof import('@/lib/platform-core-two-role-sections');
+
+  it('uses a strict visible allowlist instead of denylist-only filtering', () => {
+    const src = readRepo('src/lib/platform-core-two-role-sections.ts');
+    expect(src).toMatch(/PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST/);
+    expect(src).toMatch(/getVisibleSectionIds/);
+    expect(src).toMatch(/visibleIds\.has/);
+  });
+
+  it('does not overlap visible sections with pending backlog', () => {
+    const visible = new Set(flattenSectionMap(sections.PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST as never));
+    const pending = flattenSectionMap(sections.PLATFORM_CORE_TWO_ROLE_PENDING_SECTION_BACKLOG as never);
+    const overlap = pending.filter((sectionId) => visible.has(sectionId));
+    expect(overlap).toEqual([]);
+  });
+
+  it('keeps the current golden path inside visible baseline sections', () => {
+    const visible = new Set(flattenSectionMap(sections.PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST as never));
+    const hiddenGoldenStops = sections.PLATFORM_CORE_TWO_ROLE_WHOLESALE_FLOW
+      .map((step) => step.sectionId)
+      .filter((sectionId) => !visible.has(sectionId));
+    expect(hiddenGoldenStops).toEqual([]);
+  });
+
+  it('keeps unfinished commercial P0 tabs hidden until implemented', () => {
+    const visible = new Set(flattenSectionMap(sections.PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST as never));
+    for (const sectionId of [
+      'brand-co-revision',
+      'brand-op-qc',
+      'brand-op-packing',
+      'brand-op-closeout',
+      'brand-cm-collection-chat',
+      'shop-op-acceptance',
+      'shop-op-closeout',
+      'shop-cm-collection-chat',
+    ]) {
+      expect(visible.has(sectionId)).toBe(false);
+    }
+  });
+
+  it('keeps shop development out of visible tabs in the two-role baseline', () => {
+    expect(sections.PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST.shop?.development).toBeUndefined();
+    expect(sections.PLATFORM_CORE_TWO_ROLE_PENDING_SECTION_BACKLOG.shop?.development).toContain(
+      'shop-dev-bridge'
+    );
   });
 });
 
