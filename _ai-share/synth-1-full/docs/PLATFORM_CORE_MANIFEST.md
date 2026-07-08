@@ -130,3 +130,58 @@ Key:
 ## Promotion process
 
 To add to manifest: ADR + update boundaries test + readiness audit entry + manifest row.
+
+
+---
+
+## Phase 22.5 — Final inventory (2026-07-08)
+
+**Branch:** `platform-core-v1-routes-cleanup`
+
+### Ring classification
+
+| Ring | Definition | Count (approx) |
+|------|------------|----------------|
+| **Core (Ring A)** | brand + shop × 5 pillars, baseline bundle | 274 UI tsx |
+| **Supporting** | gateways, ports, readiness, BFF, chrome | 113 lib files, 21 BFF routes, 35 server modules |
+| **Extended (Ring B)** | manufacturer/supplier pillar cards, factory dossier chrome | `pillars/*Manufacturer*`, `*Extended*`, `FactoryDossierCoreChrome`, `extended/*` |
+| **Archive** | `_archive/platform-core-legacy/*` | consumed only via `shared/legacy-peer-strips/` wrappers |
+| **Dead code** | see `docs/DEAD_CODE_REPORT.md` | tracked, not auto-deleted |
+
+### Horizontal services (pillar-agnostic)
+
+Import via `src/lib/platform-core-services.ts`:
+
+| Service | Gateway / module |
+|---------|------------------|
+| Documents | `platform-core-gateways/documents-gateway.ts` |
+| Dossier | workshop2 phase1 + `platform-core-ports/dossier-store` |
+| Messages / Threads | `entity-comms-gateway.ts`, `/api/messages/contextual` |
+| Calendar | `platform_core_user_calendar_tasks`, calendar BFF |
+| Notifications | `platform-core-comms/*`, notification-events |
+| Timeline / History | entity threads + dossier revisions (no unified timeline yet) |
+| Files | documents-gateway + dossier visuals |
+| Tasks | `/api/brand/tasks`, calendar strip |
+| AI | planner dev API, task strips (env-gated) |
+
+### Canonical UI primitives (Phase 22.5)
+
+| Primitive | Path |
+|-----------|------|
+| EmptyState | `src/lib/platform-core-empty-state.ts` → design-system |
+| DataTable shell | `src/components/platform/shared/PlatformCoreDataTable.tsx` |
+| PeerStrip layout | `src/components/platform/shared/PlatformCoreSpinePeerStripShell.tsx` (6/70 PeerStrips migrated) |
+| Cabinet chrome | `src/lib/platform-core-cabinet-chrome.ts` |
+| Hub gadgets | `src/components/platform/platform-core-hub-gadget-styles.ts` |
+
+### Baseline import rules (enforced)
+
+`src/lib/__tests__/platform-core-boundaries-final.test.ts` blocks: `_archive`, `@/components/factory`, `@/lib/marketing`, `@/lib/academy`, `@/lib/routes`, etc. in Ring A.
+
+**Known debt:** ≤12 baseline UI files still import `platform-core-extended-routes` for factory dossier deep-links (cap enforced by test).
+
+### Extended-only (not in baseline bundle)
+
+- `platform-core-extended-routes.ts`, `platform-core-hub-matrix-rows-extended.ts`
+- `components/platform/pillars/*Manufacturer*`, `*Extended*`
+- `components/factory/*` imports (isolated to extended UI files)
