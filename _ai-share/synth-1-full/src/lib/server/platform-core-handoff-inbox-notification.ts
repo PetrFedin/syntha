@@ -5,7 +5,7 @@ import {
   factoryHandoffQueueHrefForDemo,
   getPlatformCoreDemo,
 } from '@/lib/platform-core-hub-matrix';
-import { factoryMessagesB2bOrderContextHref } from '@/lib/routes';
+import { factoryMessagesB2bOrderContextHref } from '@/lib/platform-core-extended-routes';
 
 /** Wave WY · push в comms inbox при новом PO в очереди handoff (notification_events). */
 export async function notifyManufacturerHandoffQueuePoInbox(input: {

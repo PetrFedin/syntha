@@ -26,3 +26,15 @@
 ## Связанные документы (не ADR)
 
 - **[CANONICAL_FULL.md](./CANONICAL_FULL.md)**, **[SOURCE_OF_TRUTH.md](./SOURCE_OF_TRUTH.md)**, **[INTEGRATION_MAP.md](../INTEGRATION_MAP.md)** — продуктовый канон; ADR фиксируют **изменения** и компромиссы относительно него.
+
+## Platform Core v1 — Phase 20 (конституция)
+
+| ID | Тема | Статус | Файл |
+|----|------|--------|------|
+| PC-ADR-001 | 2 baseline roles × 5 pillars | Accepted | [ADR-001-two-roles-five-pillars.md](./adr/ADR-001-two-roles-five-pillars.md) |
+| PC-ADR-002 | Article as central spine entity | Accepted | [ADR-002-article-central-entity.md](./adr/ADR-002-article-central-entity.md) |
+| PC-ADR-003 | Extended roles separated from baseline | Accepted | [ADR-003-extended-roles-separated.md](./adr/ADR-003-extended-roles-separated.md) |
+| PC-ADR-004 | B2C in Archive ring | Accepted | [ADR-004-b2c-archive.md](./adr/ADR-004-b2c-archive.md) |
+| PC-ADR-005 | Backend Core vs Full split | Accepted | [ADR-005-backend-core-full-split.md](./adr/ADR-005-backend-core-full-split.md) |
+
+См. также: [PLATFORM_CORE_CONTRACT.md](./PLATFORM_CORE_CONTRACT.md), [PLATFORM_CORE_MANIFEST.md](./PLATFORM_CORE_MANIFEST.md), [TECHNICAL_ROADMAP.md](./TECHNICAL_ROADMAP.md).

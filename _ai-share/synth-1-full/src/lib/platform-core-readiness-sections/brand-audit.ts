@@ -1,4 +1,3 @@
-import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -40,7 +39,9 @@ import {
   shopB2bTrackingOrderHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+  EXTENDED_ROUTES,
+  LEGACY_ROUTES,
+} from '@/lib/platform-core-readiness-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { WORKSHOP2_COL_PARAM, workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import { platformCoreCabinetSectionHref } from '@/lib/platform-core-cabinet-workspace';
@@ -273,7 +274,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.attributeHealth}?collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/merch/attribute-health?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-dev-material-passport',
@@ -300,7 +301,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.fabricPassportRollup}?collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/merch/fabric-passport?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-dev-rfq-supplier',
@@ -320,7 +321,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.integrationsCentric}?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=upstream`,
+        `/brand/integrations/archive/centric?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=upstream`,
     },
     {
       id: 'brand-dev-supplier-bom',
@@ -340,7 +341,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.suppliersRfq}?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=bom`,
+        `${ROUTES.brand.suppliers}?collection=${encodeURIComponent(d.collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=bom`,
     },
   ],
   sample_collection: [
@@ -661,7 +662,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.assortmentMixPlanner}?collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/merch/assortment-mix-planner?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-co-crm-segmentation',
@@ -705,7 +706,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: () => `${ROUTES.brand.distributor.commissions}`,
+      resolveHref: () => `/brand/distributor/commissions`,
     },
     {
       id: 'brand-co-pricelist',
@@ -748,7 +749,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.packRules}?collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/merch/pack-rules?collection=${encodeURIComponent(d.collectionId)}`,
     },
     {
       id: 'brand-co-landed-margin',
@@ -769,7 +770,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.marginSimulator}?collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/merch/margin-simulator?collection=${encodeURIComponent(d.collectionId)}`,
     },
   ],
   order_production: [
@@ -928,7 +929,7 @@ export const BRAND_SECTION_AUDIT: Partial<
       bad: [],
       fix: [],
       resolveHref: (d) =>
-        `${ROUTES.brand.inventory}?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(d.collectionId)}`,
+        `/brand/inventory?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(d.collectionId)}`,
     },
   ],
   comms: [

@@ -1,4 +1,3 @@
-import { LEGACY_ROUTES } from '@/lib/platform-core-legacy-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -40,7 +39,9 @@ import {
   shopB2bTrackingOrderHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+  EXTENDED_ROUTES,
+  LEGACY_ROUTES,
+} from '@/lib/platform-core-readiness-routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { WORKSHOP2_COL_PARAM, workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import { platformCoreCabinetSectionHref } from '@/lib/platform-core-cabinet-workspace';
@@ -679,7 +680,7 @@ export const SHOP_SECTION_AUDIT: Partial<Record<CoreHubPillarId, readonly Sectio
         bad: [],
         fix: [],
         resolveHref: (d) =>
-          `${ROUTES.shop.inventory}?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(d.collectionId)}`,
+          `/shop/inventory?${PILLAR_CAPABILITY_FEATURE_PARAM}=overview&collection=${encodeURIComponent(d.collectionId)}`,
       },
     ],
     comms: [

@@ -13,32 +13,19 @@ import type {
   CoreHubPillarId,
   PlatformCoreDemoContext,
 } from '@/lib/platform-core-hub-matrix';
+import type {
+  PlatformCoreChainOverviewState,
+  PlatformCoreChainPillarSnapshot,
+  PlatformCoreChainRoleSnapshot,
+} from '@/lib/platform-core-chain-snapshot.types';
 
-export type ChainPillarSnap = {
-  id: CoreHubPillarId;
-  title: string;
-  done: boolean;
-  detailRu: string;
-  primaryHref: string;
-};
-
-export type ChainRoleSnap = {
-  id: CoreChainRoleId;
-  label: string;
-  landingHref: string;
-  activePillarCount: number;
-  participatesIn: CoreHubPillarId[];
-};
-
-export type PlatformCoreChainOverviewState = {
-  collectionId: string;
-  demoOrderId: string;
-  demoArticleId: string;
-  demoBuyerId?: string;
-  pillars: ChainPillarSnap[];
-  roles: ChainRoleSnap[];
-  commsThreadCount: number;
-};
+export type {
+  PlatformCoreChainOverviewState,
+  PlatformCoreChainPillarSnapshot,
+  PlatformCoreChainRoleSnapshot,
+  ChainPillarSnap,
+  ChainRoleSnap,
+} from '@/lib/platform-core-chain-snapshot.types';
 
 export type PlatformCoreOverviewStatus = 'loading' | 'ready' | 'error';
 

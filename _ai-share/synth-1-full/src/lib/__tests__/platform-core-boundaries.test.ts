@@ -17,7 +17,10 @@ const BASELINE_FILES = [
   'src/lib/platform-core-hub-matrix-rows.ts',
   'src/lib/platform-core-routes.ts',
   'src/lib/platform-core-hub-matrix.ts',
+  'src/lib/platform-core-hub-matrix-peers.ts',
+  'src/lib/platform-core-hub-matrix-demo-rewrite.ts',
   'src/lib/platform-core-article-spine.ts',
+  'src/lib/platform-core-chain-snapshot.types.ts',
 ] as const;
 
 const FORBIDDEN_PATTERNS: ReadonlyArray<{ label: string; re: RegExp }> = [

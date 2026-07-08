@@ -70,6 +70,20 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(next);
   }
 
+  if (platformCoreMode && isPageNav && path === '/shop/b2b-orders') {
+    const next = url.clone();
+    next.pathname = '/shop/b2b/orders';
+    next.search = url.search;
+    return NextResponse.redirect(next);
+  }
+
+  if (platformCoreMode && path === '/api/platform-core/b2b-message-templates') {
+    const next = url.clone();
+    next.pathname = '/api/platform-core/b2b/message-templates';
+    next.search = url.search;
+    return NextResponse.redirect(next, 308);
+  }
+
   if (platformCoreStrict && isPageNav && !path.startsWith('/api/')) {
     const workshopWrite = isWorkshop2ArticlePath(path) && isPlatformCoreWorkshopWriteSession(url);
     if (!workshopWrite && !isPlatformCoreStrictPageAllowed(path)) {

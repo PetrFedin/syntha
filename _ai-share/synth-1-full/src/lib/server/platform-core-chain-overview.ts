@@ -1,6 +1,11 @@
 import 'server-only';
 
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
+import type {
+  PlatformCoreChainOverviewState,
+  PlatformCoreChainPillarSnapshot,
+  PlatformCoreChainRoleSnapshot,
+} from '@/lib/platform-core-chain-snapshot.types';
 import {
   getPlatformCoreDemo,
   getPlatformCoreCollectionLabel,
@@ -35,21 +40,17 @@ import {
 } from '@/lib/server/platform-core-chain-overview-cache';
 import { isWorkshop2PgConnectionError } from '@/lib/server/workshop2-pg-pool';
 
-export type PlatformCorePillarSnapshot = {
-  id: CoreHubPillarId;
-  title: string;
-  done: boolean;
-  detailRu: string;
-  primaryHref: string;
-};
+export type {
+  PlatformCoreChainOverviewState,
+  PlatformCoreChainPillarSnapshot,
+  PlatformCoreChainRoleSnapshot,
+} from '@/lib/platform-core-chain-snapshot.types';
 
-export type PlatformCoreRoleSnapshot = {
-  id: CoreChainRoleId;
-  label: string;
-  landingHref: string;
-  activePillarCount: number;
-  participatesIn: CoreHubPillarId[];
-};
+/** @deprecated alias */
+export type PlatformCorePillarSnapshot = PlatformCoreChainPillarSnapshot;
+
+/** @deprecated alias */
+export type PlatformCoreRoleSnapshot = PlatformCoreChainRoleSnapshot;
 
 export type PlatformCoreChainOverview = {
   collectionId: string;

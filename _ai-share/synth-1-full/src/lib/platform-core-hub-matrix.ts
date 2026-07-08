@@ -40,26 +40,23 @@ import {
   buildPlatformCoreContextSearchParams,
   type PlatformCoreContextQueryStyle,
 } from '@/lib/platform-core-hub-matrix-context';
-import { isDefaultPlatformCoreCollectionId } from '@/lib/platform-core-url-canon';
-import {
-  brandLinesheetsHrefForDemo,
-  brandShowroomHrefForDemo,
-  shopShowroomHrefForDemo,
-} from '@/lib/platform-core-hub-matrix-demo-hrefs';
-import {
-  factoryDossierHrefForDemo,
-  factoryHandoffQueueHrefForDemo,
-  getExtendedCrossRolePeerDemoHrefForDemo,
-  isExtendedCoreRole,
-} from '@/lib/platform-core-hub-matrix-extended-peers';
 import {
   factoryMaterialsCatalogHrefForDemo,
   factoryMaterialsHrefForDemo,
   factoryMaterialsProcurementHrefForDemo,
 } from '@/lib/platform-core-hub-matrix-demo-hrefs-extended';
 import { getRolePillarDemoHrefForDemo } from '@/lib/platform-core-hub-matrix-role-pillar-hrefs';
+import {
+  factoryDossierHrefForDemo,
+  factoryHandoffQueueHrefForDemo,
+} from '@/lib/platform-core-hub-matrix-extended-peers';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { coercePlatformCoreNativeHref } from '@/lib/platform-core-native-href';
+import {
+  rewriteHrefForDemo,
+  rewriteHubTextForDemo,
+  rewriteLabelForDemo,
+} from '@/lib/platform-core-hub-matrix-demo-rewrite';
+import { platformCoreRolePillarHref } from '@/lib/platform-core-hub-matrix-peers';
 import { PLATFORM_CORE_HUB_ROWS } from '@/lib/platform-core-hub-matrix-rows-all';
 import { filterPlatformCoreHubRowsForBaseline } from '@/lib/platform-core-article-spine';
 import {
@@ -290,15 +287,18 @@ export function getPlatformCorePillarHandoffRuForDemo(
   return rewriteLabelForDemo(PLATFORM_CORE_PILLAR_HANDOFF_RU[pillarId], demo);
 }
 
-export type PillarCrossRolePeer = {
-  roleId: CoreChainRoleId;
-  label: string;
-  participates: boolean;
-  cabinetHref: string;
-  title: string;
-  demoEntityRu: string;
-  demoHref?: string;
-};
+export type { PillarCrossRolePeer } from '@/lib/platform-core-hub-matrix-peers';
+export {
+  getCrossRolePeerDemoHrefForDemo,
+  getPillarCrossRolePeers,
+  getPillarCrossRolePeersForDemo,
+  getRoleGoldenPathQuickLinks,
+  platformCoreRolePillarHref,
+} from '@/lib/platform-core-hub-matrix-peers';
+export {
+  rewriteHrefForDemo,
+  rewriteHubTextForDemo,
+} from '@/lib/platform-core-hub-matrix-demo-rewrite';
 
 export function getAdjacentPillars(pillarId: CoreHubPillarId): {
   prev: CoreHubPillarId | null;
@@ -321,22 +321,6 @@ export function getRoleAdjacentPillarHref(
   const target = direction === 'prev' ? adj.prev : adj.next;
   if (!target) return null;
   return platformCoreRolePillarHref(roleId, target);
-}
-
-export function platformCoreRolePillarHref(
-  roleId: CoreChainRoleId,
-  pillarId: CoreHubPillarId,
-  collectionId?: string
-): string {
-  const row = getPlatformCoreHubRow(roleId);
-  if (!row) return '/platform';
-  const params = new URLSearchParams({ pillar: pillarId });
-  const cid = collectionId?.trim();
-  const resolved = cid ? resolvePlatformCoreCollectionId(cid) : undefined;
-  if (resolved && !isDefaultPlatformCoreCollectionId(resolved)) {
-    params.set('collection', resolved);
-  }
-  return `${row.landingHref}?${params.toString()}`;
 }
 
 /** Ссылка на столп с учётом роли: кабинет или demo-экран бренда на hub. */
@@ -383,84 +367,6 @@ export function getRolePillarDemoHref(
   pillarId: CoreHubPillarId
 ): string | undefined {
   return getRolePillarDemoHrefForDemo(roleId, pillarId, PLATFORM_CORE_DEMO);
-}
-
-/** Подмена SS27/FW27 id в href матрицы под выбранную коллекцию. */
-export function rewriteHrefForDemo(
-  href: string,
-  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
-): string {
-  let out = href;
-  for (const preset of Object.values(PLATFORM_CORE_DEMO_PRESETS)) {
-    if (
-      preset.collectionId === demo.collectionId &&
-      preset.demoOrderId === demo.demoOrderId &&
-      preset.demoArticleId === demo.demoArticleId
-    ) {
-      continue;
-    }
-    const pairs: [string, string][] = [
-      [preset.productionOrderId, demo.productionOrderId],
-      [preset.demoOrderId, demo.demoOrderId],
-      [preset.demoArticleId, demo.demoArticleId],
-      [preset.collectionId, demo.collectionId],
-    ];
-    for (const [from, to] of pairs) {
-      if (from !== to && out.includes(from)) {
-        out = out.split(from).join(to);
-      }
-    }
-  }
-  if (isPlatformCoreMode()) {
-    out = coercePlatformCoreNativeHref(out, demo);
-  }
-  return out;
-}
-
-/** Подмена id коллекции в подписях hub/кабинетов. */
-export function rewriteHubTextForDemo(
-  text: string,
-  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
-): string {
-  return rewriteLabelForDemo(text, demo);
-}
-
-function rewriteLabelForDemo(
-  label: string,
-  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
-): string {
-  let out = label;
-  for (const preset of Object.values(PLATFORM_CORE_DEMO_PRESETS)) {
-    if (preset.collectionId !== demo.collectionId && out.includes(preset.collectionId)) {
-      out = out.split(preset.collectionId).join(demo.collectionId);
-    }
-    if (preset.demoOrderId !== demo.demoOrderId && out.includes(preset.demoOrderId)) {
-      out = out.split(preset.demoOrderId).join(demo.demoOrderId);
-    }
-    if (
-      preset.productionOrderId !== demo.productionOrderId &&
-      out.includes(preset.productionOrderId)
-    ) {
-      out = out.split(preset.productionOrderId).join(demo.productionOrderId);
-    }
-    if (preset.demoArticleId !== demo.demoArticleId && out.includes(preset.demoArticleId)) {
-      out = out.split(preset.demoArticleId).join(demo.demoArticleId);
-    }
-    if (preset.factoryId !== demo.factoryId && out.includes(preset.factoryId)) {
-      out = out.split(preset.factoryId).join(demo.factoryId);
-    }
-    if (preset.factoryHubId !== demo.factoryHubId && out.includes(preset.factoryHubId)) {
-      out = out.split(preset.factoryHubId).join(demo.factoryHubId);
-    }
-  }
-  const targetCollectionLabel = getPlatformCoreCollectionLabel(demo.collectionId);
-  for (const preset of PLATFORM_CORE_COLLECTION_PRESETS) {
-    if (preset.id === demo.collectionId) continue;
-    if (preset.label !== targetCollectionLabel && out.includes(preset.label)) {
-      out = out.split(preset.label).join(targetCollectionLabel);
-    }
-  }
-  return out;
 }
 
 export function getPlatformCorePillarEntityLabelForDemo(
@@ -516,131 +422,4 @@ export function getHubCellActionsForDemo(
       };
     });
   return roleId === 'shop' ? mapped.slice(0, 3) : mapped;
-}
-
-/** Другие роли в том же столпе — для handoff из кабинета. */
-export function getPillarCrossRolePeers(
-  viewerRoleId: CoreChainRoleId,
-  pillarId: CoreHubPillarId
-): PillarCrossRolePeer[] {
-  return getPillarCrossRolePeersForDemo(viewerRoleId, pillarId, PLATFORM_CORE_DEMO);
-}
-
-/** Рабочий экран peer-роли с учётом viewer — без dead-end (магазин → handoff бренда). */
-export function getCrossRolePeerDemoHrefForDemo(
-  viewerRoleId: CoreChainRoleId,
-  peerRoleId: CoreChainRoleId,
-  pillarId: CoreHubPillarId,
-  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
-): string | undefined {
-  const orderId = demo.demoOrderId.trim();
-
-  if (isExtendedCoreRole(viewerRoleId) || isExtendedCoreRole(peerRoleId)) {
-    const extended = getExtendedCrossRolePeerDemoHrefForDemo(
-      viewerRoleId,
-      peerRoleId,
-      pillarId,
-      demo
-    );
-    if (extended) return extended;
-  }
-
-  if (pillarId === 'comms') {
-    if (viewerRoleId === 'brand' && peerRoleId === 'shop') {
-      return shopMessagesB2bOrderContextHref(orderId);
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'brand') {
-      return brandMessagesB2bOrderContextHref(orderId);
-    }
-  }
-
-  if (pillarId === 'order_production') {
-    if (viewerRoleId === 'brand' && peerRoleId === 'shop') {
-      return shopB2bTrackingOrderHref(orderId);
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'brand') {
-      return shopB2bOrderHref(orderId);
-    }
-  }
-
-  if (pillarId === 'development') {
-    const showroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
-    const brandDevHref = brandDevelopmentCabinetHref(demo.collectionId);
-    if (viewerRoleId === 'brand' && peerRoleId === 'shop') return showroomHref;
-    if (viewerRoleId === 'shop' && peerRoleId === 'brand') return brandDevHref;
-  }
-
-  if (pillarId === 'sample_collection') {
-    if (viewerRoleId === 'brand' && peerRoleId === 'shop') {
-      return `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
-    }
-    if (viewerRoleId === 'shop' && peerRoleId === 'brand') {
-      return brandLinesheetsHrefForDemo(demo);
-    }
-  }
-
-  if (viewerRoleId === 'shop' && peerRoleId === 'brand' && pillarId === 'order_production') {
-    return shopB2bOrderHref(orderId);
-  }
-  if (viewerRoleId === 'shop' && peerRoleId === 'brand' && pillarId === 'collection_order') {
-    return brandB2bOrderHref(orderId);
-  }
-  if (viewerRoleId === 'brand' && peerRoleId === 'shop' && pillarId === 'collection_order') {
-    return shopB2bTrackingOrderHref(orderId);
-  }
-  if (viewerRoleId === 'brand' && peerRoleId === 'shop' && pillarId === 'sample_collection') {
-    return `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
-  }
-  return getRolePillarDemoHrefForDemo(peerRoleId, pillarId, demo);
-}
-
-export function getPillarCrossRolePeersForDemo(
-  viewerRoleId: CoreChainRoleId,
-  pillarId: CoreHubPillarId,
-  demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO
-): PillarCrossRolePeer[] {
-  const collectionId =
-    demo.collectionId !== PLATFORM_CORE_DEMO.collectionId ? demo.collectionId : undefined;
-  return getPlatformCoreHubRowsForUi()
-    .filter((r) => r.id !== viewerRoleId)
-    .map((row) => {
-      const cell = row.pillars[pillarId];
-      const participates = cell.kind === 'active';
-      return {
-        roleId: row.id,
-        label: row.label,
-        participates,
-        cabinetHref: platformCoreRolePillarHref(row.id, pillarId, collectionId),
-        title: participates ? cell.title : cell.reason,
-        demoEntityRu: getPlatformCorePillarEntityLabelForDemo(pillarId, demo),
-        demoHref: (() => {
-          if (!participates) return undefined;
-          const href = getCrossRolePeerDemoHrefForDemo(viewerRoleId, row.id, pillarId, demo);
-          return href ? rewriteHrefForDemo(href, demo) : undefined;
-        })(),
-      };
-    });
-}
-
-/** Дедуплированные рабочие ссылки роли для strip «Цепочка» в кабинете. */
-export function getRoleGoldenPathQuickLinks(
-  roleId: CoreChainRoleId,
-  navPillarIds: readonly CoreHubPillarId[],
-  max = 6
-): Array<{ label: string; href: string }> {
-  const row = getPlatformCoreHubRow(roleId);
-  if (!row) return [];
-  const seen = new Set<string>();
-  const out: Array<{ label: string; href: string }> = [];
-  for (const pillarId of navPillarIds) {
-    const cell = row.pillars[pillarId];
-    if (cell.kind !== 'active' || !cell.actions?.length) continue;
-    for (const action of cell.actions) {
-      if (!action.href || seen.has(action.href)) continue;
-      seen.add(action.href);
-      out.push(action);
-      if (out.length >= max) return out;
-    }
-  }
-  return out;
 }

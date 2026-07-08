@@ -9,8 +9,7 @@ import {
   isPlatformCoreArticleSpineMode,
 } from '@/lib/platform-core-article-spine';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
-import { ROUTES } from '@/lib/platform-core-routes'
-import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 import {
   isDefaultPlatformCoreCollectionId,
   omitDefaultCollectionSearchParam,
@@ -93,9 +92,9 @@ export function roleCoreCabinetBasePath(roleId: CoreChainRoleId): string {
     case 'shop':
       return ROUTES.shop.coreCabinet;
     case 'manufacturer':
-      return EXTENDED_ROUTES.factory.productionCoreCabinet;
+      return '/factory/production/core';
     case 'supplier':
-      return EXTENDED_ROUTES.factory.supplierCoreCabinet;
+      return '/factory/supplier/core';
     default:
       return ROUTES.brand.coreCabinet;
   }

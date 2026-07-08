@@ -1,4 +1,3 @@
-import { ROUTES as EXTENDED_ROUTES } from '@/lib/platform-core-extended-routes';
 /**
  * @generated split from platform-core-readiness-sections.ts — do not edit monolith; edit role file.
  */
@@ -40,7 +39,9 @@ import {
   shopB2bTrackingOrderHref,
   shopCalendarB2bOrderContextHref,
   shopMessagesB2bOrderContextHref,
-} from '@/lib/routes';
+  EXTENDED_ROUTES,
+  LEGACY_ROUTES,
+} from '@/lib/platform-core-readiness-routes';
 import { WORKSHOP2_COL_PARAM, workshop2ArticleHref } from '@/lib/production/workshop2-url';
 import { platformCoreCabinetSectionHref } from '@/lib/platform-core-cabinet-workspace';
 import type { SectionAuditTemplate } from './types';
