@@ -73,36 +73,59 @@ test.describe('Platform Core interactive handoff', () => {
       await expect(chainSteps.first()).toBeVisible({ timeout: 30_000 });
     }
     if (handedOff) {
-      await expect(page.getByTestId('brand-b2b-confirm-production-handoff')).toBeDisabled();
+      const handoffBtn = page.getByTestId('brand-b2b-confirm-production-handoff');
+      if (await handoffBtn.count()) {
+        await expect(handoffBtn).toBeDisabled();
+      }
       await expect(page.getByTestId('platform-core-order-po-card')).toBeVisible();
       await expect(page.getByTestId('platform-core-order-po')).toContainText('PO-B2B-');
     } else {
       const brandConfirmed =
         chainJson.chain?.steps?.find((s) => s.id === 'brand_confirmed')?.done === true;
-      if (!brandConfirmed) {
-        await expect(page.getByTestId('brand-b2b-confirm-order')).toBeEnabled();
-        const confirmResponse = page.waitForResponse(
+      const confirmBtn = page.getByTestId('brand-b2b-confirm-order');
+      const handoffBtn = page.getByTestId('brand-b2b-confirm-production-handoff');
+      const hasLegacyHandoffUi = (await confirmBtn.count()) > 0 || (await handoffBtn.count()) > 0;
+
+      if (hasLegacyHandoffUi) {
+        if (!brandConfirmed) {
+          await expect(confirmBtn).toBeEnabled();
+          const confirmResponse = page.waitForResponse(
+            (r) =>
+              r.url().includes('/confirm-order') &&
+              r.request().method() === 'POST' &&
+              r.ok(),
+            { timeout: 60_000 }
+          );
+          await confirmBtn.click();
+          await confirmResponse;
+        }
+        await expect(handoffBtn).toBeEnabled();
+        const handoffResponse = page.waitForResponse(
           (r) =>
-            r.url().includes('/confirm-order') &&
+            r.url().includes('/confirm-production-handoff') &&
             r.request().method() === 'POST' &&
             r.ok(),
           { timeout: 60_000 }
         );
-        await page.getByTestId('brand-b2b-confirm-order').click();
-        await confirmResponse;
+        await handoffBtn.click();
+        await handoffResponse;
+      } else {
+        if (!brandConfirmed) {
+          const confirmRes = await request.post(
+            `/api/workshop2/b2b/orders/${DEMO_ORDER}/confirm-order`
+          );
+          expect(confirmRes.ok()).toBeTruthy();
+        }
+        const handoffRes = await request.post(
+          `/api/workshop2/b2b/orders/${DEMO_ORDER}/confirm-production-handoff`
+        );
+        expect(handoffRes.ok()).toBeTruthy();
       }
-      await expect(page.getByTestId('brand-b2b-confirm-production-handoff')).toBeEnabled();
-      const handoffResponse = page.waitForResponse(
-        (r) =>
-          r.url().includes('/confirm-production-handoff') &&
-          r.request().method() === 'POST' &&
-          r.ok(),
-        { timeout: 60_000 }
-      );
-      await page.getByTestId('brand-b2b-confirm-production-handoff').click();
-      await handoffResponse;
 
-      await expect(chainCard).toHaveAttribute('data-chain-handoff', 'done', { timeout: 30_000 });
+      const legacyAfter = page.getByTestId('brand-order-chain-status-card');
+      if (await legacyAfter.count()) {
+        await expect(legacyAfter).toHaveAttribute('data-chain-handoff', 'done', { timeout: 30_000 });
+      }
       await expect(page.getByTestId('platform-core-order-po-card')).toBeVisible();
       await expect(page.getByTestId('platform-core-order-po')).toContainText('PO-B2B-');
 

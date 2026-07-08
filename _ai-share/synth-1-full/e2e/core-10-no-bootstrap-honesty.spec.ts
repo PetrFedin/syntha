@@ -42,7 +42,7 @@ test.describe('core-10: prod без bootstrap (честность)', () => {
     if (await banner.count()) {
       await expect(banner).toHaveAttribute('data-variant', 'no-seed');
     } else {
-      await expect(page.getByTestId('platform-core-chain-overview')).toBeVisible({ timeout: 60_000 });
+      await expect(page.getByTestId('platform-core-hub-main-column')).toBeVisible({ timeout: 60_000 });
     }
   });
 
