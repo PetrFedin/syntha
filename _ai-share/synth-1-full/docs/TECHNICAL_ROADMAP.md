@@ -70,3 +70,13 @@
 - Mobile factory floor tablet (already partial in extended)
 
 Each requires: ADR + manifest promotion + extension ring only.
+
+---
+
+## Phase 22 — Product consolidation (2026-07-08) ✅
+
+**Deliverable:** `docs/FIVE_PILLARS_AUDIT.md` — completeness audit per pillar (brand+shop), product gaps, scores.
+
+**Outcome:** Overall product readiness **7.4/10** (vs architecture 8.1). Weakest pillar: order_production (6.9). Commercial rollout blockers documented — no code changes in Phase 22.
+
+**Next (Phase 23 — product, not architecture):** OP closeout UI, collection comms entity, publish in hub, 7-step dev progress API.

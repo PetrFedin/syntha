@@ -74,3 +74,9 @@
 **Quality score (post Phase 21):** 8.1 / 10 overall (↑ from 7.2)
 
 **Remaining P2 (not Phase 21 scope):** giant workspace coordinators (~800+ LOC), full PeerStrip dedup (~60→shell), FastAPI 405 middleware, lib/b2b wave file merges.
+
+---
+
+## Phase 22 product audit (2026-07-08)
+
+See **`docs/FIVE_PILLARS_AUDIT.md`**. Product readiness **7.4/10**; full commercial cycle without external tools — **not yet** (blockers: OP tail, collection comms, publish hub gap).
