@@ -305,6 +305,48 @@ describe('Platform Core lifecycle map', () => {
   });
 });
 
+describe('Platform Core UI repair queue', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actions = require('@/lib/platform-core-ui-action-contracts') as typeof import('@/lib/platform-core-ui-action-contracts');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const lifecycle = require('@/lib/platform-core-lifecycle-map') as typeof import('@/lib/platform-core-lifecycle-map');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const repairQueue = require('@/lib/platform-core-ui-repair-queue') as typeof import('@/lib/platform-core-ui-repair-queue');
+
+  it('keeps every P0 commercial lifecycle gap represented in the repair queue', () => {
+    const p0ActionIds = new Set(repairQueue.getPlatformCoreP0RepairQueue().flatMap((item) => [...item.actionIds]));
+    const missing = lifecycle
+      .getPlatformCoreLifecyclePendingActionIds()
+      .filter((actionId) => !p0ActionIds.has(actionId));
+    expect(missing).toEqual([]);
+  });
+
+  it('references only known action contracts', () => {
+    const knownActionIds = new Set(actions.PLATFORM_CORE_UI_ACTION_CONTRACTS.map((action) => action.actionId));
+    const unknown = repairQueue
+      .getPlatformCoreRepairQueueActionIds()
+      .filter((actionId) => !knownActionIds.has(actionId));
+    expect(unknown).toEqual([]);
+  });
+
+  it('requires each repair item to have concrete acceptance criteria', () => {
+    for (const item of repairQueue.PLATFORM_CORE_UI_REPAIR_QUEUE) {
+      expect(item.repairId).toMatch(/^p[0-2]-/);
+      expect(item.titleRu.length).toBeGreaterThan(10);
+      expect(item.problemRu.length).toBeGreaterThan(30);
+      expect(item.fixRu.length).toBeGreaterThan(30);
+      expect(item.acceptanceRu.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('keeps the weakest product pillar prioritized in P0', () => {
+    const p0OrderProduction = repairQueue
+      .getPlatformCoreP0RepairQueue()
+      .filter((item) => item.pillarId === 'order_production');
+    expect(p0OrderProduction.length).toBeGreaterThanOrEqual(3);
+  });
+});
+
 describe('Platform Core canonical snapshot types', () => {
   it('chain snapshot types live in platform-core-chain-snapshot.types.ts', () => {
     const types = readRepo('src/lib/platform-core-chain-snapshot.types.ts');
