@@ -150,6 +150,59 @@ describe('Platform Core visible section allowlist', () => {
   });
 });
 
+describe('Platform Core UI surface manifest', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const sections = require('@/lib/platform-core-two-role-sections') as typeof import('@/lib/platform-core-two-role-sections');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const manifest = require('@/lib/platform-core-ui-surface-manifest') as typeof import('@/lib/platform-core-ui-surface-manifest');
+
+  it('documents the UI surface audit', () => {
+    const doc = readDoc('PLATFORM_CORE_UI_SURFACE_AUDIT.md');
+    expect(doc).toMatch(/strict visible allowlist/i);
+    expect(doc).toMatch(/CORE_WORKING/);
+    expect(doc).toMatch(/PENDING_P0/);
+  });
+
+  it('has exactly one manifest item for every visible baseline section', () => {
+    const visible = [...new Set(flattenSectionMap(sections.PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST as never))].sort();
+    const manifestIds = [...manifest.getPlatformCoreVisibleSurfaceIds()].sort();
+    expect(manifestIds).toEqual(visible);
+  });
+
+  it('does not publish pending backlog sections as manifest-visible surfaces', () => {
+    const manifestIds = new Set(manifest.getPlatformCoreVisibleSurfaceIds());
+    const pending = manifest.flattenPendingBacklog();
+    const leaked = pending.filter((sectionId) => manifestIds.has(sectionId));
+    expect(leaked).toEqual([]);
+  });
+
+  it('requires every visible surface to declare user-facing expectation and decision', () => {
+    for (const item of manifest.PLATFORM_CORE_UI_SURFACE_MANIFEST) {
+      expect(item.sectionId).toBeTruthy();
+      expect(item.labelRu).toBeTruthy();
+      expect(item.primaryExpectation.length).toBeGreaterThan(20);
+      expect(['KEEP', 'FIX', 'HIDE', 'MERGE', 'ARCHIVE']).toContain(item.decision);
+      expect(['CORE_WORKING', 'CORE_PARTIAL']).toContain(item.status);
+    }
+  });
+
+  it('keeps partial surfaces explicit so they can be repaired, not mistaken for done', () => {
+    expect(manifest.getPlatformCorePartialSurfaceIds()).toEqual(
+      expect.arrayContaining([
+        'brand-dev-dossier',
+        'brand-sc-publish',
+        'shop-co-detail',
+        'brand-co-detail',
+        'brand-op-handoff',
+        'brand-op-registry',
+        'brand-op-dossier',
+        'shop-co-buyer-tracking',
+        'brand-cm-notes',
+      ])
+    );
+  });
+});
+
 describe('Platform Core canonical snapshot types', () => {
   it('chain snapshot types live in platform-core-chain-snapshot.types.ts', () => {
     const types = readRepo('src/lib/platform-core-chain-snapshot.types.ts');
