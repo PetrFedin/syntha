@@ -19,21 +19,13 @@ import {
 import type { ReadinessSubItem } from '@/lib/platform-core-readiness-audit';
 
 /**
- * Wholesale baseline: скрываем только CRM/WSSI/agent-rep и supplier-only разделы.
- * Полный SECTION_AUDIT (brand + shop) остаётся в матрице и кабинете.
+ * Platform Core baseline теперь работает по строгому visible allowlist.
+ *
+ * Причина: denylist скрывал только CRM/WSSI/supplier-only хвосты, но оставлял риск,
+ * что demo/legacy/partial секции попадут в кабинет и создадут пустые вкладки.
+ * В v1 показываем только явно подтверждённые рабочие секции brand/shop.
  */
-export const PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST = new Set<string>([
-  'brand-co-wssi-plan',
-  'brand-co-crm-segmentation',
-  'brand-co-agent-rep',
-  'brand-dev-rfq-supplier',
-  'brand-dev-supplier-bom',
-  'shop-co-agent-rep',
-  'shop-dev-bridge',
-]);
-
-/** @deprecated Используйте denylist + PLATFORM_CORE_TWO_ROLE_WHOLESALE_FLOW для golden path. */
-export const PLATFORM_CORE_TWO_ROLE_SECTION_ALLOWLIST: Partial<
+export const PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST: Partial<
   Record<CoreChainRoleId, Partial<Record<CoreHubPillarId, readonly string[]>>>
 > = {
   brand: {
@@ -55,6 +47,44 @@ export const PLATFORM_CORE_TWO_ROLE_SECTION_ALLOWLIST: Partial<
     comms: ['shop-cm-order-chat', 'shop-cm-calendar-order'],
   },
 };
+
+/**
+ * Секции, нужные коммерчески, но ещё не готовые как видимые baseline-вкладки.
+ * Они не должны показываться обычному пользователю до реализации и e2e-проверки.
+ */
+export const PLATFORM_CORE_TWO_ROLE_PENDING_SECTION_BACKLOG: Partial<
+  Record<CoreChainRoleId, Partial<Record<CoreHubPillarId, readonly string[]>>>
+> = {
+  brand: {
+    collection_order: ['brand-co-revision'],
+    order_production: ['brand-op-qc', 'brand-op-packing', 'brand-op-closeout'],
+    comms: ['brand-cm-collection-chat'],
+  },
+  shop: {
+    development: ['shop-dev-bridge'],
+    collection_order: ['shop-co-revision'],
+    order_production: ['shop-op-tracking', 'shop-op-acceptance', 'shop-op-closeout'],
+    comms: ['shop-cm-collection-chat'],
+  },
+};
+
+/**
+ * Backward-compatible denylist for legacy tests/docs. В baseline-фильтрации больше
+ * не используется как источник правды; source of truth — visible allowlist выше.
+ */
+export const PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST = new Set<string>([
+  'brand-co-wssi-plan',
+  'brand-co-crm-segmentation',
+  'brand-co-agent-rep',
+  'brand-dev-rfq-supplier',
+  'brand-dev-supplier-bom',
+  'shop-co-agent-rep',
+  'shop-dev-bridge',
+]);
+
+/** @deprecated Use PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST. */
+export const PLATFORM_CORE_TWO_ROLE_SECTION_ALLOWLIST =
+  PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST;
 
 export type TwoRoleWholesaleFlowStep = {
   step: number;
@@ -165,25 +195,31 @@ export const PLATFORM_CORE_TWO_ROLE_WHOLESALE_FLOW: readonly TwoRoleWholesaleFlo
   },
 ] as const;
 
+function getVisibleSectionIds(
+  roleId: CoreChainRoleId,
+  pillarId: CoreHubPillarId
+): readonly string[] {
+  return PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST[roleId]?.[pillarId] ?? [];
+}
+
 export function isTwoRoleBaselineSectionAllowed(
   roleId: CoreChainRoleId,
   pillarId: CoreHubPillarId,
   sectionId: string
 ): boolean {
-  void pillarId;
   if (!isPlatformCoreTwoRoleBaseline()) return true;
   if (!isPlatformCoreBaselineRoleId(roleId)) return false;
-  return !PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST.has(sectionId);
+  return getVisibleSectionIds(roleId, pillarId).includes(sectionId);
 }
 
-/** Фильтр sidebar «Разделы» и audit sub-items — убираем CRM/WSSI/supplier-only. */
+/** Фильтр sidebar «Разделы» и audit sub-items — показываем только strict visible sections. */
 export function filterReadinessSubItemsForTwoRoleBaseline(
   items: ReadinessSubItem[],
   roleId: CoreChainRoleId,
   pillarId: CoreHubPillarId
 ): ReadinessSubItem[] {
-  void pillarId;
   if (!isPlatformCoreTwoRoleBaseline()) return items;
   if (!isPlatformCoreBaselineRoleId(roleId)) return [];
-  return items.filter((item) => !PLATFORM_CORE_TWO_ROLE_SECTION_DENYLIST.has(item.id));
+  const visibleIds = new Set(getVisibleSectionIds(roleId, pillarId));
+  return items.filter((item) => visibleIds.has(item.id));
 }
