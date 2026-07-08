@@ -17,7 +17,12 @@ type Props = {
 };
 
 /** Supplier calendar · procurement + forecast + mfr handoff spine. */
-export function SupCmCalendarContextPeerStrip({ collectionId, articleId, factoryId, orderId }: Props) {
+export function SupCmCalendarContextPeerStrip({
+  collectionId,
+  articleId,
+  factoryId,
+  orderId,
+}: Props) {
   const resolvedOrderId = orderId?.trim() || '';
   const session = buildSupplierProcurementSession({
     collectionId,
@@ -40,19 +45,31 @@ export function SupCmCalendarContextPeerStrip({ collectionId, articleId, factory
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="sup-cm-calendar-context-peer-strip"
     >
-      <Link href={procurementHref} data-testid="sup-cm-calendar-procurement-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurementHref}
+        data-testid="sup-cm-calendar-procurement-link"
+        className={hubGadget.goldenLink}
+      >
         Закупки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.forecastHref} data-testid="sup-cm-calendar-forecast-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.forecastHref}
+        data-testid="sup-cm-calendar-forecast-link"
+        className={hubGadget.goldenLink}
+      >
         Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={mfrHandoffHref} data-testid="sup-cm-calendar-mfr-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={mfrHandoffHref}
+        data-testid="sup-cm-calendar-mfr-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача производству
       </Link>
       {resolvedOrderId ? (

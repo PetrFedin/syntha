@@ -25,10 +25,7 @@ export function SupplierOpCabinetSpineNavStrip({ demo, orderId }: Props) {
   const cabinetHref = factorySupplierCoreOrderProductionCabinetHref(demo.collectionId);
 
   return (
-    <div
-      className={hubGadget.goldenPath}
-      data-testid="sup-op-cabinet-spine-nav-strip"
-    >
+    <div className={hubGadget.goldenPath} data-testid="sup-op-cabinet-spine-nav-strip">
       <span className={hubGadget.muted}>Столп 4 SoT</span>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -83,7 +80,11 @@ export function SupplierOpCabinetSpineNavStrip({ demo, orderId }: Props) {
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={cabinetHref} data-testid="sup-op-spine-cabinet-link" className={hubGadget.goldenLink}>
+      <Link
+        href={cabinetHref}
+        data-testid="sup-op-spine-cabinet-link"
+        className={hubGadget.goldenLink}
+      >
         Кабинет
       </Link>
     </div>

@@ -33,7 +33,12 @@ type Props = {
 };
 
 /** Wave XU · OP dossier TZ export + print e2e strip (RU labels, export-print route). */
-export function MfrOpDossierExportPrintStrip({ collectionId, articleId, orderId, className }: Props) {
+export function MfrOpDossierExportPrintStrip({
+  collectionId,
+  articleId,
+  orderId,
+  className,
+}: Props) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const printHref = buildMfrDossierExportPrintHref(articleId, { collectionId, orderId });
@@ -59,7 +64,7 @@ export function MfrOpDossierExportPrintStrip({ collectionId, articleId, orderId,
   return (
     <div
       className={cn(
-        'border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs',
+        'border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs',
         className
       )}
       data-testid={WAVE_XU_MFR_DOSSIER_EXPORT_PRINT_STRIP_TESTID}

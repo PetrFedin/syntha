@@ -12,7 +12,11 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
 
   const { collectionId, articleId } = await ctx.params;
   const org = req.nextUrl.searchParams.get('organizationId') ?? undefined;
-  const result = await getPlatformCoreCommsForArticle({ collectionId, articleId, organizationId: org });
+  const result = await getPlatformCoreCommsForArticle({
+    collectionId,
+    articleId,
+    organizationId: org,
+  });
   if (!result.ok) {
     return NextResponse.json(result, {
       status: result.reason === 'invalid_path' ? 400 : 404,

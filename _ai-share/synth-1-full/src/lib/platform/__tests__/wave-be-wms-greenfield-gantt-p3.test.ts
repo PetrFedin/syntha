@@ -9,8 +9,7 @@ describe('wave-be supplier wms + greenfield registry + mfr gantt p3', () => {
   });
 
   it('wms reserve API path contract', () => {
-    const path =
-      '/api/workshop2/articles/SS27/demo-ss27-01/wms/reserve-sample';
+    const path = '/api/workshop2/articles/SS27/demo-ss27-01/wms/reserve-sample';
     expect(path).toContain('wms/reserve-sample');
   });
 });

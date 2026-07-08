@@ -1,7 +1,4 @@
-import {
-  platformCoreRolePillarHref,
-  type CoreChainRoleId,
-} from '@/lib/platform-core-hub-matrix';
+import { platformCoreRolePillarHref, type CoreChainRoleId } from '@/lib/platform-core-hub-matrix';
 import { platformCorePillarChainStatusRolePrefix } from '@/lib/platform-core-chain-status-pillar-sse';
 
 /** Wave YX — hub notification center compact on all pillar cards (S4). */
@@ -28,10 +25,22 @@ export const WAVE_YX_PILLAR_NOTIFICATION_COMPACT_WIRES = [
   { id: 'brand-co', file: 'components/platform/CollectionOrderPillarCard.tsx', variant: 'brand' },
   { id: 'shop-co', file: 'components/platform/CollectionOrderPillarCard.tsx', variant: 'shop' },
   { id: 'brand-op', file: 'components/platform/OrderProductionPillarCard.tsx', variant: 'brand' },
-  { id: 'mfr-op', file: 'components/platform/OrderProductionPillarCard.tsx', variant: 'manufacturer' },
+  {
+    id: 'mfr-op',
+    file: 'components/platform/OrderProductionPillarCard.tsx',
+    variant: 'manufacturer',
+  },
   { id: 'shop-op', file: 'components/platform/ShopOrderProductionPillarCard.tsx', variant: 'shop' },
-  { id: 'sup-op', file: 'components/platform/SupplierProcurementPillarCard.tsx', variant: 'supplier' },
-  { id: 'sup-co', file: 'components/platform/empty-cells/supplier-collection-order-forecast-panel.tsx', variant: 'supplier' },
+  {
+    id: 'sup-op',
+    file: 'components/platform/SupplierProcurementPillarCard.tsx',
+    variant: 'supplier',
+  },
+  {
+    id: 'sup-co',
+    file: 'components/platform/empty-cells/supplier-collection-order-forecast-panel.tsx',
+    variant: 'supplier',
+  },
   { id: 'comms', file: 'components/platform/CommsPillarCard.tsx', variant: 'all' },
 ] as const;
 

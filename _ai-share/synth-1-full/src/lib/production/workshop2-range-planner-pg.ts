@@ -145,12 +145,9 @@ export function parseRangePlannerCollectionMetadata(
     if (!id) continue;
     tiers.push({
       id,
-      budget:
-        typeof row.budget === 'number' && row.budget > 0 ? Math.round(row.budget) : undefined,
+      budget: typeof row.budget === 'number' && row.budget > 0 ? Math.round(row.budget) : undefined,
       targetMargin:
-        typeof row.targetMargin === 'number' &&
-        row.targetMargin > 0 &&
-        row.targetMargin <= 100
+        typeof row.targetMargin === 'number' && row.targetMargin > 0 && row.targetMargin <= 100
           ? Math.round(row.targetMargin)
           : undefined,
       planSkuCount:
@@ -369,9 +366,7 @@ export function rangePlannerPgDisclaimerRu(snapshot: RangePlannerPgSnapshot): st
   }
   if (snapshot.dataSource === 'pg') {
     const unassigned =
-      snapshot.unassignedSkuCount > 0
-        ? ` Без tier-метки: ${snapshot.unassignedSkuCount}.`
-        : '';
+      snapshot.unassignedSkuCount > 0 ? ` Без tier-метки: ${snapshot.unassignedSkuCount}.` : '';
     return `Состав коллекции (${snapshot.articleCount}), tier-разбивка, бюджеты и целевая маржа — из PostgreSQL.${unassigned}`;
   }
   if (snapshot.unassignedSkuCount > 0) {

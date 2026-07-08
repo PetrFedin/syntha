@@ -82,11 +82,7 @@ export function resolveWorkshop2B2bMatrixAvailabilityHint(input: {
   const onHand = Math.max(
     0,
     Math.round(
-      workshop2PgMirrorNum(
-        wms,
-        'onHandQty',
-        typeof wms?.onHandQty === 'number' ? wms.onHandQty : 0
-      )
+      workshop2PgMirrorNum(wms, 'onHandQty', typeof wms?.onHandQty === 'number' ? wms.onHandQty : 0)
     )
   );
   if (onHand > 0) {

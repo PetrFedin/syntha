@@ -27,18 +27,14 @@ export function stampDossierAfterFactoryPackExport(opts: {
     dossierUpdatedAtSnapshot,
     articleSkuSnapshot: opts.skuDraft.trim() || undefined,
   };
-  return pushTzActionLog(
-    { ...opts.dossier, factoryPackLastExport: meta },
-    opts.updatedByLabel,
-    {
-      type: 'factory_pack_export',
-      format: opts.format,
-      snapshotId: meta.snapshotId,
-      sheetsReady: meta.sheetsReady,
-      sheetsTotal: meta.sheetsTotal,
-      qtyBridged: meta.qtyBridged,
-      releaseGateReady: opts.releaseGate.ready,
-      dossierUpdatedAtSnapshot,
-    }
-  );
+  return pushTzActionLog({ ...opts.dossier, factoryPackLastExport: meta }, opts.updatedByLabel, {
+    type: 'factory_pack_export',
+    format: opts.format,
+    snapshotId: meta.snapshotId,
+    sheetsReady: meta.sheetsReady,
+    sheetsTotal: meta.sheetsTotal,
+    qtyBridged: meta.qtyBridged,
+    releaseGateReady: opts.releaseGate.ready,
+    dossierUpdatedAtSnapshot,
+  });
 }

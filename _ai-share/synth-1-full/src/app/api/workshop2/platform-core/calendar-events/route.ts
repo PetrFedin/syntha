@@ -17,7 +17,11 @@ import {
   createPlatformCoreChainStepCalendarEvents,
   type PlatformCoreChainCalendarStepKind,
 } from '@/lib/server/platform-core-chain-calendar-hook';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 const CHAIN_STEP_KINDS = new Set<PlatformCoreChainCalendarStepKind>([
   'inventory_reserved',
@@ -85,7 +89,9 @@ export async function POST(req: NextRequest) {
   const b = (body ?? {}) as Record<string, unknown>;
   const orderId = String(b.orderId ?? '').trim();
   const collectionId = String(b.collectionId ?? 'SS27').trim();
-  const stepKind = String(b.stepKind ?? b.kind ?? 'chain_status') as PlatformCoreChainCalendarStepKind;
+  const stepKind = String(
+    b.stepKind ?? b.kind ?? 'chain_status'
+  ) as PlatformCoreChainCalendarStepKind;
   const titleRu = String(b.titleRu ?? '').trim();
   const bodyRu = String(b.bodyRu ?? '').trim() || undefined;
 

@@ -69,12 +69,17 @@ export function PlatformCoreB2bOrderDetailPoCard({
             {poId}
           </Link>
         ) : (
-          <code className="font-mono text-[10px] font-semibold" data-testid="platform-core-order-po">
+          <code
+            className="font-mono text-[10px] font-semibold"
+            data-testid="platform-core-order-po"
+          >
             {poId}
           </code>
         )}
         <Badge variant={poHandedOff ? 'default' : 'outline'}>
-          {poHandedOff ? poStatusLabelRu ?? PRODUCTION_HANDOFF_QUEUE_RU : PRODUCTION_HANDOFF_PENDING_RU}
+          {poHandedOff
+            ? (poStatusLabelRu ?? PRODUCTION_HANDOFF_QUEUE_RU)
+            : PRODUCTION_HANDOFF_PENDING_RU}
         </Badge>
         {factoryId ? <span className="text-text-muted">· {factoryId}</span> : null}
         {variant === 'brand' ? (

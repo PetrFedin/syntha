@@ -60,7 +60,7 @@ export function PlatformCoreB2bViewToggle() {
           data-testid="platform-core-b2b-view-menu"
           className={cn(
             PLATFORM_CORE_HEADER_ICON_BTN,
-            'btn-tab-active sm:hidden border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20'
+            'btn-tab-active border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 sm:hidden'
           )}
           aria-label={`B2B раздел: ${activeLabel(activeView)}. Открыть список`}
         >

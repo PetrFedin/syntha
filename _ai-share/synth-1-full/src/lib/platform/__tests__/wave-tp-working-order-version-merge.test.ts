@@ -55,7 +55,8 @@ describe('wave TP — shop working order version diff + merge contracts', () => 
 
 describe('wave TP — working order diff + merge server helpers', () => {
   it('diffShopWorkingOrderVersions returns structured result for unknown order', async () => {
-    const { diffShopWorkingOrderVersions } = await import('@/lib/server/shop-working-order-version-diff');
+    const { diffShopWorkingOrderVersions } =
+      await import('@/lib/server/shop-working-order-version-diff');
     const diff = await diffShopWorkingOrderVersions({
       wholesaleOrderId: 'INT-NO-SUCH-ORDER-TP',
       persistJournal: false,
@@ -66,7 +67,8 @@ describe('wave TP — working order diff + merge server helpers', () => {
   });
 
   it('mergeShopWorkingOrderToMatrix exposes partialMerge when no lines', async () => {
-    const { mergeShopWorkingOrderToMatrix } = await import('@/lib/server/shop-working-order-merge-to-matrix');
+    const { mergeShopWorkingOrderToMatrix } =
+      await import('@/lib/server/shop-working-order-merge-to-matrix');
     const result = await mergeShopWorkingOrderToMatrix({
       wholesaleOrderId: 'INT-NO-SUCH-ORDER-TP',
       sessionId: 'b2b-cart-tp-test',

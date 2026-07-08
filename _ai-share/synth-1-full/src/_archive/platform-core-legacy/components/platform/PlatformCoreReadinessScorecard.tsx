@@ -96,8 +96,7 @@ export function PlatformCoreReadinessScorecard({ collectionId }: Props) {
     };
   }, []);
 
-  const liveChain =
-    !emptyChain && pgReachable === true && overviewStatus === 'ready';
+  const liveChain = !emptyChain && pgReachable === true && overviewStatus === 'ready';
 
   const staticSummary = useMemo(() => {
     const cells = getPlatformCoreReadinessMatrix(collectionId, { liveChain: false });
@@ -156,7 +155,7 @@ export function PlatformCoreReadinessScorecard({ collectionId }: Props) {
               <td
                 className={
                   liveChain
-                    ? 'text-emerald-700 py-1.5 text-center font-mono font-semibold'
+                    ? 'py-1.5 text-center font-mono font-semibold text-emerald-700'
                     : 'text-text-muted py-1.5 text-center font-mono'
                 }
               >
@@ -172,7 +171,7 @@ export function PlatformCoreReadinessScorecard({ collectionId }: Props) {
             <td
               className={
                 liveChain
-                  ? 'text-emerald-700 pt-2 text-center font-mono font-bold'
+                  ? 'pt-2 text-center font-mono font-bold text-emerald-700'
                   : 'text-text-muted pt-2 text-center font-mono font-bold'
               }
             >

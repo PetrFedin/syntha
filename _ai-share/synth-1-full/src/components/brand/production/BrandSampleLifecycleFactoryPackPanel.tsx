@@ -32,7 +32,7 @@ export function BrandSampleLifecycleFactoryPackPanel({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
-        <ol className="list-decimal space-y-1 pl-5 text-xs text-text-secondary">
+        <ol className="text-text-secondary list-decimal space-y-1 pl-5 text-xs">
           {WORKSHOP2_TECHPACK_EXPORT_SHEETS.map((s) => (
             <li key={s.id}>
               {s.sheetNo}. {s.titleRu} — {s.summaryRu}

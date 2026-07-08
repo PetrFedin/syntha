@@ -42,7 +42,12 @@ export function resolveBrandScArticleSpineActiveStep(
 export function brandScPublishCabinetHref(
   demo: Pick<PlatformCoreDemoContext, 'collectionId' | 'demoOrderId' | 'demoArticleId'>
 ): string {
-  return platformCoreCabinetSectionHref('brand', 'sample_collection', BRAND_SC_PUBLISH_SECTION, demo);
+  return platformCoreCabinetSectionHref(
+    'brand',
+    'sample_collection',
+    BRAND_SC_PUBLISH_SECTION,
+    demo
+  );
 }
 
 export function shopScShowroomMatrixQuickAddHref(

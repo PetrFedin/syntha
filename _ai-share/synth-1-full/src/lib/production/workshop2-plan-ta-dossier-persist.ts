@@ -78,8 +78,7 @@ export function evaluateWorkshop2PlanTaSampleGate(
     return {
       id: 'plan.ta.at_risk',
       severity: 'warning',
-      messageRu:
-        hintRu ?? `T&A плана: ${delayedCount} задержек, ${overdueCount} просрочено.`,
+      messageRu: hintRu ?? `T&A плана: ${delayedCount} задержек, ${overdueCount} просрочено.`,
     };
   }
   if (!persistedAt && !dossier.taMilestonesPersistedAt) {

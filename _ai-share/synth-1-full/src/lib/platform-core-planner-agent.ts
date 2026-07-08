@@ -31,7 +31,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-comms-sender-hardcoded',
     kind: 'improve',
     priority: 'P1',
-    title: "Contextual sender fallback «Участник» (workshop2-contextual-message-sender, не Current User)",
+    title:
+      'Contextual sender fallback «Участник» (workshop2-contextual-message-sender, не Current User)',
     roleId: 'brand',
     pillarId: 'comms',
     href: '/brand/messages',
@@ -41,7 +42,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-comms-no-realtime',
     kind: 'add',
     priority: 'P1',
-    title: 'Contextual chat SSE + poll fallback (`/api/messages/contextual/stream`, contextual-chat-sse-live-badge)',
+    title:
+      'Contextual chat SSE + poll fallback (`/api/messages/contextual/stream`, contextual-chat-sse-live-badge)',
     roleId: 'brand',
     pillarId: 'comms',
     href: '/brand/messages',
@@ -111,8 +113,7 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-no-pg-json-fallback',
     kind: 'improve',
     priority: 'P1',
-    title:
-      'Без PG — dossier file persist banner + WORKSHOP2_PG_ONLY block (не prod-ready)',
+    title: 'Без PG — dossier file persist banner + WORKSHOP2_PG_ONLY block (не prod-ready)',
     roleId: 'brand',
     pillarId: 'development',
     href: '/brand/production/workshop2',
@@ -242,7 +243,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-brand-cabinet-count-sync',
     kind: 'improve',
     priority: 'P1',
-    title: 'Кабинет · лайншит и витрина: Синхрон counts mini/page (brand-sc-cabinet-published-sync)',
+    title:
+      'Кабинет · лайншит и витрина: Синхрон counts mini/page (brand-sc-cabinet-published-sync)',
     roleId: 'brand',
     pillarId: 'sample_collection',
     href: '/brand/core-cabinet',
@@ -282,7 +284,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-shop-crm-invite',
     kind: 'improve',
     priority: 'P1',
-    title: 'Реестр оптовых заказов: CRM/invite flow (shop-co-registry-partners-link + invite panel)',
+    title:
+      'Реестр оптовых заказов: CRM/invite flow (shop-co-registry-partners-link + invite panel)',
     roleId: 'shop',
     pillarId: 'collection_order',
     href: '/shop/b2b/partners/discover',
@@ -342,7 +345,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-orchestrator-scan-wiring',
     kind: 'improve',
     priority: 'P0',
-    title: 'Backend orchestrator: tech_debt, architecture_guard, code_quality, ui_improvement, order_anomaly',
+    title:
+      'Backend orchestrator: tech_debt, architecture_guard, code_quality, ui_improvement, order_anomaly',
     roleId: 'brand',
     pillarId: 'development',
     href: '/platform',
@@ -371,7 +375,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-orchestrator-pg-order-context',
     kind: 'add',
     priority: 'P1',
-    title: 'POST /api/v1/ai/task: enrich_platform_context (collectionId, articleId, orderId, pillar, role)',
+    title:
+      'POST /api/v1/ai/task: enrich_platform_context (collectionId, articleId, orderId, pillar, role)',
     roleId: 'brand',
     pillarId: 'development',
     status: 'done',
@@ -425,7 +430,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-ollama-eval-pack',
     kind: 'add',
     priority: 'P2',
-    title: 'Eval: tests/eval/test_agent_ollama_eval.py + npm run agent:eval:ollama (risk/quota/anomaly)',
+    title:
+      'Eval: tests/eval/test_agent_ollama_eval.py + npm run agent:eval:ollama (risk/quota/anomaly)',
     roleId: 'shop',
     pillarId: 'collection_order',
     status: 'done',
@@ -512,7 +518,8 @@ export const PLATFORM_CORE_PLANNER_AGENT_ITEMS: PlatformCorePlannerAgentItem[] =
     id: 'agent-brand-dev-w2-hub-ai',
     kind: 'add',
     priority: 'P1',
-    title: 'brand-dev-w2-hub: PlatformAiTaskStrip → product_architect (dossier completeness, без сезона)',
+    title:
+      'brand-dev-w2-hub: PlatformAiTaskStrip → product_architect (dossier completeness, без сезона)',
     roleId: 'brand',
     pillarId: 'development',
     href: '/brand/production/workshop2',

@@ -61,7 +61,9 @@ export function BrandDevInvestorReadinessStrip({
   return (
     <div
       className={cn(
-        compact ? hubGadget.goldenPath : 'border-border-subtle space-y-2 rounded-md border border-amber-200/50 bg-amber-50/20 px-3 py-2'
+        compact
+          ? hubGadget.goldenPath
+          : 'border-border-subtle space-y-2 rounded-md border border-amber-200/50 bg-amber-50/20 px-3 py-2'
       )}
       data-testid="brand-dev-investor-readiness-strip"
     >
@@ -72,11 +74,18 @@ export function BrandDevInvestorReadinessStrip({
         Готовность инвестору · PG
       </span>
       {loading ? (
-        <span className="text-text-muted text-[10px]" data-testid="brand-dev-investor-readiness-loading">
+        <span
+          className="text-text-muted text-[10px]"
+          data-testid="brand-dev-investor-readiness-loading"
+        >
           Загрузка PG…
         </span>
       ) : error ? (
-        <Badge variant="destructive" className="text-[9px]" data-testid="brand-dev-investor-readiness-error">
+        <Badge
+          variant="destructive"
+          className="text-[9px]"
+          data-testid="brand-dev-investor-readiness-error"
+        >
           PG недоступен
         </Badge>
       ) : (

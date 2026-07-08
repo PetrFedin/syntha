@@ -98,9 +98,7 @@ export async function POST(req: NextRequest) {
       const ledgerAtp = Number(item.ledgerAtp);
       const physicalOnHand = Number(item.physicalOnHand);
       if (!sku || Number.isNaN(ledgerAtp) || Number.isNaN(physicalOnHand)) continue;
-      results.push(
-        await adjustOne({ shopId, sku, ledgerAtp, physicalOnHand })
-      );
+      results.push(await adjustOne({ shopId, sku, ledgerAtp, physicalOnHand }));
     }
     return NextResponse.json({
       ok: true,

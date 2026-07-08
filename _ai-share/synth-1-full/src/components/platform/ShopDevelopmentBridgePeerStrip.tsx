@@ -19,13 +19,21 @@ export function ShopDevelopmentBridgePeerStrip({ collectionId, readyForBuyers }:
 
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-dev-bridge-peer-strip">
-      <Link href={brandW2Href} data-testid="shop-dev-bridge-peer-w2-link" className={hubGadget.goldenLink}>
+      <Link
+        href={brandW2Href}
+        data-testid="shop-dev-bridge-peer-w2-link"
+        className={hubGadget.goldenLink}
+      >
         Техпак бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={shop.showroomHref} data-testid="shop-dev-bridge-peer-showroom-link" className={hubGadget.goldenLink}>
+      <Link
+        href={shop.showroomHref}
+        data-testid="shop-dev-bridge-peer-showroom-link"
+        className={hubGadget.goldenLink}
+      >
         Витрина
       </Link>
       {readyForBuyers ? (
@@ -33,7 +41,11 @@ export function ShopDevelopmentBridgePeerStrip({ collectionId, readyForBuyers }:
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={shop.matrixHref} data-testid="shop-dev-bridge-peer-matrix-link" className={hubGadget.goldenLink}>
+          <Link
+            href={shop.matrixHref}
+            data-testid="shop-dev-bridge-peer-matrix-link"
+            className={hubGadget.goldenLink}
+          >
             Матрица
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>

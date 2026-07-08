@@ -48,7 +48,12 @@ export function BrandSpineWholesaleImportCard({
               {archiveListLabel}
             </Button>
           ) : null}
-          <Button size="sm" onClick={() => void runImport()} disabled={busy} data-testid={`brand-spine-import-btn-${platform}`}>
+          <Button
+            size="sm"
+            onClick={() => void runImport()}
+            disabled={busy}
+            data-testid={`brand-spine-import-btn-${platform}`}
+          >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Импорт в реестр заказов
           </Button>

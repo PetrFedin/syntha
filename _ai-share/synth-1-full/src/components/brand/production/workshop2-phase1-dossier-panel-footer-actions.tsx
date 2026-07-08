@@ -40,7 +40,7 @@ export function Workshop2DossierPanelFooterActions({
     <div
       className={cn(
         'border-border-subtle flex min-h-[2.25rem] flex-col gap-2 border-t pt-3',
-        'max-md:sticky max-md:bottom-0 max-md:z-20 max-md:-mx-1 max-md:border-t max-md:bg-bg-surface/95 max-md:px-1 max-md:pb-safe max-md:pt-2 max-md:backdrop-blur-sm'
+        'max-md:bg-bg-surface/95 max-md:pb-safe max-md:sticky max-md:bottom-0 max-md:z-20 max-md:-mx-1 max-md:border-t max-md:px-1 max-md:pt-2 max-md:backdrop-blur-sm'
       )}
       data-testid="brand-dev-dossier-actions-strip"
     >
@@ -71,7 +71,10 @@ export function Workshop2DossierPanelFooterActions({
             type="button"
             variant="secondary"
             onClick={saveDraft}
-            className={cn(hubCabinet.workspacePrimaryBtn, 'h-9 gap-1.5 px-3 text-xs max-md:min-h-11')}
+            className={cn(
+              hubCabinet.workspacePrimaryBtn,
+              'h-9 gap-1.5 px-3 text-xs max-md:min-h-11'
+            )}
             data-testid="workshop2-dossier-save-draft"
           >
             Сохранить

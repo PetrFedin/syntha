@@ -71,12 +71,8 @@ describe('wave TQ — QC gate blocks handoff + bulk idempotency UX', () => {
         { blocksShipment: false, result: 'pass' },
       ])
     ).toBe(true);
-    expect(
-      workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'pass' }])
-    ).toBe(false);
-    expect(
-      workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'rework' }])
-    ).toBe(true);
+    expect(workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'pass' }])).toBe(false);
+    expect(workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'rework' }])).toBe(true);
   });
 
   it('brandProductionQcBlocksHandoffCount counts only blocking fail/rework', () => {
@@ -167,8 +163,10 @@ describe('wave TQ — QC gate blocks handoff + bulk idempotency UX', () => {
   });
 
   it('bulkConfirmWorkshop2B2bProductionHandoff surfaces idempotent replay flag', async () => {
-    const { rememberWorkshop2BulkHandoffIdempotency, resetWorkshop2BulkHandoffIdempotencyForTests } =
-      await import('@/lib/server/workshop2-b2b-production-handoff');
+    const {
+      rememberWorkshop2BulkHandoffIdempotency,
+      resetWorkshop2BulkHandoffIdempotencyForTests,
+    } = await import('@/lib/server/workshop2-b2b-production-handoff');
     resetWorkshop2BulkHandoffIdempotencyForTests();
     const key = buildWorkshop2BulkHandoffIdempotencyKey(['B2B-IDEM-REPLAY']);
     rememberWorkshop2BulkHandoffIdempotency(key, {

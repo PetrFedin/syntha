@@ -161,9 +161,7 @@ function Workshop2CorePgHydrateBanner({
       data-testid="workshop2-core-pg-hydrate-banner"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span>
-          {message ?? 'Синхронизация опубликованных артикулов из PG.'}
-        </span>
+        <span>{message ?? 'Синхронизация опубликованных артикулов из PG.'}</span>
         <Button
           type="button"
           size="sm"
@@ -265,7 +263,7 @@ export function Workshop2HubCorePage({ embedded = false }: Workshop2HubCorePageP
       ) : null}
       {platformCore && !embedded && hubArticleIds.length > 0 ? (
         <div
-          className="rounded-lg border border-border-subtle bg-bg-surface px-3 py-2.5"
+          className="border-border-subtle bg-bg-surface rounded-lg border px-3 py-2.5"
           data-testid="brand-dev-w2-hub-publish-strip"
         >
           <p className="text-text-muted mb-1.5 text-[10px] font-semibold uppercase tracking-wide">
@@ -281,7 +279,10 @@ export function Workshop2HubCorePage({ embedded = false }: Workshop2HubCorePageP
               {publishMessage}
             </p>
           ) : null}
-          <BrandScPublishAuditLog collectionId={activeCollectionId} reloadNonce={publishReloadNonce} />
+          <BrandScPublishAuditLog
+            collectionId={activeCollectionId}
+            reloadNonce={publishReloadNonce}
+          />
           <BrandScPublishReleasePeerStrip collectionId={activeCollectionId} />
         </div>
       ) : platformCore && !embedded && isPlatformCoreEmptyChainCollection(activeCollectionId) ? (
@@ -336,33 +337,33 @@ export function Workshop2HubCorePage({ embedded = false }: Workshop2HubCorePageP
         </div>
       ) : null}
       {!(embedded && platformCore) ? (
-      <Workshop2TabContent
-        basePath={
-          embedded
-            ? `/brand/core?pillar=development&section=${BRAND_DEV_W2_HUB_SECTION}&collection=${encodeURIComponent(activeCollectionId)}`
-            : ROUTES.brand.productionWorkshop2
-        }
-        activeCollections={ctx.activeCollections}
-        archivedCollections={ctx.archivedCollections}
-        metricsByCollectionId={ctx.metricsByCollectionId}
-        getArticlePipelineProgress={ctx.getArticlePipelineProgress}
-        getSkuFlowDoc={ctx.getSkuFlowDoc}
-        onCreateCollection={ctx.onCreateCollection}
-        onArchiveCollection={ctx.onArchiveCollection}
-        onRestoreCollection={ctx.onRestoreCollection}
-        onToggleCollectionPin={ctx.onToggleCollectionPin}
-        getUserCollectionRow={ctx.getUserCollectionRow}
-        getCollectionCoverDataUrl={ctx.getCollectionCoverDataUrl}
-        onUpdateUserCollection={ctx.onUpdateUserCollection}
-        onUpdateSs27Meta={ctx.onUpdateSs27Meta}
-        articlePickerLines={ctx.articlePickerLines}
-        onCommitWorkshop2Article={ctx.onCommitWorkshop2Article}
-        onBulkAddWorkshop2Articles={ctx.onBulkAddWorkshop2Articles}
-        onRemoveWorkshop2Article={ctx.onRemoveWorkshop2Article}
-        onPatchWorkshop2ArticleLine={ctx.onPatchWorkshop2ArticleLine}
-        createdByLabel={ctx.createdByLabel}
-        highlightArticleId={ctx.highlightArticleId}
-      />
+        <Workshop2TabContent
+          basePath={
+            embedded
+              ? `/brand/core?pillar=development&section=${BRAND_DEV_W2_HUB_SECTION}&collection=${encodeURIComponent(activeCollectionId)}`
+              : ROUTES.brand.productionWorkshop2
+          }
+          activeCollections={ctx.activeCollections}
+          archivedCollections={ctx.archivedCollections}
+          metricsByCollectionId={ctx.metricsByCollectionId}
+          getArticlePipelineProgress={ctx.getArticlePipelineProgress}
+          getSkuFlowDoc={ctx.getSkuFlowDoc}
+          onCreateCollection={ctx.onCreateCollection}
+          onArchiveCollection={ctx.onArchiveCollection}
+          onRestoreCollection={ctx.onRestoreCollection}
+          onToggleCollectionPin={ctx.onToggleCollectionPin}
+          getUserCollectionRow={ctx.getUserCollectionRow}
+          getCollectionCoverDataUrl={ctx.getCollectionCoverDataUrl}
+          onUpdateUserCollection={ctx.onUpdateUserCollection}
+          onUpdateSs27Meta={ctx.onUpdateSs27Meta}
+          articlePickerLines={ctx.articlePickerLines}
+          onCommitWorkshop2Article={ctx.onCommitWorkshop2Article}
+          onBulkAddWorkshop2Articles={ctx.onBulkAddWorkshop2Articles}
+          onRemoveWorkshop2Article={ctx.onRemoveWorkshop2Article}
+          onPatchWorkshop2ArticleLine={ctx.onPatchWorkshop2ArticleLine}
+          createdByLabel={ctx.createdByLabel}
+          highlightArticleId={ctx.highlightArticleId}
+        />
       ) : null}
     </>
   );
@@ -394,10 +395,7 @@ export function Workshop2HubCorePage({ embedded = false }: Workshop2HubCorePageP
         data-testid="brand-dev-w2-hub-panel"
         data-audit-legacy="workshop2-hub-core-embedded"
       >
-        <PlatformCoreArticleSpineGoldenPathStrip
-          demo={spineDemo}
-          activeStep="brand-dev-w2-hub"
-        />
+        <PlatformCoreArticleSpineGoldenPathStrip demo={spineDemo} activeStep="brand-dev-w2-hub" />
         {hubInner}
       </div>
     );

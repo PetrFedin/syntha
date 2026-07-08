@@ -87,7 +87,10 @@ describe('brand-material-passport-rollup-repository', () => {
 
   it('refresh persists merged catalog slice', async () => {
     clearBrandMaterialPassportRollupMemoryForTests();
-    const refreshed = await refreshBrandMaterialPassportRollupServer({ collectionId: 'SS27', limit: 8 });
+    const refreshed = await refreshBrandMaterialPassportRollupServer({
+      collectionId: 'SS27',
+      limit: 8,
+    });
     expect(refreshed.rows.length).toBeGreaterThan(0);
     expect(refreshed.summary.withComposition).toBeGreaterThanOrEqual(0);
   });

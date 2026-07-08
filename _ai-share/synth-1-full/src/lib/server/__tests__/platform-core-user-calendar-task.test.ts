@@ -4,21 +4,33 @@ import {
   listPlatformCoreUserCalendarTasks,
 } from '@/lib/server/platform-core-user-calendar-task';
 
-const pgMemoryByCollection = new Map<string, import('@/lib/server/platform-core-user-calendar-task').PlatformCoreUserCalendarTask[]>();
+const pgMemoryByCollection = new Map<
+  string,
+  import('@/lib/server/platform-core-user-calendar-task').PlatformCoreUserCalendarTask[]
+>();
 
 jest.mock('@/lib/server/platform-core-user-calendar-task-repository', () => ({
   clearPlatformCoreUserCalendarTaskPgMemoryForTests: () => pgMemoryByCollection.clear(),
-  listPlatformCoreUserCalendarTasksPg: jest.fn(async (input: { collectionId: string; orderId?: string }) => {
-    const collectionId = input.collectionId.trim();
-    const orderId = input.orderId?.trim();
-    const tasks = pgMemoryByCollection.get(collectionId) ?? [];
-    return tasks.filter((t) => !orderId || t.orderId?.trim() === orderId);
-  }),
-  upsertPlatformCoreUserCalendarTaskPg: jest.fn(async (task: import('@/lib/server/platform-core-user-calendar-task').PlatformCoreUserCalendarTask) => {
-    const existing = pgMemoryByCollection.get(task.collectionId) ?? [];
-    pgMemoryByCollection.set(task.collectionId, [...existing.filter((t) => t.id !== task.id), task]);
-    return task;
-  }),
+  listPlatformCoreUserCalendarTasksPg: jest.fn(
+    async (input: { collectionId: string; orderId?: string }) => {
+      const collectionId = input.collectionId.trim();
+      const orderId = input.orderId?.trim();
+      const tasks = pgMemoryByCollection.get(collectionId) ?? [];
+      return tasks.filter((t) => !orderId || t.orderId?.trim() === orderId);
+    }
+  ),
+  upsertPlatformCoreUserCalendarTaskPg: jest.fn(
+    async (
+      task: import('@/lib/server/platform-core-user-calendar-task').PlatformCoreUserCalendarTask
+    ) => {
+      const existing = pgMemoryByCollection.get(task.collectionId) ?? [];
+      pgMemoryByCollection.set(task.collectionId, [
+        ...existing.filter((t) => t.id !== task.id),
+        task,
+      ]);
+      return task;
+    }
+  ),
 }));
 
 jest.mock('@/lib/server/workshop2-pg-pool', () => ({

@@ -9,9 +9,7 @@ import type { ShopCollaborativeApprovalStepId } from '@/lib/shop/shop-collaborat
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getWorkshop2PgPool, isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 
-export type ShopCollaborativeSessionJournalEventType =
-  | 'brand_margin_approve'
-  | 'shop_step_advance';
+export type ShopCollaborativeSessionJournalEventType = 'brand_margin_approve' | 'shop_step_advance';
 
 export type ShopCollaborativeSessionJournalRow = {
   id: string;
@@ -39,7 +37,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(JOURNAL_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(JOURNAL_FILE, 'utf8')) as ShopCollaborativeSessionJournalRow[];
+    const parsed = JSON.parse(
+      fs.readFileSync(JOURNAL_FILE, 'utf8')
+    ) as ShopCollaborativeSessionJournalRow[];
     if (Array.isArray(parsed)) memoryJournal.splice(0, memoryJournal.length, ...parsed);
   } catch {
     /* ignore */

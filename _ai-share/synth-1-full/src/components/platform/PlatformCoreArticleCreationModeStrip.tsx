@@ -20,7 +20,7 @@ export function PlatformCoreArticleCreationModeStrip({ value, onChange, disabled
   return (
     <section
       data-testid="platform-core-article-creation-mode-strip"
-      className="border-border-subtle w-full min-w-0 rounded-xl border bg-bg-surface p-1"
+      className="border-border-subtle bg-bg-surface w-full min-w-0 rounded-xl border p-1"
       aria-label="Режим создания артикула"
     >
       <div className={cn(hubCabinet.pillarSegmentRow, 'w-full')} role="group">

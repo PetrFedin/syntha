@@ -18,20 +18,32 @@ export async function POST(req: NextRequest) {
   const force = body.force === true || body.forceReexport === true;
   if (!wholesaleOrderId) {
     return NextResponse.json(
-      { ok: false as const, error: { code: 'MISSING_ORDER', message: 'wholesaleOrderId required' }, meta: { requestId, mode, apiVersion: 'v1' as const } },
+      {
+        ok: false as const,
+        error: { code: 'MISSING_ORDER', message: 'wholesaleOrderId required' },
+        meta: { requestId, mode, apiVersion: 'v1' as const },
+      },
       { status: 400, headers: { 'x-request-id': requestId } }
     );
   }
   const record = await exportWholesaleOrderAfterConfirm(wholesaleOrderId, undefined, { force });
   if (!record || record.platform !== 'joor') {
     return NextResponse.json(
-      { ok: false as const, error: { code: 'NOT_JOOR', message: 'Order is not JOOR-sourced' }, meta: { requestId, mode, apiVersion: 'v1' as const } },
+      {
+        ok: false as const,
+        error: { code: 'NOT_JOOR', message: 'Order is not JOOR-sourced' },
+        meta: { requestId, mode, apiVersion: 'v1' as const },
+      },
       { status: 400, headers: { 'x-request-id': requestId } }
     );
   }
   enqueueSyncJob({ platform: 'joor', kind: 'order_export', resultCount: 1 });
   return NextResponse.json(
-    { ok: true as const, data: { export: record }, meta: { requestId, mode, apiVersion: 'v1' as const } },
+    {
+      ok: true as const,
+      data: { export: record },
+      meta: { requestId, mode, apiVersion: 'v1' as const },
+    },
     { headers: { 'x-request-id': requestId } }
   );
 }

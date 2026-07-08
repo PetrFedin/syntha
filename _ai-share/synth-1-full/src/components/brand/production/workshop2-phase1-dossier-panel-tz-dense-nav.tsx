@@ -51,7 +51,7 @@ export function Workshop2DossierTzDenseSectionNav({
       data-testid="brand-dev-dossier-section-nav"
     >
       <div className="flex min-w-0 flex-nowrap items-stretch gap-2">
-        <div className="border-border-subtle bg-bg-surface2 flex min-h-9 w-full min-w-0 flex-1 gap-0.5 rounded-xl border p-1 max-md:flex-nowrap max-md:overflow-x-auto max-md:overscroll-x-contain max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden md:flex-wrap">
+        <div className="border-border-subtle bg-bg-surface2 flex min-h-9 w-full min-w-0 flex-1 gap-0.5 rounded-xl border p-1 max-md:flex-nowrap max-md:overflow-x-auto max-md:overscroll-x-contain max-md:[scrollbar-width:none] md:flex-wrap max-md:[&::-webkit-scrollbar]:hidden">
           {dossierNavPrimarySections.map((s) => {
             const isActive = activeSection === s.id;
             const primaryForView =
@@ -80,7 +80,7 @@ export function Workshop2DossierTzDenseSectionNav({
                 onClick={() => onSelectSection(s.id)}
                 className={cn(
                   cabinetSurface.tabsTrigger,
-                  'h-8 min-h-8 max-md:min-h-11 max-md:shrink-0 max-md:flex-none max-md:px-3 min-w-[calc(33.33%-4px)] flex-1 basis-[calc(33.33%-4px)] justify-center gap-1 border px-1.5 text-center text-[10px] font-semibold !normal-case leading-tight transition-colors md:min-w-0 md:basis-0',
+                  'h-8 min-h-8 min-w-[calc(33.33%-4px)] flex-1 basis-[calc(33.33%-4px)] justify-center gap-1 border px-1.5 text-center text-[10px] font-semibold !normal-case leading-tight transition-colors max-md:min-h-11 max-md:flex-none max-md:shrink-0 max-md:px-3 md:min-w-0 md:basis-0',
                   isActive &&
                     'border-accent-primary/45 bg-accent-primary/5 text-accent-primary shadow-none',
                   !isActive &&
@@ -107,7 +107,7 @@ export function Workshop2DossierTzDenseSectionNav({
                 size="sm"
                 className={cn(
                   cabinetSurface.tabsTrigger,
-                  'h-8 min-h-8 max-md:min-h-11 shrink-0 gap-1 px-2 text-[10px] font-semibold !normal-case'
+                  'h-8 min-h-8 shrink-0 gap-1 px-2 text-[10px] font-semibold !normal-case max-md:min-h-11'
                 )}
               >
                 Ещё ({dossierNavSecondarySections.length})

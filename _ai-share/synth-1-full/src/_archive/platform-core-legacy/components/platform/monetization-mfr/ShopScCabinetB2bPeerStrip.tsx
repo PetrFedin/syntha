@@ -21,13 +21,21 @@ export function ShopScCabinetB2bPeerStrip({ collectionId, omitCheckout = false }
 
   return (
     <div className={hubGadget.goldenPath} data-testid={WAVE_YF_SHOP_SC_B2B_PEER_STRIP_TESTID}>
-      <Link href={session.hubHref} data-testid="shop-sc-cabinet-platform-hub-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.hubHref}
+        data-testid="shop-sc-cabinet-platform-hub-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YF_PLATFORM_B2B_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.marketroomShowcaseHref} data-testid="shop-sc-cabinet-marketroom-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.marketroomShowcaseHref}
+        data-testid="shop-sc-cabinet-marketroom-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YF_MARKETROOM_RU}
       </Link>
       {!omitCheckout ? (
@@ -35,7 +43,11 @@ export function ShopScCabinetB2bPeerStrip({ collectionId, omitCheckout = false }
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.buyPathHref} data-testid="shop-sc-cabinet-checkout-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.buyPathHref}
+            data-testid="shop-sc-cabinet-checkout-link"
+            className={hubGadget.goldenLink}
+          >
             Оформление
           </Link>
         </>

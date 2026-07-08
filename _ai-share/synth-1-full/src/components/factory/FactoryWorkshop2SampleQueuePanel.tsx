@@ -201,8 +201,7 @@ export function FactoryWorkshop2SampleQueuePanel({
               Очередь образцов
             </CardTitle>
             <CardDescription className="text-xs">
-              {WAVE_XC_MFR_SAMPLE_QUEUE_SOURCE_PREFIX_RU}:{' '}
-              {source ? source : loading ? '…' : '—'}
+              {WAVE_XC_MFR_SAMPLE_QUEUE_SOURCE_PREFIX_RU}: {source ? source : loading ? '…' : '—'}
             </CardDescription>
           </div>
           <div className="flex flex-col items-end gap-1">

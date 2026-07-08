@@ -85,8 +85,7 @@ function checkFromMirror(
     return {
       id: ids.visual,
       severity: 'blocker',
-      messageRu:
-        hintRu || `Визуальный gate: ${openVisualGateCount} открытых предупреждений.`,
+      messageRu: hintRu || `Визуальный gate: ${openVisualGateCount} открытых предупреждений.`,
     };
   }
   return null;

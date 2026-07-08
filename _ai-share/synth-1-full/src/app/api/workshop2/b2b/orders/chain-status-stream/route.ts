@@ -58,7 +58,9 @@ export async function GET(req: NextRequest) {
       const poll = async () => {
         try {
           const entries = await Promise.all(
-            orderIds.map(async (orderId) => [orderId, await getWorkshop2B2bChainStatus(orderId)] as const)
+            orderIds.map(
+              async (orderId) => [orderId, await getWorkshop2B2bChainStatus(orderId)] as const
+            )
           );
           const chains = Object.fromEntries(entries);
           const fingerprint = fingerprintWorkshop2B2bChains(chains);
@@ -78,9 +80,7 @@ export async function GET(req: NextRequest) {
         }
       };
 
-      sendRaw(
-        formatPlatformCoreChainStatusSseData({ type: 'ping', ts: new Date().toISOString() })
-      );
+      sendRaw(formatPlatformCoreChainStatusSseData({ type: 'ping', ts: new Date().toISOString() }));
       void poll();
 
       const onBump = () => void poll();

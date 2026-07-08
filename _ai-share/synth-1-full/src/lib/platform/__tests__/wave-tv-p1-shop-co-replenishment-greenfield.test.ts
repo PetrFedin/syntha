@@ -42,9 +42,8 @@ describe('shop-replenishment-allocate-server', () => {
 
 describe('shop-replenishment-matrix-prefill', () => {
   it('builds matrix href with replenishment prefill', async () => {
-    const { shopReplenishmentMatrixPrefillHref } = await import(
-      '@/lib/b2b/shop-replenishment-matrix-prefill'
-    );
+    const { shopReplenishmentMatrixPrefillHref } =
+      await import('@/lib/b2b/shop-replenishment-matrix-prefill');
     const href = shopReplenishmentMatrixPrefillHref('SS27', 'B2B-SS27-DEMO-001', {
       appliedLines: 3,
       atpQtyTotal: 42,

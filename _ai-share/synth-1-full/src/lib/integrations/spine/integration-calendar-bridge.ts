@@ -4,17 +4,17 @@
 import 'server-only';
 
 import type { Workshop2B2bCalendarEvent } from '@/lib/production/workshop2-b2b-campaign-hub';
-import {
-  listImportedOrdersAsB2B,
-  patchImportedOrderFields,
-} from './imported-orders-persistence';
+import { listImportedOrdersAsB2B, patchImportedOrderFields } from './imported-orders-persistence';
 import {
   getDeliveryWindow,
   listDeliveryWindowsForCollection,
   upsertDeliveryWindow,
   type DeliveryWindowRecord,
 } from './delivery-window-persistence.file';
-import { formatWholesaleOrderDisplayId, isIntegrationImportedWholesaleOrderId } from './integration-ui-utils';
+import {
+  formatWholesaleOrderDisplayId,
+  isIntegrationImportedWholesaleOrderId,
+} from './integration-ui-utils';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 
 function parseDateLabel(label: string): { startAt: string; endAt: string } | null {

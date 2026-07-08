@@ -112,7 +112,14 @@ export async function buildWorkshop2CollectionLinesheetPdfBytes(input: {
       if (embed) {
         try {
           ensureSpace(THUMB_H_MM + 2);
-          doc.addImage(embed.dataUrl, embed.format, THUMB_X_MM, blockStartY, THUMB_W_MM, THUMB_H_MM);
+          doc.addImage(
+            embed.dataUrl,
+            embed.format,
+            THUMB_X_MM,
+            blockStartY,
+            THUMB_W_MM,
+            THUMB_H_MM
+          );
           embedded = true;
         } catch {
           embedded = false;

@@ -29,11 +29,7 @@ export const ORDER_SOURCE_PLATFORMS = [
 
 export type OrderSourcePlatform = (typeof ORDER_SOURCE_PLATFORMS)[number];
 
-export type SynthaOperationalStatus =
-  | 'draft'
-  | 'pending_approval'
-  | 'confirmed'
-  | 'cancelled';
+export type SynthaOperationalStatus = 'draft' | 'pending_approval' | 'confirmed' | 'cancelled';
 
 const JOOR_STATUS_MAP: Record<string, SynthaOperationalStatus> = {
   draft: 'draft',

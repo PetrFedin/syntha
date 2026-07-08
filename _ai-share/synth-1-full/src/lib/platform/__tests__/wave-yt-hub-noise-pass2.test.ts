@@ -96,11 +96,7 @@ export const WAVE_YT_HUB_PILLAR_FIXES = [
   {
     id: 'comms-thread-preview-lg',
     file: 'components/platform/CommsPillarCard.tsx',
-    mustContain: [
-      'CommsCabinetThreadPreview',
-      'CommsCabinetSplitProvider',
-      'threadPreview',
-    ],
+    mustContain: ['CommsCabinetThreadPreview', 'CommsCabinetSplitProvider', 'threadPreview'],
     mustNotContain: [],
   },
   {
@@ -121,7 +117,10 @@ export const WAVE_YT_HUB_PILLAR_FIXES = [
   {
     id: 'op-pillar-audit-legacy-gated',
     file: 'components/platform/OrderProductionPillarCard.tsx',
-    mustContain: ['usePlatformCoreHubAuditLegacyAttrs', "auditLegacy('order-production-pillar-card')"],
+    mustContain: [
+      'usePlatformCoreHubAuditLegacyAttrs',
+      "auditLegacy('order-production-pillar-card')",
+    ],
     mustNotContain: ['data-audit-legacy="order-production-pillar-card"'],
   },
   {

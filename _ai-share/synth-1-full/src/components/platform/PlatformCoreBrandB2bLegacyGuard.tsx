@@ -19,10 +19,7 @@ function PlatformCoreBrandB2bLegacyGuardInner({ children }: Props) {
 
   if (!isPlatformCoreMode()) return <>{children}</>;
 
-  const redirect = resolveBrandB2bLegacyRedirect(
-    pathname ?? '',
-    searchParams.get('collection')
-  );
+  const redirect = resolveBrandB2bLegacyRedirect(pathname ?? '', searchParams.get('collection'));
   if (!redirect) return <>{children}</>;
 
   const pillarId = pillarIdForBrandB2bLegacyTarget(redirect.target);

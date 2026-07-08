@@ -19,7 +19,10 @@ export type BrandWssiCapacityFeedRow = BrandWssiCapacityRow & {
 export type BrandWssiFeedStorageMode = 'pg' | 'file' | 'memory' | 'demo';
 
 export function buildBrandWssiMixFeedRows(products: readonly Product[]): BrandWssiMixFeedRow[] {
-  return calculateAssortmentMix([...products]).map((row) => ({ ...row, source: 'catalog' as const }));
+  return calculateAssortmentMix([...products]).map((row) => ({
+    ...row,
+    source: 'catalog' as const,
+  }));
 }
 
 export function buildBrandWssiCapacityFeedRows(collectionId: string): BrandWssiCapacityFeedRow[] {

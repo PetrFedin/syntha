@@ -34,10 +34,8 @@ describe('shop-replenishment-filter-slices-repository', () => {
   });
 
   it('persists active slice for buyer', async () => {
-    const {
-      getShopReplenishmentFilterSlicesServer,
-      postShopReplenishmentFilterSliceServer,
-    } = await import('@/lib/server/shop-replenishment-filter-slices-repository');
+    const { getShopReplenishmentFilterSlicesServer, postShopReplenishmentFilterSliceServer } =
+      await import('@/lib/server/shop-replenishment-filter-slices-repository');
     const saved = await postShopReplenishmentFilterSliceServer({
       buyerId: 'shop1',
       slice: {

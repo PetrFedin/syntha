@@ -39,8 +39,7 @@ export const WAVE_YJ_SUP_OP_PARTIAL_SHIP_STEP_RU =
   'Частичная отгрузка · bulk-confirm (partialShipQty/backorder)';
 export const WAVE_YJ_SUP_OP_BULK_CONFIRM_STEP_RU =
   'Подтверждение поставки · bulk-confirm API (все BOM строки)';
-export const WAVE_YJ_SUP_OP_WMS_WEBHOOK_STEP_RU =
-  'WMS inbound confirm · webhook (env-gated stub)';
+export const WAVE_YJ_SUP_OP_WMS_WEBHOOK_STEP_RU = 'WMS inbound confirm · webhook (env-gated stub)';
 
 export type SupOpProcurementHonestChainStep = {
   id: string;
@@ -153,7 +152,10 @@ export function buildSupOpTrackingTailHref(input: {
   });
 }
 
-export function supOpCommsTailHrefCarriesPoContext(href: string, productionOrderId: string): boolean {
+export function supOpCommsTailHrefCarriesPoContext(
+  href: string,
+  productionOrderId: string
+): boolean {
   const po = productionOrderId.trim();
   if (!po) return false;
   try {

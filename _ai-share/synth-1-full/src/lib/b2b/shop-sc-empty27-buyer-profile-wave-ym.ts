@@ -21,7 +21,8 @@ export const SHOP_EMPTY27_ONBOARDING_COLLECTION_ID = 'EMPTY27' as const;
 
 export const SHOP_EMPTY27_MATRIX_SEED_COLLECTION_ID = 'SS27' as const;
 
-export const SHOP_EMPTY27_WAVE_YM_MIGRATION = '061_wave_uw_shop_partnership_invite_journal' as const;
+export const SHOP_EMPTY27_WAVE_YM_MIGRATION =
+  '061_wave_uw_shop_partnership_invite_journal' as const;
 
 export const SHOP_EMPTY27_ONBOARDING_STRIP_TESTID = 'shop-sc-empty27-onboarding-strip' as const;
 export const SHOP_EMPTY27_ONBOARDING_PG_TESTID = 'shop-sc-empty27-onboarding-pg' as const;
@@ -40,7 +41,8 @@ export const SHOP_EMPTY27_ONBOARDING_MATRIX_LINK_TESTID =
 export const SHOP_EMPTY27_ONBOARDING_SEED_PROFILE_TESTID =
   'shop-sc-empty27-onboarding-seed-profile' as const;
 
-export const SHOP_EMPTY27_BUYER_PROFILE_STRIP_TESTID = 'shop-sc-cabinet-buyer-profile-strip' as const;
+export const SHOP_EMPTY27_BUYER_PROFILE_STRIP_TESTID =
+  'shop-sc-cabinet-buyer-profile-strip' as const;
 export const SHOP_EMPTY27_BUYER_PROFILE_PG_TESTID = 'shop-sc-cabinet-buyer-profile-pg' as const;
 export const SHOP_EMPTY27_BUYER_PROFILE_MEMORY_TESTID =
   'shop-sc-cabinet-buyer-profile-memory' as const;
@@ -115,7 +117,9 @@ export function shopEmpty27BuyerProfileStorageBadgeRu(
   return null;
 }
 
-export function shopEmpty27GreenfieldHintRu(state: ShopGreenfieldOnboardingSnapshot | null): string {
+export function shopEmpty27GreenfieldHintRu(
+  state: ShopGreenfieldOnboardingSnapshot | null
+): string {
   if (state?.crmReady && state?.pricelistReady) {
     return `${shopCoreBuyerLabelRu(SHOP_GREENFIELD_DEFAULT_BUYER_ID)}: CRM и прайс готовы — откройте матрицу SS27.`;
   }
@@ -136,9 +140,7 @@ export function shopEmpty27MatrixSeedHref(input: {
   );
 }
 
-export function shopEmpty27BuyerProfileReadMessageRu(
-  profile: ShopBuyerCrmProfile | null
-): string {
+export function shopEmpty27BuyerProfileReadMessageRu(profile: ShopBuyerCrmProfile | null): string {
   if (!profile) {
     return `${SHOP_SC_CABINET_BUYER_PROFILE_NO_SEGMENT_RU} · ${SHOP_EMPTY27_BUYER_PROFILE_NO_SEGMENT_HINT_RU}`;
   }
@@ -156,7 +158,11 @@ export function shopEmpty27BuyerProfileWriteMessageRu(
 ): string {
   if (!profile) return 'CRM-профиль покупателя недоступен.';
   const storage =
-    storageMode === 'pg' ? 'PG' : storageMode === 'memory' ? SHOP_SC_CABINET_BUYER_PROFILE_MEMORY_RU : '—';
+    storageMode === 'pg'
+      ? 'PG'
+      : storageMode === 'memory'
+        ? SHOP_SC_CABINET_BUYER_PROFILE_MEMORY_RU
+        : '—';
   return `Сегмент «${profile.segmentNameRu}» записан · ${storage}`;
 }
 

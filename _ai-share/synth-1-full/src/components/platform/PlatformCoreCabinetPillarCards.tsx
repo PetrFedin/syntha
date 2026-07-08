@@ -14,11 +14,7 @@ type Props = {
 };
 
 /** Столпы кабинета роли — те же карточки, что «Столпы · быстрый вход» на /platform. */
-export function PlatformCoreCabinetPillarCards({
-  pillarIds,
-  selectedPillarId,
-  onSelect,
-}: Props) {
+export function PlatformCoreCabinetPillarCards({ pillarIds, selectedPillarId, onSelect }: Props) {
   return (
     <section
       data-testid="role-core-pillar-nav-horizontal"

@@ -2,9 +2,7 @@
 
 import { useMemo } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
-import {
-  useWorkshop2Phase1DossierSendHandoffBundles,
-} from '@/components/brand/production/use-workshop2-phase1-dossier-send-handoff-bundles';
+import { useWorkshop2Phase1DossierSendHandoffBundles } from '@/components/brand/production/use-workshop2-phase1-dossier-send-handoff-bundles';
 import type {
   BuildWorkshop2AssignmentHandoffBundleInput,
   BuildWorkshop2AssignmentSendPanelBundleInput,

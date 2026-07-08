@@ -21,11 +21,11 @@ type ShopLayoutSidebarPanelProps = {
 export function ShopLayoutSidebarPanel({ role, can, onNavigate }: ShopLayoutSidebarPanelProps) {
   const sidebarGroups = useMemo(() => {
     const piped = augmentShopNavForCoreCabinet(applyShopNavPipeline(shopNavGroups));
-    const rbacFiltered = piped.filter((g) =>
-      canSeeShopNavGroup(role, g.id, can)
-    );
+    const rbacFiltered = piped.filter((g) => canSeeShopNavGroup(role, g.id, can));
     const afterRbac = rbacFiltered.length > 0 ? rbacFiltered : piped;
-    return filterNavGroupsForCoreSidebar(filterShopNavGroupsByTier(afterRbac, getShopNavDisplayMode()));
+    return filterNavGroupsForCoreSidebar(
+      filterShopNavGroupsByTier(afterRbac, getShopNavDisplayMode())
+    );
   }, [role, can]);
 
   return (

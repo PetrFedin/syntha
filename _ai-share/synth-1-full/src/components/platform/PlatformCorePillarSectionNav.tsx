@@ -23,12 +23,8 @@ export function PlatformCorePillarSectionNav({ roleId, pillarId, onSelectPillar 
   const { prev, next } = getAdjacentPillars(pillarId);
   const prevTitle = prev ? PLATFORM_CORE_PILLARS.find((p) => p.id === prev)?.title : null;
   const nextTitle = next ? PLATFORM_CORE_PILLARS.find((p) => p.id === next)?.title : null;
-  const prevHref = prev
-    ? getRoleAdjacentPillarWorkspaceHref(roleId, pillarId, 'prev', demo)
-    : null;
-  const nextHref = next
-    ? getRoleAdjacentPillarWorkspaceHref(roleId, pillarId, 'next', demo)
-    : null;
+  const prevHref = prev ? getRoleAdjacentPillarWorkspaceHref(roleId, pillarId, 'prev', demo) : null;
+  const nextHref = next ? getRoleAdjacentPillarWorkspaceHref(roleId, pillarId, 'next', demo) : null;
 
   if (!prev && !next) return null;
 

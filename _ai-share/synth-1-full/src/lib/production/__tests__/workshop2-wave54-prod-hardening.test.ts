@@ -6,10 +6,11 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { buildWorkshop2PerformanceBudgetPayload } from '@/lib/production/workshop2-performance-budget-api';
-import { readWorkshop2B2bInvoiceStubJournal, isWorkshop2B2bInvoiceJournalFilePersistEnabled } from '@/lib/production/workshop2-b2b-invoice-stub';
 import {
-  buildWorkshop2Wave54ProdHardeningReadyProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+  readWorkshop2B2bInvoiceStubJournal,
+  isWorkshop2B2bInvoiceJournalFilePersistEnabled,
+} from '@/lib/production/workshop2-b2b-invoice-stub';
+import { buildWorkshop2Wave54ProdHardeningReadyProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave54ProdHardeningReadyProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 
 const root = process.cwd();
@@ -42,7 +43,18 @@ describe('wave54 — invoice repository journal fallback', () => {
     fs.writeFileSync(
       path.join(tmp, '.planning/workshop2-b2b-invoice-stub-journal.json'),
       JSON.stringify({
-        entries: [{ id: 'i1', orderId: 'O1', brandId: 'b', tenantId: 't1', totalRub: 1, mode: 'journal_only', at: '2026-01-01', pdfPathPlaceholderRu: '/x' }],
+        entries: [
+          {
+            id: 'i1',
+            orderId: 'O1',
+            brandId: 'b',
+            tenantId: 't1',
+            totalRub: 1,
+            mode: 'journal_only',
+            at: '2026-01-01',
+            pdfPathPlaceholderRu: '/x',
+          },
+        ],
       }),
       'utf8'
     );
@@ -77,40 +89,63 @@ describe('wave54 — scripts and migrations on disk', () => {
   });
 
   it('ack lifecycle apply dry-run default', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-ack-s3-lifecycle-apply.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-ack-s3-lifecycle-apply.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('dry-run');
     expect(mjs).toContain('put-bucket-lifecycle-configuration');
   });
 
   it('ack restore drill quarterly wraps replay', () => {
-    expect(fs.existsSync(path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'))).toBe(true);
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'), 'utf8');
+    expect(
+      fs.existsSync(path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'))
+    ).toBe(true);
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-ack-restore-drill-quarterly.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('workshop2-ack-replay-drill');
   });
 
   it('022 invoice migration exists', () => {
-    const sql = fs.readFileSync(path.join(root, 'db/migrations/022_workshop2_b2b_invoice.sql'), 'utf8');
+    const sql = fs.readFileSync(
+      path.join(root, 'db/migrations/022_workshop2_b2b_invoice.sql'),
+      'utf8'
+    );
     expect(sql).toMatch(/workshop2_b2b_invoice/);
     expect(sql).toMatch(/tenant_id/);
   });
 
   it('invoice repository listByTenantId export', () => {
-    const ts = fs.readFileSync(path.join(root, 'src/lib/server/workshop2-b2b-invoice-repository.ts'), 'utf8');
+    const ts = fs.readFileSync(
+      path.join(root, 'src/lib/server/workshop2-b2b-invoice-repository.ts'),
+      'utf8'
+    );
     expect(ts).toContain('listWorkshop2B2bInvoicesByTenantId');
   });
 
   it('orders export uses invoice repository', () => {
-    const route = fs.readFileSync(path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'), 'utf8');
+    const route = fs.readFileSync(
+      path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'),
+      'utf8'
+    );
     expect(route).toContain('listWorkshop2B2bInvoicesByTenantId');
   });
 
   it('investor-demo-full probes performance-budget', () => {
-    const mjs = fs.readFileSync(path.join(root, 'scripts/workshop2-investor-demo-full.mjs'), 'utf8');
+    const mjs = fs.readFileSync(
+      path.join(root, 'scripts/workshop2-investor-demo-full.mjs'),
+      'utf8'
+    );
     expect(mjs).toContain('performance-budget');
   });
 
   it('probe-prod cron workflow', () => {
-    const yml = fs.readFileSync(path.join(root, '.github/workflows/workshop2-probe-prod.yml'), 'utf8');
+    const yml = fs.readFileSync(
+      path.join(root, '.github/workflows/workshop2-probe-prod.yml'),
+      'utf8'
+    );
     expect(yml).toMatch(/schedule:/);
     expect(yml).toContain('workshop2-probe-alert.mjs');
   });
@@ -123,8 +158,12 @@ describe('wave54 — scripts and migrations on disk', () => {
   });
 
   it('sentry + runbook PagerDuty RU', () => {
-    expect(fs.readFileSync(path.join(root, '.planning/workshop2-sentry-alert-rules.md'), 'utf8')).toContain('PagerDuty');
-    expect(fs.readFileSync(path.join(root, '.planning/workshop2-ru-ops-runbook.md'), 'utf8')).toContain('PagerDuty');
+    expect(
+      fs.readFileSync(path.join(root, '.planning/workshop2-sentry-alert-rules.md'), 'utf8')
+    ).toContain('PagerDuty');
+    expect(
+      fs.readFileSync(path.join(root, '.planning/workshop2-ru-ops-runbook.md'), 'utf8')
+    ).toContain('PagerDuty');
   });
 
   it('wave54 restore disk chains wave53', () => {

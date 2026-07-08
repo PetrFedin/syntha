@@ -28,31 +28,51 @@ export function BrandCoAgentRepCoPeerStrip({ collectionId, orderId }: Props) {
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={brandAgentRepShopPortalHref()} data-testid="brand-co-agent-rep-shop-portal-link" className={hubGadget.goldenLink}>
+      <Link
+        href={brandAgentRepShopPortalHref()}
+        data-testid="brand-co-agent-rep-shop-portal-link"
+        className={hubGadget.goldenLink}
+      >
         Портал представителя
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={brandAgentRepShopCommissionHref()} data-testid="brand-co-agent-rep-shop-commission-link" className={hubGadget.goldenLink}>
+      <Link
+        href={brandAgentRepShopCommissionHref()}
+        data-testid="brand-co-agent-rep-shop-commission-link"
+        className={hubGadget.goldenLink}
+      >
         Комиссия
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelist.shopMatrixHref} data-testid="brand-co-agent-rep-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelist.shopMatrixHref}
+        data-testid="brand-co-agent-rep-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelist.shopCheckoutHref} data-testid="brand-co-agent-rep-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelist.shopCheckoutHref}
+        data-testid="brand-co-agent-rep-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crmHref} data-testid="brand-co-agent-rep-crm-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="brand-co-agent-rep-crm-link"
+        className={hubGadget.goldenLink}
+      >
         CRM
       </Link>
     </div>

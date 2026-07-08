@@ -51,9 +51,7 @@ export function BrandB2bIntegrationsImportToolbar({
   return (
     <div
       className={className ?? 'flex flex-wrap items-center gap-2'}
-      data-testid={
-        compact ? 'brand-co-cabinet-import-toolbar' : 'brand-co-registry-import-toolbar'
-      }
+      data-testid={compact ? 'brand-co-cabinet-import-toolbar' : 'brand-co-registry-import-toolbar'}
     >
       {platforms.map((platform) => (
         <Button

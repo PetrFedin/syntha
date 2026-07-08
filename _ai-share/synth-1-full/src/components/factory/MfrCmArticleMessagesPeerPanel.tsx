@@ -15,9 +15,7 @@ function MfrCmArticleMessagesPeerPanelInner() {
   const contextType = searchParams.get('contextType')?.trim() || '';
   const w2 = parseWorkspaceThreadContext(searchParams);
   const collectionId =
-    w2.collectionId ||
-    searchParams.get('collection')?.trim() ||
-    PLATFORM_CORE_DEMO.collectionId;
+    w2.collectionId || searchParams.get('collection')?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId =
     w2.articleId ||
     searchParams.get('article')?.trim() ||

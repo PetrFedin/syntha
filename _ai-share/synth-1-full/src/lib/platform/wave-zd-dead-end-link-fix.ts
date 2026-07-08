@@ -3,10 +3,7 @@
  * SoT for core-245-wave-zd-links.spec.ts + unit contract tests.
  */
 import { ROUTES } from '@/lib/routes';
-import {
-  brandLinesheetsHrefForDemo,
-  PLATFORM_CORE_DEMO,
-} from '@/lib/platform-core-hub-matrix';
+import { brandLinesheetsHrefForDemo, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import {
   WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS,
   WAVE_YQ_HUB_MATRIX_CELLS,
@@ -128,10 +125,7 @@ export const WAVE_ZD_DEAD_END_LINK_FIXES: readonly WaveZdDeadEndLinkFix[] = [
     now: 'ROUTES.shop.b2bPartnersDiscover — hub matrix SC canonical',
     testids: ['distributor-nav-partners-marketplace'],
     sourceFile: 'lib/data/distributor-navigation.ts',
-    sourceMustContain: [
-      "value: 'marketplace'",
-      'ROUTES.shop.b2bPartnersDiscover',
-    ],
+    sourceMustContain: ["value: 'marketplace'", 'ROUTES.shop.b2bPartnersDiscover'],
     sourceMustNotContain: [
       "{ href: ROUTES.shop.b2bDiscover, label: 'Подбор брендов', value: 'marketplace' }",
     ],
@@ -170,9 +164,7 @@ export const WAVE_ZD_LINKS_FIXED_COUNT = WAVE_ZD_DEAD_END_LINK_FIXES.length;
 const CANONICAL_LINESHEET_PREFIX = '/brand/linesheets';
 
 /** Wave YQ active workspace hrefs must not point at known dead-end path prefixes. */
-export function scanWaveYqMatrixHrefDeadEnds(
-  cells = WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS
-): string[] {
+export function scanWaveYqMatrixHrefDeadEnds(cells = WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS): string[] {
   const dead: string[] = [];
   const blocked = [
     '/404',
@@ -199,7 +191,9 @@ export function waveZdBrandLinesheetsHref(collectionId = WAVE_ZD_COLLECTION_ID):
   return brandLinesheetsHrefForDemo({ ...PLATFORM_CORE_DEMO, collectionId });
 }
 
-export function waveZdBrandLinesheetsHrefMatchesGolden(collectionId = WAVE_ZD_COLLECTION_ID): boolean {
+export function waveZdBrandLinesheetsHrefMatchesGolden(
+  collectionId = WAVE_ZD_COLLECTION_ID
+): boolean {
   const href = waveZdBrandLinesheetsHref(collectionId);
   return href.startsWith(CANONICAL_LINESHEET_PREFIX) && href.includes(`collection=${collectionId}`);
 }

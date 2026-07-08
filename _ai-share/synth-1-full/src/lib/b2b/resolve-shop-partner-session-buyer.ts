@@ -40,9 +40,8 @@ export async function resolveShopCoreBuyerIdFromPartnerSessionCookieAsync(
   const sessionId = readShopB2bPartnerSessionCookie(req);
   if (!sessionId) return undefined;
 
-  const { getShopB2bPartnerSessionServer } = await import(
-    '@/lib/server/shop-b2b-partner-session-repository'
-  );
+  const { getShopB2bPartnerSessionServer } =
+    await import('@/lib/server/shop-b2b-partner-session-repository');
   const { record } = await getShopB2bPartnerSessionServer(sessionId);
   if (!record) return undefined;
   return resolveShopCoreBuyerIdFromPartnerEmail(record.buyerEmail);

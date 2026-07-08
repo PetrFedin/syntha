@@ -12,10 +12,7 @@ type Result = {
 };
 
 /** Live PG mirror badge for shop CO cabinet (Wave TS). */
-export function useShopB2bOperationalStatusMirror(
-  orderId: string,
-  reloadNonce = 0
-): Result {
+export function useShopB2bOperationalStatusMirror(orderId: string, reloadNonce = 0): Result {
   const [status, setStatus] = useState<string | null>(null);
   const [storageMode, setStorageMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

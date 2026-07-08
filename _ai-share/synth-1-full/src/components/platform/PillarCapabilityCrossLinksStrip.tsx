@@ -34,19 +34,17 @@ export function PillarCapabilityCrossLinksStrip({
   if (!safeLinks.length) return null;
 
   return (
-    <section
-      className={cn('border-border-subtle border-t pt-4', className)}
-      data-testid={testId}
-    >
-      <p className="text-text-muted mb-2 text-[10px] font-black uppercase tracking-widest">{title}</p>
+    <section className={cn('border-border-subtle border-t pt-4', className)} data-testid={testId}>
+      <p className="text-text-muted mb-2 text-[10px] font-black uppercase tracking-widest">
+        {title}
+      </p>
       {missingOrderHintCount > 0 ? (
         <p
-          className="text-amber-800 mb-2 text-[11px] font-medium"
+          className="mb-2 text-[11px] font-medium text-amber-800"
           data-testid={`${testId}-order-hint`}
         >
-          {missingOrderHintCount}{' '}
-          {missingOrderHintCount === 1 ? 'связь требует' : 'связей требуют'} контекст заказа — добавьте{' '}
-          <code className="text-[10px]">?order=</code> в URL
+          {missingOrderHintCount} {missingOrderHintCount === 1 ? 'связь требует' : 'связей требуют'}{' '}
+          контекст заказа — добавьте <code className="text-[10px]">?order=</code> в URL
         </p>
       ) : null}
       {variant === 'chips' ? (

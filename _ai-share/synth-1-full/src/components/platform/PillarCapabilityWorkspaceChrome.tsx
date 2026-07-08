@@ -41,7 +41,8 @@ export function PillarCapabilityWorkspaceChrome({
   crossLinksLimit = 6,
   showCrossLinks = true,
 }: PillarCapabilityWorkspaceChromeProps) {
-  const { workspace, activeFeatureId, setActiveFeatureId } = usePillarCapabilityWorkspace(workspaceId);
+  const { workspace, activeFeatureId, setActiveFeatureId } =
+    usePillarCapabilityWorkspace(workspaceId);
 
   const effectiveCtx = useMemo(
     () => (workspace ? buildPillarWorkspaceContext(workspaceId, ctx) : ctx),
@@ -102,7 +103,7 @@ export function PillarCapabilityWorkspaceChrome({
               ? cn(
                   hubCabinet.workspacePillarStrip,
                   'max-lg:border-b max-lg:pb-2',
-                  'lg:flex lg:flex-col lg:gap-0.5 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:sticky lg:top-14'
+                  'lg:sticky lg:top-14 lg:flex lg:flex-col lg:gap-0.5 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none'
                 )
               : coreMode
                 ? cn(
@@ -120,9 +121,7 @@ export function PillarCapabilityWorkspaceChrome({
               coreSideNav &&
                 'max-lg:flex max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:overscroll-x-contain',
               coreSideNav && 'lg:flex lg:flex-col lg:gap-0.5 lg:overflow-visible',
-              coreMode &&
-                !coreSideNav &&
-                cn(hubCabinet.pillarNavPillRow, 'flex flex-nowrap gap-1'),
+              coreMode && !coreSideNav && cn(hubCabinet.pillarNavPillRow, 'flex flex-nowrap gap-1'),
               !coreMode && 'flex flex-wrap gap-1'
             )}
           >
@@ -143,30 +142,25 @@ export function PillarCapabilityWorkspaceChrome({
                           'lg:flex lg:w-full lg:flex-col lg:items-start lg:rounded-lg lg:border lg:px-2 lg:py-2 lg:text-left lg:text-[13px] lg:font-semibold lg:normal-case lg:tracking-normal',
                           active
                             ? 'lg:bg-accent-primary/10 lg:text-text-primary lg:border-accent-primary/20'
-                            : 'lg:text-text-secondary lg:border-transparent lg:hover:bg-bg-surface2',
+                            : 'lg:text-text-secondary lg:hover:bg-bg-surface2 lg:border-transparent',
                           disabled && 'cursor-not-allowed opacity-40'
                         )
                       : coreMode
-                        ? cn(
-                            platformCoreHeaderHubTabClass(active),
-                            'shrink-0 snap-start'
-                          )
+                        ? cn(platformCoreHeaderHubTabClass(active), 'shrink-0 snap-start')
                         : cn(
-                          'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
-                          active
-                            ? 'bg-text-primary text-white'
-                            : 'text-text-secondary hover:bg-bg-surface2 hover:text-text-primary',
-                          disabled && 'cursor-not-allowed opacity-40'
-                        ),
+                            'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
+                            active
+                              ? 'bg-text-primary text-white'
+                              : 'text-text-secondary hover:bg-bg-surface2 hover:text-text-primary',
+                            disabled && 'cursor-not-allowed opacity-40'
+                          ),
                     disabled && 'cursor-not-allowed opacity-40'
                   )}
                   data-testid={feature.testId}
                   title={feature.summaryRu}
                 >
                   {feature.labelRu}
-                  {feature.status === 'stub' ? (
-                    <span className="ml-1 opacity-70">·</span>
-                  ) : null}
+                  {feature.status === 'stub' ? <span className="ml-1 opacity-70">·</span> : null}
                 </button>
               );
             })}

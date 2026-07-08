@@ -21,7 +21,7 @@ export function ShopShowroomCoverHeroStrip({
   return (
     <div
       className={cn(
-        'relative w-full min-w-0 overflow-hidden rounded-lg border border-border-subtle',
+        'border-border-subtle relative w-full min-w-0 overflow-hidden rounded-lg border',
         className
       )}
       data-testid={testId}

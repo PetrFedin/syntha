@@ -53,10 +53,7 @@ export function buildPlatformCoreContextQuery(
   demo: PlatformCoreDemoContext = PLATFORM_CORE_DEMO,
   options?: { style?: PlatformCoreContextQueryStyle }
 ): string {
-  const q = buildPlatformCoreContextSearchParams(
-    demo,
-    options?.style ?? 'workspace'
-  ).toString();
+  const q = buildPlatformCoreContextSearchParams(demo, options?.style ?? 'workspace').toString();
   return q ? `?${q}` : '';
 }
 

@@ -12,12 +12,13 @@ type Props = {
 export function MfrOpOrdersBulkAckSoTStrip({ handoffQueueHref, pendingCount }: Props) {
   if (pendingCount <= 0) return null;
   return (
-    <p
-      className={hubGadget.muted}
-      data-testid="factory-production-orders-bulk-sot-strip"
-    >
+    <p className={hubGadget.muted} data-testid="factory-production-orders-bulk-sot-strip">
       Ожидают приёмки: {pendingCount}.{' '}
-      <Link href={handoffQueueHref} className={hubGadget.goldenLink} data-testid="factory-production-orders-bulk-sot-handoff-link">
+      <Link
+        href={handoffQueueHref}
+        className={hubGadget.goldenLink}
+        data-testid="factory-production-orders-bulk-sot-handoff-link"
+      >
         Очередь передачи
       </Link>
     </p>

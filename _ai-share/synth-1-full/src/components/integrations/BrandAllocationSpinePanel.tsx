@@ -85,7 +85,10 @@ export function BrandAllocationSpinePanel({ orderId, reloadNonce = 0 }: Props) {
   if (!isIntegrationImportedWholesaleOrderId(orderId)) return null;
   if (loadState === 'loading') {
     return (
-      <p className="text-muted-foreground flex items-center gap-2 text-xs" data-testid="brand-allocation-spine-loading">
+      <p
+        className="flex items-center gap-2 text-xs text-muted-foreground"
+        data-testid="brand-allocation-spine-loading"
+      >
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
         Allocation…
       </p>
@@ -114,10 +117,17 @@ export function BrandAllocationSpinePanel({ orderId, reloadNonce = 0 }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Badge variant="outline" className="text-[10px]" data-testid="brand-allocation-status-badge">
+        <Badge
+          variant="outline"
+          className="text-[10px]"
+          data-testid="brand-allocation-status-badge"
+        >
           {allocation.status}
         </Badge>
-        <ul className="text-muted-foreground space-y-1 text-[11px]" data-testid="brand-allocation-lines">
+        <ul
+          className="space-y-1 text-[11px] text-muted-foreground"
+          data-testid="brand-allocation-lines"
+        >
           {allocation.lines.slice(0, 5).map((line) => (
             <li key={line.sku}>
               {line.sku} · {line.qtyAllocated}/{line.qtyOrdered}

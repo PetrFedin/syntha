@@ -20,7 +20,10 @@ import { pickOrderProductionSnapshot } from '@/lib/platform-core-pillar-snapshot
 import { resolvePlatformCoreCabinetOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 import { getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
 import { WAVE_WZ_SHOP_OP_WIP_BADGE_PREFIX_RU } from '@/lib/platform-core-ports/platform/wave-wz-ru-noise-dedup-final';
-import { WAVE_XY_SHOP_OP_CO_TRACKING_DEDUP_LINK_RU, shopCoCabinetTrackingEmbedAnchorHref } from '@/lib/platform-core-ports/platform/wave-xy-shop-co-tracking-embed';
+import {
+  WAVE_XY_SHOP_OP_CO_TRACKING_DEDUP_LINK_RU,
+  shopCoCabinetTrackingEmbedAnchorHref,
+} from '@/lib/platform-core-ports/platform/wave-xy-shop-co-tracking-embed';
 import { shouldSuppressHubCabinetChainStatusBadge } from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
 import { formatWholesaleOrderDisplayId } from '@/lib/integrations/spine/integration-ui-utils';
@@ -31,10 +34,7 @@ type Props = {
 };
 
 /** Shop hub · order_production — read-only WIP + chain steps + calendar ↔ tracking peers. */
-export function ShopOrderProductionPillarCard({
-  compact = false,
-  minimalChrome = false,
-}: Props) {
+export function ShopOrderProductionPillarCard({ compact = false, minimalChrome = false }: Props) {
   const demo = usePlatformCoreDemoContext();
   const auditUi = usePlatformCoreAuditUi();
   const suppressChainBadge = shouldSuppressHubCabinetChainStatusBadge({ compact, auditUi });
@@ -135,56 +135,63 @@ export function ShopOrderProductionPillarCard({
             />
           ) : null}
         </div>
-      {productionOrderId ? (
-        <Badge variant="outline" className={hubGadget.metaBadge} data-testid="shop-op-cabinet-po-badge">
-          PO {productionOrderId}
-        </Badge>
-      ) : null}
-      {trackingPreview?.wipLabelRu ? (
-        <Badge
-          variant="outline"
-          className="border-indigo-200 bg-indigo-50 text-[9px] text-indigo-900"
-          data-testid="shop-op-cabinet-wip-badge"
-        >
-          {WAVE_WZ_SHOP_OP_WIP_BADGE_PREFIX_RU} {trackingPreview.wipLabelRu}
-        </Badge>
-      ) : null}
-      {trackingPreview?.deliveryLabel && !compact ? (
-        <Badge
-          variant="outline"
-          className="border-sky-200 bg-sky-50 text-[9px] text-sky-900"
-          data-testid="shop-op-cabinet-delivery-badge"
-        >
-          ETA · {trackingPreview.deliveryLabel}
-        </Badge>
-      ) : null}
-      {chainSteps.length > 0 ? (
-        <ul className="space-y-1" data-testid="shop-op-cabinet-chain-steps">
-          {chainSteps.map((step) => (
-            <li
-              key={step.id}
-              className="flex items-start gap-1.5 text-xs"
-              data-testid={`shop-op-cabinet-chain-step-${step.id}`}
-              data-done={step.done ? 'true' : 'false'}
-            >
-              {step.done ? (
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-              ) : (
-                <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-              )}
-              <span>{step.labelRu}</span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      <ShopCoTrackingEtaPeekStrip
-        orderId={cabinetOrderId}
-        variant="cabinet"
-        trackingNumberPreview={trackingPreview?.trackingNumber}
-      />
-      {!minimalChrome ? (
-        <ShopOpCabinetSpinePeerStrip collectionId={collectionId} orderId={cabinetOrderId} />
-      ) : null}
+        {productionOrderId ? (
+          <Badge
+            variant="outline"
+            className={hubGadget.metaBadge}
+            data-testid="shop-op-cabinet-po-badge"
+          >
+            PO {productionOrderId}
+          </Badge>
+        ) : null}
+        {trackingPreview?.wipLabelRu ? (
+          <Badge
+            variant="outline"
+            className="border-indigo-200 bg-indigo-50 text-[9px] text-indigo-900"
+            data-testid="shop-op-cabinet-wip-badge"
+          >
+            {WAVE_WZ_SHOP_OP_WIP_BADGE_PREFIX_RU} {trackingPreview.wipLabelRu}
+          </Badge>
+        ) : null}
+        {trackingPreview?.deliveryLabel && !compact ? (
+          <Badge
+            variant="outline"
+            className="border-sky-200 bg-sky-50 text-[9px] text-sky-900"
+            data-testid="shop-op-cabinet-delivery-badge"
+          >
+            ETA · {trackingPreview.deliveryLabel}
+          </Badge>
+        ) : null}
+        {chainSteps.length > 0 ? (
+          <ul className="space-y-1" data-testid="shop-op-cabinet-chain-steps">
+            {chainSteps.map((step) => (
+              <li
+                key={step.id}
+                className="flex items-start gap-1.5 text-xs"
+                data-testid={`shop-op-cabinet-chain-step-${step.id}`}
+                data-done={step.done ? 'true' : 'false'}
+              >
+                {step.done ? (
+                  <CheckCircle2
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                    aria-hidden
+                  />
+                ) : (
+                  <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                )}
+                <span>{step.labelRu}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <ShopCoTrackingEtaPeekStrip
+          orderId={cabinetOrderId}
+          variant="cabinet"
+          trackingNumberPreview={trackingPreview?.trackingNumber}
+        />
+        {!minimalChrome ? (
+          <ShopOpCabinetSpinePeerStrip collectionId={collectionId} orderId={cabinetOrderId} />
+        ) : null}
       </CardContent>
     </Card>
   );

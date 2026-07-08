@@ -192,9 +192,7 @@ export function SupplierQcScorecard({
         <div className="flex flex-col items-center justify-center rounded-xl border border-slate-100 bg-slate-50 p-4">
           <p className="text-text-secondary mb-1 text-sm font-medium">Pass Rate</p>
           <div className="text-text-primary text-4xl font-bold">{data.passRate.toFixed(1)}%</div>
-          <p className="text-text-muted mt-2 text-xs">
-            {data.totalBatches} партий проверено
-          </p>
+          <p className="text-text-muted mt-2 text-xs">{data.totalBatches} партий проверено</p>
         </div>
 
         <div className="flex h-40 flex-col items-center">

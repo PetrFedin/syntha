@@ -1,4 +1,7 @@
-import { brandLandedMarginTabHref, brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
+import {
+  brandLandedMarginTabHref,
+  brandOrderCommsTabHref,
+} from '@/lib/b2b/brand-collection-order-hrefs';
 import {
   shopCollaborativeTabHref,
   shopLandedMarginTabHref,

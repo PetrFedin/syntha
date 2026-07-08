@@ -34,9 +34,7 @@ describe('wave TG — brand 1.4 handoff ERP hardening', () => {
         { blocksShipment: false, result: 'pass' },
       ])
     ).toBe(true);
-    expect(
-      workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'pass' }])
-    ).toBe(false);
+    expect(workshop2QcGateBlocksHandoff([{ blocksShipment: true, result: 'pass' }])).toBe(false);
   });
 
   it('brandProductionQcBlocksHandoffCount counts blocking inspections', () => {

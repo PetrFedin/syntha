@@ -25,8 +25,7 @@ function resolveDossierContext(
   body?: Record<string, unknown>
 ): { collectionId: string; articleId: string; materialId?: string } | null {
   const { searchParams } = new URL(req.url);
-  const collectionId =
-    String(body?.collectionId ?? searchParams.get('collectionId') ?? '').trim();
+  const collectionId = String(body?.collectionId ?? searchParams.get('collectionId') ?? '').trim();
   const articleId = String(body?.articleId ?? searchParams.get('articleId') ?? '').trim();
   if (!collectionId || !articleId) return null;
   const materialId = String(body?.materialId ?? searchParams.get('materialId') ?? '').trim();

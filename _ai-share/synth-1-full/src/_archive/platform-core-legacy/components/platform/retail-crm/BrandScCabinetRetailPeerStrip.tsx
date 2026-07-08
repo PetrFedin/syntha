@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform-core-ports/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_B2B_BASE } from '@/lib/platform-core-mode-surfaces';
-import { ROUTES, shopB2bCheckoutCollectionHref, shopB2bMatrixReorderHref } from '@/lib/platform-core-routes';
+import {
+  ROUTES,
+  shopB2bCheckoutCollectionHref,
+  shopB2bMatrixReorderHref,
+} from '@/lib/platform-core-routes';
 import { SHOP_CORE_BUYER_PRESETS } from '@/lib/platform-core-ports/legacy/order/shop-core-buyer-context';
 import {
   WAVE_WZ_BRAND_SC_RETAIL_PEER_STRIP_TESTID,
@@ -21,18 +25,28 @@ type Props = {
 
 /** Brand SC cabinet · syndication + platform + shop buy path (multi-buyer). */
 export function BrandScCabinetRetailPeerStrip({ collectionId, omitBuyPath = false }: Props) {
-  const syndicationHref = platformCoreUiHref(`${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=syndication&collection=${encodeURIComponent(collectionId)}`);
+  const syndicationHref = platformCoreUiHref(
+    `${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=syndication&collection=${encodeURIComponent(collectionId)}`
+  );
   const platformHubHref = `${PLATFORM_CORE_B2B_BASE}?collection=${encodeURIComponent(collectionId)}&${PILLAR_CAPABILITY_FEATURE_PARAM}=hub`;
 
   return (
     <div className={hubGadget.goldenPath} data-testid={WAVE_WZ_BRAND_SC_RETAIL_PEER_STRIP_TESTID}>
-      <Link href={syndicationHref} data-testid="brand-sc-cabinet-syndication-link" className={hubGadget.goldenLink}>
+      <Link
+        href={syndicationHref}
+        data-testid="brand-sc-cabinet-syndication-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_WZ_BRAND_SC_RETAIL_SYNDICATION_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={platformHubHref} data-testid="brand-sc-cabinet-platform-hub-link" className={hubGadget.goldenLink}>
+      <Link
+        href={platformHubHref}
+        data-testid="brand-sc-cabinet-platform-hub-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_WZ_BRAND_SC_RETAIL_PLATFORM_RU}
       </Link>
       {omitBuyPath ? null : (

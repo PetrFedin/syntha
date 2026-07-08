@@ -27,9 +27,7 @@ function filterOrdersByPartner(
   const buyerIds = resolveWorkshop2RetailerBuyerIds(pid);
   if (!buyerIds.length) return orders.filter((o) => o.buyerId === pid || o.repId === pid);
   const set = new Set(buyerIds);
-  return orders.filter(
-    (o) => (o.buyerId && set.has(o.buyerId)) || (o.repId && set.has(o.repId))
-  );
+  return orders.filter((o) => (o.buyerId && set.has(o.buyerId)) || (o.repId && set.has(o.repId)));
 }
 
 export async function GET(req: NextRequest) {

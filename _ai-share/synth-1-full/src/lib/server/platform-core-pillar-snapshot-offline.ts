@@ -94,8 +94,7 @@ export async function buildPlatformCorePillarSnapshotOffline(input: {
   const factoryId = input.factoryId?.trim() || demo.factoryId;
   const articleId = input.articleId?.trim() || demo.demoArticleId;
   const orderId =
-    input.wholesaleOrderId?.trim() ||
-    (demo.demoOrderId.startsWith('__') ? '' : demo.demoOrderId);
+    input.wholesaleOrderId?.trim() || (demo.demoOrderId.startsWith('__') ? '' : demo.demoOrderId);
 
   if (input.pillarId === 'development') {
     const status = await getWorkshop2DevelopmentStatus(cid, factoryId, { skipRangePlanner: true });

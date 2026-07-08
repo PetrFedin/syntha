@@ -16,8 +16,8 @@ export function ShopMessagesLegacyPage() {
           Сообщения · операционный контур
         </p>
         <p className="text-text-secondary text-xs leading-snug">
-          Переговоры с брендом — здесь; календари поставок и закупок, матрица и подборки заказа —
-          в одном процессе (см. блок ниже после чата).
+          Переговоры с брендом — здесь; календари поставок и закупок, матрица и подборки заказа — в
+          одном процессе (см. блок ниже после чата).
         </p>
         <CommunicationsOperationalStrip variant="shop" />
         <Suspense fallback={null}>

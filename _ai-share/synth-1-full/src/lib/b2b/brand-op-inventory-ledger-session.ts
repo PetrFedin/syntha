@@ -25,8 +25,7 @@ export function buildBrandOpInventoryLedgerSession(input?: {
   const demo = getPlatformCoreDemoByOrderId(orderId);
   const collectionId = input?.collectionId?.trim() || demo.collectionId;
   const articleId = input?.articleId?.trim() || demo.demoArticleId;
-  const productionOrderId =
-    input?.productionOrderId?.trim() || demo.productionOrderId;
+  const productionOrderId = input?.productionOrderId?.trim() || demo.productionOrderId;
 
   return {
     collectionId,

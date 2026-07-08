@@ -47,25 +47,24 @@ export const WAVE_YZ_HUB_WIRING = [
   {
     id: 'readiness-scores-api-route',
     file: 'app/api/workshop2/platform-core/readiness-scores/route.ts',
-    mustContain: [
-      'buildWaveYzReadinessScoresExport',
-      'guardWorkshop2Route',
-      'readiness-scores',
-    ],
+    mustContain: ['buildWaveYzReadinessScoresExport', 'guardWorkshop2Route', 'readiness-scores'],
     mustNotContain: [] as string[],
   },
 ] as const;
 
 describe('wave YZ — readiness score export strip + API', () => {
-  it.each(WAVE_YZ_HUB_WIRING)('$id — wiring + RU labels', ({ file, mustContain, mustNotContain }) => {
-    const text = read(file);
-    for (const snippet of mustContain) {
-      expect(text).toContain(snippet);
+  it.each(WAVE_YZ_HUB_WIRING)(
+    '$id — wiring + RU labels',
+    ({ file, mustContain, mustNotContain }) => {
+      const text = read(file);
+      for (const snippet of mustContain) {
+        expect(text).toContain(snippet);
+      }
+      for (const snippet of mustNotContain) {
+        expect(text).not.toContain(snippet);
+      }
     }
-    for (const snippet of mustNotContain) {
-      expect(text).not.toContain(snippet);
-    }
-  });
+  );
 
   it('buildWaveYzReadinessScoresExport — 4×5 matrix with summary', () => {
     const payload = buildWaveYzReadinessScoresExport('SS27', { mode: 'static' });

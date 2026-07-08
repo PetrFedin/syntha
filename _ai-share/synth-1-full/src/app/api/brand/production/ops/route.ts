@@ -12,10 +12,7 @@ export async function GET(req: NextRequest) {
   const collectionId = req.nextUrl.searchParams.get('collectionId')?.trim();
   const orderId = req.nextUrl.searchParams.get('orderId')?.trim();
   if (!collectionId) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'Укажите collectionId.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false, messageRu: 'Укажите collectionId.' }, { status: 400 });
   }
 
   const snapshot = await getBrandProductionOpsSnapshot({ collectionId, orderId });

@@ -55,7 +55,10 @@ export function buildManufacturerCommsEntityThreads(input?: {
     pillarRu,
   });
 
-  const dossierTzHref = workshop2ArticleHref(collectionId, articleId, { w2pane: 'tz', w2sec: 'spec' });
+  const dossierTzHref = workshop2ArticleHref(collectionId, articleId, {
+    w2pane: 'tz',
+    w2sec: 'spec',
+  });
   const sampleTzHref = workshop2ArticleHref(collectionId, articleId, { w2pane: 'sample' });
 
   const articleChat = factoryMessagesWorkshop2ArticleContextHref(collectionId, articleId, {

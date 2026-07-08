@@ -130,7 +130,11 @@ export async function loadCollectionStageModulesWithMode(
   const corePgOnly = !shouldUseLocalStorageClientFallbackInCore();
   const cid = collectionKey.trim();
   if (!cid) {
-    return { doc: emptyDoc(), persistMode: corePgOnly ? 'postgres' : 'local', pgUnavailable: corePgOnly };
+    return {
+      doc: emptyDoc(),
+      persistMode: corePgOnly ? 'postgres' : 'local',
+      pgUnavailable: corePgOnly,
+    };
   }
 
   try {
@@ -164,7 +168,8 @@ export async function loadCollectionStageModulesWithMode(
 export async function hydrateCollectionStageModulesFromServer(
   collectionKey: string
 ): Promise<CollectionStageModulesDoc | null> {
-  const { doc, persistMode, pgUnavailable } = await loadCollectionStageModulesWithMode(collectionKey);
+  const { doc, persistMode, pgUnavailable } =
+    await loadCollectionStageModulesWithMode(collectionKey);
   if (persistMode !== 'postgres' || pgUnavailable) return null;
   window.dispatchEvent(
     new CustomEvent(BRAND_COLLECTION_STAGE_MODULES_SAVED, { detail: { collectionKey } })

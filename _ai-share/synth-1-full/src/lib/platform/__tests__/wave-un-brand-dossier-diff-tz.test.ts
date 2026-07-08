@@ -15,9 +15,7 @@ import {
 import { buildBrandOpAttachTzPoSession } from '@/lib/fashion/brand-op-attach-tz-po-session';
 import { resolveBrandDossierFactoryDiff } from '@/lib/server/brand-dossier-factory-diff';
 import { attachBrandB2bOrderTzPdfToPo } from '@/lib/server/brand-b2b-order-attach-tz-pdf';
-import {
-  WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY,
-} from '@/lib/production/workshop2-phase1-dossier-storage';
+import { WORKSHOP2_PHASE1_DOSSIER_STORAGE_KEY } from '@/lib/production/workshop2-phase1-dossier-storage';
 import {
   shouldPersistPhase1DossierOfflineDualWrite,
   shouldUseLocalStorageClientFallbackInCore,
@@ -25,14 +23,18 @@ import {
 
 describe('wave UN — brand dossier factory diff live + attach TZ PDF', () => {
   it('dossier factory diff API path contract', () => {
-    expect(BRAND_DOSSIER_FACTORY_DIFF_API_PATH).toBe(
-      '/api/brand/workshop2/dossier-factory-diff'
-    );
+    expect(BRAND_DOSSIER_FACTORY_DIFF_API_PATH).toBe('/api/brand/workshop2/dossier-factory-diff');
     expect(
-      brandDossierFactoryDiffApiPath(PLATFORM_CORE_DEMO.collectionId, PLATFORM_CORE_DEMO.demoArticleId)
+      brandDossierFactoryDiffApiPath(
+        PLATFORM_CORE_DEMO.collectionId,
+        PLATFORM_CORE_DEMO.demoArticleId
+      )
     ).toContain('collectionId=SS27');
     expect(
-      brandDossierFactoryDiffApiPath(PLATFORM_CORE_DEMO.collectionId, PLATFORM_CORE_DEMO.demoArticleId)
+      brandDossierFactoryDiffApiPath(
+        PLATFORM_CORE_DEMO.collectionId,
+        PLATFORM_CORE_DEMO.demoArticleId
+      )
     ).toContain('articleId=');
   });
 

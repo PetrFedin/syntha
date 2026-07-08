@@ -30,10 +30,7 @@ export const WAVE_ZE_HUB_PILLAR_FIXES = [
   {
     id: 'brand-co-partner-loading-ru',
     file: 'components/platform/CollectionOrderPillarCard.tsx',
-    mustContain: [
-      'WAVE_ZE_PARTNER_COUNT_LOADING_RU',
-      'formatHubCabinetPartnerStorageModeSuffixRu',
-    ],
+    mustContain: ['WAVE_ZE_PARTNER_COUNT_LOADING_RU', 'formatHubCabinetPartnerStorageModeSuffixRu'],
     mustNotContain: ['PG · партнёры'],
   },
   {

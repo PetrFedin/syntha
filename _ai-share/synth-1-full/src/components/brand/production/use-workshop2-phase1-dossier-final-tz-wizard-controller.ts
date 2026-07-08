@@ -12,10 +12,7 @@ import { downloadWorkshop2TechPackHtmlFile } from '@/lib/production/workshop2-te
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
 import type { Workshop2TechPackReleaseGate } from '@/lib/production/workshop2-techpack-release-gate';
 
-type PersistFn = (
-  dossier: Workshop2DossierPhase1,
-  opts?: { freezeUpdatedAt?: boolean }
-) => void;
+type PersistFn = (dossier: Workshop2DossierPhase1, opts?: { freezeUpdatedAt?: boolean }) => void;
 
 export type UseWorkshop2Phase1DossierFinalTzWizardControllerInput = {
   dossier: Workshop2DossierPhase1;

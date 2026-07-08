@@ -6,10 +6,7 @@ import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles
 /** Clarifies nav SoT: chain card here, dossier facts in #production-dossier below. */
 export function BrandOpChainDossierSoTStrip() {
   return (
-    <div
-      className={hubGadget.goldenPath}
-      data-testid="brand-op-chain-dossier-sot-strip"
-    >
+    <div className={hubGadget.goldenPath} data-testid="brand-op-chain-dossier-sot-strip">
       <span className={hubGadget.muted}>SoT: цепочка здесь</span>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·

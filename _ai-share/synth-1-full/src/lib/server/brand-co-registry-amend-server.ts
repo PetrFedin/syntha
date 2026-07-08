@@ -28,9 +28,7 @@ function filterOrdersByPartner(
     return orders.filter((o) => o.buyerId === pid || o.repId === pid);
   }
   const set = new Set(buyerIds);
-  return orders.filter(
-    (o) => (o.buyerId && set.has(o.buyerId)) || (o.repId && set.has(o.repId))
-  );
+  return orders.filter((o) => (o.buyerId && set.has(o.buyerId)) || (o.repId && set.has(o.repId)));
 }
 
 /** Pending amend rows for brand CO registry (PG/file orders + in-memory amendments). */

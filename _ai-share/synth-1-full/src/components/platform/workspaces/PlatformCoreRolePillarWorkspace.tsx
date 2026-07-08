@@ -89,8 +89,7 @@ export function PlatformCoreRolePillarWorkspace({
   orderId,
   factoryId = PLATFORM_CORE_DEMO.factoryId,
 }: Props) {
-  const sectionId =
-    resolveCabinetWorkspaceSection(roleId, pillarId, sectionFromUrl) ?? 'unknown';
+  const sectionId = resolveCabinetWorkspaceSection(roleId, pillarId, sectionFromUrl) ?? 'unknown';
 
   if (roleId === 'brand' && pillarId === 'development') {
     return (
@@ -140,10 +139,7 @@ export function PlatformCoreRolePillarWorkspace({
 
   if (roleId === 'supplier' && pillarId === 'development') {
     return (
-      <SupplierDevelopmentCabinetWorkspace
-        collectionId={collectionId}
-        sectionId={sectionId}
-      />
+      <SupplierDevelopmentCabinetWorkspace collectionId={collectionId} sectionId={sectionId} />
     );
   }
 

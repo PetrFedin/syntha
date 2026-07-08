@@ -51,9 +51,8 @@ export async function importCentricRfq(
 ): Promise<CentricRfqRecord> {
   await ensureSpineOperationalStoreReady(SPINE_PROCUREMENT_SCOPES);
   const org = organizationId?.trim() || 'org-brand-001';
-  const lines =
-    payload.lines?.length ?
-      payload.lines
+  const lines = payload.lines?.length
+    ? payload.lines
     : [
         { materialName: 'Main fabric SS27', qty: 1200, unit: 'm', supplierHint: 'Textile Co' },
         { materialName: 'Lining', qty: 800, unit: 'm' },
@@ -112,7 +111,11 @@ export async function acknowledgeCentricRfq(input: {
 
   const nextStatus: CentricRfqRecord['status'] =
     input.status ??
-    (existing.status === 'open' ? 'quoted' : existing.status === 'quoted' ? 'awarded' : existing.status);
+    (existing.status === 'open'
+      ? 'quoted'
+      : existing.status === 'quoted'
+        ? 'awarded'
+        : existing.status);
 
   const record = await persistCentricRfqWriteThrough({ ...existing, status: nextStatus });
 

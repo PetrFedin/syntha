@@ -1,10 +1,4 @@
-export type PlatformCoreEntityThreadKind =
-  | 'bom'
-  | 'sample'
-  | 'qc'
-  | 'rfq'
-  | 'dossier'
-  | 'handoff';
+export type PlatformCoreEntityThreadKind = 'bom' | 'sample' | 'qc' | 'rfq' | 'dossier' | 'handoff';
 
 export type PlatformCoreEntityThreadTemplate = {
   id: string;

@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
 
   const productionOrderId = String(body.productionOrderId ?? '').trim();
   const b2bOrderId = String(body.b2bOrderId ?? body.wholesaleOrderId ?? '').trim();
-  const poStageRaw = String(body.poStage ?? body.stage ?? 'cutting').trim().toLowerCase();
+  const poStageRaw = String(body.poStage ?? body.stage ?? 'cutting')
+    .trim()
+    .toLowerCase();
 
   if (!productionOrderId || !b2bOrderId) {
     return NextResponse.json(
@@ -41,9 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const poStage = (
-    PRODUCTION_WIP_STAGES.includes(poStageRaw as ProductionWipStage)
-      ? poStageRaw
-      : 'cutting'
+    PRODUCTION_WIP_STAGES.includes(poStageRaw as ProductionWipStage) ? poStageRaw : 'cutting'
   ) as ProductionWipStage;
 
   await ensureSpineOperationalStoreReady(SPINE_WIP_WRITE_SCOPES);

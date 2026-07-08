@@ -7,7 +7,10 @@ import {
   shopWorkingOrderTabHref,
 } from '@/lib/b2b/shop-collection-order-hrefs';
 import { shopB2bCheckoutCollectionHref } from '@/lib/routes';
-import { brandOrderCommsTabHref, brandLandedMarginTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
+import {
+  brandOrderCommsTabHref,
+  brandLandedMarginTabHref,
+} from '@/lib/b2b/brand-collection-order-hrefs';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import {
   PLATFORM_CORE_B2B_BASE,

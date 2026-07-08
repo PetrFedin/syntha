@@ -25,9 +25,7 @@ function FactoryProductionOrdersWorkspaceBody() {
   const demo = getPlatformCoreDemo(collectionId);
   const factoryId = searchParams.get('factoryId')?.trim() || demo.factoryId;
   const orderId =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    demo.demoOrderId;
+    searchParams.get('order')?.trim() || searchParams.get('orderId')?.trim() || demo.demoOrderId;
   const articleId = searchParams.get('article')?.trim() || demo.demoArticleId;
   const ctx = { collectionId, orderId, factoryId, role: 'manufacturer' as const };
   const { activeFeatureId } = usePillarCapabilityWorkspace('manufacturer-production-ops');

@@ -14,9 +14,7 @@ import {
   resolveContextualMessageSender,
   WORKSHOP2_CONTEXTUAL_SYSTEM_SENDER,
 } from '@/lib/server/workshop2-contextual-message-sender';
-import {
-  getWorkshop2RealtimeHub,
-} from '@/lib/server/workshop2-realtime-hub';
+import { getWorkshop2RealtimeHub } from '@/lib/server/workshop2-realtime-hub';
 
 export type Workshop2ContextualMessageRecord = {
   id: string;

@@ -27,11 +27,7 @@ export function BrandDevW2HubContextStrip({ collectionId }: Props) {
 
   return (
     <div
-      className={cn(
-        hubGadget.goldenPath,
-        hubCabinet.workspaceTableScroll,
-        'max-md:flex-nowrap'
-      )}
+      className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="brand-dev-w2-hub-context-strip"
       data-audit-legacy="brand-w2-hub-cross-links"
     >

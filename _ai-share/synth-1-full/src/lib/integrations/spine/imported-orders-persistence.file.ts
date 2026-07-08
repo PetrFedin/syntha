@@ -88,7 +88,10 @@ export function findImportedOrderByExternalKey(
   return load().orders[wholesaleOrderId];
 }
 
-export function upsertImportedOrder(record: ImportedOperationalOrderRecord, externalKey: string): void {
+export function upsertImportedOrder(
+  record: ImportedOperationalOrderRecord,
+  externalKey: string
+): void {
   if (isImportedOrdersPgPrimaryWrite()) {
     void import('./imported-orders-persistence.pg')
       .then((m) => m.upsertSpineImportedOrderToPg(record, externalKey))
@@ -138,26 +141,20 @@ export function listImportedOrdersForPlatform(platform: string): Array<Record<st
       externalOrderId,
       wholesaleOrderId,
       status: rec.order.status,
-      customer_name:
-        orderExt.buyerName ?? orderExt.buyer ?? orderExt.shopName ?? orderExt.shop,
+      customer_name: orderExt.buyerName ?? orderExt.buyer ?? orderExt.shopName ?? orderExt.shop,
       lines: rec.lineItems,
       importedAt: rec.importedAt,
       _source: 'spine_mirror',
     });
   }
-  return out.sort((a, b) =>
-    String(b.importedAt ?? '').localeCompare(String(a.importedAt ?? ''))
-  );
+  return out.sort((a, b) => String(b.importedAt ?? '').localeCompare(String(a.importedAt ?? '')));
 }
 
 export function patchImportedOrderStatus(wholesaleOrderId: string, status: string): void {
   patchImportedOrderFields(wholesaleOrderId, { status });
 }
 
-export function patchImportedOrderFields(
-  wholesaleOrderId: string,
-  patch: Partial<B2BOrder>
-): void {
+export function patchImportedOrderFields(wholesaleOrderId: string, patch: Partial<B2BOrder>): void {
   const data = load();
   const id = wholesaleOrderId.trim();
   const rec = data.orders[id];

@@ -2435,7 +2435,6 @@ function Workshop2ArticleWorkspaceScreen({
   );
 }
 
-
 function findWorkshop2InventoryLineForArticle(
   lines: LocalOrderLine[],
   articleId: string
@@ -2508,7 +2507,11 @@ export function Workshop2ArticleWorkspace({
   );
 
   const mainTab = useMemo((): MainTab => {
-    const fromUrl = !paneFromUrl ? 'tz' : paneFromUrl === 'overview' ? 'tz' : (paneFromUrl as MainTab);
+    const fromUrl = !paneFromUrl
+      ? 'tz'
+      : paneFromUrl === 'overview'
+        ? 'tz'
+        : (paneFromUrl as MainTab);
     return resolveW2MainTabForCreationMode(fromUrl, articleCreationMode) as MainTab;
   }, [paneFromUrl, articleCreationMode]);
 
@@ -2631,7 +2634,14 @@ export function Workshop2ArticleWorkspace({
 
     if (!secFromQuery) return;
     syncMainTabToUrl('tz', { dossierSection: secFromQuery });
-  }, [article?.id, articleCreationMode, collectionId, syncMainTabToUrl, w2paneQueryValue, w2secParam]);
+  }, [
+    article?.id,
+    articleCreationMode,
+    collectionId,
+    syncMainTabToUrl,
+    w2paneQueryValue,
+    w2secParam,
+  ]);
 
   const articleWorkspaceRef = useMemo(
     () =>

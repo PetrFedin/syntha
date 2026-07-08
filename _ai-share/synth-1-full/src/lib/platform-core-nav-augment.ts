@@ -127,11 +127,7 @@ function filterShopNavForPlatformCore<T extends NavGroupLike>(groups: readonly T
         icon: LayoutGrid,
         description: 'Оптовый заказ внутри коллекции — столп «Оптовый заказ».',
       };
-      const links = [
-        ...(cabinet ? [cabinet] : []),
-        showroomLink,
-        matrixLink,
-      ];
+      const links = [...(cabinet ? [cabinet] : []), showroomLink, matrixLink];
       return { ...g, label: SHOP_PIM_GROUP_LABEL, links } as T;
     }
 
@@ -214,168 +210,168 @@ function filterManufacturerNavForPlatformCore<T extends NavGroupLike>(groups: re
   return groups
     .filter((g) => g.id !== 'partners')
     .map((g) => {
-    if (!g.links) return g;
+      if (!g.links) return g;
 
-    if (g.id === 'comms') {
-      return {
-        ...g,
-        label: COMMS_GROUP_LABEL,
-        links: sortCommsNavLinksMessagesFirst(
-          g.links.map((link) => {
-            if (link.value === 'calendar') {
-              return {
-                ...link,
-                href: `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
-                description: 'Задачи, заказы и этапы производства — цех.',
-              };
-            }
-            if (link.value === 'messages') {
-              return {
-                ...link,
-                href: ROUTES.factory.messages,
-                description: 'Сообщения цеха и контекст по заказу.',
-              };
-            }
-            return link;
-          })
-        ),
-      } as T;
-    }
+      if (g.id === 'comms') {
+        return {
+          ...g,
+          label: COMMS_GROUP_LABEL,
+          links: sortCommsNavLinksMessagesFirst(
+            g.links.map((link) => {
+              if (link.value === 'calendar') {
+                return {
+                  ...link,
+                  href: `${ROUTES.factory.productionCalendar}?role=manufacturer&layers=tasks,orders,production`,
+                  description: 'Задачи, заказы и этапы производства — цех.',
+                };
+              }
+              if (link.value === 'messages') {
+                return {
+                  ...link,
+                  href: ROUTES.factory.messages,
+                  description: 'Сообщения цеха и контекст по заказу.',
+                };
+              }
+              return link;
+            })
+          ),
+        } as T;
+      }
 
-    if (g.id === 'production') {
-      const cabinet = g.links.find((l) => l.value === PLATFORM_CORE_CABINET_NAV_VALUE);
-      const links = [
-        ...(cabinet ? [cabinet] : []),
-        {
-          label: 'Очередь передачи',
-          value: 'handoff-queue-core',
-          href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO),
-          icon: Factory,
-          description: 'Передача подтверждённого заказа в производство.',
-        },
-        {
-          label: 'Заказы цеха',
-          value: 'production-orders-core',
-          href: factoryProductionOrdersOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId, {
-            factoryId: PLATFORM_CORE_DEMO.factoryId,
-          }),
-          icon: Package,
-          description: 'PO и серии цеха.',
-        },
-        {
-          label: 'Досье',
-          value: 'dossier-core',
-          href: factoryProductionDossierContextHref(PLATFORM_CORE_DEMO.demoArticleId, {
-            collectionId: PLATFORM_CORE_DEMO.collectionId,
-            orderId: PLATFORM_CORE_DEMO.demoOrderId,
-          }),
-          icon: FileText,
-          description: 'ТЗ артикула (read-only).',
-        },
-      ];
-      return { ...g, label: MFR_PRODUCTION_GROUP_LABEL, links } as T;
-    }
+      if (g.id === 'production') {
+        const cabinet = g.links.find((l) => l.value === PLATFORM_CORE_CABINET_NAV_VALUE);
+        const links = [
+          ...(cabinet ? [cabinet] : []),
+          {
+            label: 'Очередь передачи',
+            value: 'handoff-queue-core',
+            href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO),
+            icon: Factory,
+            description: 'Передача подтверждённого заказа в производство.',
+          },
+          {
+            label: 'Заказы цеха',
+            value: 'production-orders-core',
+            href: factoryProductionOrdersOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId, {
+              factoryId: PLATFORM_CORE_DEMO.factoryId,
+            }),
+            icon: Package,
+            description: 'PO и серии цеха.',
+          },
+          {
+            label: 'Досье',
+            value: 'dossier-core',
+            href: factoryProductionDossierContextHref(PLATFORM_CORE_DEMO.demoArticleId, {
+              collectionId: PLATFORM_CORE_DEMO.collectionId,
+              orderId: PLATFORM_CORE_DEMO.demoOrderId,
+            }),
+            icon: FileText,
+            description: 'ТЗ артикула (read-only).',
+          },
+        ];
+        return { ...g, label: MFR_PRODUCTION_GROUP_LABEL, links } as T;
+      }
 
-    return g;
-  });
+      return g;
+    });
 }
 
 function filterSupplierNavForPlatformCore<T extends NavGroupLike>(groups: readonly T[]): T[] {
   return groups
     .filter((g) => g.id !== 'partners')
     .map((g) => {
-    if (!g.links) return g;
+      if (!g.links) return g;
 
-    if (g.id === 'comms') {
-      const calendarLink = g.links.find((l) => l.value === 'calendar');
-      const messagesLink = g.links.find((l) => l.value === 'messages');
-      const links = [
-        ...(messagesLink
-          ? [
-              {
-                ...messagesLink,
-                href: ROUTES.factory.supplierMessages,
-                description: 'Сообщения и контекст по артикулу.',
-              },
-            ]
-          : []),
-        {
-          label: 'Запросы цен',
-          value: 'rfq-inbox-core',
-          href: factorySupplierRfqInboxHref({
-            collectionId: PLATFORM_CORE_DEMO.collectionId,
-            articleId: PLATFORM_CORE_DEMO.demoArticleId,
-          }),
-          icon: Inbox,
-          description: 'Входящие RFQ — отдельный маршрут, не alias сообщений.',
-          testId: 'supplier-sidebar-rfq-inbox-nav',
-        },
-        ...(calendarLink
-          ? [
-              {
-                ...calendarLink,
+      if (g.id === 'comms') {
+        const calendarLink = g.links.find((l) => l.value === 'calendar');
+        const messagesLink = g.links.find((l) => l.value === 'messages');
+        const links = [
+          ...(messagesLink
+            ? [
+                {
+                  ...messagesLink,
+                  href: ROUTES.factory.supplierMessages,
+                  description: 'Сообщения и контекст по артикулу.',
+                },
+              ]
+            : []),
+          {
+            label: 'Запросы цен',
+            value: 'rfq-inbox-core',
+            href: factorySupplierRfqInboxHref({
+              collectionId: PLATFORM_CORE_DEMO.collectionId,
+              articleId: PLATFORM_CORE_DEMO.demoArticleId,
+            }),
+            icon: Inbox,
+            description: 'Входящие RFQ — отдельный маршрут, не alias сообщений.',
+            testId: 'supplier-sidebar-rfq-inbox-nav',
+          },
+          ...(calendarLink
+            ? [
+                {
+                  ...calendarLink,
+                  href: factorySupplierCalendarB2bOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId),
+                  description: 'Поставки, заказы и логистика материалов.',
+                },
+              ]
+            : []),
+        ];
+        return {
+          ...g,
+          label: COMMS_GROUP_LABEL,
+          links: sortCommsNavLinksMessagesFirst(links),
+        } as T;
+      }
+
+      if (g.id === 'pim') {
+        const cabinet = g.links.find((l) => l.value === PLATFORM_CORE_CABINET_NAV_VALUE);
+        const materialsHub = g.links.find((l) => l.value === 'materials-hub');
+        const links = [
+          ...(cabinet ? [cabinet] : []),
+          {
+            label: 'Материалы цеха',
+            value: 'materials-bom-core',
+            href: factoryMaterialsHrefForDemo(PLATFORM_CORE_DEMO),
+            icon: materialsHub?.icon ?? Package,
+            description: 'BOM из досье — спецификация материалов.',
+          },
+          {
+            label: 'Каталог материалов',
+            value: 'materials-catalog-core',
+            href: factoryMaterialsCatalogHrefForDemo(PLATFORM_CORE_DEMO),
+            icon: Package,
+            description: 'Листинги и остатки материалов поставщика.',
+            testId: 'supplier-sidebar-materials-catalog-nav',
+          },
+          {
+            label: 'Закупка под PO',
+            value: 'materials-procurement-core',
+            href: factoryMaterialsProcurementHrefForDemo(PLATFORM_CORE_DEMO, { role: 'supplier' }),
+            icon: Package,
+            description: 'Закупка и PATCH materials_supplied под производственный заказ.',
+          },
+        ];
+        return { ...g, label: SUPPLIER_PIM_GROUP_LABEL, links } as T;
+      }
+
+      if (g.id === 'logistics') {
+        return {
+          ...g,
+          links: g.links.map((link) => {
+            if (link.value === 'logistics-hub') {
+              return {
+                ...link,
                 href: factorySupplierCalendarB2bOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId),
-                description: 'Поставки, заказы и логистика материалов.',
-              },
-            ]
-          : []),
-      ];
-      return {
-        ...g,
-        label: COMMS_GROUP_LABEL,
-        links: sortCommsNavLinksMessagesFirst(links),
-      } as T;
-    }
+                description: 'Логистика материалов (кабинет поставщика, не brand.logistics).',
+              };
+            }
+            return link;
+          }),
+        } as T;
+      }
 
-    if (g.id === 'pim') {
-      const cabinet = g.links.find((l) => l.value === PLATFORM_CORE_CABINET_NAV_VALUE);
-      const materialsHub = g.links.find((l) => l.value === 'materials-hub');
-      const links = [
-        ...(cabinet ? [cabinet] : []),
-        {
-          label: 'Материалы цеха',
-          value: 'materials-bom-core',
-          href: factoryMaterialsHrefForDemo(PLATFORM_CORE_DEMO),
-          icon: materialsHub?.icon ?? Package,
-          description: 'BOM из досье — спецификация материалов.',
-        },
-        {
-          label: 'Каталог материалов',
-          value: 'materials-catalog-core',
-          href: factoryMaterialsCatalogHrefForDemo(PLATFORM_CORE_DEMO),
-          icon: Package,
-          description: 'Листинги и остатки материалов поставщика.',
-          testId: 'supplier-sidebar-materials-catalog-nav',
-        },
-        {
-          label: 'Закупка под PO',
-          value: 'materials-procurement-core',
-          href: factoryMaterialsProcurementHrefForDemo(PLATFORM_CORE_DEMO, { role: 'supplier' }),
-          icon: Package,
-          description: 'Закупка и PATCH materials_supplied под производственный заказ.',
-        },
-      ];
-      return { ...g, label: SUPPLIER_PIM_GROUP_LABEL, links } as T;
-    }
-
-    if (g.id === 'logistics') {
-      return {
-        ...g,
-        links: g.links.map((link) => {
-          if (link.value === 'logistics-hub') {
-            return {
-              ...link,
-              href: factorySupplierCalendarB2bOrderContextHref(PLATFORM_CORE_DEMO.demoOrderId),
-              description: 'Логистика материалов (кабинет поставщика, не brand.logistics).',
-            };
-          }
-          return link;
-        }),
-      } as T;
-    }
-
-    return g;
-  });
+      return g;
+    });
 }
 
 const CORE_CABINET_LINK = {
@@ -421,7 +417,9 @@ export function augmentManufacturerNavForCoreCabinet<T extends NavGroupLike>(
   return withPlatformCoreNavHrefs(filterManufacturerNavForPlatformCore(out));
 }
 
-export function augmentSupplierNavForCoreCabinet<T extends NavGroupLike>(groups: readonly T[]): T[] {
+export function augmentSupplierNavForCoreCabinet<T extends NavGroupLike>(
+  groups: readonly T[]
+): T[] {
   let out = prependCabinetLink(groups, 'pim', ROUTES.factory.supplierCoreCabinet);
   if (!isPlatformCoreMode()) return out;
   return withPlatformCoreNavHrefs(filterSupplierNavForPlatformCore(out));
@@ -521,7 +519,11 @@ export function getFactoryCoreManufacturerSections(): FactoryOverviewSection[] {
           label: 'Мой кабинет',
           desc: 'Столпы × роли',
         },
-        { href: ROUTES.factory.production, label: 'Очередь цеха', desc: 'Передача подтверждённого заказа в производство' },
+        {
+          href: ROUTES.factory.production,
+          label: 'Очередь цеха',
+          desc: 'Передача подтверждённого заказа в производство',
+        },
         {
           href: `/factory/production/dossier/${PLATFORM_CORE_DEMO.demoArticleId}`,
           label: `Досье · ${PLATFORM_CORE_DEMO.demoArticleId}`,

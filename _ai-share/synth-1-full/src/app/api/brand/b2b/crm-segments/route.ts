@@ -52,7 +52,8 @@ export async function PATCH(req: NextRequest) {
   const firstOrderDiscountPct =
     body.firstOrderDiscountPct === null
       ? null
-      : body.firstOrderDiscountPct !== undefined && Number.isFinite(Number(body.firstOrderDiscountPct))
+      : body.firstOrderDiscountPct !== undefined &&
+          Number.isFinite(Number(body.firstOrderDiscountPct))
         ? Number(body.firstOrderDiscountPct)
         : undefined;
 

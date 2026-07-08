@@ -12,14 +12,9 @@ function resolveBuyerId(req: NextRequest, checkoutBuyerId: string): string {
 }
 
 function resolveOrderContext(req: NextRequest, body?: { orderId?: string; collection?: string }) {
-  const orderId =
-    body?.orderId?.trim() ||
-    req.nextUrl.searchParams.get('orderId')?.trim() ||
-    '';
+  const orderId = body?.orderId?.trim() || req.nextUrl.searchParams.get('orderId')?.trim() || '';
   const collectionId =
-    body?.collection?.trim() ||
-    req.nextUrl.searchParams.get('collection')?.trim() ||
-    'SS27';
+    body?.collection?.trim() || req.nextUrl.searchParams.get('collection')?.trim() || 'SS27';
   return { orderId, collectionId };
 }
 

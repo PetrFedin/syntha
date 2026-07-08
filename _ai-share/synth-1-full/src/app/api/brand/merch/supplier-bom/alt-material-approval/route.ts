@@ -78,7 +78,10 @@ export async function GET(req: NextRequest) {
   const collectionId = req.nextUrl.searchParams.get('collectionId')?.trim() ?? '';
   const articleId = req.nextUrl.searchParams.get('articleId')?.trim() ?? '';
   if (!collectionId || !articleId) {
-    return NextResponse.json({ ok: false, messageRu: 'collectionId и articleId обязательны.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'collectionId и articleId обязательны.' },
+      { status: 400 }
+    );
   }
 
   const record = await getWorkshop2ServerDossierRecord(collectionId, articleId);
@@ -116,7 +119,10 @@ export async function POST(req: NextRequest) {
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ ok: false, messageRu: 'Некорректное тело запроса.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Некорректное тело запроса.' },
+      { status: 400 }
+    );
   }
 
   const collectionId = String(body.collectionId ?? '').trim();
@@ -126,10 +132,16 @@ export async function POST(req: NextRequest) {
   const action = String(body.action ?? '').trim() as BrandAltMaterialApprovalAction;
 
   if (!collectionId || !articleId || !primary || !alternative) {
-    return NextResponse.json({ ok: false, messageRu: 'Заполните collectionId, articleId, primary, alternative.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Заполните collectionId, articleId, primary, alternative.' },
+      { status: 400 }
+    );
   }
   if (action !== 'approve' && action !== 'reject') {
-    return NextResponse.json({ ok: false, messageRu: 'Допустимы только действия approve или reject.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Допустимы только действия approve или reject.' },
+      { status: 400 }
+    );
   }
 
   const record = await getWorkshop2ServerDossierRecord(collectionId, articleId);

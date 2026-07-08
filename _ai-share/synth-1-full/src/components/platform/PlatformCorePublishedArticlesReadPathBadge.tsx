@@ -17,10 +17,7 @@ type Props = {
 };
 
 /** Честный бейдж источника опубликованных артикулов на SC surfaces. */
-export function PlatformCorePublishedArticlesReadPathBadge({
-  collectionId,
-  className,
-}: Props) {
+export function PlatformCorePublishedArticlesReadPathBadge({ collectionId, className }: Props) {
   if (!isPlatformCoreMode()) return null;
 
   const readPath = resolveBrandScPublishedArticlesReadPath(collectionId);

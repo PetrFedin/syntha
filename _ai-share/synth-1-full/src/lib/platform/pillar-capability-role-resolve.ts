@@ -188,7 +188,10 @@ export function resolveOpQcGateHref(ctx: PillarCapabilityContext): string {
   const order = demoOrder(ctx);
 
   if (ctx.role === 'manufacturer') {
-    return manufacturerHandoffFeatureHref('qc-gate', { orderId: order, collectionId: demoCollection(ctx) });
+    return manufacturerHandoffFeatureHref('qc-gate', {
+      orderId: order,
+      collectionId: demoCollection(ctx),
+    });
   }
 
   return brandProductionOpsFeatureHref(order, 'qc-gate');

@@ -65,7 +65,9 @@ export function ShopB2bOrdersLegacyListPage() {
                   <TableCell>
                     <Badge variant={statusVariant(o.status)}>{o.status}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">{o.amount?.toLocaleString('ru-RU')} ₽</TableCell>
+                  <TableCell className="text-right">
+                    {o.amount?.toLocaleString('ru-RU')} ₽
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

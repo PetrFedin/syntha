@@ -50,10 +50,7 @@ const INVESTOR_PATH_ROOTS = [
   'src/app/brand/production/workshop2',
 ] as const;
 
-const DEMO_WARNING_ONLY_CHECK_IDS = new Set([
-  'human_signoff',
-  'production_keys',
-]);
+const DEMO_WARNING_ONLY_CHECK_IDS = new Set(['human_signoff', 'production_keys']);
 
 function walkTsxFiles(dir: string, root: string, out: string[]): void {
   let entries: fs.Dirent[];
@@ -190,16 +187,14 @@ export function buildWorkshop2InvestorDemoStatusReport(
   const w58 = buildWorkshop2Wave58InvestorShowReadyProbe(env);
   const deadEnds = auditWorkshop2InvestorPathDeadEnds(rootDir);
   const parity = parseWorkshop2B2bParityCoverage(rootDir);
-  const realHumanSignoff =
-    cutover.humanSignoffGateOk || summarizeHumanSignoff(rootDir);
+  const realHumanSignoff = cutover.humanSignoffGateOk || summarizeHumanSignoff(rootDir);
   const humanSignoffComplete = investorDemoMode || realHumanSignoff;
 
   const unitTestMin = Number(String(env.WORKSHOP2_UNIT_TEST_MIN ?? '1445').trim()) || 1445;
   const unitTestsPassing = resolveWorkshop2UnitTestsPassing(env, rootDir);
 
   const wave58Score = w58.wave58InvestorShowReady ?? 0;
-  const integrationProbeOk =
-    readiness.readyForInvestorDemo || wave58Score >= 12;
+  const integrationProbeOk = readiness.readyForInvestorDemo || wave58Score >= 12;
 
   const productionKeys = [
     'WORKSHOP2_KONTUR_DIADOC_TOKEN',
@@ -221,7 +216,7 @@ export function buildWorkshop2InvestorDemoStatusReport(
         ? readiness.readyForInvestorDemo
           ? 'readyForInvestorDemo=true'
           : `wave58 probe ${wave58Score}/12+ (demo integration OK)`
-        : readiness.reasons[0] ?? 'См. /api/workshop2/integration-probes',
+        : (readiness.reasons[0] ?? 'См. /api/workshop2/integration-probes'),
     },
     {
       id: 'wave57_post_freeze',
@@ -240,9 +235,7 @@ export function buildWorkshop2InvestorDemoStatusReport(
       ok: deadEnds.deadEndsRemaining === 0,
       labelRu: 'Нет href="#" в investor path',
       hintRu:
-        deadEnds.deadEndsRemaining > 0
-          ? deadEnds.paths.slice(0, 3).join(', ')
-          : 'grep audit PASS',
+        deadEnds.deadEndsRemaining > 0 ? deadEnds.paths.slice(0, 3).join(', ') : 'grep audit PASS',
     },
     {
       id: 'parity_matrix',

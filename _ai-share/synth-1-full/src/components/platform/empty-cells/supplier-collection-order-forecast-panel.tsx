@@ -94,9 +94,9 @@ export default function SupplierCollectionOrderForecast({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-bold">Прогноз сырья по оптовому заказу</CardTitle>
           {hideLead ? null : (
-          <CardDescription className="text-xs">
-            Строки матрицы заказа × <PlatformCoreTerm term="BOM" /> из досье (только чтение).
-          </CardDescription>
+            <CardDescription className="text-xs">
+              Строки матрицы заказа × <PlatformCoreTerm term="BOM" /> из досье (только чтение).
+            </CardDescription>
           )}
         </CardHeader>
         <CardContent className="space-y-2 text-xs">
@@ -122,10 +122,12 @@ export default function SupplierCollectionOrderForecast({
               </span>
             ) : null}
           </p>
-          <p className="text-text-muted text-[10px] leading-snug">{SUPPLIER_FORECAST_B2B_DISCLAIMER_RU}</p>
+          <p className="text-text-muted text-[10px] leading-snug">
+            {SUPPLIER_FORECAST_B2B_DISCLAIMER_RU}
+          </p>
           {Object.values(confirmedArticles).some(Boolean) ? (
             <p
-              className="text-emerald-800 text-[10px] leading-snug"
+              className="text-[10px] leading-snug text-emerald-800"
               data-testid="supplier-forecast-confirmed-note"
             >
               {SUPPLIER_FORECAST_B2B_CONFIRMED_NOTE_RU}
@@ -141,8 +143,8 @@ export default function SupplierCollectionOrderForecast({
             </p>
           ) : loadState === 'waiting-data' ? (
             <p className="text-text-muted" data-testid="supplier-forecast-waiting-data">
-              Заказ {formatWholesaleOrderDisplayId(activeOrderId)} в очереди — матрица и BOM появятся после
-              подтверждения брендом.
+              Заказ {formatWholesaleOrderDisplayId(activeOrderId)} в очереди — матрица и BOM
+              появятся после подтверждения брендом.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -235,4 +237,3 @@ export default function SupplierCollectionOrderForecast({
     </section>
   );
 }
-

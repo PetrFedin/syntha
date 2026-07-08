@@ -5,9 +5,7 @@ import type {
   Workshop2DossierPhase1,
   Workshop2PomTemplateApplyRecord,
 } from '@/lib/production/workshop2-dossier-phase1.types';
-import {
-  mergeWorkshop2PomTemplateIntoDossier,
-} from '@/lib/production/workshop2-pom-template-apply';
+import { mergeWorkshop2PomTemplateIntoDossier } from '@/lib/production/workshop2-pom-template-apply';
 import type { Workshop2PomTemplateRow } from '@/lib/production/workshop2-reference-seeds';
 
 function uid(): string {

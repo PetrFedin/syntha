@@ -26,15 +26,18 @@ describe('wave YP — cross-link audit fix batch (all roles × pillars)', () => 
     expect(WAVE_YP_PARTNERS_RU).toBe('Партнёры');
   });
 
-  it.each(WAVE_YP_CROSS_LINK_AUDIT_FIXES)('$id — section bad/fix cleared + wave YP evidence', (fix) => {
-    const hit = cells
-      .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
-      .find((s) => s.id === fix.sectionId);
-    expect(hit).toBeDefined();
-    expect(hit?.bad ?? []).toEqual([]);
-    expect(hit?.fix ?? []).toEqual([]);
-    expect(hit?.good.some((g) => /Wave YP|core-231/i.test(g))).toBe(true);
-  });
+  it.each(WAVE_YP_CROSS_LINK_AUDIT_FIXES)(
+    '$id — section bad/fix cleared + wave YP evidence',
+    (fix) => {
+      const hit = cells
+        .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
+        .find((s) => s.id === fix.sectionId);
+      expect(hit).toBeDefined();
+      expect(hit?.bad ?? []).toEqual([]);
+      expect(hit?.fix ?? []).toEqual([]);
+      expect(hit?.good.some((g) => /Wave YP|core-231/i.test(g))).toBe(true);
+    }
+  );
 
   it.each(WAVE_YP_CROSS_LINK_AUDIT_FIXES)('$id — closure testids + source wired', (fix) => {
     for (const tid of fix.testids) {

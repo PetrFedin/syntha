@@ -55,7 +55,11 @@ export function BrandAgentRepTerritoryPeerStrip({
     return (
       <div className={hubGadget.goldenPath} data-testid="brand-agent-rep-territory-peer-strip">
         <span className="text-text-muted text-[10px]">Нет rep в ledger для territory map.</span>
-        <Link href={crmHref} data-testid="brand-agent-rep-territory-crm-link" className={hubGadget.goldenLink}>
+        <Link
+          href={crmHref}
+          data-testid="brand-agent-rep-territory-crm-link"
+          className={hubGadget.goldenLink}
+        >
           Сегменты CRM
         </Link>
       </div>
@@ -84,7 +88,11 @@ export function BrandAgentRepTerritoryPeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={brandAgentRepShopPortalHref()} data-testid="brand-agent-rep-territory-shop-portal-link" className={hubGadget.goldenLink}>
+      <Link
+        href={brandAgentRepShopPortalHref()}
+        data-testid="brand-agent-rep-territory-shop-portal-link"
+        className={hubGadget.goldenLink}
+      >
         Shop portal
       </Link>
       <Badge variant="outline" className="text-[9px]">

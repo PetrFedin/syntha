@@ -16,5 +16,8 @@ export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get('sessionId')?.trim();
 
   const pack = buildWorkshop2B2bRepOfflinePack({ repId, tenantId, brandId, sessionId });
-  return NextResponse.json({ ok: true, pack }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
+  return NextResponse.json(
+    { ok: true, pack },
+    { status: 200, headers: { 'Cache-Control': 'no-store' } }
+  );
 }

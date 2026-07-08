@@ -25,7 +25,11 @@ export async function GET(req: NextRequest) {
   const usePgSource =
     partnerships.length > 0 &&
     (partnerships.some((p) => p.source === 'pg') || isWorkshop2PostgresEnabled());
-  const source = usePgSource ? ('pg' as const) : failClosed ? ('pg' as const) : ('fallback' as const);
+  const source = usePgSource
+    ? ('pg' as const)
+    : failClosed
+      ? ('pg' as const)
+      : ('fallback' as const);
   const items = partnerships.length
     ? partnerships
     : failClosed

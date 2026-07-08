@@ -33,7 +33,8 @@ export const SUPPLIER_MATERIAL_CATALOG_PG_READ_BADGE_TESTID =
 export const SUP_DEV_PRICE_DELTA_ALERT_STRIP_TESTID = 'sup-dev-price-delta-alert-strip';
 export const SUP_DEV_PRICE_DELTA_ALERT_LOADING_TESTID = 'sup-dev-price-delta-alert-loading';
 export const SUP_DEV_PRICE_DELTA_ALERT_EMPTY_TESTID = 'sup-dev-price-delta-alert-empty';
-export const SUP_DEV_PRICE_DELTA_ALERT_CATALOG_LINK_TESTID = 'sup-dev-price-delta-alert-catalog-link';
+export const SUP_DEV_PRICE_DELTA_ALERT_CATALOG_LINK_TESTID =
+  'sup-dev-price-delta-alert-catalog-link';
 
 export function supDevMaterialCatalogPillarNavLabelRu(): string {
   return 'Каталог материалов';

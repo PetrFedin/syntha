@@ -70,8 +70,7 @@ export function evaluateWorkshop2TaMilestonesSampleGate(
       id: 'ta.milestones.empty',
       severity: 'warning',
       messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') ||
-        'Нет milestones T&A — заполните календарь плана.',
+        workshop2PgMirrorStr(mirror, 'hintRu') || 'Нет milestones T&A — заполните календарь плана.',
     };
   }
   const persistedAt =

@@ -63,7 +63,11 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
             />
           )}
           {publishMessage ? (
-            <p className="text-text-secondary text-xs" role="status" data-testid="brand-release-showroom-publish-status">
+            <p
+              className="text-text-secondary text-xs"
+              role="status"
+              data-testid="brand-release-showroom-publish-status"
+            >
               {publishMessage}
             </p>
           ) : null}
@@ -73,7 +77,10 @@ export function BrandReleaseShowroomPublishPanel({ collectionId }: Props) {
           />
           <div className="flex flex-wrap gap-2 pt-1">
             <Button size="sm" variant="outline" asChild>
-              <Link href={session.brandShowroomHref} data-testid="brand-release-showroom-brand-preview-link">
+              <Link
+                href={session.brandShowroomHref}
+                data-testid="brand-release-showroom-brand-preview-link"
+              >
                 Brand preview
               </Link>
             </Button>

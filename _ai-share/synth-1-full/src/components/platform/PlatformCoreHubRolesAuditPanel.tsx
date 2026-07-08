@@ -21,7 +21,10 @@ export function PlatformCoreHubRolesAuditPanel({ collectionId, showRoles, showAu
     <section
       data-testid="platform-core-hub-roles-audit-panel"
       aria-label="Роли и оценка готовности"
-      className={cn(platformCoreHubLayout.quickEntryAfterBanner, platformCoreHubLayout.sectionStack)}
+      className={cn(
+        platformCoreHubLayout.quickEntryAfterBanner,
+        platformCoreHubLayout.sectionStack
+      )}
     >
       {showRoles ? <PlatformCoreHubQuickEntry layout="horizontal" /> : null}
       {showAudit ? (

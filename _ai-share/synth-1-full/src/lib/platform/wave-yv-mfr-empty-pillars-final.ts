@@ -8,7 +8,8 @@ export const MFR_EMPTY_SC_PUBLISH_BADGE_TESTID = 'mfr-empty-sc-publish-badge' as
 export const MFR_EMPTY_CO_HANDOFF_COUNT_BADGE_TESTID = 'mfr-empty-co-handoff-count-badge' as const;
 
 /** Compact read-only panel wrappers (wave YV). */
-export const MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID = 'mfr-empty-sc-publish-status-panel' as const;
+export const MFR_EMPTY_SC_PUBLISH_STATUS_PANEL_TESTID =
+  'mfr-empty-sc-publish-status-panel' as const;
 export const MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID = 'mfr-empty-co-handoff-count-panel' as const;
 
 export const MFR_EMPTY_HANDOFF_QUEUE_API_PATH =

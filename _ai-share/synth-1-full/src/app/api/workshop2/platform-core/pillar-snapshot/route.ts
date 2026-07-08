@@ -15,10 +15,7 @@ export async function GET(req: NextRequest) {
   const collectionId = sp.get('collectionId')?.trim() || 'SS27';
   const pillarIdRaw = sp.get('pillarId')?.trim() || '';
   if (!isCoreHubPillarId(pillarIdRaw)) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'Некорректный pillarId.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false, messageRu: 'Некорректный pillarId.' }, { status: 400 });
   }
   const roleId = (sp.get('roleId')?.trim() || undefined) as CoreChainRoleId | undefined;
   const wholesaleOrderId = sp.get('orderId')?.trim() || undefined;

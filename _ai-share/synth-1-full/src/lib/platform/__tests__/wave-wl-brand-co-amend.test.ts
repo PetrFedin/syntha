@@ -18,8 +18,12 @@ describe('wave WL — brand CO registry amend API + multi-buyer PG', () => {
   });
 
   it('brand amend approve/reject API paths', () => {
-    expect(brandCoRegistryAmendApproveApiPath('B2B-1', 'amend-1')).toContain('/amendments/amend-1/approve');
-    expect(brandCoRegistryAmendRejectApiPath('B2B-1', 'amend-1')).toContain('/amendments/amend-1/reject');
+    expect(brandCoRegistryAmendApproveApiPath('B2B-1', 'amend-1')).toContain(
+      '/amendments/amend-1/approve'
+    );
+    expect(brandCoRegistryAmendRejectApiPath('B2B-1', 'amend-1')).toContain(
+      '/amendments/amend-1/reject'
+    );
     expect('brand-b2b-amend-approve').toContain('approve');
     expect('brand-b2b-amend-reject').toContain('reject');
   });

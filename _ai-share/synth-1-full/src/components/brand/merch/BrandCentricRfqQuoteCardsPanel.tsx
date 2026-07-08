@@ -26,9 +26,9 @@ type Props = {
 export function BrandCentricRfqQuoteCardsPanel({ collectionId, articleId, rfqId }: Props) {
   const [busyQuoteId, setBusyQuoteId] = useState<string | null>(null);
   const [resolvedRfqId, setResolvedRfqId] = useState<string | null>(rfqId ?? null);
-  const [quotes, setQuotes] = useState<Awaited<ReturnType<typeof fetchBrandCentricRfqQuotes>>['quotes']>(
-    []
-  );
+  const [quotes, setQuotes] = useState<
+    Awaited<ReturnType<typeof fetchBrandCentricRfqQuotes>>['quotes']
+  >([]);
   const [storageMode, setStorageMode] = useState<string>('demo');
 
   const reload = useCallback(async () => {
@@ -71,7 +71,10 @@ export function BrandCentricRfqQuoteCardsPanel({ collectionId, articleId, rfqId 
         <Badge variant="secondary">Quotes: {summary.total}</Badge>
         <Badge variant="outline">Pending: {summary.pending}</Badge>
         {accepted ? (
-          <Badge className="border-emerald-300 bg-emerald-50 text-emerald-800" data-testid="brand-centric-rfq-quote-awarded-badge">
+          <Badge
+            className="border-emerald-300 bg-emerald-50 text-emerald-800"
+            data-testid="brand-centric-rfq-quote-awarded-badge"
+          >
             Awarded · {accepted.supplierName}
           </Badge>
         ) : null}
@@ -93,7 +96,7 @@ export function BrandCentricRfqQuoteCardsPanel({ collectionId, articleId, rfqId 
 
       {!resolvedRfqId ? (
         <Card className="border-dashed">
-          <CardContent className="py-6 text-sm text-text-muted">
+          <CardContent className="text-text-muted py-6 text-sm">
             Нет RFQ для {collectionId}:{articleId} — сначала импортируйте RFQ выше.
           </CardContent>
         </Card>
@@ -116,10 +119,14 @@ export function BrandCentricRfqQuoteCardsPanel({ collectionId, articleId, rfqId 
               >
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-sm">
-                    {isAccepted ? <Trophy className="h-4 w-4 text-emerald-700" aria-hidden /> : null}
+                    {isAccepted ? (
+                      <Trophy className="h-4 w-4 text-emerald-700" aria-hidden />
+                    ) : null}
                     {quote.supplierName}
                   </CardTitle>
-                  <CardDescription className="font-mono text-[10px]">{quote.quoteId}</CardDescription>
+                  <CardDescription className="font-mono text-[10px]">
+                    {quote.quoteId}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p>

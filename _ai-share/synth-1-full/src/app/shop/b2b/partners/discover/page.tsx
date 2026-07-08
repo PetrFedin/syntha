@@ -6,9 +6,9 @@ import { ShopB2bPartnersDiscoverCorePage } from '@/app/shop/b2b/partners/discove
 
 const ShopB2bPartnersDiscoverLegacyPage = dynamic(
   () =>
-    import(
-      '@/_archive/platform-core-legacy/app/shop/b2b/partners/discover/partners-discover-legacy'
-    ).then((m) => m.ShopB2bPartnersDiscoverLegacyPage),
+    import('@/_archive/platform-core-legacy/app/shop/b2b/partners/discover/partners-discover-legacy').then(
+      (m) => m.ShopB2bPartnersDiscoverLegacyPage
+    ),
   { ssr: false }
 );
 

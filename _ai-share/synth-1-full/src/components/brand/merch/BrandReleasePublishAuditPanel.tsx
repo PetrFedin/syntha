@@ -18,10 +18,7 @@ export function BrandReleasePublishAuditPanel({
   const resolvedCollectionId = collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
 
   return (
-    <div
-      className={compact ? 'pt-1' : 'space-y-2'}
-      data-testid="brand-release-publish-audit-panel"
-    >
+    <div className={compact ? 'pt-1' : 'space-y-2'} data-testid="brand-release-publish-audit-panel">
       <BrandScPublishAuditLog collectionId={resolvedCollectionId} reloadNonce={reloadNonce} />
     </div>
   );

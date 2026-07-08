@@ -14,10 +14,7 @@ import { ProductCustomizationBlock } from '@/components/b2b/ProductCustomization
 import { tid } from '@/lib/ui/test-ids';
 import { ShopAnalyticsSegmentErpStrip } from '@/components/shop/ShopAnalyticsSegmentErpStrip';
 import { B2bMarginAnalysisHubButton } from '@/components/shop/B2bMarginAnalysisHubButton';
-import {
-  checkoutWorkshop2Cart,
-  syncLegacyCartToWorkshop2,
-} from '@/lib/b2b/workshop2-cart-bridge';
+import { checkoutWorkshop2Cart, syncLegacyCartToWorkshop2 } from '@/lib/b2b/workshop2-cart-bridge';
 
 export function ShopB2bCheckoutLegacyPage() {
   const router = useRouter();
@@ -77,16 +74,27 @@ export function ShopB2bCheckoutLegacyPage() {
             </p>
           ) : (
             <ul className="space-y-2">
-              {b2bCart.map((item: { id?: string; name?: string; sku?: string; quantity?: number; price?: number }, i: number) => (
-                <li key={`${item.id ?? item.sku}-${i}`} className="flex justify-between text-sm">
-                  <span>
-                    {item.name ?? item.sku} × {item.quantity ?? 1}
-                  </span>
-                  <span>
-                    {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString('ru-RU')} ₽
-                  </span>
-                </li>
-              ))}
+              {b2bCart.map(
+                (
+                  item: {
+                    id?: string;
+                    name?: string;
+                    sku?: string;
+                    quantity?: number;
+                    price?: number;
+                  },
+                  i: number
+                ) => (
+                  <li key={`${item.id ?? item.sku}-${i}`} className="flex justify-between text-sm">
+                    <span>
+                      {item.name ?? item.sku} × {item.quantity ?? 1}
+                    </span>
+                    <span>
+                      {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString('ru-RU')} ₽
+                    </span>
+                  </li>
+                )
+              )}
             </ul>
           )}
           <p className="mt-3 font-semibold">Итого: {total.toLocaleString('ru-RU')} ₽</p>

@@ -172,10 +172,7 @@ export function CalendarGrid({
     );
 
     return (
-      <div
-        className="space-y-2"
-        data-testid={slimCore ? 'platform-core-calendar-list' : undefined}
-      >
+      <div className="space-y-2" data-testid={slimCore ? 'platform-core-calendar-list' : undefined}>
         {sortedEvents.map((ev) => (
           <div
             key={ev.id}

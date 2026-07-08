@@ -62,7 +62,11 @@ export function BrandDevGreenfieldMonetizationSegmentStrip({ collectionId }: Pro
           {BRAND_DEV_GREENFIELD_BUYER_BADGE_RU} · {GREENFIELD_BUYER_ID}
         </Badge>
         {storageMode ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="brand-dev-greenfield-pg-source">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="brand-dev-greenfield-pg-source"
+          >
             {storageMode === 'pg' ? 'PostgreSQL' : storageMode}
           </Badge>
         ) : null}
@@ -74,19 +78,32 @@ export function BrandDevGreenfieldMonetizationSegmentStrip({ collectionId }: Pro
         </p>
       ) : profile ? (
         <div className="flex flex-wrap gap-1.5">
-          <Badge variant="secondary" className="text-[9px]" data-testid="brand-dev-greenfield-segment">
+          <Badge
+            variant="secondary"
+            className="text-[9px]"
+            data-testid="brand-dev-greenfield-segment"
+          >
             {profile.segmentNameRu}
           </Badge>
           <Badge variant="outline" className="text-[9px]" data-testid="brand-dev-greenfield-tier">
             <Tag className="mr-0.5 h-2.5 w-2.5" aria-hidden />
             {profile.priceTier}
           </Badge>
-          <Badge variant="outline" className="text-[9px]" data-testid="brand-dev-greenfield-net-terms">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="brand-dev-greenfield-net-terms"
+          >
             Net {profile.netTermDays} дн.
           </Badge>
           {profile.firstOrderDiscountPct != null ? (
-            <Badge variant="outline" className="text-[9px]" data-testid="brand-dev-greenfield-discount">
-              <Percent className="mr-0.5 h-2.5 w-2.5" aria-hidden />−{profile.firstOrderDiscountPct}%
+            <Badge
+              variant="outline"
+              className="text-[9px]"
+              data-testid="brand-dev-greenfield-discount"
+            >
+              <Percent className="mr-0.5 h-2.5 w-2.5" aria-hidden />−{profile.firstOrderDiscountPct}
+              %
             </Badge>
           ) : null}
         </div>
@@ -97,25 +114,41 @@ export function BrandDevGreenfieldMonetizationSegmentStrip({ collectionId }: Pro
       )}
 
       <div className={hubGadget.goldenPath} data-testid="brand-dev-greenfield-monetization-path">
-        <Link href={segmentsHref} data-testid="brand-dev-greenfield-crm-link" className={hubGadget.goldenLink}>
+        <Link
+          href={segmentsHref}
+          data-testid="brand-dev-greenfield-crm-link"
+          className={hubGadget.goldenLink}
+        >
           CRM сегменты
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={pricelistHref} data-testid="brand-dev-greenfield-pricelist-link" className={hubGadget.goldenLink}>
+        <Link
+          href={pricelistHref}
+          data-testid="brand-dev-greenfield-pricelist-link"
+          className={hubGadget.goldenLink}
+        >
           Прайс-лист
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={shop.matrixHref} data-testid="brand-dev-greenfield-matrix-link" className={hubGadget.goldenLink}>
+        <Link
+          href={shop.matrixHref}
+          data-testid="brand-dev-greenfield-matrix-link"
+          className={hubGadget.goldenLink}
+        >
           Матрица
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={shop.checkoutHref} data-testid="brand-dev-greenfield-checkout-link" className={hubGadget.goldenLink}>
+        <Link
+          href={shop.checkoutHref}
+          data-testid="brand-dev-greenfield-checkout-link"
+          className={hubGadget.goldenLink}
+        >
           Оформление
         </Link>
       </div>

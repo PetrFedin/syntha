@@ -11,7 +11,9 @@ import {
 import { handleWorkshop2SupplierWmsConfirmWebhook } from '@/lib/server/workshop2-supplier-wms-confirm-handler';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const POST = withWorkshop2ApiErrorRu(async function postSupplierWmsConfirmWebhook(req: NextRequest) {
+export const POST = withWorkshop2ApiErrorRu(async function postSupplierWmsConfirmWebhook(
+  req: NextRequest
+) {
   if (!isWorkshop2SupplierWmsConfirmWebhookEnabled()) {
     return jsonWorkshop2ErrorRu(503, 'webhook_disabled', {
       messageRu:

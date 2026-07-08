@@ -18,7 +18,11 @@ export function validateShopMatrixDraftDocRu(
     hints.push(SHOP_MATRIX_DRAFT_EMPTY_HINT_RU);
   }
 
-  if (coll && draft.collectionId.trim() && draft.collectionId.trim().toUpperCase() !== coll.toUpperCase()) {
+  if (
+    coll &&
+    draft.collectionId.trim() &&
+    draft.collectionId.trim().toUpperCase() !== coll.toUpperCase()
+  ) {
     hints.push(`Коллекция черновика (${draft.collectionId}) не совпадает с экраном (${coll}).`);
   }
 

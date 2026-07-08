@@ -5,7 +5,10 @@ import { ArrowLeft } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { PlatformCoreChromeShell } from '@/components/platform/usePlatformCoreChainOverview';
 import { PlatformCorePlannerPanel } from '@/components/platform/PlatformCorePlannerPanel';
-import { resolvePlatformCoreCollectionId, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
+import {
+  resolvePlatformCoreCollectionId,
+  PLATFORM_CORE_DEMO,
+} from '@/lib/platform-core-hub-matrix';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 
 export function PlatformPlannerPageClient() {
@@ -19,9 +22,13 @@ export function PlatformPlannerPageClient() {
   return (
     <PlatformCoreChromeShell collectionId={collectionId}>
       <div className="bg-bg-surface pb-safe min-h-[calc(100vh-2.5rem)] w-full min-w-0 px-4 md:px-6 md:pb-6">
-        <header className="border-border-subtle sticky top-0 z-10 -mx-4 border-b bg-bg-surface/95 px-4 py-2 backdrop-blur-sm md:-mx-6 md:px-6">
+        <header className="border-border-subtle bg-bg-surface/95 sticky top-0 z-10 -mx-4 border-b px-4 py-2 backdrop-blur-sm md:-mx-6 md:px-6">
           <nav aria-label="Навигация" className={hubCabinet.contextBar}>
-            <Link href={hubHref} data-testid="platform-planner-back-hub" className={hubCabinet.contextBarBack}>
+            <Link
+              href={hubHref}
+              data-testid="platform-planner-back-hub"
+              className={hubCabinet.contextBarBack}
+            >
               <ArrowLeft className="h-3 w-3 shrink-0" aria-hidden />
               Hub
             </Link>

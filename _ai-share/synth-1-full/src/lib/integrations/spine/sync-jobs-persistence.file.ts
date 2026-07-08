@@ -120,10 +120,7 @@ export function markSyncJobRunning(id: string): IntegrationSyncJob | undefined {
   return patchJob(id, { status: 'running', startedAt: new Date().toISOString() });
 }
 
-export function completeSyncJob(
-  id: string,
-  resultCount = 0
-): IntegrationSyncJob | undefined {
+export function completeSyncJob(id: string, resultCount = 0): IntegrationSyncJob | undefined {
   return patchJob(id, {
     status: 'completed',
     finishedAt: new Date().toISOString(),

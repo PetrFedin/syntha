@@ -35,10 +35,7 @@ export function useWorkshop2B2bChainSummaries(
     [orderIds]
   );
 
-  const orderIdList = useMemo(
-    () => (idsKey ? idsKey.split(',') : []),
-    [idsKey]
-  );
+  const orderIdList = useMemo(() => (idsKey ? idsKey.split(',') : []), [idsKey]);
   const { tick } = usePlatformCoreChainStatusPoll(enabled && Boolean(idsKey), orderIdList);
 
   useEffect(() => {

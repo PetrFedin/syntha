@@ -84,9 +84,7 @@ export async function hydrateWorkshop2InspectorOfflineQueueFromIndexedDb(): Prom
     const req = tx.objectStore(IDB_STORE).getAll();
     req.onsuccess = () =>
       resolve(
-        Array.isArray(req.result)
-          ? (req.result as Workshop2InspectorOfflineQueueEntry[])
-          : []
+        Array.isArray(req.result) ? (req.result as Workshop2InspectorOfflineQueueEntry[]) : []
       );
     req.onerror = () => resolve([]);
   });

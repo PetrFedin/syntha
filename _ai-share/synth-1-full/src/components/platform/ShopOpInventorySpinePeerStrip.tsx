@@ -12,23 +12,51 @@ export function ShopOpInventorySpinePeerStrip({ collectionId, orderId }: Props) 
 
   return (
     <div className={hubGadget.goldenPath} data-testid="shop-op-inventory-spine-peer-strip">
-      <Link href={s.orderCommsHref} data-testid="shop-op-inventory-order-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={s.orderCommsHref}
+        data-testid="shop-op-inventory-order-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат по заказу
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.matrixHref} data-testid="shop-op-inventory-matrix-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.matrixHref}
+        data-testid="shop-op-inventory-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.replenishmentAtpHref} data-testid="shop-op-inventory-replenishment-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.replenishmentAtpHref}
+        data-testid="shop-op-inventory-replenishment-link"
+        className={hubGadget.goldenLink}
+      >
         Пополнение
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.landedMarginHref} data-testid="shop-op-inventory-margin-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.landedMarginHref}
+        data-testid="shop-op-inventory-margin-link"
+        className={hubGadget.goldenLink}
+      >
         Маржа
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
-      <Link href={s.brandInventoryOverviewHref} data-testid="shop-op-inventory-brand-ledger-link" className={hubGadget.goldenLink}>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
+      <Link
+        href={s.brandInventoryOverviewHref}
+        data-testid="shop-op-inventory-brand-ledger-link"
+        className={hubGadget.goldenLink}
+      >
         Склад бренда
       </Link>
     </div>

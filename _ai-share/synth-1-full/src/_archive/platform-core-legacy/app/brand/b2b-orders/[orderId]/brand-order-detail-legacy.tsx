@@ -62,11 +62,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import {
-  initialOrderItems,
-  orderStatusSteps,
-  mockOrderDetailJoors,
-} from '@/lib/order-data';
+import { initialOrderItems, orderStatusSteps, mockOrderDetailJoors } from '@/lib/order-data';
 import {
   getBrandB2bCollaborationProcessGroups,
   getBrandB2bOrderPriorityGroups,
@@ -180,81 +176,81 @@ export function BrandB2bOrderDetailLegacyPage({ orderId }: BrandB2bOrderDetailLe
           </Button>
         }
         actions={
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <div className="hidden items-center gap-2 rounded-xl border border-amber-100 bg-amber-50 px-4 py-2 lg:flex">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <span className="text-[10px] font-black uppercase text-amber-700">
-                  Credit Check: OK (Limit 5.0M ₽)
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                className="border-border-default h-10 gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest"
-                asChild
-              >
-                <Link href={`/brand/b2b-orders/${orderId}/invoice`}>
-                  <FileText className="text-text-muted h-4 w-4" /> Pro-forma
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="border-border-default h-10 gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest"
-                asChild
-              >
-                <Link
-                  href={`${ROUTES.shop.b2bWorkingOrder}?wholesaleOrderId=${encodeURIComponent(orderId)}`}
-                  title="Контур ритейлера: версии файла NuOrder / Working Order"
-                >
-                  <Layers className="text-text-muted h-4 w-4" /> Working Order
-                </Link>
-              </Button>
-              <B2bOrderCommsContextButtons orderId={orderId} variant="brand" />
-              {approvalStatus === 'pending' ? (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    className="h-10 rounded-xl border-rose-100 px-4 text-[10px] font-black uppercase text-rose-600 hover:bg-rose-50"
-                  >
-                    Отклонить
-                  </Button>
-                  <Button
-                    onClick={handleApproveOrder}
-                    className="h-10 rounded-xl bg-emerald-600 px-6 text-[10px] font-black uppercase text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700"
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" /> Одобрить заказ
-                  </Button>
-                </div>
-              ) : (
-                <Badge className="h-10 rounded-xl border-none bg-emerald-100 px-6 text-[10px] font-black uppercase text-emerald-700">
-                  <CheckCircle className="mr-2 h-4 w-4" /> Одобрено
-                </Badge>
-              )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="border-border-default h-10 w-10 rounded-xl border"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="border-border-subtle rounded-xl p-2 shadow-xl"
-                >
-                  <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                    Отправить в ERP
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                    Создать копию
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider text-rose-600">
-                    Удалить
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="hidden items-center gap-2 rounded-xl border border-amber-100 bg-amber-50 px-4 py-2 lg:flex">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <span className="text-[10px] font-black uppercase text-amber-700">
+                Credit Check: OK (Limit 5.0M ₽)
+              </span>
             </div>
+            <Button
+              variant="outline"
+              className="border-border-default h-10 gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest"
+              asChild
+            >
+              <Link href={`/brand/b2b-orders/${orderId}/invoice`}>
+                <FileText className="text-text-muted h-4 w-4" /> Pro-forma
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="border-border-default h-10 gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest"
+              asChild
+            >
+              <Link
+                href={`${ROUTES.shop.b2bWorkingOrder}?wholesaleOrderId=${encodeURIComponent(orderId)}`}
+                title="Контур ритейлера: версии файла NuOrder / Working Order"
+              >
+                <Layers className="text-text-muted h-4 w-4" /> Working Order
+              </Link>
+            </Button>
+            <B2bOrderCommsContextButtons orderId={orderId} variant="brand" />
+            {approvalStatus === 'pending' ? (
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  className="h-10 rounded-xl border-rose-100 px-4 text-[10px] font-black uppercase text-rose-600 hover:bg-rose-50"
+                >
+                  Отклонить
+                </Button>
+                <Button
+                  onClick={handleApproveOrder}
+                  className="h-10 rounded-xl bg-emerald-600 px-6 text-[10px] font-black uppercase text-white shadow-lg shadow-emerald-100 hover:bg-emerald-700"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" /> Одобрить заказ
+                </Button>
+              </div>
+            ) : (
+              <Badge className="h-10 rounded-xl border-none bg-emerald-100 px-6 text-[10px] font-black uppercase text-emerald-700">
+                <CheckCircle className="mr-2 h-4 w-4" /> Одобрено
+              </Badge>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="border-border-default h-10 w-10 rounded-xl border"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="border-border-subtle rounded-xl p-2 shadow-xl"
+              >
+                <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  Отправить в ERP
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  Создать копию
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-lg text-[10px] font-bold uppercase tracking-wider text-rose-600">
+                  Удалить
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         }
       />
 

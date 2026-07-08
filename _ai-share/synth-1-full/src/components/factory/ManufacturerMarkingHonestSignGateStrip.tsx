@@ -97,7 +97,11 @@ export function ManufacturerMarkingHonestSignGateStrip({ collectionId, articleId
           body: JSON.stringify({ markingRequired: true, gtin: status?.gtin ?? undefined }),
         }
       );
-      const json = (await res.json()) as { ok?: boolean; messageRu?: string; uiStatusLabelRu?: string };
+      const json = (await res.json()) as {
+        ok?: boolean;
+        messageRu?: string;
+        uiStatusLabelRu?: string;
+      };
       if (json.ok) {
         setMessage(json.uiStatusLabelRu ?? json.messageRu ?? 'Journal обновлён');
         await load();
@@ -141,12 +145,18 @@ export function ManufacturerMarkingHonestSignGateStrip({ collectionId, articleId
         {busy ? '…' : 'Journal register'}
       </Button>
       {isPlatformCoreMode() && apiConfigured === false ? (
-        <span className="text-text-muted text-[10px]" data-testid="mfr-op-marking-core-disabled-hint">
+        <span
+          className="text-text-muted text-[10px]"
+          data-testid="mfr-op-marking-core-disabled-hint"
+        >
           API ЧЗ не настроен — только CSV
         </span>
       ) : null}
       {message ? (
-        <span className="text-text-secondary text-[10px]" data-testid="mfr-op-marking-register-message">
+        <span
+          className="text-text-secondary text-[10px]"
+          data-testid="mfr-op-marking-register-message"
+        >
           {message}
         </span>
       ) : null}

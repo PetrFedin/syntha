@@ -40,7 +40,9 @@ export function BrandDevSchemaPassportPeerStrip({ collectionId, activeSide }: Pr
           >
             {WAVE_YF_ATTR_HEALTH_RU}
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
           <Link
             href={schemaHref}
             data-testid="brand-dev-schema-passport-schema-link"
@@ -48,7 +50,9 @@ export function BrandDevSchemaPassportPeerStrip({ collectionId, activeSide }: Pr
           >
             {WAVE_YF_ATTR_SCHEMA_RU}
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
         </>
       ) : null}
       {activeSide === 'schema' ? (
@@ -60,7 +64,9 @@ export function BrandDevSchemaPassportPeerStrip({ collectionId, activeSide }: Pr
           >
             {WAVE_YF_MAT_ROLLUP_RU}
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
           <Link
             href={passportCertsHref}
             data-testid="brand-dev-schema-passport-certs-link"
@@ -68,7 +74,9 @@ export function BrandDevSchemaPassportPeerStrip({ collectionId, activeSide }: Pr
           >
             {WAVE_YF_MAT_CERTS_RU}
           </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>·</span>
+          <span className={hubGadget.goldenSep} aria-hidden>
+            ·
+          </span>
         </>
       ) : null}
       <Link

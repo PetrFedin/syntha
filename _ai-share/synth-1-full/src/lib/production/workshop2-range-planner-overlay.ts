@@ -205,9 +205,7 @@ export function detectRangePlannerOverlayConflict(
   if (tiers.length === 0) {
     return { hasConflict: false, summaryRu: '', tiers: [] };
   }
-  const tierLabels = tiers.map(
-    (row) => RANGE_PLANNER_TIER_LABEL_RU[row.tierId] ?? row.tierId
-  );
+  const tierLabels = tiers.map((row) => RANGE_PLANNER_TIER_LABEL_RU[row.tierId] ?? row.tierId);
   return {
     hasConflict: true,
     summaryRu: rangePlannerOverlayConflictSummaryRu(tierLabels),

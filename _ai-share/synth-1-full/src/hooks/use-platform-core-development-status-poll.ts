@@ -29,7 +29,10 @@ export function usePlatformCoreDevelopmentStatusPoll(
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
   const collectionIdsKey = useMemo(
-    () => capCollectionIdsForSse(collectionIds ?? []).sort().join(','),
+    () =>
+      capCollectionIdsForSse(collectionIds ?? [])
+        .sort()
+        .join(','),
     [collectionIds]
   );
 

@@ -125,16 +125,16 @@ export const ShowroomNavigation: React.FC<ShowroomNavigationProps> = ({
               )}
             </div>
             {!slim ? (
-            <Badge
-              variant="outline"
-              className="border-border-default text-text-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-normal"
-            >
-              {showroomTab === 'kickstarter'
-                ? 'Лаборатория'
-                : showroomTab === 'outlet'
-                  ? 'Аутлет'
-                  : 'Витрина'}
-            </Badge>
+              <Badge
+                variant="outline"
+                className="border-border-default text-text-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-normal"
+              >
+                {showroomTab === 'kickstarter'
+                  ? 'Лаборатория'
+                  : showroomTab === 'outlet'
+                    ? 'Аутлет'
+                    : 'Витрина'}
+              </Badge>
             ) : null}
           </div>
           <h2 className="text-text-primary text-2xl font-bold uppercase leading-tight tracking-tight md:text-4xl">

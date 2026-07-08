@@ -58,7 +58,9 @@ function AssortmentMixPlannerLegacyPage() {
                 ) : (
                   <CheckCircle2 className="h-3 w-3" />
                 )}
-                <span>Target {item.targetPct}% · Current {item.currentPct}%</span>
+                <span>
+                  Target {item.targetPct}% · Current {item.currentPct}%
+                </span>
               </div>
             </CardContent>
           </Card>

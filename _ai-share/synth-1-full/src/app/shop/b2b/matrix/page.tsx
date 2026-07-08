@@ -72,10 +72,16 @@ function B2BMatrixPageInner() {
   >(urlPrepackApply);
 
   const ctx = useMemo(
-    () => ({ collectionId, orderId, articleId: focusArticleId ?? prepackApply?.articleId, role: 'shop' as const }),
+    () => ({
+      collectionId,
+      orderId,
+      articleId: focusArticleId ?? prepackApply?.articleId,
+      role: 'shop' as const,
+    }),
     [collectionId, orderId, focusArticleId, prepackApply?.articleId]
   );
-  const { activeFeatureId, setActiveFeatureId } = usePillarCapabilityWorkspace('shop-wholesale-matrix');
+  const { activeFeatureId, setActiveFeatureId } =
+    usePillarCapabilityWorkspace('shop-wholesale-matrix');
 
   const openInspector = useCallback(
     (articleId: string) => {

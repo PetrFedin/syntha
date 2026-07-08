@@ -4,10 +4,7 @@ import { getApiContractMode } from '@/lib/runtime-mode';
 import { getCollectionLinesheetSnapshot } from '@/lib/integrations/spine/linesheet-gen.service';
 
 /** GET /api/integrations/v1/linesheet/[collectionId] · latest P2-LINESHEET-GEN snapshot */
-export async function GET(
-  req: NextRequest,
-  ctx: { params: Promise<{ collectionId: string }> }
-) {
+export async function GET(req: NextRequest, ctx: { params: Promise<{ collectionId: string }> }) {
   const requestId = getOrCreateRequestId(req);
   const mode = getApiContractMode();
   const { collectionId } = await ctx.params;

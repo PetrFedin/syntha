@@ -79,7 +79,9 @@ export async function POST(
     ok: true,
     collectionId,
     draft,
-    storageMode: toBffPgStorageMode(result.storageMode ?? brandCreateArticleWizardDraftStorageMode()),
+    storageMode: toBffPgStorageMode(
+      result.storageMode ?? brandCreateArticleWizardDraftStorageMode()
+    ),
     messageRu: 'Черновик мастера сохранён.',
   });
 }
@@ -118,7 +120,9 @@ export async function PATCH(
       ok: true,
       collectionId,
       draft: null,
-      storageMode: toBffPgStorageMode(result.storageMode ?? brandCreateArticleWizardDraftStorageMode()),
+      storageMode: toBffPgStorageMode(
+        result.storageMode ?? brandCreateArticleWizardDraftStorageMode()
+      ),
       messageRu: 'Черновик мастера удалён.',
     });
   }
@@ -138,7 +142,9 @@ export async function PATCH(
     ok: true,
     collectionId,
     draft: result.draft,
-    storageMode: toBffPgStorageMode(result.storageMode ?? brandCreateArticleWizardDraftStorageMode()),
+    storageMode: toBffPgStorageMode(
+      result.storageMode ?? brandCreateArticleWizardDraftStorageMode()
+    ),
     messageRu: 'Черновик мастера обновлён.',
   });
 }

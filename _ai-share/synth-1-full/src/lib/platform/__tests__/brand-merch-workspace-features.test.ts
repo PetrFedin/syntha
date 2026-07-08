@@ -7,9 +7,7 @@ import {
   buildBrandReleaseSyndicationRows,
   summarizeBrandReleaseSyndication,
 } from '@/lib/fashion/brand-release-syndication';
-import {
-  buildBrandSampleLifecycleRows,
-} from '@/lib/fashion/brand-sample-lifecycle';
+import { buildBrandSampleLifecycleRows } from '@/lib/fashion/brand-sample-lifecycle';
 import { brandAttributeMissingFixHref } from '@/lib/fashion/brand-attribute-schema-w2-link';
 import { getPillarCapabilityWorkspace } from '@/lib/platform/pillar-capability-workspaces';
 import {
@@ -34,9 +32,7 @@ import {
   buildBrandSizeChartGradeRows,
   summarizeBrandSizeChartGrade,
 } from '@/lib/fashion/brand-size-chart-grade';
-import {
-  buildShopAgentRepSession,
-} from '@/lib/b2b/shop-agent-rep';
+import { buildShopAgentRepSession } from '@/lib/b2b/shop-agent-rep';
 import {
   buildShopLandedMarginRows,
   buildShopLandedMarginSession,
@@ -57,7 +53,10 @@ import {
 } from '@/lib/fashion/supplier-procurement-workspace';
 import { summarizeBrandPricelistVersions } from '@/lib/fashion/brand-pricelist-version';
 import { getPriceLists } from '@/lib/b2b/price-lists';
-import { shopCollaborativeTabHref, shopShowroomTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
+import {
+  shopCollaborativeTabHref,
+  shopShowroomTabHref,
+} from '@/lib/b2b/shop-collection-order-hrefs';
 import { summarizeBrandPackRulesRows } from '@/lib/fashion/brand-pack-rules-curve';
 import {
   brandPackRulesFeatureHref,
@@ -116,10 +115,7 @@ import {
   buildBrandSupplierBomSession,
 } from '@/lib/fashion/brand-supplier-bom-workspace';
 import { buildBrandLinesheetSyndicationSession } from '@/lib/fashion/brand-linesheet-syndication';
-import {
-  buildShopOrderCommsSession,
-  shopOrderCommsFeatureHref,
-} from '@/lib/b2b/shop-order-comms';
+import { buildShopOrderCommsSession, shopOrderCommsFeatureHref } from '@/lib/b2b/shop-order-comms';
 import {
   brandOrderCommsFeatureHref,
   buildBrandOrderCommsSession,
@@ -144,10 +140,7 @@ import {
   buildBrandPricelistSession,
   brandPricelistFeatureHref,
 } from '@/lib/b2b/brand-pricelist-workspace';
-import {
-  buildPlatformB2bHubSession,
-  platformB2bHubFeatureHref,
-} from '@/lib/b2b/platform-b2b-hub';
+import { buildPlatformB2bHubSession, platformB2bHubFeatureHref } from '@/lib/b2b/platform-b2b-hub';
 import {
   buildPlatformB2bMarketroomSession,
   platformB2bMarketroomFeatureHref,
@@ -172,7 +165,10 @@ import {
   buildShopB2bPartnersSession,
   shopB2bPartnersFeatureHref,
 } from '@/lib/b2b/shop-b2b-partners-workspace';
-import { buildShopInventoryOpsSession, shopInventoryFeatureHref } from '@/lib/b2b/shop-inventory-ops';
+import {
+  buildShopInventoryOpsSession,
+  shopInventoryFeatureHref,
+} from '@/lib/b2b/shop-inventory-ops';
 import {
   buildManufacturerHandoffQueueSession,
   manufacturerHandoffFeatureHref,
@@ -216,10 +212,7 @@ describe('brand-release-syndication', () => {
     const product = products[0]!;
     const rows = buildBrandReleaseSyndicationRows([product], {
       techPackBySku: new Map([
-        [
-          product.sku,
-          { ready: false, sheetsReady: 2, sheetsTotal: 6, qtyBridged: false },
-        ],
+        [product.sku, { ready: false, sheetsReady: 2, sheetsTotal: 6, qtyBridged: false }],
       ]),
     });
     expect(rows[0]?.ready).toBe(false);
@@ -278,7 +271,9 @@ describe('brand-comms-entity-threads', () => {
   it('builds four entity thread rows with chat hrefs', () => {
     const rows = buildBrandCommsEntityThreads();
     expect(rows.length).toBe(4);
-    expect(rows.every((r) => r.messagesHref.includes('contextType=workshop2_article') || r.id === 'qc')).toBe(true);
+    expect(
+      rows.every((r) => r.messagesHref.includes('contextType=workshop2_article') || r.id === 'qc')
+    ).toBe(true);
     expect(rows.find((r) => r.id === 'bom')?.attachTzSupported).toBe(true);
     expect(rows.find((r) => r.id === 'qc')?.attachTzSupported).toBe(false);
   });
@@ -336,7 +331,9 @@ describe('brand-rfq-supplier-workspace golden path', () => {
 
 describe('brand-supplier-bom-workspace golden path', () => {
   it('chains bom → centric RFQ → supplier forecast', () => {
-    expect(brandSupplierBomFeatureHref('procurement', 'SS27', 'art-1')).toContain('pcf=procurement');
+    expect(brandSupplierBomFeatureHref('procurement', 'SS27', 'art-1')).toContain(
+      'pcf=procurement'
+    );
     const session = buildBrandSupplierBomSession({ collectionId: 'SS27', articleId: 'art-1' });
     expect(session.centricRfqHref).toContain('pcf=rfq');
     expect(session.supplierForecastHref).toContain('pcf=forecast');
@@ -364,7 +361,10 @@ describe('shop-collaborative-order golden path', () => {
 
 describe('shop spine golden path hrefs', () => {
   it('working order chains versions → checkout', () => {
-    const session = buildShopWorkingOrderSession({ wholesaleOrderId: 'INT-1', collectionId: 'SS27' });
+    const session = buildShopWorkingOrderSession({
+      wholesaleOrderId: 'INT-1',
+      collectionId: 'SS27',
+    });
     expect(session.versionsHref).toContain('pcf=versions');
     expect(session.orderCommsHref).toContain('pcf=tracking');
     expect(session.checkoutHref).toContain('checkout');
@@ -410,7 +410,9 @@ describe('wave V.2 golden path hrefs', () => {
     expect(session.handoffHref).toContain('handoff');
     expect(session.brandHandoffHref).toContain('pcf=handoff');
     expect(session.shopTrackingHref).toContain('pcf=tracking');
-    expect(manufacturerHandoffFeatureHref('qc-gate', { orderId: 'INT-1' })).toContain('pcf=qc-gate');
+    expect(manufacturerHandoffFeatureHref('qc-gate', { orderId: 'INT-1' })).toContain(
+      'pcf=qc-gate'
+    );
   });
 
   it('supplier procurement chains bom → shop tracking', () => {
@@ -422,9 +424,9 @@ describe('wave V.2 golden path hrefs', () => {
     expect(session.bomHref).toContain('pcf=bom');
     expect(session.forecastHref).toContain('pcf=forecast');
     expect(session.shopTrackingHref).toContain('pcf=tracking');
-    expect(supplierProcurementTabHref('supply', { collectionId: 'SS27', articleId: 'art-1' })).toContain(
-      'pcf=supply'
-    );
+    expect(
+      supplierProcurementTabHref('supply', { collectionId: 'SS27', articleId: 'art-1' })
+    ).toContain('pcf=supply');
   });
 
   it('brand comms workspace chains inbox → shop tracking', () => {
@@ -586,7 +588,10 @@ describe('brand-agent-rep-oversight', () => {
 
 describe('shop-working-order-session', () => {
   it('builds session hrefs with pcf tabs', () => {
-    const session = buildShopWorkingOrderSession({ wholesaleOrderId: 'INT-1', collectionId: 'SS27' });
+    const session = buildShopWorkingOrderSession({
+      wholesaleOrderId: 'INT-1',
+      collectionId: 'SS27',
+    });
     expect(session.versionsHref).toContain('pcf=versions');
     expect(session.matrixHref).toContain('pcf=matrix');
     expect(session.prepackHref).toContain('pcf=prepack');
@@ -664,7 +669,9 @@ describe('brand-production-handoff', () => {
 describe('brand-linesheet-syndication', () => {
   it('links syndication to showroom publish tab', () => {
     const session = buildBrandLinesheetSyndicationSession({ collectionId: 'SS27' });
-    expect(session.showroomPublishHref).toContain(`${PILLAR_CAPABILITY_FEATURE_PARAM}=showroom-publish`);
+    expect(session.showroomPublishHref).toContain(
+      `${PILLAR_CAPABILITY_FEATURE_PARAM}=showroom-publish`
+    );
     expect(session.shopShowroomHref).toContain('/shop/b2b/showroom');
   });
 });
@@ -679,7 +686,9 @@ describe('manufacturer-handoff-queue', () => {
     expect(session.handoffHref).toContain(`${PILLAR_CAPABILITY_FEATURE_PARAM}=handoff`);
     expect(session.handoffHref).toContain('#handoff-queue');
     expect(manufacturerHandoffFeatureHref('handoff', { orderId: 'INT-1' })).toContain('INT-1');
-    expect(manufacturerHandoffFeatureHref('qc-gate', { orderId: 'INT-1' })).toContain('pcf=qc-gate');
+    expect(manufacturerHandoffFeatureHref('qc-gate', { orderId: 'INT-1' })).toContain(
+      'pcf=qc-gate'
+    );
     expect(manufacturerHandoffFeatureHref('techpack-ack', { orderId: 'INT-1' })).toContain(
       'pcf=techpack-ack'
     );
@@ -764,7 +773,11 @@ describe('brand-order-comms', () => {
 
 describe('supplier-mrp-supply', () => {
   it('builds supply tab and materials bridge hrefs', () => {
-    const session = buildSupplierMrpSupplySession({ collectionId: 'SS27', articleId: 'art-1', orderId: 'INT-1' });
+    const session = buildSupplierMrpSupplySession({
+      collectionId: 'SS27',
+      articleId: 'art-1',
+      orderId: 'INT-1',
+    });
     expect(session.supplyTabHref).toContain(`${PILLAR_CAPABILITY_FEATURE_PARAM}=supply`);
     expect(session.materialsHref).toContain('view=procurement');
     expect(session.shopMatrixHref).toContain('pcf=matrix');
@@ -876,7 +889,9 @@ describe('manufacturer-production-ops', () => {
     expect(session.brandOrderHandoffHref).toContain('pcf=handoff');
     expect(session.shopLandedMarginHref).toContain('pcf=rollup');
     expect(session.shopOrderCommsHref).toContain('pcf=tracking');
-    expect(manufacturerProductionOpsFeatureHref('wip', { collectionId: 'SS27' })).toContain('pcf=wip');
+    expect(manufacturerProductionOpsFeatureHref('wip', { collectionId: 'SS27' })).toContain(
+      'pcf=wip'
+    );
   });
 });
 

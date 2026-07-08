@@ -65,9 +65,10 @@ function rowToGrain(row: {
     quantity: row.quantity,
     ownerId: row.shop_id,
     tenantId: row.shop_id,
-    channelId: row.channel_id === 'b2b' || row.channel_id === 'b2c' || row.channel_id === 'retail'
-      ? row.channel_id
-      : undefined,
+    channelId:
+      row.channel_id === 'b2b' || row.channel_id === 'b2c' || row.channel_id === 'retail'
+        ? row.channel_id
+        : undefined,
     metadata: {
       updatedAt: row.updated_at.toISOString(),
       version: 1,
@@ -75,7 +76,13 @@ function rowToGrain(row: {
   };
 }
 
-function grainToInsertParams(grain: InventoryGrain, shopId: string, seasonTag: string, collectionId: string, productName: string) {
+function grainToInsertParams(
+  grain: InventoryGrain,
+  shopId: string,
+  seasonTag: string,
+  collectionId: string,
+  productName: string
+) {
   return [
     grain.grainId,
     shopId,
@@ -170,7 +177,9 @@ async function persistGrainsPg(shopId: string, grains: InventoryGrain[]): Promis
   return true;
 }
 
-export async function ensureShopInventoryLedgerGrainsSeeded(shopId: string): Promise<InventoryGrain[]> {
+export async function ensureShopInventoryLedgerGrainsSeeded(
+  shopId: string
+): Promise<InventoryGrain[]> {
   const sid = shopId.trim() || 'shop1';
   const existing = await listShopInventoryLedgerGrainsRaw(sid);
   if (existing.length > 0) return existing;
@@ -254,7 +263,8 @@ export async function listShopInventoryLedgerGrains(input: {
   if (collectionId === 'SS27' || collectionId === 'FW27') {
     return grains.filter((g) => {
       const p = products.find((x) => x.sku === g.sku);
-      const season = (p?.season as string | undefined) ?? (collectionId === 'FW27' ? 'FW27' : 'SS27');
+      const season =
+        (p?.season as string | undefined) ?? (collectionId === 'FW27' ? 'FW27' : 'SS27');
       return season === collectionId || allowedSkus.has(g.sku);
     });
   }

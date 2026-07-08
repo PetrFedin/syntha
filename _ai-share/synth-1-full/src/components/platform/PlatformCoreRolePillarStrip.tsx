@@ -10,9 +10,7 @@ import {
   platformCoreRolePillarHref,
 } from '@/lib/platform-core-hub-matrix';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
-import {
-  platformCoreHeaderHubTabClass,
-} from '@/lib/platform-core-header-controls';
+import { platformCoreHeaderHubTabClass } from '@/lib/platform-core-header-controls';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 
@@ -41,10 +39,7 @@ export function PlatformCoreRolePillarStrip({ roleId, activePillarId, className 
       className={cn(hubCabinet.workspacePillarStrip, className)}
     >
       <div
-        className={cn(
-          hubCabinet.pillarNavPillRow,
-          'md:flex-wrap md:overflow-visible md:snap-none'
-        )}
+        className={cn(hubCabinet.pillarNavPillRow, 'md:snap-none md:flex-wrap md:overflow-visible')}
       >
         {PLATFORM_CORE_PILLARS.filter((pillar) => activeIds.includes(pillar.id)).map((pillar) => {
           const href = getRolePillarWorkspaceHref(roleId, pillar.id, demo);

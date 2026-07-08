@@ -74,9 +74,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
         return {
           ...prev,
           development: prev.development.map(mapItem),
-          techDebt: prev.techDebt.map((item) =>
-            item.id === taskId ? { ...item, status } : item
-          ),
+          techDebt: prev.techDebt.map((item) => (item.id === taskId ? { ...item, status } : item)),
           queue: prev.queue.map(mapItem),
           counts: {
             ...prev.counts,
@@ -96,44 +94,47 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
     []
   );
 
-  const refresh = useCallback(async (opts?: { skipScrollRestore?: boolean }) => {
-    const restoreScroll = !opts?.skipScrollRestore && !chatSessionIdRef.current;
-    if (restoreScroll) {
-      savedWindowScrollY.current = window.scrollY;
-      if (listScrollRef.current) {
-        savedListScrollTop.current = listScrollRef.current.scrollTop;
-      }
-    }
-    setLoading(true);
-    try {
-      const r = await fetch(
-        `/api/dev/platform-core/planner?collection=${encodeURIComponent(collectionId)}`,
-        { cache: 'no-store', headers: plannerFetchHeaders() }
-      );
-      if (!r.ok) throw new Error('offline');
-      const j = (await r.json()) as PlatformCorePlannerSnapshot & {
-        ok: boolean;
-        plannerMeta?: { closedWaveGeneration?: number; p0Active?: number };
-      };
-      setSnapshot(j);
-      setPlannerMeta(j.plannerMeta ?? { p0Active: j.counts?.p0 });
-      setApiOnline(true);
-    } catch {
-      setApiOnline(false);
-      setSnapshot(EMPTY_PLATFORM_CORE_PLANNER_SNAPSHOT);
-      setPlannerMeta({});
-    } finally {
-      setLoading(false);
+  const refresh = useCallback(
+    async (opts?: { skipScrollRestore?: boolean }) => {
+      const restoreScroll = !opts?.skipScrollRestore && !chatSessionIdRef.current;
       if (restoreScroll) {
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: savedWindowScrollY.current, behavior: 'auto' });
-          if (listScrollRef.current) {
-            listScrollRef.current.scrollTop = savedListScrollTop.current;
-          }
-        });
+        savedWindowScrollY.current = window.scrollY;
+        if (listScrollRef.current) {
+          savedListScrollTop.current = listScrollRef.current.scrollTop;
+        }
       }
-    }
-  }, [collectionId]);
+      setLoading(true);
+      try {
+        const r = await fetch(
+          `/api/dev/platform-core/planner?collection=${encodeURIComponent(collectionId)}`,
+          { cache: 'no-store', headers: plannerFetchHeaders() }
+        );
+        if (!r.ok) throw new Error('offline');
+        const j = (await r.json()) as PlatformCorePlannerSnapshot & {
+          ok: boolean;
+          plannerMeta?: { closedWaveGeneration?: number; p0Active?: number };
+        };
+        setSnapshot(j);
+        setPlannerMeta(j.plannerMeta ?? { p0Active: j.counts?.p0 });
+        setApiOnline(true);
+      } catch {
+        setApiOnline(false);
+        setSnapshot(EMPTY_PLATFORM_CORE_PLANNER_SNAPSHOT);
+        setPlannerMeta({});
+      } finally {
+        setLoading(false);
+        if (restoreScroll) {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: savedWindowScrollY.current, behavior: 'auto' });
+            if (listScrollRef.current) {
+              listScrollRef.current.scrollTop = savedListScrollTop.current;
+            }
+          });
+        }
+      }
+    },
+    [collectionId]
+  );
 
   const runAgents = useCallback(
     async (taskId?: string) => {
@@ -169,7 +170,9 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
           setChatTaskTitle(j.task?.title);
           setAgentSessionStatus('starting');
         }
-        setActionMsg(j.spawn?.error ? j.message ?? 'Ошибка агента' : (j.message ?? 'Агент в работе'));
+        setActionMsg(
+          j.spawn?.error ? (j.message ?? 'Ошибка агента') : (j.message ?? 'Агент в работе')
+        );
         await refresh({ skipScrollRestore: true });
       } catch {
         setActionMsg('API недоступен — запустите dev:core на :3001');
@@ -348,17 +351,29 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                 )}
               >
                 <span
-                  className={cn('h-1.5 w-1.5 rounded-full', apiOnline ? 'bg-emerald-500' : 'bg-slate-400')}
+                  className={cn(
+                    'h-1.5 w-1.5 rounded-full',
+                    apiOnline ? 'bg-emerald-500' : 'bg-slate-400'
+                  )}
                 />
                 {apiOnline ? 'в сети' : 'офлайн'}
               </span>
             </div>
             <p className="text-text-secondary max-w-xl text-[12px] leading-relaxed">
-              Очередь улучшений по ролям и столпам — локальный аудит + Cursor SDK для глубокого скана.
+              Очередь улучшений по ролям и столпам — локальный аудит + Cursor SDK для глубокого
+              скана.
             </p>
           </div>
-          <div className={cn(platformCoreHubLayout.plannerToolbarRow, 'flex flex-wrap items-center gap-3')}>
-            <PlannerStatChip label="P0 активно" value={plannerMeta.p0Active ?? snapshot.counts.p0} />
+          <div
+            className={cn(
+              platformCoreHubLayout.plannerToolbarRow,
+              'flex flex-wrap items-center gap-3'
+            )}
+          >
+            <PlannerStatChip
+              label="P0 активно"
+              value={plannerMeta.p0Active ?? snapshot.counts.p0}
+            />
             <PlannerStatChip label="открыто" value={snapshot.counts.open} />
             <PlannerStatChip label="в работе" value={snapshot.counts.inProgress} />
             <PlannerStatChip label="готово" value={snapshot.counts.done} />
@@ -409,7 +424,10 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
               scanStatusDone && 'border-emerald-200 bg-emerald-50',
               scanStatusError && 'border-red-200 bg-red-50',
               scanStatusRunning && 'border-blue-200 bg-blue-50',
-              !scanStatusDone && !scanStatusError && !scanStatusRunning && 'border-slate-200 bg-slate-50'
+              !scanStatusDone &&
+                !scanStatusError &&
+                !scanStatusRunning &&
+                'border-slate-200 bg-slate-50'
             )}
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -431,7 +449,10 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                   scanStatusDone && 'bg-emerald-200 text-emerald-900',
                   scanStatusError && 'bg-red-200 text-red-900',
                   scanStatusRunning && 'bg-blue-200 text-blue-900',
-                  !scanStatusDone && !scanStatusError && !scanStatusRunning && 'bg-slate-200 text-slate-700'
+                  !scanStatusDone &&
+                    !scanStatusError &&
+                    !scanStatusRunning &&
+                    'bg-slate-200 text-slate-700'
                 )}
               >
                 {scanStatusDone
@@ -443,7 +464,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                       : '…'}
               </span>
             </div>
-            <p className="text-[9px] font-mono opacity-60 mt-1">{chatSessionId}</p>
+            <p className="mt-1 font-mono text-[9px] opacity-60">{chatSessionId}</p>
           </div>
         ) : null}
 
@@ -453,8 +474,8 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
             className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-950"
           >
             Планировщик офлайн — hub должен быть на <strong>dev:core (:3001)</strong>. Запустите{' '}
-            <code className="text-[10px]">npm run dev:core</code> из корня Projects. Устаревший офлайн-снимок
-            больше не показывается — только live API.
+            <code className="text-[10px]">npm run dev:core</code> из корня Projects. Устаревший
+            офлайн-снимок больше не показывается — только live API.
           </p>
         ) : null}
 
@@ -469,10 +490,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
         ) : null}
 
         {snapshot.sessionSummary ? (
-          <div
-            data-testid="planner-session-summary"
-            className="mt-3 grid gap-3 sm:grid-cols-2"
-          >
+          <div data-testid="planner-session-summary" className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-emerald-200/80 bg-emerald-50/60 px-3 py-2.5">
               <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-900">
                 Сделано недавно
@@ -492,8 +510,13 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
               </p>
               <ul className="mt-2 max-h-40 space-y-2 overflow-y-auto text-[11px] text-sky-950">
                 {snapshot.sessionSummary.nextUp.map((entry) => (
-                  <li key={entry.title} className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                    <span className="text-[9px] font-bold uppercase text-sky-800">{entry.priority}</span>
+                  <li
+                    key={entry.title}
+                    className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5"
+                  >
+                    <span className="text-[9px] font-bold uppercase text-sky-800">
+                      {entry.priority}
+                    </span>
                     {entry.href ? (
                       <Link href={entry.href} className="font-semibold hover:underline">
                         {entry.title}
@@ -502,7 +525,7 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                       <span className="font-semibold">{entry.title}</span>
                     )}
                     {entry.hint ? (
-                      <span className="text-sky-900/80 w-full text-[10px]">{entry.hint}</span>
+                      <span className="w-full text-[10px] text-sky-900/80">{entry.hint}</span>
                     ) : null}
                   </li>
                 ))}
@@ -588,8 +611,12 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
             onClick={() => setTab('development')}
           >
             Развитие
-            <span className="text-text-primary ml-1 tabular-nums font-semibold">{devOpenCount}</span>
-            <span className="text-text-muted ml-0.5 tabular-nums">/ {snapshot.counts.development}</span>
+            <span className="text-text-primary ml-1 font-semibold tabular-nums">
+              {devOpenCount}
+            </span>
+            <span className="text-text-muted ml-0.5 tabular-nums">
+              / {snapshot.counts.development}
+            </span>
           </button>
           <button
             type="button"
@@ -601,8 +628,12 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
             onClick={() => setTab('tech-debt')}
           >
             Техдолг
-            <span className="text-text-primary ml-1 tabular-nums font-semibold">{debtOpenCount}</span>
-            <span className="text-text-muted ml-0.5 tabular-nums">/ {snapshot.counts.techDebt}</span>
+            <span className="text-text-primary ml-1 font-semibold tabular-nums">
+              {debtOpenCount}
+            </span>
+            <span className="text-text-muted ml-0.5 tabular-nums">
+              / {snapshot.counts.techDebt}
+            </span>
           </button>
         </div>
 
@@ -664,7 +695,12 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
               </div>
             ) : priority === 'all' ? (
               PLANNER_PANEL_PRIORITIES.map((p) => (
-                <PlannerPriorityGroup key={p} priority={p} items={devByPriority[p]} defaultOpen={p === 'P0'}>
+                <PlannerPriorityGroup
+                  key={p}
+                  priority={p}
+                  items={devByPriority[p]}
+                  defaultOpen={p === 'P0'}
+                >
                   {devByPriority[p].map((item) => (
                     <PlannerTaskRow
                       key={item.id}
@@ -691,28 +727,19 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                 ))}
               </ul>
             )
-          ) : (
-            debtItems.length === 0 ? (
-              <div className="border-border-subtle rounded-lg border bg-white px-4 py-10 text-center">
-                <p className="text-text-muted text-sm">Список пуст</p>
-              </div>
-            ) : priority === 'all' ? (
-              PLANNER_PANEL_PRIORITIES.map((p) => (
-                <PlannerPriorityGroup key={p} priority={p} items={debtByPriority[p]} defaultOpen={p === 'P0'}>
-                  {debtByPriority[p].map((item) => (
-                    <PlannerDebtRow
-                      key={item.id}
-                      item={item}
-                      busy={busy}
-                      apiOnline={apiOnline}
-                      onAgent={(id) => void runAgents(id)}
-                    />
-                  ))}
-                </PlannerPriorityGroup>
-              ))
-            ) : (
-              <ul className="border-border-subtle overflow-hidden rounded-lg border bg-white">
-                {debtItems.map((item) => (
+          ) : debtItems.length === 0 ? (
+            <div className="border-border-subtle rounded-lg border bg-white px-4 py-10 text-center">
+              <p className="text-text-muted text-sm">Список пуст</p>
+            </div>
+          ) : priority === 'all' ? (
+            PLANNER_PANEL_PRIORITIES.map((p) => (
+              <PlannerPriorityGroup
+                key={p}
+                priority={p}
+                items={debtByPriority[p]}
+                defaultOpen={p === 'P0'}
+              >
+                {debtByPriority[p].map((item) => (
                   <PlannerDebtRow
                     key={item.id}
                     item={item}
@@ -721,8 +748,20 @@ export function PlatformCorePlannerPanel({ collectionId = 'SS27' }: Props) {
                     onAgent={(id) => void runAgents(id)}
                   />
                 ))}
-              </ul>
-            )
+              </PlannerPriorityGroup>
+            ))
+          ) : (
+            <ul className="border-border-subtle overflow-hidden rounded-lg border bg-white">
+              {debtItems.map((item) => (
+                <PlannerDebtRow
+                  key={item.id}
+                  item={item}
+                  busy={busy}
+                  apiOnline={apiOnline}
+                  onAgent={(id) => void runAgents(id)}
+                />
+              ))}
+            </ul>
           )}
         </div>
 

@@ -1,8 +1,4 @@
-import type {
-  Product,
-  ProductScrollSwitcherSection,
-  ScrollExperienceConfig,
-} from '@/lib/types';
+import type { Product, ProductScrollSwitcherSection, ScrollExperienceConfig } from '@/lib/types';
 import { safeResolveVideoCdnUrl } from '@/lib/runway/runway-media-fallback';
 import { resolveVideoCdnOptions } from '@/lib/runway/runway-video-cdn';
 import { resolveSectionPosterUrl } from '@/lib/runway/scroll-section-media';
@@ -57,9 +53,7 @@ export function resolveSectionVideoSourcesCore(
   if (!resolved) return {};
 
   const posterSection = section ?? fallbackSection;
-  const poster = posterSection
-    ? resolveSectionPosterUrl(product, posterSection, index)
-    : undefined;
+  const poster = posterSection ? resolveSectionPosterUrl(product, posterSection, index) : undefined;
 
   return pairScrollVideoSources(resolved, poster);
 }

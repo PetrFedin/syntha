@@ -128,10 +128,7 @@ export function waveYuPrereqE2eSpecsRegistered(): {
   postYiBatch: string[];
 } {
   const yiBatch = ['core-172-wave-wi-partial-ship.spec.ts', 'core-179-wave-wp-bom-po.spec.ts'];
-  const postYi = [
-    'core-224-wave-yi-e2e-smoke-registry.spec.ts',
-    'core-225-wave-yj-sup-op.spec.ts',
-  ];
+  const postYi = ['core-224-wave-yi-e2e-smoke-registry.spec.ts', 'core-225-wave-yj-sup-op.spec.ts'];
   const registry = WAVE_YI_CORE_E2E_SMOKE_REGISTRY_SPECS as readonly string[];
   return {
     inYiRegistry: yiBatch.filter((spec) => registry.includes(spec)),

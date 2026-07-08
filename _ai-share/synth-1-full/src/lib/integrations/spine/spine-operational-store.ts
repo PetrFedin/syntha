@@ -74,10 +74,7 @@ export const SPINE_OPERATIONAL_ALL_SCOPES: SpineOperationalScope[] = [
 ];
 
 /** Hub + pillar snapshot: order resolution without full spine PG sweep. */
-export const SPINE_HUB_MINIMAL_SCOPES: SpineOperationalScope[] = [
-  'imported_orders',
-  'allocation',
-];
+export const SPINE_HUB_MINIMAL_SCOPES: SpineOperationalScope[] = ['imported_orders', 'allocation'];
 
 /** Procurement / materials: vendor PO + Centric RFQ mirror (migration 029). */
 export const SPINE_PROCUREMENT_SCOPES: SpineOperationalScope[] = [
@@ -87,10 +84,7 @@ export const SPINE_PROCUREMENT_SCOPES: SpineOperationalScope[] = [
 ];
 
 /** Allocation queue read/write (post-confirm). */
-export const SPINE_ALLOCATION_SCOPES: SpineOperationalScope[] = [
-  'imported_orders',
-  'allocation',
-];
+export const SPINE_ALLOCATION_SCOPES: SpineOperationalScope[] = ['imported_orders', 'allocation'];
 
 /** WIP + shipment tracking read-model. */
 export const SPINE_TRACKING_READ_SCOPES: SpineOperationalScope[] = [

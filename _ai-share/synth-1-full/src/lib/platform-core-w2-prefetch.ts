@@ -11,7 +11,7 @@ const W2_ARTICLE_PATH = new RegExp(
 export function prefetchPlatformCoreW2FromHref(href: string | null | undefined): void {
   if (!href?.trim()) return;
   try {
-    const path = href.startsWith('http') ? new URL(href).pathname : href.split(/[?#]/)[0] ?? href;
+    const path = href.startsWith('http') ? new URL(href).pathname : (href.split(/[?#]/)[0] ?? href);
     if (W2_ARTICLE_PATH.test(path)) {
       prefetchWorkshop2ArticleTabChunks('tz');
       return;

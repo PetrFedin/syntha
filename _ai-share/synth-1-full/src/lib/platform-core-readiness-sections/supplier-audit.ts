@@ -138,8 +138,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       order: 4,
       staticScore: 7.8,
       liveScore: 7.9,
-      summary:
-        'Alt-material PG approve/reject + brand notification (~8.0 после wave XW).',
+      summary: 'Alt-material PG approve/reject + brand notification (~8.0 после wave XW).',
       good: [
         'Только BOM без пустого RFQ',
         'Primary → materials',
@@ -169,8 +168,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       order: 1,
       staticScore: 8.0,
       liveScore: 8.0,
-      summary:
-        'Honest procurement chain RU — YJ/YI/WP/WI closure + wave YU §6 8.0 (core-236).',
+      summary: 'Honest procurement chain RU — YJ/YI/WP/WI closure + wave YU §6 8.0 (core-236).',
       good: [
         'PATCH API',
         'e2e core-02',
@@ -324,8 +322,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) =>
-        platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-order', d),
+      resolveHref: (d) => platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-order', d),
     },
     {
       id: 'sup-cm-article',
@@ -344,8 +341,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) =>
-        platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-article', d),
+      resolveHref: (d) => platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-article', d),
     },
     {
       id: 'sup-cm-rfq-inbox',
@@ -353,8 +349,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       order: 3,
       staticScore: 7.7,
       liveScore: 7.8,
-      summary:
-        'Dedicated rfq-inbox — SLA timer + quote RU (~8.0 после wave XD).',
+      summary: 'Dedicated rfq-inbox — SLA timer + quote RU (~8.0 после wave XD).',
       good: [
         'supplier-rfq-inbox-core',
         'factorySupplierRfqInboxHref',
@@ -425,8 +420,7 @@ export const SUPPLIER_SECTION_AUDIT: Partial<
       ],
       bad: [],
       fix: [],
-      resolveHref: (d) =>
-        platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-cabinet', d),
+      resolveHref: (d) => platformCoreCabinetSectionHref('supplier', 'comms', 'sup-cm-cabinet', d),
     },
   ],
 };

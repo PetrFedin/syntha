@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!contextType || !contextId) {
-      return NextResponse.json({ error: 'Missing contextType/contextId or chatId' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Missing contextType/contextId or chatId' },
+        { status: 400 }
+      );
     }
 
     const readerId = resolveReaderId(request, body.readerId);
@@ -51,8 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid lastSeenMessageCount' }, { status: 400 });
     }
 
-    const organizationId =
-      body.organizationId?.trim() || resolveWorkshop2OrganizationId(request);
+    const organizationId = body.organizationId?.trim() || resolveWorkshop2OrganizationId(request);
 
     const record = await upsertWorkshop2ContextualReadState({
       organizationId,

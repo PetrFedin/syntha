@@ -496,7 +496,8 @@ export function FactoryMaterialsCorePage() {
         inventoryReservedDone,
         materialsSuppliedDone,
         showPartialShipPath: showSupplierPartialShipStrip,
-        partialShipDone: confirmState === 'done' || supplyAlreadyConfirmed || Boolean(partialShipMeta),
+        partialShipDone:
+          confirmState === 'done' || supplyAlreadyConfirmed || Boolean(partialShipMeta),
         bulkConfirmDone: confirmState === 'done' || supplyAlreadyConfirmed || materialsSuppliedDone,
       }),
     [
@@ -615,7 +616,7 @@ export function FactoryMaterialsCorePage() {
 
   return (
     <div
-      className={cn(hubCabinet.listChrome, 'overflow-x-clip pb-safe p-3 md:p-4')}
+      className={cn(hubCabinet.listChrome, 'pb-safe overflow-x-clip p-3 md:p-4')}
       data-testid={view === 'procurement' ? 'materials-procurement-view' : 'factory-materials-core'}
       data-view={view}
     >
@@ -717,7 +718,11 @@ export function FactoryMaterialsCorePage() {
           </div>
         ) : null}
 
-        {view === 'development' && activeRole === 'supplier' && isPlatformCoreMode() && collectionId && articleId ? (
+        {view === 'development' &&
+        activeRole === 'supplier' &&
+        isPlatformCoreMode() &&
+        collectionId &&
+        articleId ? (
           <div className="mb-2">
             <SupDevMaterialsCoPeerStrip
               collectionId={collectionId}
@@ -741,7 +746,11 @@ export function FactoryMaterialsCorePage() {
           />
         ) : null}
 
-        {view === 'development' && activeRole === 'supplier' && isPlatformCoreMode() && collectionId && articleId ? (
+        {view === 'development' &&
+        activeRole === 'supplier' &&
+        isPlatformCoreMode() &&
+        collectionId &&
+        articleId ? (
           <div className="mb-2 space-y-2">
             <SupplierPriceDeltaAlertStrip collectionId={collectionId} articleId={articleId} />
             <SupDevCompareSuppliersP2Strip collectionId={collectionId} articleId={articleId} />
@@ -967,7 +976,10 @@ export function FactoryMaterialsCorePage() {
           />
         ) : null}
 
-        {view === 'procurement' && activeRole === 'manufacturer' && orderId && isPlatformCoreMode() ? (
+        {view === 'procurement' &&
+        activeRole === 'manufacturer' &&
+        orderId &&
+        isPlatformCoreMode() ? (
           <MfrOpMaterialsCoSpinePeerStrip
             factoryId={factoryId}
             collectionId={collectionId}
@@ -1556,8 +1568,7 @@ export function FactoryMaterialsCorePage() {
               (confirmState === 'loading' || confirmState === 'done' || bulkConfirmProgress) ? (
                 <SupplierBulkConfirmProgressStrip
                   confirmed={
-                    bulkConfirmProgress?.confirmed ??
-                    (confirmState === 'done' ? bomTotalCount : 0)
+                    bulkConfirmProgress?.confirmed ?? (confirmState === 'done' ? bomTotalCount : 0)
                   }
                   total={bulkConfirmProgress?.total ?? bomTotalCount}
                   busy={confirmState === 'loading'}

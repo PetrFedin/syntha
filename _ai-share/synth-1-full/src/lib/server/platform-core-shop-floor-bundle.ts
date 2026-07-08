@@ -1,7 +1,5 @@
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
-import {
-  buildWorkshop2FinalTzExportContextFromDossier,
-} from '@/lib/production/workshop2-final-tz-spec-export';
+import { buildWorkshop2FinalTzExportContextFromDossier } from '@/lib/production/workshop2-final-tz-spec-export';
 import { parseMatRowsFromDossier } from '@/lib/production/workshop2-material-mat-rows';
 import { getWorkshop2B2bChainStatus } from '@/lib/server/workshop2-b2b-production-handoff';
 

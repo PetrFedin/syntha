@@ -25,9 +25,7 @@ const RICH_EMPTY_REASONS: Partial<
   },
   manufacturer: {
     sample_collection: (
-      <>
-        Linesheet и showroom ведёт бренд — цех видит статус коллекции после одобрения образца.
-      </>
+      <>Linesheet и showroom ведёт бренд — цех видит статус коллекции после одобрения образца.</>
     ),
     collection_order: (
       <>

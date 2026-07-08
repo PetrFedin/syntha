@@ -12,16 +12,14 @@ async function archivedResponse() {
 
 export async function GET(request: Request) {
   if (isPlatformCoreMode()) return archivedResponse();
-  const mod = await import(
-    '../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-intent/route'
-  );
+  const mod =
+    await import('../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-intent/route');
   return mod.GET(request);
 }
 
 export async function POST(request: Request) {
   if (isPlatformCoreMode()) return archivedResponse();
-  const mod = await import(
-    '../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-intent/route'
-  );
+  const mod =
+    await import('../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-intent/route');
   return mod.POST(request);
 }

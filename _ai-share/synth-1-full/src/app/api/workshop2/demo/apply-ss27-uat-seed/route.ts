@@ -5,7 +5,12 @@ import { buildWorkshop2FileStoreDemoDossier } from '@/lib/production/workshop2-f
 import { putWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { jsonWorkshop2ErrorRu } from '@/lib/production/workshop2-api-error-ru';
 
-const SS27_DEMO_ARTICLE_IDS = ['demo-ss27-01', 'demo-ss27-02', 'demo-ss27-03', 'demo-ss27-04'] as const;
+const SS27_DEMO_ARTICLE_IDS = [
+  'demo-ss27-01',
+  'demo-ss27-02',
+  'demo-ss27-03',
+  'demo-ss27-04',
+] as const;
 
 /**
  * POST — принудительный re-seed SS27 demo dossiers для investor UAT / publish gate.

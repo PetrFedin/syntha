@@ -12,12 +12,12 @@ import { fingerprintWorkshop2HandoffQueue } from '@/lib/platform-core-handoff-qu
 
 describe('workshop2-qc-gate-shipment', () => {
   it('blocks when fail/rework with blocksShipment', () => {
-    expect(
-      workshop2QcInspectionBlocksShipment({ blocksShipment: true, result: 'fail' })
-    ).toBe(true);
-    expect(
-      workshop2QcInspectionBlocksShipment({ blocksShipment: true, result: 'pass' })
-    ).toBe(false);
+    expect(workshop2QcInspectionBlocksShipment({ blocksShipment: true, result: 'fail' })).toBe(
+      true
+    );
+    expect(workshop2QcInspectionBlocksShipment({ blocksShipment: true, result: 'pass' })).toBe(
+      false
+    );
     expect(
       workshop2QcGateBlocksOrderShipment([
         { blocksShipment: true, result: 'rework' },

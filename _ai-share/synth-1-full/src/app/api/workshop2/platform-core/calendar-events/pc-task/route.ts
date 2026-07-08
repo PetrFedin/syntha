@@ -61,8 +61,6 @@ export async function POST(req: NextRequest) {
     taskId,
     pcTask: taskId,
     created,
-    messageRu: created
-      ? `Задача PG создана · pcTask=${taskId}.`
-      : 'Задача уже есть в PG.',
+    messageRu: created ? `Задача PG создана · pcTask=${taskId}.` : 'Задача уже есть в PG.',
   });
 }

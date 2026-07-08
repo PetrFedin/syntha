@@ -53,14 +53,18 @@ export function ShopDevelopmentBridgeGreenfieldCrmStrip({ collectionId }: Props)
   }, [buyerId]);
 
   const partners = buildShopB2bPartnersSession({ collectionId });
-  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
-  const showroomHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
+  const matrixHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
+  );
+  const showroomHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+  );
   const pricelistHref = brandCrmSegmentationFeatureHref('pricelist', collectionId);
   const replenishmentHref = shopReplenishmentTabHref('stock-atp', collectionId);
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 px-3 py-2"
+      className="border-border-subtle bg-bg-surface2/40 space-y-2 rounded-md border px-3 py-2"
       data-testid="shop-development-bridge-greenfield-crm-strip"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -78,19 +82,32 @@ export function ShopDevelopmentBridgeGreenfieldCrmStrip({ collectionId }: Props)
         <p className="text-text-muted text-[10px]">{SHOP_GREENFIELD_CRM_LOADING_RU}</p>
       ) : profile ? (
         <div className="flex flex-wrap gap-1.5">
-          <Badge variant="secondary" className="text-[9px]" data-testid="shop-dev-bridge-crm-segment">
+          <Badge
+            variant="secondary"
+            className="text-[9px]"
+            data-testid="shop-dev-bridge-crm-segment"
+          >
             {profile.segmentNameRu}
           </Badge>
           <Badge variant="outline" className="text-[9px]" data-testid="shop-dev-bridge-crm-tier">
             <Tag className="mr-0.5 h-2.5 w-2.5" aria-hidden />
             {profile.priceTier}
           </Badge>
-          <Badge variant="outline" className="text-[9px]" data-testid="shop-dev-bridge-crm-net-terms">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="shop-dev-bridge-crm-net-terms"
+          >
             Net {profile.netTermDays} дн.
           </Badge>
           {profile.firstOrderDiscountPct != null ? (
-            <Badge variant="outline" className="text-[9px]" data-testid="shop-dev-bridge-crm-discount">
-              <Percent className="mr-0.5 h-2.5 w-2.5" aria-hidden />−{profile.firstOrderDiscountPct}%
+            <Badge
+              variant="outline"
+              className="text-[9px]"
+              data-testid="shop-dev-bridge-crm-discount"
+            >
+              <Percent className="mr-0.5 h-2.5 w-2.5" aria-hidden />−{profile.firstOrderDiscountPct}
+              %
             </Badge>
           ) : null}
         </div>
@@ -99,13 +116,21 @@ export function ShopDevelopmentBridgeGreenfieldCrmStrip({ collectionId }: Props)
       )}
 
       <div className={hubGadget.goldenPath}>
-        <Link href={showroomHref} data-testid="shop-dev-bridge-crm-showroom-link" className={hubGadget.goldenLink}>
+        <Link
+          href={showroomHref}
+          data-testid="shop-dev-bridge-crm-showroom-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_SHOWROOM_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={matrixHref} data-testid="shop-dev-bridge-crm-matrix-link" className={hubGadget.goldenLink}>
+        <Link
+          href={matrixHref}
+          data-testid="shop-dev-bridge-crm-matrix-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_MATRIX_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
@@ -121,25 +146,41 @@ export function ShopDevelopmentBridgeGreenfieldCrmStrip({ collectionId }: Props)
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={partners.discoverHref} data-testid="shop-dev-bridge-crm-partners-link" className={hubGadget.goldenLink}>
+        <Link
+          href={partners.discoverHref}
+          data-testid="shop-dev-bridge-crm-partners-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_PARTNERS_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={pricelistHref} data-testid="shop-dev-bridge-crm-brand-pricelist-link" className={hubGadget.goldenLink}>
+        <Link
+          href={pricelistHref}
+          data-testid="shop-dev-bridge-crm-brand-pricelist-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_BRAND_PRICELIST_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={partners.brandCrmSegmentsHref} data-testid="shop-dev-bridge-crm-brand-segments-link" className={hubGadget.goldenLink}>
+        <Link
+          href={partners.brandCrmSegmentsHref}
+          data-testid="shop-dev-bridge-crm-brand-segments-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_BRAND_SEGMENTS_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={partners.landedMarginHref} data-testid="shop-dev-bridge-crm-landed-margin-link" className={hubGadget.goldenLink}>
+        <Link
+          href={partners.landedMarginHref}
+          data-testid="shop-dev-bridge-crm-landed-margin-link"
+          className={hubGadget.goldenLink}
+        >
           {SHOP_GREENFIELD_CRM_LANDED_MARGIN_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>

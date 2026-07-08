@@ -74,9 +74,9 @@ describe('platform-core-cabinet-workspace', () => {
   it('maps archive sections to pillar default in article spine mode', () => {
     const prevCore = process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE;
     process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
-    expect(
-      resolveCabinetWorkspaceSection('brand', 'collection_order', 'brand-co-retailers')
-    ).toBe('brand-co-registry');
+    expect(resolveCabinetWorkspaceSection('brand', 'collection_order', 'brand-co-retailers')).toBe(
+      'brand-co-registry'
+    );
     expect(resolveCabinetWorkspaceSection('brand', 'collection_order', 'brand-co-chain')).toBe(
       'brand-co-registry'
     );
@@ -102,9 +102,9 @@ describe('platform-core-cabinet-workspace', () => {
     const { shouldShowBrandDevelopmentArticleWorkspace } = jest.requireActual(
       '@/lib/platform-core-cabinet-workspace'
     );
-    expect(
-      shouldShowBrandDevelopmentArticleWorkspace('brand-dev-w2-hub', demo.demoArticleId)
-    ).toBe(false);
+    expect(shouldShowBrandDevelopmentArticleWorkspace('brand-dev-w2-hub', demo.demoArticleId)).toBe(
+      false
+    );
     expect(
       shouldShowBrandDevelopmentArticleWorkspace('brand-dev-dossier', demo.demoArticleId)
     ).toBe(true);

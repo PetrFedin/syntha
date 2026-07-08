@@ -26,12 +26,13 @@ const snapshotCache = new Map<string, { at: number; result: SnapshotFetchResult 
 const inflightRequests = new Map<string, Promise<SnapshotFetchResult>>();
 
 const SNAPSHOT_TTL_MS =
-  typeof process !== 'undefined' && process.env.NODE_ENV === 'development'
-    ? 5 * 60_000
-    : 120_000;
+  typeof process !== 'undefined' && process.env.NODE_ENV === 'development' ? 5 * 60_000 : 120_000;
 
 function snapshotCacheKey(options: Options): string {
-  const sp = new URLSearchParams({ collectionId: options.collectionId, pillarId: options.pillarId });
+  const sp = new URLSearchParams({
+    collectionId: options.collectionId,
+    pillarId: options.pillarId,
+  });
   if (options.roleId) sp.set('roleId', options.roleId);
   if (options.wholesaleOrderId) sp.set('orderId', options.wholesaleOrderId);
   if (options.articleId) sp.set('articleId', options.articleId);
@@ -66,7 +67,10 @@ async function fetchPillarSnapshotFresh(
   if (!promise) {
     promise = (async () => {
       try {
-        const sp = new URLSearchParams({ collectionId: options.collectionId, pillarId: options.pillarId });
+        const sp = new URLSearchParams({
+          collectionId: options.collectionId,
+          pillarId: options.pillarId,
+        });
         if (options.roleId) sp.set('roleId', options.roleId);
         if (options.wholesaleOrderId) sp.set('orderId', options.wholesaleOrderId);
         if (options.articleId) sp.set('articleId', options.articleId);

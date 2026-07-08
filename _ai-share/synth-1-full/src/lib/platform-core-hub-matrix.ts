@@ -135,12 +135,8 @@ export {
   buildPillarEntityLabels,
 } from '@/lib/platform-core-hub-matrix-pillars';
 
-
-
 export function getPlatformCoreDemoByOrderId(orderId: string): PlatformCoreDemoContext {
-  const preset = Object.values(PLATFORM_CORE_DEMO_PRESETS).find(
-    (p) => p.demoOrderId === orderId
-  );
+  const preset = Object.values(PLATFORM_CORE_DEMO_PRESETS).find((p) => p.demoOrderId === orderId);
   return preset ?? PLATFORM_CORE_DEMO;
 }
 
@@ -188,15 +184,12 @@ export function getPrimaryPillarHrefForDemo(
   return brandDemo ? rewriteHrefForDemo(brandDemo, demo) : '/platform';
 }
 
-
 export { getRolePillarDemoHrefForDemo } from '@/lib/platform-core-hub-matrix-role-pillar-hrefs';
 
 /** Demo trail для SS27 — быстрые ссылки hub/overview. */
 export const PLATFORM_CORE_DEMO_TRAIL = buildPlatformCoreDemoTrail(PLATFORM_CORE_DEMO);
 
-export function getDemoTrailPrimaryHref(
-  pillarId: CoreHubPillarId
-): string | undefined {
+export function getDemoTrailPrimaryHref(pillarId: CoreHubPillarId): string | undefined {
   return getDemoTrailPrimaryHrefForDemo(pillarId, PLATFORM_CORE_DEMO);
 }
 
@@ -239,17 +232,10 @@ export function getChainStripPillarHref(
   if (options?.highlightRole) {
     return getRolePillarWorkspaceHref(options.highlightRole, pillarId, demo);
   }
-  return (
-    getDemoTrailPrimaryHrefForDemo(pillarId, demo) ??
-    options?.primaryHref ??
-    '/platform'
-  );
+  return getDemoTrailPrimaryHrefForDemo(pillarId, demo) ?? options?.primaryHref ?? '/platform';
 }
 
-
-export function getPlatformCoreHubRow(
-  roleId: CoreChainRoleId
-): CoreHubRoleRow | undefined {
+export function getPlatformCoreHubRow(roleId: CoreChainRoleId): CoreHubRoleRow | undefined {
   return PLATFORM_CORE_HUB_ROWS.find((r) => r.id === roleId);
 }
 
@@ -372,10 +358,7 @@ export function getPillarLinkForRole(
   return fallbackHref || '/platform';
 }
 
-export function isRolePillarActive(
-  roleId: CoreChainRoleId,
-  pillarId: CoreHubPillarId
-): boolean {
+export function isRolePillarActive(roleId: CoreChainRoleId, pillarId: CoreHubPillarId): boolean {
   const row = getPlatformCoreHubRow(roleId);
   return row?.pillars[pillarId]?.kind === 'active';
 }
@@ -453,7 +436,10 @@ function rewriteLabelForDemo(
     if (preset.demoOrderId !== demo.demoOrderId && out.includes(preset.demoOrderId)) {
       out = out.split(preset.demoOrderId).join(demo.demoOrderId);
     }
-    if (preset.productionOrderId !== demo.productionOrderId && out.includes(preset.productionOrderId)) {
+    if (
+      preset.productionOrderId !== demo.productionOrderId &&
+      out.includes(preset.productionOrderId)
+    ) {
       out = out.split(preset.productionOrderId).join(demo.productionOrderId);
     }
     if (preset.demoArticleId !== demo.demoArticleId && out.includes(preset.demoArticleId)) {
@@ -509,12 +495,8 @@ export function getHubCellActionsForDemo(
   const hidePreOrders = options?.hidePreOrders ?? isPlatformCoreMode();
   const mapped = cell.actions
     .filter((action) => !(hidePreOrders && action.href === ROUTES.brand.preOrders))
-    .filter(
-      (action) => !(options?.hideCatalogLegacy && action.href === ROUTES.shop.b2bCatalog)
-    )
-    .filter(
-      (action) => !(options?.hideDiscoverLegacy && action.href === ROUTES.shop.b2bDiscover)
-    )
+    .filter((action) => !(options?.hideCatalogLegacy && action.href === ROUTES.shop.b2bCatalog))
+    .filter((action) => !(options?.hideDiscoverLegacy && action.href === ROUTES.shop.b2bDiscover))
     .filter(
       (action) =>
         !(
@@ -660,16 +642,28 @@ export function getCrossRolePeerDemoHrefForDemo(
   if (viewerRoleId === 'brand' && peerRoleId === 'shop' && pillarId === 'sample_collection') {
     return `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(demo.collectionId)}`;
   }
-  if (viewerRoleId === 'brand' && peerRoleId === 'manufacturer' && pillarId === 'order_production') {
+  if (
+    viewerRoleId === 'brand' &&
+    peerRoleId === 'manufacturer' &&
+    pillarId === 'order_production'
+  ) {
     return factoryHandoffQueueHrefForDemo(demo);
   }
   if (viewerRoleId === 'manufacturer' && peerRoleId === 'brand' && pillarId === 'development') {
     return brandDevelopmentCabinetHref(demo.collectionId);
   }
-  if (viewerRoleId === 'manufacturer' && peerRoleId === 'supplier' && pillarId === 'order_production') {
+  if (
+    viewerRoleId === 'manufacturer' &&
+    peerRoleId === 'supplier' &&
+    pillarId === 'order_production'
+  ) {
     return factoryMaterialsProcurementHrefForDemo(demo, { role: 'manufacturer' });
   }
-  if (viewerRoleId === 'supplier' && peerRoleId === 'manufacturer' && pillarId === 'order_production') {
+  if (
+    viewerRoleId === 'supplier' &&
+    peerRoleId === 'manufacturer' &&
+    pillarId === 'order_production'
+  ) {
     return factoryHandoffQueueHrefForDemo(demo);
   }
   if (viewerRoleId === 'supplier' && peerRoleId === 'brand' && pillarId === 'development') {
@@ -685,23 +679,25 @@ export function getPillarCrossRolePeersForDemo(
 ): PillarCrossRolePeer[] {
   const collectionId =
     demo.collectionId !== PLATFORM_CORE_DEMO.collectionId ? demo.collectionId : undefined;
-  return getPlatformCoreHubRowsForUi().filter((r) => r.id !== viewerRoleId).map((row) => {
-    const cell = row.pillars[pillarId];
-    const participates = cell.kind === 'active';
-    return {
-      roleId: row.id,
-      label: row.label,
-      participates,
-      cabinetHref: platformCoreRolePillarHref(row.id, pillarId, collectionId),
-      title: participates ? cell.title : cell.reason,
-      demoEntityRu: getPlatformCorePillarEntityLabelForDemo(pillarId, demo),
-      demoHref: (() => {
-        if (!participates) return undefined;
-        const href = getCrossRolePeerDemoHrefForDemo(viewerRoleId, row.id, pillarId, demo);
-        return href ? rewriteHrefForDemo(href, demo) : undefined;
-      })(),
-    };
-  });
+  return getPlatformCoreHubRowsForUi()
+    .filter((r) => r.id !== viewerRoleId)
+    .map((row) => {
+      const cell = row.pillars[pillarId];
+      const participates = cell.kind === 'active';
+      return {
+        roleId: row.id,
+        label: row.label,
+        participates,
+        cabinetHref: platformCoreRolePillarHref(row.id, pillarId, collectionId),
+        title: participates ? cell.title : cell.reason,
+        demoEntityRu: getPlatformCorePillarEntityLabelForDemo(pillarId, demo),
+        demoHref: (() => {
+          if (!participates) return undefined;
+          const href = getCrossRolePeerDemoHrefForDemo(viewerRoleId, row.id, pillarId, demo);
+          return href ? rewriteHrefForDemo(href, demo) : undefined;
+        })(),
+      };
+    });
 }
 
 /** Дедуплированные рабочие ссылки роли для strip «Цепочка» в кабинете. */

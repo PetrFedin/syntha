@@ -14,9 +14,7 @@ import {
   brandDevPassportReleaseGateStatusLabelRu,
   brandDevPassportShowroomPublishHref,
 } from '@/lib/production/wave-wq-release-gate-block-publish';
-import {
-  evaluateBrandMaterialPassportReleaseGateFromSummary,
-} from '@/lib/production/brand-material-passport-release-gate';
+import { evaluateBrandMaterialPassportReleaseGateFromSummary } from '@/lib/production/brand-material-passport-release-gate';
 import { fetchBrandScReleaseGateCheck } from '@/lib/production/brand-sc-release-gate-passport';
 import { materialPassportCertsBlockRelease } from '@/lib/fashion/brand-material-passport-certs';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';

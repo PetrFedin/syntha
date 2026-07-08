@@ -6,9 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePlatformCoreCommsInboxPoll } from '@/hooks/use-platform-core-comms-inbox-poll';
-import {
-  attachBrandCommsEntityThreadTz,
-} from '@/lib/fashion/brand-comms-entity-thread-attach-tz-store';
+import { attachBrandCommsEntityThreadTz } from '@/lib/fashion/brand-comms-entity-thread-attach-tz-store';
 import { brandCommsEntityThreadSupportsAttachTz } from '@/lib/fashion/brand-comms-entity-thread-attach-tz';
 import { buildBrandCommsEntityThreads } from '@/lib/fashion/brand-comms-entity-threads';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -24,7 +22,8 @@ export function BrandCommsEntityThreadsPanel() {
   const collectionId = resolvePageCollectionId({
     collection: searchParams.get('collection'),
   });
-  const articleId = searchParams.get('article')?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
+  const articleId =
+    searchParams.get('article')?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
   const [busyId, setBusyId] = useState<string | null>(null);
   const [attached, setAttached] = useState<Record<string, boolean>>({});
   const { sseConnected: inboxSseConnected } = usePlatformCoreCommsInboxPoll(true);
@@ -36,7 +35,7 @@ export function BrandCommsEntityThreadsPanel() {
 
   const inboxHref = `${ROUTES.brand.messages}?${PILLAR_CAPABILITY_FEATURE_PARAM}=inbox`;
 
-  const attachTz = async (threadId: typeof rows[number]['id']) => {
+  const attachTz = async (threadId: (typeof rows)[number]['id']) => {
     if (!brandCommsEntityThreadSupportsAttachTz(threadId)) return;
     setBusyId(threadId);
     try {

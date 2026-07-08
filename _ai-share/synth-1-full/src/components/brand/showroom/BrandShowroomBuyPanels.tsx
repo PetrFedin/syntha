@@ -24,7 +24,8 @@ export function BrandShowroomPublishPanel({ collectionId }: Props) {
             <CardTitle className="text-base">Publish · syndication</CardTitle>
           </div>
           <CardDescription>
-            Syndication и preview — publish action в one-click strip выше (без дубля release-gate tab).
+            Syndication и preview — publish action в one-click strip выше (без дубля release-gate
+            tab).
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">

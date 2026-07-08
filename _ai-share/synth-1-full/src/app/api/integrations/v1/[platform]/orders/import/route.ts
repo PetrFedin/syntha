@@ -26,7 +26,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json(
       {
         ok: false as const,
-        error: { code: 'UNSUPPORTED_PLATFORM', message: 'Wholesale import not supported for platform' },
+        error: {
+          code: 'UNSUPPORTED_PLATFORM',
+          message: 'Wholesale import not supported for platform',
+        },
         meta: { requestId, mode, apiVersion: 'v1' as const },
       },
       { status: 400, headers: { 'x-request-id': requestId } }
@@ -69,7 +72,8 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
       importWholesaleOrder({
         platform,
         externalOrderId: parsed.data.externalOrderId,
-        raw: typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : undefined,
+        raw:
+          typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : undefined,
         dryRun,
         organizationId,
       }),

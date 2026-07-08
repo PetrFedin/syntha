@@ -59,7 +59,7 @@ export function BrandIntegrationsSpineStatusStrip({ compact = false }: { compact
   if (loadState === 'loading') {
     return (
       <span
-        className="text-muted-foreground inline-flex items-center gap-1 text-[10px]"
+        className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"
         data-testid="brand-spine-status-loading"
       >
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
@@ -119,9 +119,8 @@ export function BrandIntegrationsSpineStatusStrip({ compact = false }: { compact
         ))}
       </div>
       {hub ? (
-        <p className="text-muted-foreground text-[10px]">
-          Inbound webhook:{' '}
-          <code className="text-[9px]">{hub.inboundShipmentWebhookPath}</code>
+        <p className="text-[10px] text-muted-foreground">
+          Inbound webhook: <code className="text-[9px]">{hub.inboundShipmentWebhookPath}</code>
           {hub.webhookSecretConfigured ? ' · секрет задан' : ' · секрет не задан'}
         </p>
       ) : null}

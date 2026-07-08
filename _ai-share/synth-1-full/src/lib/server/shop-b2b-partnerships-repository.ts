@@ -119,15 +119,7 @@ export async function upsertShopB2bPartnershipPg(input: {
        END,
        updated_at = NOW()
      RETURNING id, buyer_id, brand_id, brand_slug, status, collection_id, created_at, updated_at, connected_at`,
-    [
-      id,
-      buyerId,
-      brandId,
-      brandSlug,
-      input.status,
-      collectionId,
-      connectedAt,
-    ]
+    [id, buyerId, brandId, brandSlug, input.status, collectionId, connectedAt]
   );
   return rowToPartnership(res.rows[0] as Parameters<typeof rowToPartnership>[0]);
 }

@@ -15,7 +15,9 @@ export function validateShopMatrixSizeRunMoq(input: {
     ok: violations.length === 0,
     violations,
     messageRu:
-      violations.length > 0 ? `MOQ: ${violations.length} замечаний по размерам` : 'MOQ по размерам соблюдён.',
+      violations.length > 0
+        ? `MOQ: ${violations.length} замечаний по размерам`
+        : 'MOQ по размерам соблюдён.',
   };
 }
 
@@ -73,7 +75,9 @@ export function validateShopMatrixSizeRunDistribution(input: {
   for (const size of curveSizes) {
     const expectedPct = (input.expectedCurve[size] ?? 0) / expectedTotal;
     if (expectedPct >= 0.12 && (input.qtyBySize[size] ?? 0) <= 0) {
-      violations.push(`${size}: отсутствует в size run при доле кривой ~${Math.round(expectedPct * 100)}%`);
+      violations.push(
+        `${size}: отсутствует в size run при доле кривой ~${Math.round(expectedPct * 100)}%`
+      );
     }
   }
 

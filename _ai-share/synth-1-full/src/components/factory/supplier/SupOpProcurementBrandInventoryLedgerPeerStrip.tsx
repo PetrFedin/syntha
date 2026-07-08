@@ -31,7 +31,10 @@ export function SupOpProcurementBrandInventoryLedgerPeerStrip({
   });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_WP_SUP_BRAND_INVENTORY_LEDGER_PEER_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_WP_SUP_BRAND_INVENTORY_LEDGER_PEER_TESTID}
+    >
       <Link
         href={ledgerHref}
         data-testid={WAVE_WP_SUP_BRAND_INVENTORY_LEDGER_LINK_TESTID}

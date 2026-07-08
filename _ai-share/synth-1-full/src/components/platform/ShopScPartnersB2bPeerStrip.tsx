@@ -26,20 +26,35 @@ export function ShopScPartnersB2bPeerStrip({ collectionId, orderId }: Props) {
   const platform = buildPlatformB2bHubSession({ collectionId, orderId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_SHOP_SC_PARTNERS_B2B_PEER_STRIP_TESTID}>
-      <Link href={platform.hubHref} data-testid="shop-sc-partners-platform-hub-link" className={hubGadget.goldenLink}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_SHOP_SC_PARTNERS_B2B_PEER_STRIP_TESTID}
+    >
+      <Link
+        href={platform.hubHref}
+        data-testid="shop-sc-partners-platform-hub-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_PLATFORM_B2B_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={partners.platformMarketroomHref} data-testid="shop-sc-partners-marketroom-link" className={hubGadget.goldenLink}>
+      <Link
+        href={partners.platformMarketroomHref}
+        data-testid="shop-sc-partners-marketroom-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_YP_MARKETROOM_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={partners.shopMatrixHref} data-testid="shop-sc-partners-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={partners.shopMatrixHref}
+        data-testid="shop-sc-partners-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -55,7 +70,11 @@ export function ShopScPartnersB2bPeerStrip({ collectionId, orderId }: Props) {
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={platform.buyPathHref} data-testid="shop-sc-partners-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={platform.buyPathHref}
+        data-testid="shop-sc-partners-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
     </div>

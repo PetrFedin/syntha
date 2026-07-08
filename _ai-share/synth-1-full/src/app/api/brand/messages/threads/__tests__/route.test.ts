@@ -19,7 +19,10 @@ import { buildPgContextualThreadsResponse } from '@/lib/server/pg-contextual-mes
 describe('GET /api/brand/messages/threads', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (guardWorkshop2Route as jest.Mock).mockResolvedValue({ ok: true, actor: { actorLabel: 'brand-test' } });
+    (guardWorkshop2Route as jest.Mock).mockResolvedValue({
+      ok: true,
+      actor: { actorLabel: 'brand-test' },
+    });
   });
 
   it('requires guard before listing threads', async () => {

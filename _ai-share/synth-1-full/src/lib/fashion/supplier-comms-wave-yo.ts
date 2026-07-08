@@ -55,9 +55,7 @@ export function supCmChainMaterialsPushBadgeRu(done: boolean): string {
 }
 
 export function supCmChainMaterialsPushTitleRu(done: boolean): string {
-  return done
-    ? 'materials_supplied · chain-status bump'
-    : 'Ожидаем подтверждение материалов';
+  return done ? 'materials_supplied · chain-status bump' : 'Ожидаем подтверждение материалов';
 }
 
 export function supCmChainMaterialsPushFallbackRu(): string {
@@ -65,7 +63,10 @@ export function supCmChainMaterialsPushFallbackRu(): string {
 }
 
 /** Quote peer hrefs for demo — single canonical RFQ inbox route. */
-export function supCmQuotePeerHrefsForDemo(collectionId: string, articleId: string): {
+export function supCmQuotePeerHrefsForDemo(
+  collectionId: string,
+  articleId: string
+): {
   rfqInboxHref: string;
   isCanonical: boolean;
 } {

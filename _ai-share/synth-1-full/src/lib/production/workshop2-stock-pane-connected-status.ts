@@ -35,14 +35,11 @@ export function summarizeWorkshop2StockPaneConnectedStatusRu(input: {
   const journalRows: Workshop2InternalWmsMemoryJournalEntry[] = Array.isArray(memoryJournal)
     ? (memoryJournal as Workshop2InternalWmsMemoryJournalEntry[])
     : [];
-  const moyJournal = [...journalRows]
-    .reverse()
-    .find((j) => {
-      const msg = typeof j?.messageRu === 'string' ? j.messageRu : '';
-      return msg.includes('МойСклад') || j?.kind === 'sync';
-    });
-  const moyMsg =
-    typeof moyJournal?.messageRu === 'string' ? moyJournal.messageRu.trim() : '';
+  const moyJournal = [...journalRows].reverse().find((j) => {
+    const msg = typeof j?.messageRu === 'string' ? j.messageRu : '';
+    return msg.includes('МойСклад') || j?.kind === 'sync';
+  });
+  const moyMsg = typeof moyJournal?.messageRu === 'string' ? moyJournal.messageRu.trim() : '';
   const ledgerHint = ledger ? workshop2PgMirrorStr(ledger, 'hintRu') : '';
   if (moyMsg) {
     parts.push(`МойСклад: ${moyMsg}`);

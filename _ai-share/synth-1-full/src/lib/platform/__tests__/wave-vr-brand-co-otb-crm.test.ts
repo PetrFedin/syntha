@@ -13,9 +13,7 @@ import {
   BRAND_PRICELIST_PUBLISH_API_PATH,
   brandPricelistPublishMessageRu,
 } from '@/lib/b2b/brand-pricelist-publish';
-import {
-  brandWssiShopReplenishmentRulesHref,
-} from '@/lib/fashion/brand-wssi-plan';
+import { brandWssiShopReplenishmentRulesHref } from '@/lib/fashion/brand-wssi-plan';
 
 const SEGMENTS: BrandCrmSegmentObject[] = [
   {
@@ -44,7 +42,9 @@ describe('wave VR — brand CO OTB × CRM × pricelist tier sync', () => {
     const row = buildBrandCoOtbReplenishmentBuyerRow({
       buyerId: 'shop1',
       collectionId: 'SS27',
-      mix: [{ category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' }],
+      mix: [
+        { category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' },
+      ],
       activePresetId: 'fashion-eos',
     });
     expect(row.syncStatus).toBe('aligned');

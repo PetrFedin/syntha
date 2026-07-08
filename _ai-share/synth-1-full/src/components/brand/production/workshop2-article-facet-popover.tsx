@@ -60,7 +60,10 @@ export function Workshop2ArticleFacetPopover({
             <span className="text-[10px] font-bold uppercase sm:hidden">
               {compactLabel ?? label.slice(0, 3)}
             </span>
-            <ChevronDown className="text-text-secondary hidden h-3.5 w-3.5 shrink-0 sm:block" aria-hidden />
+            <ChevronDown
+              className="text-text-secondary hidden h-3.5 w-3.5 shrink-0 sm:block"
+              aria-hidden
+            />
             {sel.size > 0 ? (
               <span
                 className="bg-accent-primary absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full sm:hidden"

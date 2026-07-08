@@ -176,9 +176,7 @@ function ShowroomSectionComponent({
     <ShowroomSectionWrapper>
       <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6">
         <Card className="border-border-subtle group relative flex min-h-[400px] flex-col justify-center rounded-xl border border-none bg-white shadow-2xl shadow-md transition-all">
-          <CardContent className="relative z-10 p-4">
-            {showroomBody}
-          </CardContent>
+          <CardContent className="relative z-10 p-4">{showroomBody}</CardContent>
         </Card>
       </div>
     </ShowroomSectionWrapper>

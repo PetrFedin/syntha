@@ -5,7 +5,10 @@ import {
   mapReadinessCellToDashboardModel,
   waveYrReadinessSectionTestId,
 } from '@/lib/platform/wave-yr-readiness-cell-dashboard';
-import { getReadinessCell, getPlatformCoreReadinessMatrix } from '@/lib/platform-core-readiness-audit';
+import {
+  getReadinessCell,
+  getPlatformCoreReadinessMatrix,
+} from '@/lib/platform-core-readiness-audit';
 
 const SRC = path.join(__dirname, '..', '..', '..');
 
@@ -41,15 +44,18 @@ export const WAVE_YR_HUB_WIRING = [
 ] as const;
 
 describe('wave YR — readiness cell dashboard strip', () => {
-  it.each(WAVE_YR_HUB_WIRING)('$id — wiring + RU labels', ({ file, mustContain, mustNotContain }) => {
-    const text = read(file);
-    for (const snippet of mustContain) {
-      expect(text).toContain(snippet);
+  it.each(WAVE_YR_HUB_WIRING)(
+    '$id — wiring + RU labels',
+    ({ file, mustContain, mustNotContain }) => {
+      const text = read(file);
+      for (const snippet of mustContain) {
+        expect(text).toContain(snippet);
+      }
+      for (const snippet of mustNotContain) {
+        expect(text).not.toContain(snippet);
+      }
     }
-    for (const snippet of mustNotContain) {
-      expect(text).not.toContain(snippet);
-    }
-  });
+  );
 
   it('brand × development — cell model with section chips from readiness-sections', () => {
     const model = buildWaveYrReadinessCellDashboardModel('brand', 'development', 'SS27', {

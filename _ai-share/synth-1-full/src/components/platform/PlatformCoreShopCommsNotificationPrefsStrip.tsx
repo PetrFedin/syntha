@@ -116,14 +116,19 @@ export function PlatformCoreCommsNotificationPrefsStrip({
           onCheckedChange={(v) => update({ chainStatusPush: v === true })}
           data-testid={`${prefix}-notification-pref-chain-push`}
         />
-        <span>{compact ? WAVE_WZ_COMMS_CHAIN_PUSH_COMPACT_RU : WAVE_WZ_COMMS_CHAIN_PUSH_FULL_RU}</span>
+        <span>
+          {compact ? WAVE_WZ_COMMS_CHAIN_PUSH_COMPACT_RU : WAVE_WZ_COMMS_CHAIN_PUSH_FULL_RU}
+        </span>
       </label>
     </>
   );
 
   if (compact) {
     return (
-      <details className="text-text-muted text-[10px]" data-testid={`${prefix}-notification-prefs-compact`}>
+      <details
+        className="text-text-muted text-[10px]"
+        data-testid={`${prefix}-notification-prefs-compact`}
+      >
         <summary className="inline-flex cursor-pointer list-none items-center gap-1 hover:underline [&::-webkit-details-marker]:hidden">
           <Settings2 className="h-3 w-3" aria-hidden />
           Настройки

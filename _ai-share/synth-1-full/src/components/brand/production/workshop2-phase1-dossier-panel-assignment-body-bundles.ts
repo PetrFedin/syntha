@@ -14,7 +14,9 @@ export type Workshop2AssignmentSendPanelBundle = Omit<
   'children'
 >;
 
-export type Workshop2AssignmentHandoffBundle = ComponentProps<typeof Workshop2TechPackHandoffBlock> & {
+export type Workshop2AssignmentHandoffBundle = ComponentProps<
+  typeof Workshop2TechPackHandoffBlock
+> & {
   techPackReady?: boolean;
 };
 

@@ -24,7 +24,11 @@ const ingestMemory: Array<{
   createdAt: string;
 }> = [];
 
-const SYNDICATION_FILE = path.join(process.cwd(), 'data', 'brand-linesheet-syndication-journal.json');
+const SYNDICATION_FILE = path.join(
+  process.cwd(),
+  'data',
+  'brand-linesheet-syndication-journal.json'
+);
 const ROLLBACK_FILE = path.join(process.cwd(), 'data', 'brand-linesheet-unpublish-rollback.json');
 const INGEST_FILE = path.join(process.cwd(), 'data', 'shop-showroom-auto-ingest-journal.json');
 
@@ -40,11 +44,15 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (fs.existsSync(SYNDICATION_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(SYNDICATION_FILE, 'utf8')) as BrandLinesheetSyndicateResult[];
+      const parsed = JSON.parse(
+        fs.readFileSync(SYNDICATION_FILE, 'utf8')
+      ) as BrandLinesheetSyndicateResult[];
       if (Array.isArray(parsed)) syndicationMemory.splice(0, syndicationMemory.length, ...parsed);
     }
     if (fs.existsSync(ROLLBACK_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(ROLLBACK_FILE, 'utf8')) as BrandLinesheetUnpublishRollbackSnapshot[];
+      const parsed = JSON.parse(
+        fs.readFileSync(ROLLBACK_FILE, 'utf8')
+      ) as BrandLinesheetUnpublishRollbackSnapshot[];
       if (Array.isArray(parsed)) rollbackMemory.splice(0, rollbackMemory.length, ...parsed);
     }
     if (fs.existsSync(INGEST_FILE)) {
@@ -199,7 +207,12 @@ export async function saveBrandLinesheetUnpublishRollbackSnapshot(input: {
       `INSERT INTO brand_linesheet_unpublish_rollback_snapshots
          (id, collection_id, article_ids, created_at)
        VALUES ($1,$2,$3::jsonb,$4::timestamptz)`,
-      [snapshot.snapshotId, snapshot.collectionId, JSON.stringify(snapshot.articleIds), snapshot.createdAt]
+      [
+        snapshot.snapshotId,
+        snapshot.collectionId,
+        JSON.stringify(snapshot.articleIds),
+        snapshot.createdAt,
+      ]
     );
     return snapshot;
   }
@@ -248,7 +261,9 @@ export async function getLatestBrandLinesheetUnpublishRollbackSnapshot(
   return latest ?? null;
 }
 
-export async function markBrandLinesheetUnpublishRollbackApplied(snapshotId: string): Promise<void> {
+export async function markBrandLinesheetUnpublishRollbackApplied(
+  snapshotId: string
+): Promise<void> {
   hydrateFileIfNeeded();
   const at = new Date().toISOString();
 
@@ -291,7 +306,14 @@ export async function appendShopShowroomAutoIngestJournal(input: {
       `INSERT INTO shop_showroom_auto_ingest_journal
          (id, buyer_id, collection_id, article_ids, source, created_at)
        VALUES ($1,$2,$3,$4::jsonb,$5,$6::timestamptz)`,
-      [row.id, row.buyerId, row.collectionId, JSON.stringify(row.articleIds), row.source, row.createdAt]
+      [
+        row.id,
+        row.buyerId,
+        row.collectionId,
+        JSON.stringify(row.articleIds),
+        row.source,
+        row.createdAt,
+      ]
     );
     return { id: row.id, ingestedCount: articleIds.length };
   }

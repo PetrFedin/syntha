@@ -143,7 +143,10 @@ export async function appendShopRepOfflineDraftServer(input: {
 }
 
 export function shopRepOfflineDraftsStorageMode(): 'postgres' | 'file' | 'memory' | 'unavailable' {
-  if ((isWorkshop2PgOnlyMode() || !shouldUseShopRepOfflineDraftsFileMemoryFallback()) && !pgAvailable) {
+  if (
+    (isWorkshop2PgOnlyMode() || !shouldUseShopRepOfflineDraftsFileMemoryFallback()) &&
+    !pgAvailable
+  ) {
     return 'unavailable';
   }
   if (pgAvailable && isWorkshop2PostgresEnabled()) return 'postgres';

@@ -36,8 +36,8 @@ export function PlatformCoreLegacyB2bOrderRedirect({ roleId, orderId }: Props) {
           testId={testId}
           message={
             <>
-              Заказ <span className="font-mono">{orderId}</span> относится к устаревшему формату — открыт
-              актуальный реестр оптовых заказов.
+              Заказ <span className="font-mono">{orderId}</span> относится к устаревшему формату —
+              открыт актуальный реестр оптовых заказов.
             </>
           }
         />

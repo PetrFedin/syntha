@@ -17,8 +17,7 @@ import {
 
 export type { CollectionInventoryOverlayDoc };
 
-export const COLLECTION_INVENTORY_OVERLAY_LS_PREFIX =
-  'brand_collection_inventory_overlay_v1__';
+export const COLLECTION_INVENTORY_OVERLAY_LS_PREFIX = 'brand_collection_inventory_overlay_v1__';
 
 const PREFIX = COLLECTION_INVENTORY_OVERLAY_LS_PREFIX;
 

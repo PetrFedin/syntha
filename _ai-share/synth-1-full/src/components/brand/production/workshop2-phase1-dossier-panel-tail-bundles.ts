@@ -63,7 +63,12 @@ export function buildWorkshop2Phase1DossierPanelTailInput(
   const sectionBody = buildWorkshop2Phase1DossierSectionBodyInputBundles(sectionBodyFlat);
   const { sectionNav, dossierCore, jumpNav } = sectionBody;
   const { activeSection, handleSelectTzSection } = sectionNav;
-  const { dossier: dossierDoc, tzWriteDisabled, skuDraft, nameDraft } = {
+  const {
+    dossier: dossierDoc,
+    tzWriteDisabled,
+    skuDraft,
+    nameDraft,
+  } = {
     dossier: dossierCore.dossier,
     tzWriteDisabled: dossierCore.tzWriteDisabled,
     skuDraft: sectionBody.passport.skuDraft,
@@ -109,9 +114,7 @@ export function buildWorkshop2Phase1DossierPanelTailInput(
       rollback: {
         show: showRollbackButton,
         lifecycleState:
-          dossier.lifecycleState === 'sent_to_production'
-            ? 'sent_to_production'
-            : 'handoff_ready',
+          dossier.lifecycleState === 'sent_to_production' ? 'sent_to_production' : 'handoff_ready',
         onRollback: handleRollbackToDevelopment,
       },
     },

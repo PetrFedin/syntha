@@ -5,7 +5,10 @@ import { NextResponse } from 'next/server';
 import { readJsonBody } from '@/lib/http/read-json-body';
 import { getLiveProcessDefinition } from '@/lib/live-process/process-definitions';
 import { getTemplateById } from '@/lib/live-process/process-templates';
-import { getStoredDefinitionAsync, upsertDefinitionAsync } from '@/lib/server/process-workflow-store';
+import {
+  getStoredDefinitionAsync,
+  upsertDefinitionAsync,
+} from '@/lib/server/process-workflow-store';
 import type { LiveProcessDefinition } from '@/lib/live-process/types';
 
 export const runtime = 'nodejs';

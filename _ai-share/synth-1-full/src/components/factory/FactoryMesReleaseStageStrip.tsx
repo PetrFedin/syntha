@@ -21,13 +21,7 @@ type Props = {
 };
 
 /** Компактная полоса MES cut / sew / qc / released для реестра production-orders. */
-export function FactoryMesReleaseStageStrip({
-  stage,
-  poStatus,
-  busy,
-  onAdvance,
-  testId,
-}: Props) {
+export function FactoryMesReleaseStageStrip({ stage, poStatus, busy, onAdvance, testId }: Props) {
   const current = factoryMesReleaseStageProgressIndex(stage);
   const canAdvance = canAdvanceFactoryMesReleaseStage(poStatus, stage);
   const nextLabel = canAdvance

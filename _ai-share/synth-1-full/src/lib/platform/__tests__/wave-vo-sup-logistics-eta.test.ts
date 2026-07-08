@@ -71,7 +71,10 @@ describe('wave VO — supplier comms logistics ETA/map + chain-status + RFQ peer
   });
 
   it('quote peer → dedicated RFQ inbox route (wave SX verify, not messages alias)', () => {
-    const rfqHref = factorySupplierRfqInboxHref({ collectionId: 'SS27', articleId: 'demo-ss27-01' });
+    const rfqHref = factorySupplierRfqInboxHref({
+      collectionId: 'SS27',
+      articleId: 'demo-ss27-01',
+    });
     expect(rfqHref).toContain('/factory/supplier/rfq-inbox');
     expect(rfqHref).not.toContain('feature=rfq');
     expect(rfqHref).not.toContain('pcf=rfq');

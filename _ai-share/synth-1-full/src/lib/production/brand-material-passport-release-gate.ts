@@ -52,8 +52,7 @@ export function evaluateBrandMaterialPassportReleaseGateFromSummary(input: {
       storageMode: input.storageMode,
     };
   }
-  const blocked =
-    input.releaseBlocked || materialPassportCertsBlockRelease(input.summary);
+  const blocked = input.releaseBlocked || materialPassportCertsBlockRelease(input.summary);
   return {
     blocked,
     ready: !blocked,

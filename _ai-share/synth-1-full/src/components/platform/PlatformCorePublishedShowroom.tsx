@@ -341,10 +341,16 @@ export function PlatformCorePublishedShowroom({
       ? `${ROUTES.shop.b2bShowroom}?collection=${id}`
       : `${ROUTES.brand.showroom}?collection=${id}`;
 
-  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
+  const matrixHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
+  );
   const linesheetHref = `/brand/linesheets?collection=${encodeURIComponent(collectionId)}`;
-  const brandShowroomHref = platformCoreUiHref(`${ROUTES.brand.showroom}?collection=${encodeURIComponent(collectionId)}`);
-  const shopShowroomHref = platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`);
+  const brandShowroomHref = platformCoreUiHref(
+    `${ROUTES.brand.showroom}?collection=${encodeURIComponent(collectionId)}`
+  );
+  const shopShowroomHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+  );
   const sectionPrefix = variant === 'shop' ? 'shop-sc-showroom' : 'brand-sc-showroom';
   const panelTestId = `${sectionPrefix}-panel`;
   const missingCollection = !collectionId?.trim();
@@ -807,7 +813,9 @@ export function PlatformCorePublishedShowroom({
                       asChild
                     >
                       <Link
-                        href={platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(article.collectionId)}`)}
+                        href={platformCoreUiHref(
+                          `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(article.collectionId)}`
+                        )}
                         data-testid={`brand-sc-showroom-matrix-link-${article.articleId}`}
                         data-audit-legacy={`brand-showroom-matrix-link-${article.articleId}`}
                       >

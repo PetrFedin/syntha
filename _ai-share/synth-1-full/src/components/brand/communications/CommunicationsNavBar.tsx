@@ -35,8 +35,7 @@ export function CommunicationsNavBar({
   if (isPlatformCoreMode()) return null;
   const deadlines = getDefaultUpcomingDeadlines({ limit: 20 });
   const overdueCount = deadlines.filter((d) => d.isOverdue).length;
-  const unread =
-    unreadCount ?? (pgUnread.totalUnread > 0 ? pgUnread.totalUnread : RECENT_UNREAD);
+  const unread = unreadCount ?? (pgUnread.totalUnread > 0 ? pgUnread.totalUnread : RECENT_UNREAD);
 
   return (
     <>

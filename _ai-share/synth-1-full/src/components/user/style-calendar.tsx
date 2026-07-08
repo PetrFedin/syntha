@@ -447,7 +447,9 @@ export default function StyleCalendar({
             setEvents([...events, json.event]);
             onPlatformCoreTaskCreated?.();
           } else {
-            setTaskSaveError(json.messageRu?.trim() || 'Слот не сохранён — нужен PostgreSQL (core:bootstrap).');
+            setTaskSaveError(
+              json.messageRu?.trim() || 'Слот не сохранён — нужен PostgreSQL (core:bootstrap).'
+            );
           }
         } finally {
           setTaskSaving(false);
@@ -512,7 +514,7 @@ export default function StyleCalendar({
       className={cn(
         'flex flex-col overflow-hidden border bg-white',
         slimCore
-          ? 'overflow-x-clip rounded-lg border-border-subtle shadow-sm'
+          ? 'border-border-subtle overflow-x-clip rounded-lg shadow-sm'
           : 'rounded-3xl border-slate-100 shadow-xl',
         variant === 'full' ? 'h-full' : 'h-[600px]'
       )}

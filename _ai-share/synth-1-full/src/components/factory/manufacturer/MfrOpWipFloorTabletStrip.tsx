@@ -127,7 +127,9 @@ export function MfrOpWipFloorTabletStrip({
       data-testid={WAVE_WO_MFR_WIP_FLOOR_TABLET_STRIP_TESTID}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-semibold text-slate-800">{WAVE_WO_MFR_WIP_TABLET_TITLE_RU}</span>
+        <span className="text-[10px] font-semibold text-slate-800">
+          {WAVE_WO_MFR_WIP_TABLET_TITLE_RU}
+        </span>
         <Badge
           variant="outline"
           className="text-[8px] uppercase"
@@ -161,7 +163,11 @@ export function MfrOpWipFloorTabletStrip({
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={materialsHref} data-testid="mfr-op-wip-floor-materials-link" className={hubGadget.goldenLink}>
+        <Link
+          href={materialsHref}
+          data-testid="mfr-op-wip-floor-materials-link"
+          className={hubGadget.goldenLink}
+        >
           Закупка материалов
         </Link>
       </div>
@@ -191,12 +197,18 @@ export function MfrOpWipFloorTabletStrip({
           </Button>
         </div>
       ) : (
-        <p className="text-text-muted text-[9px]" data-testid={WAVE_WO_MFR_WIP_FLOOR_BLOCKED_TESTID}>
+        <p
+          className="text-text-muted text-[9px]"
+          data-testid={WAVE_WO_MFR_WIP_FLOOR_BLOCKED_TESTID}
+        >
           {WAVE_WO_MFR_WIP_FLOOR_BLOCKED_RU}
         </p>
       )}
       {messageRu ? (
-        <p className="text-text-muted text-[9px]" data-testid={WAVE_WO_MFR_WIP_FLOOR_MESSAGE_TESTID}>
+        <p
+          className="text-text-muted text-[9px]"
+          data-testid={WAVE_WO_MFR_WIP_FLOOR_MESSAGE_TESTID}
+        >
           {messageRu}
         </p>
       ) : null}

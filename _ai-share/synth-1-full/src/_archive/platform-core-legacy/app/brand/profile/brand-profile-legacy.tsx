@@ -60,7 +60,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { AssetTypeId, MediaAssetItem } from '@/components/brand/MediaAssetsViewer';
 import { RegistryPageHeader, RegistryPageShell } from '@/components/design-system';
 import { BrandProfileCommerceTab } from '@/app/brand/profile/brand-profile-commerce-tab';
-import { BrandProfileLegalTab, type BrandProfileLegalDataState } from '@/app/brand/profile/brand-profile-legal-tab';
+import {
+  BrandProfileLegalTab,
+  type BrandProfileLegalDataState,
+} from '@/app/brand/profile/brand-profile-legal-tab';
 import {
   BrandProfileCertificatesTab,
   type BrandProfileCertificateItem,

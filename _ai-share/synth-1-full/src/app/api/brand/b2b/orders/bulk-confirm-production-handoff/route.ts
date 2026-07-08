@@ -67,14 +67,20 @@ export async function POST(req: NextRequest) {
           factoryId,
           idempotencyKey,
         })
-      : { ok: false, handedOff: [] as string[], skipped: [] as string[], errors: [] as Array<{ orderId: string; messageRu: string }>, messageRu: '' };
+      : {
+          ok: false,
+          handedOff: [] as string[],
+          skipped: [] as string[],
+          errors: [] as Array<{ orderId: string; messageRu: string }>,
+          messageRu: '',
+        };
 
   const handedOff = [...importedHandoff, ...result.handedOff];
   const errors = [...importedErrors, ...result.errors];
   const ok = handedOff.length > 0;
   const messageRu = ok
     ? `Передано в производство: ${handedOff.length} из ${orderIds.length} заказ(ов).`
-    : errors[0]?.messageRu ?? result.messageRu ?? 'Не удалось передать заказы в производство.';
+    : (errors[0]?.messageRu ?? result.messageRu ?? 'Не удалось передать заказы в производство.');
 
   if (!ok) {
     return NextResponse.json(

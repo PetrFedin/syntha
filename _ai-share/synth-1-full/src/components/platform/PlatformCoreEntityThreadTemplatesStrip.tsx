@@ -100,9 +100,7 @@ export function PlatformCoreEntityThreadTemplatesStrip({
       <span className="text-text-muted text-[10px] font-medium uppercase tracking-wide">
         Шаблоны треда
       </span>
-      {coreMode ? (
-        <span className="text-text-muted text-[9px]">Без localStorage</span>
-      ) : null}
+      {coreMode ? <span className="text-text-muted text-[9px]">Без localStorage</span> : null}
       {coreMode ? (
         <Badge
           variant="outline"
@@ -148,9 +146,7 @@ export function PlatformCoreEntityThreadTemplatesStrip({
         disabled={busy}
         data-testid={`${testIdPrefix}-open-thread-${threadKind}`}
         onClick={() =>
-          void openThread(
-            `Тред · ${threadKind} · ${articleId}${orderId ? ` · ${orderId}` : ''}`
-          )
+          void openThread(`Тред · ${threadKind} · ${articleId}${orderId ? ` · ${orderId}` : ''}`)
         }
       >
         Открыть чат

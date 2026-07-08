@@ -68,7 +68,9 @@ export function ShopSidebar({
   const searchParams = useSearchParams();
 
   const clusteredSections = useMemo(() => {
-    const coreOrder = shouldHideNavArchiveCluster() ? SHOP_CORE_PILLARS_NAV_ORDER : SHOP_CORE_GROUP_ORDER;
+    const coreOrder = shouldHideNavArchiveCluster()
+      ? SHOP_CORE_PILLARS_NAV_ORDER
+      : SHOP_CORE_GROUP_ORDER;
     const core = sortNavGroupsByOrder(
       groups.filter((g) => (g as { clusterId?: string }).clusterId === 'syntha-cores'),
       coreOrder

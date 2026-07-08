@@ -67,7 +67,17 @@ describe('workshop2-b2b-order-operational-mapper', () => {
 
   it('PG rows override snapshot duplicates', () => {
     const merged = mergeOperationalB2bOrderLists(
-      [{ order: 'W2-B2B-SS27-001', status: 'legacy', shop: 'x', brand: 'y', amount: '0', date: '2020-01-01', deliveryDate: '2020-02-01' }],
+      [
+        {
+          order: 'W2-B2B-SS27-001',
+          status: 'legacy',
+          shop: 'x',
+          brand: 'y',
+          amount: '0',
+          date: '2020-01-01',
+          deliveryDate: '2020-02-01',
+        },
+      ],
       [sample]
     );
     expect(merged).toHaveLength(1);

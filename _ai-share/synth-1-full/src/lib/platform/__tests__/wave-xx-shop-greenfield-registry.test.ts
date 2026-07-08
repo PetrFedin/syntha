@@ -25,9 +25,7 @@ import {
   shopGreenfieldRegistryReady,
   shopGreenfieldStorageBadgeTestId,
 } from '@/lib/b2b/shop-greenfield-registry-wave-xx';
-import {
-  SHOP_SC_CABINET_BUYER_PROFILE_NO_SEGMENT_RU,
-} from '@/lib/b2b/shop-sc-cabinet-buyer-profile-honesty';
+import { SHOP_SC_CABINET_BUYER_PROFILE_NO_SEGMENT_RU } from '@/lib/b2b/shop-sc-cabinet-buyer-profile-honesty';
 
 describe('wave XX — shop2 full greenfield registry PG buyer + pricelist + matrix seed', () => {
   it('exports wave XX constants + PG tables', () => {

@@ -30,7 +30,7 @@ export function SupplierDevPillarMaterialCatalogNav({ demo, showPeers = true }: 
       <Link
         href={catalogHref}
         data-testid={SUPPLIER_CORE_MATERIAL_CATALOG_NAV_TESTID}
-        className="text-text-secondary hover:text-text-primary hover:bg-bg-surface2 flex w-full min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-semibold transition-colors"
+        className="text-text-secondary hover:text-text-primary hover:bg-bg-surface2 flex min-h-11 w-full items-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-semibold transition-colors"
         onMouseEnter={() => prefetchPlatformCoreW2FromHref(catalogHref)}
       >
         <span data-testid={SUPPLIER_DEV_PILLAR_MATERIAL_CATALOG_NAV_TESTID}>

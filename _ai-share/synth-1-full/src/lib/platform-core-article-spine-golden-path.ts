@@ -2,10 +2,7 @@
  * Wave 6 · Article Spine golden strip — native `/…/core` hrefs из golden-cross-role-path.
  * UI: brand W2 hub → dossier → linesheets → shop matrix (без legacy B2B).
  */
-import {
-  PLATFORM_CORE_DEMO,
-  type PlatformCoreDemoContext,
-} from '@/lib/platform-core-demo-context';
+import { PLATFORM_CORE_DEMO, type PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
 import { buildPlatformCoreGoldenCrossRoleStops } from '@/lib/platform-core-golden-cross-role-path';
 
 /** Шаги strip на экранах brand dev / sample_collection (embedded hub). */

@@ -11,8 +11,7 @@ export async function GET(req: NextRequest) {
 
   const summary = summarizeWorkshop2B2b3dSlaFromJournal();
   const sloTargets = readWorkshop2SloTargetsFromDisk();
-  const sloOk =
-    summary.sessionCount === 0 || summary.errorRatePct <= sloTargets.b2b3dErrorRatePct;
+  const sloOk = summary.sessionCount === 0 || summary.errorRatePct <= sloTargets.b2b3dErrorRatePct;
   return NextResponse.json({
     ok: true,
     ...summary,

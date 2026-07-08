@@ -36,19 +36,31 @@ export function MfrCmCabinetSpinePeerStrip({ collectionId, orderId, factoryId, a
     >
       {resolvedOrderId ? (
         <>
-          <Link href={comms.handoffHref} data-testid="mfr-cm-cabinet-handoff-link" className={hubGadget.goldenLink}>
+          <Link
+            href={comms.handoffHref}
+            data-testid="mfr-cm-cabinet-handoff-link"
+            className={hubGadget.goldenLink}
+          >
             Передача
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={comms.shopTrackingHref} data-testid="mfr-cm-cabinet-shop-tracking-link" className={hubGadget.goldenLink}>
+          <Link
+            href={comms.shopTrackingHref}
+            data-testid="mfr-cm-cabinet-shop-tracking-link"
+            className={hubGadget.goldenLink}
+          >
             Трекинг магазина
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={comms.brandOrderChatHref} data-testid="mfr-cm-cabinet-brand-chat-link" className={hubGadget.goldenLink}>
+          <Link
+            href={comms.brandOrderChatHref}
+            data-testid="mfr-cm-cabinet-brand-chat-link"
+            className={hubGadget.goldenLink}
+          >
             Чат бренда
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
@@ -56,19 +68,31 @@ export function MfrCmCabinetSpinePeerStrip({ collectionId, orderId, factoryId, a
           </span>
         </>
       ) : null}
-      <Link href={ops.materialsHref} data-testid="mfr-cm-cabinet-materials-link" className={hubGadget.goldenLink}>
+      <Link
+        href={ops.materialsHref}
+        data-testid="mfr-cm-cabinet-materials-link"
+        className={hubGadget.goldenLink}
+      >
         Материалы
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={ops.cutTicketHref} data-testid="mfr-cm-cabinet-cut-ticket-link" className={hubGadget.goldenLink}>
+      <Link
+        href={ops.cutTicketHref}
+        data-testid="mfr-cm-cabinet-cut-ticket-link"
+        className={hubGadget.goldenLink}
+      >
         Техкарта раскроя
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={comms.entitiesHref} data-testid="mfr-cm-cabinet-entities-link" className={hubGadget.goldenLink}>
+      <Link
+        href={comms.entitiesHref}
+        data-testid="mfr-cm-cabinet-entities-link"
+        className={hubGadget.goldenLink}
+      >
         Треды сущностей
       </Link>
     </div>

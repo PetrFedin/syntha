@@ -17,10 +17,7 @@ import type {
 } from './imported-orders-persistence.file';
 
 export function isSpineImportedOrdersPgEnabled(): boolean {
-  if (
-    process.env.SPINE_OPERATIONAL_PG === '0' ||
-    process.env.SPINE_IMPORTED_ORDERS_PG === '0'
-  ) {
+  if (process.env.SPINE_OPERATIONAL_PG === '0' || process.env.SPINE_IMPORTED_ORDERS_PG === '0') {
     return false;
   }
   return isWorkshop2PostgresEnabled();

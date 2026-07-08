@@ -15,7 +15,9 @@ type Props = {
 
 /** EMPTY27 / пустая цепочка: один путь старта без лишних CTA. */
 export function BrandDevEmptyChainOnboarding({ collectionId, variant = 'cabinet' }: Props) {
-  const rangeHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`);
+  const rangeHref = platformCoreUiHref(
+    `${ROUTES.brand.rangePlanner}?collection=${encodeURIComponent(collectionId)}`
+  );
   const createHref = brandDevelopmentCabinetHref(collectionId, undefined, { create: true });
   const ss27W2Href = brandDevelopmentCabinetHref('SS27');
   const ss27RangeHref = platformCoreUiHref(`${ROUTES.brand.rangePlanner}?collection=SS27`);
@@ -24,7 +26,7 @@ export function BrandDevEmptyChainOnboarding({ collectionId, variant = 'cabinet'
     <div
       className={
         variant === 'w2-hub'
-          ? 'border-amber-200/80 bg-amber-50/40 rounded-lg border p-2.5'
+          ? 'rounded-lg border border-amber-200/80 bg-amber-50/40 p-2.5'
           : hubGadget.pillarCard + ' ' + hubGadget.pillarBody
       }
       data-testid="brand-dev-empty-onboarding"
@@ -46,7 +48,11 @@ export function BrandDevEmptyChainOnboarding({ collectionId, variant = 'cabinet'
           </Link>
         </Button>
         <span className={hubGadget.muted}>
-          <Link href={ss27W2Href} data-testid="brand-dev-empty-ss27-w2-link" className={hubGadget.ctaLink}>
+          <Link
+            href={ss27W2Href}
+            data-testid="brand-dev-empty-ss27-w2-link"
+            className={hubGadget.ctaLink}
+          >
             SS27 W2
           </Link>
           <span className={hubGadget.goldenSep}> · </span>

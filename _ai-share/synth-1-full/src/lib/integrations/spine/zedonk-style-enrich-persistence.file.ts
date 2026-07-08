@@ -35,7 +35,9 @@ function articleKey(collectionId: string, articleId: string): string {
 function load(): FileV1 {
   try {
     const j = JSON.parse(fs.readFileSync(pathFile(), 'utf8')) as FileV1;
-    return j?.schemaVersion === 1 ? { schemaVersion: 1, byArticleKey: j.byArticleKey ?? {} } : { ...EMPTY };
+    return j?.schemaVersion === 1
+      ? { schemaVersion: 1, byArticleKey: j.byArticleKey ?? {} }
+      : { ...EMPTY };
   } catch {
     return { ...EMPTY };
   }

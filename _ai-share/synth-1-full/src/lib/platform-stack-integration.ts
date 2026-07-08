@@ -42,7 +42,12 @@ export const PLATFORM_STACK_CAPABILITIES: Record<StackCapabilityId, StackCapabil
     title: 'PostgreSQL',
     pillars: ['development', 'sample_collection', 'collection_order', 'order_production', 'comms'],
     roles: ['brand', 'shop', 'manufacturer', 'supplier'],
-    sectionIds: ['brand-dev-pg-sync', 'shop-co-registry', 'brand-co-registry', 'mfr-op-handoff-queue'],
+    sectionIds: [
+      'brand-dev-pg-sync',
+      'shop-co-registry',
+      'brand-co-registry',
+      'mfr-op-handoff-queue',
+    ],
     agentIds: [],
     backendPaths: ['app/db/session.py'],
     frontendPaths: ['src/lib/server/workshop2-pg-pool.ts', 'db/migrations/'],
@@ -174,10 +179,7 @@ export function getCapabilitiesForSection(sectionId: string): StackCapabilityId[
   return sectionIndex.get(sectionId) ?? [];
 }
 
-export function getAgentsForPillarRole(
-  pillar: CoreHubPillarId,
-  role: CoreChainRoleId
-): string[] {
+export function getAgentsForPillarRole(pillar: CoreHubPillarId, role: CoreChainRoleId): string[] {
   const agents = new Set<string>();
   for (const meta of Object.values(PLATFORM_STACK_CAPABILITIES)) {
     if (!meta.pillars.includes(pillar) || !meta.roles.includes(role)) continue;

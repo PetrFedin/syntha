@@ -82,8 +82,7 @@ export default function SubcontractorPage() {
         title={WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU}
         description={
           <>
-            {WAVE_YC_BRAND_SUBCONTRACTOR_HUB_DESC_RU}{' '}
-            <AcronymWithTooltip abbr="PO" />.
+            {WAVE_YC_BRAND_SUBCONTRACTOR_HUB_DESC_RU} <AcronymWithTooltip abbr="PO" />.
           </>
         }
         icon={Building2}
@@ -98,7 +97,9 @@ export default function SubcontractorPage() {
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold uppercase">{WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU}</h1>
+          <h1 className="text-2xl font-bold uppercase">
+            {WAVE_YC_BRAND_SUBCONTRACTOR_HUB_TITLE_RU}
+          </h1>
           {persistMode === 'postgres' && !pgUnavailable ? (
             <Badge
               variant="outline"
@@ -142,7 +143,9 @@ export default function SubcontractorPage() {
         </CardHeader>
         <CardContent>
           {data.orders.length === 0 ? (
-            <p className="text-text-secondary text-sm">Нет заказов на сторону — добавьте после интеграции с PO.</p>
+            <p className="text-text-secondary text-sm">
+              Нет заказов на сторону — добавьте после интеграции с PO.
+            </p>
           ) : null}
           <ul className="space-y-3">
             {data.orders.map((o, i) => {
@@ -184,13 +187,15 @@ export default function SubcontractorPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU) as SubcontractOrder['status'][]).map(
-                        (s) => (
-                          <SelectItem key={s} value={s} className="text-xs">
-                            {WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU[s]}
-                          </SelectItem>
-                        )
-                      )}
+                      {(
+                        Object.keys(
+                          WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU
+                        ) as SubcontractOrder['status'][]
+                      ).map((s) => (
+                        <SelectItem key={s} value={s} className="text-xs">
+                          {WAVE_YC_BRAND_SUBCONTRACTOR_STATUS_LABELS_RU[s]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </li>

@@ -55,7 +55,8 @@ export const EMPTY_SECTION_AUDIT: Partial<
         order: 1,
         staticScore: 7.2,
         liveScore: 7.3,
-        summary: 'ShopDevelopmentBridge: шаги development-status + published badge + greenfield CRM.',
+        summary:
+          'ShopDevelopmentBridge: шаги development-status + published badge + greenfield CRM.',
         good: [
           'usePillarSnapshot development BFF',
           'shop-development-bridge + core-31 e2e',

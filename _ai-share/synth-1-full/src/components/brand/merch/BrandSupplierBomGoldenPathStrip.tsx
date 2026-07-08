@@ -29,7 +29,10 @@ const STEPS: { id: BrandSupplierBomGoldenPathStepId; label: string }[] = [
   { id: 'supplier-forecast', label: 'Supplier forecast' },
 ];
 
-function hrefForStep(session: BrandSupplierBomSession, id: BrandSupplierBomGoldenPathStepId): string {
+function hrefForStep(
+  session: BrandSupplierBomSession,
+  id: BrandSupplierBomGoldenPathStepId
+): string {
   if (id === 'bom') return session.bomHref;
   if (id === 'procurement') return session.procurementHref;
   if (id === 'centric-rfq') return session.centricRfqHref;

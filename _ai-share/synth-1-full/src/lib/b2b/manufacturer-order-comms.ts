@@ -3,7 +3,10 @@ import {
   brandLandedMarginTabHref,
   brandOrderCommsTabHref,
 } from '@/lib/b2b/brand-collection-order-hrefs';
-import { shopLandedMarginTabHref, shopOrderCommsTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
+import {
+  shopLandedMarginTabHref,
+  shopOrderCommsTabHref,
+} from '@/lib/b2b/shop-collection-order-hrefs';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { manufacturerHandoffFeatureHref } from '@/lib/production/manufacturer-handoff-queue';

@@ -19,9 +19,7 @@ export function PlatformCoreCabinetPage({ roleId, fallbackHref }: Props) {
 
   return (
     <Suspense
-      fallback={
-        <PlatformCorePillarInsightSkeleton testId="platform-core-cabinet-hub-suspense" />
-      }
+      fallback={<PlatformCorePillarInsightSkeleton testId="platform-core-cabinet-hub-suspense" />}
     >
       <RoleCoreCabinetHub roleId={roleId} />
     </Suspense>

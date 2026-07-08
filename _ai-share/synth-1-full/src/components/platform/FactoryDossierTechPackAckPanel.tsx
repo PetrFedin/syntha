@@ -25,9 +25,9 @@ export function FactoryDossierTechPackAckPanel({
   const [messageRu, setMessageRu] = useState<string | null>(null);
   const [handoffId, setHandoffId] = useState<string | null>(null);
   const [hintRu, setHintRu] = useState<string | null>(null);
-  const [state, setState] = useState<'loading' | 'none' | 'draft' | 'dispatched' | 'acknowledged' | 'error'>(
-    'loading'
-  );
+  const [state, setState] = useState<
+    'loading' | 'none' | 'draft' | 'dispatched' | 'acknowledged' | 'error'
+  >('loading');
 
   const load = useCallback(() => {
     let cancelled = false;
@@ -62,7 +62,9 @@ export function FactoryDossierTechPackAckPanel({
         }
         const pending = summary.checklistRow ?? summary.lastRow;
         setHandoffId(pending?.handoffId?.trim() ?? null);
-        setState(pending?.brandDispatchedAt && !pending?.factoryReceivedAt ? 'dispatched' : 'draft');
+        setState(
+          pending?.brandDispatchedAt && !pending?.factoryReceivedAt ? 'dispatched' : 'draft'
+        );
       })
       .catch(() => {
         if (!cancelled) {
@@ -120,7 +122,9 @@ export function FactoryDossierTechPackAckPanel({
           </Badge>
         ) : (
           <>
-            <span className="text-text-secondary">Пакет передан брендом — подтвердите приёмку ТЗ.</span>
+            <span className="text-text-secondary">
+              Пакет передан брендом — подтвердите приёмку ТЗ.
+            </span>
             <Button
               type="button"
               size="sm"
@@ -134,7 +138,10 @@ export function FactoryDossierTechPackAckPanel({
           </>
         )}
         {messageRu ? (
-          <span className="text-text-muted w-full text-[10px]" data-testid="factory-dossier-techpack-ack-msg">
+          <span
+            className="text-text-muted w-full text-[10px]"
+            data-testid="factory-dossier-techpack-ack-msg"
+          >
             {messageRu}
           </span>
         ) : null}
@@ -166,7 +173,9 @@ export function FactoryDossierTechPackAckPanel({
           </p>
         ) : null}
         {state === 'acknowledged' ? (
-          <p className="text-emerald-800 text-sm">ТЗ принято цехом — factory-ack записан в dossier.</p>
+          <p className="text-sm text-emerald-800">
+            ТЗ принято цехом — factory-ack записан в dossier.
+          </p>
         ) : state === 'dispatched' ? (
           <Button
             type="button"
@@ -184,7 +193,10 @@ export function FactoryDossierTechPackAckPanel({
           </p>
         ) : null}
         {handoffId ? (
-          <p className="text-text-muted font-mono text-[10px]" data-testid="factory-dossier-techpack-ack-handoff-id">
+          <p
+            className="text-text-muted font-mono text-[10px]"
+            data-testid="factory-dossier-techpack-ack-handoff-id"
+          >
             handoffId: {handoffId}
           </p>
         ) : null}

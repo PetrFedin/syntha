@@ -57,9 +57,7 @@ export function buildWorkshop2Phase1DossierVisualsCatalog(
       )
     : [];
   const baseIds = phaseRows
-    .filter((row) =>
-      isSketchLinkedCatalogAttribute(row.attribute.attributeId, row.group?.groupId)
-    )
+    .filter((row) => isSketchLinkedCatalogAttribute(row.attribute.attributeId, row.group?.groupId))
     .map((r) => r.attribute.attributeId);
   const extraIds = input.isPhase1
     ? input.extraRows

@@ -41,8 +41,7 @@ async function loadMaterialPreviewsFromBatchApi(
     const map = new Map<string, Workshop2DossierMaterialPreview[]>();
     for (const item of json.items) {
       const materials =
-        item.materials ??
-        (item.materialNames ?? []).map((name) => ({ name, unitLabelRu: 'ед.' }));
+        item.materials ?? (item.materialNames ?? []).map((name) => ({ name, unitLabelRu: 'ед.' }));
       map.set(item.articleId, materials);
     }
     for (const id of articleIds) {
@@ -122,7 +121,10 @@ export async function fetchDossierMaterialNamesBatch(
   );
   const out = new Map<string, string[]>();
   for (const [articleId, rows] of previews) {
-    out.set(articleId, rows.map((p) => formatDossierMaterialPreviewLine(p)));
+    out.set(
+      articleId,
+      rows.map((p) => formatDossierMaterialPreviewLine(p))
+    );
   }
   return out;
 }

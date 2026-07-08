@@ -86,7 +86,7 @@ export function PlatformCoreEmpty27OnboardingStrip({ buyerId, collectionId }: Pr
 
   return (
     <div
-      className="border-border-subtle space-y-3 rounded-md border bg-bg-surface2/30 px-3 py-2"
+      className="border-border-subtle bg-bg-surface2/30 space-y-3 rounded-md border px-3 py-2"
       data-testid={SHOP_EMPTY27_ONBOARDING_STRIP_TESTID}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -94,7 +94,11 @@ export function PlatformCoreEmpty27OnboardingStrip({ buyerId, collectionId }: Pr
           {shopEmpty27OnboardingTitleRu(collectionId)}
         </span>
         {onboardingBadgeTestId && onboardingBadgeRu ? (
-          <Badge variant="outline" className="text-[9px] uppercase" data-testid={onboardingBadgeTestId}>
+          <Badge
+            variant="outline"
+            className="text-[9px] uppercase"
+            data-testid={onboardingBadgeTestId}
+          >
             {onboardingBadgeRu}
           </Badge>
         ) : null}
@@ -107,12 +111,17 @@ export function PlatformCoreEmpty27OnboardingStrip({ buyerId, collectionId }: Pr
           disabled={seedBusy}
           onClick={handleSeedProfile}
         >
-          {seedBusy ? SHOP_EMPTY27_BUYER_PROFILE_SEED_BUSY_RU : SHOP_EMPTY27_BUYER_PROFILE_SEED_CTA_RU}
+          {seedBusy
+            ? SHOP_EMPTY27_BUYER_PROFILE_SEED_BUSY_RU
+            : SHOP_EMPTY27_BUYER_PROFILE_SEED_CTA_RU}
         </Button>
       </div>
 
       {seedHint ? (
-        <p className="text-text-secondary text-[10px] leading-relaxed" data-testid="shop-sc-empty27-onboarding-seed-hint">
+        <p
+          className="text-text-secondary text-[10px] leading-relaxed"
+          data-testid="shop-sc-empty27-onboarding-seed-hint"
+        >
           {seedHint}
         </p>
       ) : null}
@@ -125,7 +134,7 @@ export function PlatformCoreEmpty27OnboardingStrip({ buyerId, collectionId }: Pr
       />
 
       <div
-        className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/40 px-3 py-2"
+        className="border-border-subtle bg-bg-surface2/40 space-y-2 rounded-md border px-3 py-2"
         data-testid={SHOP_EMPTY27_ONBOARDING_GREENFIELD_TESTID}
       >
         <div className="flex flex-wrap items-center gap-2">
@@ -151,13 +160,24 @@ export function PlatformCoreEmpty27OnboardingStrip({ buyerId, collectionId }: Pr
           {shopEmpty27GreenfieldHintRu(state)}
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-bold uppercase">
-            <PlatformCoreLink href={partnersHref} data-testid={SHOP_EMPTY27_ONBOARDING_PARTNERS_LINK_TESTID}>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="h-7 text-[10px] font-bold uppercase"
+          >
+            <PlatformCoreLink
+              href={partnersHref}
+              data-testid={SHOP_EMPTY27_ONBOARDING_PARTNERS_LINK_TESTID}
+            >
               {SHOP_EMPTY27_PARTNERS_LINK_RU}
             </PlatformCoreLink>
           </Button>
           <Button asChild size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase">
-            <PlatformCoreLink href={matrixHref} data-testid={SHOP_EMPTY27_ONBOARDING_MATRIX_LINK_TESTID}>
+            <PlatformCoreLink
+              href={matrixHref}
+              data-testid={SHOP_EMPTY27_ONBOARDING_MATRIX_LINK_TESTID}
+            >
               {SHOP_EMPTY27_MATRIX_LINK_RU}
             </PlatformCoreLink>
           </Button>

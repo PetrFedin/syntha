@@ -29,7 +29,10 @@ export function ManufacturerHandoffBridgePanel({ factoryId, orderId, collectionI
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.factoryOrdersHref} data-testid="mfr-handoff-bridge-prod-orders-link">
+            <Link
+              href={session.factoryOrdersHref}
+              data-testid="mfr-handoff-bridge-prod-orders-link"
+            >
               Заказы цеха
             </Link>
           </Button>
@@ -83,9 +86,7 @@ export function ManufacturerHandoffBridgePanel({ factoryId, orderId, collectionI
               </Button>
             </>
           ) : (
-            <p className="text-text-secondary text-sm">
-              Добавьте `?order=` для трекинга магазина.
-            </p>
+            <p className="text-text-secondary text-sm">Добавьте `?order=` для трекинга магазина.</p>
           )}
           <Button size="sm" variant="ghost" asChild>
             <Link href={session.sampleQueueHref}>Очередь образцов</Link>

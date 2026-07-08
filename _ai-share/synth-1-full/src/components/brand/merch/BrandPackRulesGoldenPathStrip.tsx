@@ -28,11 +28,7 @@ const STEPS: { id: BrandPackRulesGoldenPathStepId; label: string }[] = [
   { id: 'size-chart', label: 'Size chart' },
 ];
 
-export function BrandPackRulesGoldenPathStrip({
-  collectionId,
-  orderId,
-  activeStep,
-}: Props) {
+export function BrandPackRulesGoldenPathStrip({ collectionId, orderId, activeStep }: Props) {
   const session = buildBrandPackRulesSession({ collectionId, orderId });
 
   const hrefFor = (id: BrandPackRulesGoldenPathStepId): string => {
@@ -55,10 +51,7 @@ export function BrandPackRulesGoldenPathStrip({
           ) : null}
           <Link
             href={hrefFor(step.id)}
-            className={cn(
-              hubGadget.goldenLink,
-              activeStep === step.id && 'font-bold underline'
-            )}
+            className={cn(hubGadget.goldenLink, activeStep === step.id && 'font-bold underline')}
             data-testid={`brand-pack-rules-golden-${step.id}-link`}
           >
             {step.label}

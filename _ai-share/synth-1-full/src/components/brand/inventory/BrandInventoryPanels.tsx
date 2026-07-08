@@ -70,7 +70,10 @@ export function BrandInventoryBalanceBridgePanel({ collectionId }: Props) {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.inventoryBalanceHref} data-testid="brand-inventory-balance-deep-link">
+            <Link
+              href={session.inventoryBalanceHref}
+              data-testid="brand-inventory-balance-deep-link"
+            >
               Открыть перенос остатков
             </Link>
           </Button>
@@ -110,7 +113,10 @@ export function BrandInventoryNetworkBridgePanel({ collectionId }: Props) {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.shopInventoryOverviewHref} data-testid="brand-inventory-shop-stock-link">
+            <Link
+              href={session.shopInventoryOverviewHref}
+              data-testid="brand-inventory-shop-stock-link"
+            >
               Склад магазина
             </Link>
           </Button>
@@ -149,7 +155,10 @@ export function BrandInventoryPhysicalCountPanel({ collectionId }: Props) {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link href={session.shopInventoryReconcileHref} data-testid="brand-inventory-count-reconcile-link">
+            <Link
+              href={session.shopInventoryReconcileHref}
+              data-testid="brand-inventory-count-reconcile-link"
+            >
               Сверка магазина
             </Link>
           </Button>

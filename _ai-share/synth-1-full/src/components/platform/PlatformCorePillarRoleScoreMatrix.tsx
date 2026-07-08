@@ -72,9 +72,7 @@ export function PlatformCorePillarRoleScoreMatrix({
   const [demoSeeded, setDemoSeeded] = useState<boolean | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [sheetCell, setSheetCell] = useState<ReadinessCell | null>(null);
-  const [improvementsScope, setImprovementsScope] = useState<CoreHubPillarId | 'all' | null>(
-    null
-  );
+  const [improvementsScope, setImprovementsScope] = useState<CoreHubPillarId | 'all' | null>(null);
   const [improvementsSheetOpen, setImprovementsSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -112,10 +110,7 @@ export function PlatformCorePillarRoleScoreMatrix({
 
   const summaryStatic = useMemo(() => summarizePlatformCoreReadiness(cells, 'static'), [cells]);
   const summaryLive = useMemo(() => summarizePlatformCoreReadiness(cells, 'live'), [cells]);
-  const allImprovements = useMemo(
-    () => buildPlatformCoreReadinessImprovements(cells),
-    [cells]
-  );
+  const allImprovements = useMemo(() => buildPlatformCoreReadinessImprovements(cells), [cells]);
   const improvementsByPillar = useMemo(() => {
     const map = {} as Record<CoreHubPillarId, ReadinessImprovementItem[]>;
     for (const pillar of PLATFORM_CORE_PILLARS) {
@@ -149,7 +144,7 @@ export function PlatformCorePillarRoleScoreMatrix({
     improvementsScope === 'all'
       ? allImprovements
       : improvementsScope
-        ? improvementsByPillar[improvementsScope] ?? []
+        ? (improvementsByPillar[improvementsScope] ?? [])
         : [];
 
   const sheetPillarTitle = sheetCell
@@ -205,7 +200,7 @@ export function PlatformCorePillarRoleScoreMatrix({
         data-testid={`readiness-cell-${row.id}-${pillar.id}`}
         className={cn(
           READINESS_PILLAR_COL,
-          isOpen ? 'min-h-[2.5rem] align-top py-1' : READINESS_MATRIX_BODY_H,
+          isOpen ? 'min-h-[2.5rem] py-1 align-top' : READINESS_MATRIX_BODY_H,
           'border-border-subtle/60 border-t'
         )}
       >
@@ -253,7 +248,10 @@ export function PlatformCorePillarRoleScoreMatrix({
   const improvementsPanelRow =
     !isMobile && improvementsScope ? (
       <tr data-testid="readiness-improvements-row">
-        <td colSpan={PLATFORM_CORE_PILLARS.length + 1} className="border-border-subtle border-t px-3 pb-4 pt-2">
+        <td
+          colSpan={PLATFORM_CORE_PILLARS.length + 1}
+          className="border-border-subtle border-t px-3 pb-4 pt-2"
+        >
           <ReadinessImprovementsPanel
             items={displayedImprovements}
             filterPillarId={improvementsScope === 'all' ? undefined : improvementsScope}
@@ -292,10 +290,12 @@ export function PlatformCorePillarRoleScoreMatrix({
               improvementsScope === 'all'
                 ? allImprovements
                 : improvementsScope
-                  ? improvementsByPillar[improvementsScope] ?? []
+                  ? (improvementsByPillar[improvementsScope] ?? [])
                   : []
             }
-            filterPillarId={improvementsScope === 'all' ? undefined : improvementsScope ?? undefined}
+            filterPillarId={
+              improvementsScope === 'all' ? undefined : (improvementsScope ?? undefined)
+            }
             variant="sheet"
           />
         </SheetContent>
@@ -326,10 +326,11 @@ export function PlatformCorePillarRoleScoreMatrix({
           ) : null}
         </SheetContent>
       </Sheet>
-      <div data-testid="platform-core-readiness-matrix" className={platformCoreHubLayout.sectionStack}>
-        {hideSectionHeader ? null : (
-          <p className={hubSectionLabelClassName()}>Оценка готовности</p>
-        )}
+      <div
+        data-testid="platform-core-readiness-matrix"
+        className={platformCoreHubLayout.sectionStack}
+      >
+        {hideSectionHeader ? null : <p className={hubSectionLabelClassName()}>Оценка готовности</p>}
         {hideSectionHeader && !showModeLead ? null : (
           <p
             data-testid="platform-core-readiness-mode"
@@ -346,33 +347,63 @@ export function PlatformCorePillarRoleScoreMatrix({
         {overviewStatus === 'loading' && pgReachable === null ? (
           <PlatformCoreReadinessMatrixSkeleton />
         ) : (
-        <div className="border-border-subtle max-h-[min(72vh,780px)] overflow-auto rounded-xl border bg-white shadow-sm">
-          {isMobile ? (
-            <div className="grid w-full grid-cols-[5.35rem_minmax(0,1fr)] overflow-hidden p-3">
-              <table className="w-full border-separate border-spacing-0 bg-white text-[11px]">
-                <thead>
-                  <tr>
-                    <th scope="col" className={roleHeadFixedClass}>
-                      Роль
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hubRowsForUi.map((row) => (
-                    <tr key={row.id}>
-                      <th scope="row" className={roleRowFixedClass}>
-                        <div className={READINESS_ROW_LABEL}>
-                          <MatrixColumnLabel text={row.label} align="start" />
-                        </div>
-                      </th>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="min-w-0 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <table className="min-w-max border-separate border-spacing-0 text-[11px]">
+          <div className="border-border-subtle max-h-[min(72vh,780px)] overflow-auto rounded-xl border bg-white shadow-sm">
+            {isMobile ? (
+              <div className="grid w-full grid-cols-[5.35rem_minmax(0,1fr)] overflow-hidden p-3">
+                <table className="w-full border-separate border-spacing-0 bg-white text-[11px]">
                   <thead>
                     <tr>
+                      <th scope="col" className={roleHeadFixedClass}>
+                        Роль
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hubRowsForUi.map((row) => (
+                      <tr key={row.id}>
+                        <th scope="row" className={roleRowFixedClass}>
+                          <div className={READINESS_ROW_LABEL}>
+                            <MatrixColumnLabel text={row.label} align="start" />
+                          </div>
+                        </th>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="min-w-0 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <table className="min-w-max border-separate border-spacing-0 text-[11px]">
+                    <thead>
+                      <tr>
+                        {PLATFORM_CORE_PILLARS.map((pillar) => (
+                          <th
+                            key={pillar.id}
+                            scope="col"
+                            className={cn(READINESS_PILLAR_HEAD, 'text-text-muted font-semibold')}
+                          >
+                            <MatrixColumnLabel text={pillar.title} />
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hubRowsForUi.map((row) => (
+                        <tr key={row.id}>
+                          {PLATFORM_CORE_PILLARS.map((pillar) => renderPillarCell(row, pillar))}
+                        </tr>
+                      ))}
+                      {improvementsPanelRow}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto overscroll-x-contain p-3 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
+                <table className="w-full min-w-max border-separate border-spacing-0 text-[11px]">
+                  <thead className="sticky top-0 z-20 bg-white shadow-[0_1px_0_0_rgb(226_232_240)]">
+                    <tr>
+                      <th scope="col" className={roleHeadClass}>
+                        Роль
+                      </th>
                       {PLATFORM_CORE_PILLARS.map((pillar) => (
                         <th
                           key={pillar.id}
@@ -387,6 +418,11 @@ export function PlatformCorePillarRoleScoreMatrix({
                   <tbody>
                     {hubRowsForUi.map((row) => (
                       <tr key={row.id}>
+                        <th scope="row" className={roleRowClass}>
+                          <div className={READINESS_ROW_LABEL}>
+                            <MatrixColumnLabel text={row.label} align="start" />
+                          </div>
+                        </th>
                         {PLATFORM_CORE_PILLARS.map((pillar) => renderPillarCell(row, pillar))}
                       </tr>
                     ))}
@@ -394,43 +430,8 @@ export function PlatformCorePillarRoleScoreMatrix({
                   </tbody>
                 </table>
               </div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto overscroll-x-contain p-3 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
-              <table className="w-full min-w-max border-separate border-spacing-0 text-[11px]">
-                <thead className="sticky top-0 z-20 bg-white shadow-[0_1px_0_0_rgb(226_232_240)]">
-                  <tr>
-                    <th scope="col" className={roleHeadClass}>
-                      Роль
-                    </th>
-                    {PLATFORM_CORE_PILLARS.map((pillar) => (
-                      <th
-                        key={pillar.id}
-                        scope="col"
-                        className={cn(READINESS_PILLAR_HEAD, 'text-text-muted font-semibold')}
-                      >
-                        <MatrixColumnLabel text={pillar.title} />
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {hubRowsForUi.map((row) => (
-                    <tr key={row.id}>
-                      <th scope="row" className={roleRowClass}>
-                        <div className={READINESS_ROW_LABEL}>
-                          <MatrixColumnLabel text={row.label} align="start" />
-                        </div>
-                      </th>
-                      {PLATFORM_CORE_PILLARS.map((pillar) => renderPillarCell(row, pillar))}
-                    </tr>
-                  ))}
-                  {improvementsPanelRow}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         )}
       </div>
     </TooltipProvider>

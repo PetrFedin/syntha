@@ -12,7 +12,11 @@ export type SupplierAltMaterialApprovalStorageMode = 'postgres' | 'memory' | 'pg
 
 const memory = new Map<string, Record<string, SupplierAltMaterialApprovalStatus>>();
 
-function scopeKey(collectionId: string, articleId: string, organizationId = 'org-brand-001'): string {
+function scopeKey(
+  collectionId: string,
+  articleId: string,
+  organizationId = 'org-brand-001'
+): string {
   return `${organizationId}::${collectionId}::${articleId}`;
 }
 

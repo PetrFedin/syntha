@@ -71,20 +71,14 @@ export function PlatformCoreCalendarUserTasksStrip({
       cache: 'no-store',
     })
       .then((r) => r.json())
-      .then(
-        (json: {
-          ok?: boolean;
-          tasks?: CalendarUserTaskRow[];
-          storageMode?: string;
-        }) => {
-          if (json.ok !== true) {
-            setTasks([]);
-            return;
-          }
-          setTasks(Array.isArray(json.tasks) ? json.tasks : []);
-          setStorageMode(json.storageMode ?? null);
+      .then((json: { ok?: boolean; tasks?: CalendarUserTaskRow[]; storageMode?: string }) => {
+        if (json.ok !== true) {
+          setTasks([]);
+          return;
         }
-      )
+        setTasks(Array.isArray(json.tasks) ? json.tasks : []);
+        setStorageMode(json.storageMode ?? null);
+      })
       .catch(() => {
         setTasks([]);
       })
@@ -127,7 +121,11 @@ export function PlatformCoreCalendarUserTasksStrip({
           description: 'Быстрая задача из полосы календаря',
         }),
       });
-      const json = (await res.json()) as { ok?: boolean; messageRu?: string; event?: { id?: string } };
+      const json = (await res.json()) as {
+        ok?: boolean;
+        messageRu?: string;
+        event?: { id?: string };
+      };
       if (!res.ok || !json.ok) {
         setCreateMessage(json.messageRu ?? 'Не удалось создать задачу.');
         return;
@@ -152,7 +150,7 @@ export function PlatformCoreCalendarUserTasksStrip({
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/50 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/50 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid={`${testIdPrefix}-strip`}
     >
       <Badge variant="outline" className="text-[9px] uppercase">
@@ -185,7 +183,10 @@ export function PlatformCoreCalendarUserTasksStrip({
         {creating ? 'Создание…' : '+ Быстрая задача'}
       </Button>
       {createMessage ? (
-        <span className="text-text-muted text-[10px]" data-testid={`${testIdPrefix}-create-message`}>
+        <span
+          className="text-text-muted text-[10px]"
+          data-testid={`${testIdPrefix}-create-message`}
+        >
           {createMessage}
         </span>
       ) : null}
@@ -200,7 +201,7 @@ export function PlatformCoreCalendarUserTasksStrip({
                 size="sm"
                 variant={focused ? 'default' : 'outline'}
                 className={
-                  focused ? 'h-7 text-[10px] ring-2 ring-accent-primary/40' : 'h-7 text-[10px]'
+                  focused ? 'ring-accent-primary/40 h-7 text-[10px] ring-2' : 'h-7 text-[10px]'
                 }
                 asChild
               >

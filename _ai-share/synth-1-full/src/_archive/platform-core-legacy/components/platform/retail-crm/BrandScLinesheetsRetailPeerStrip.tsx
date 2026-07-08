@@ -21,12 +21,21 @@ export function BrandScLinesheetsRetailPeerStrip({
   collectionId,
   omitMatrixPrefillCta = false,
 }: Props) {
-  const releaseGateHref = platformCoreUiHref(`${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=techpack-gate&collection=${encodeURIComponent(collectionId)}`);
-  const matrixHref = platformCoreUiHref(`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`);
-  const checkoutHref = platformCoreUiHref(`${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(collectionId)}`);
+  const releaseGateHref = platformCoreUiHref(
+    `${ROUTES.brand.launchReadiness}?${PILLAR_CAPABILITY_FEATURE_PARAM}=techpack-gate&collection=${encodeURIComponent(collectionId)}`
+  );
+  const matrixHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`
+  );
+  const checkoutHref = platformCoreUiHref(
+    `${ROUTES.shop.b2bCheckout}?collection=${encodeURIComponent(collectionId)}`
+  );
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_YP_BRAND_SC_LINESHEETS_RETAIL_PEER_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_YP_BRAND_SC_LINESHEETS_RETAIL_PEER_STRIP_TESTID}
+    >
       <Link
         href={releaseGateHref}
         data-testid="brand-sc-linesheets-release-gate-link"
@@ -51,7 +60,11 @@ export function BrandScLinesheetsRetailPeerStrip({
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={checkoutHref} data-testid="brand-sc-linesheets-shop-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={checkoutHref}
+        data-testid="brand-sc-linesheets-shop-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
     </div>

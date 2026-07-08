@@ -13,7 +13,9 @@ import {
 function buildWorkshop2Wave45StagingProdReadyProbe(_env: Workshop2ProcessEnvLike = process.env) {
   return { ok: false, wave45StagingProdReady: 0 };
 }
-function buildWorkshop2Wave46ProductionCutoverReadyProbe(_env: Workshop2ProcessEnvLike = process.env) {
+function buildWorkshop2Wave46ProductionCutoverReadyProbe(
+  _env: Workshop2ProcessEnvLike = process.env
+) {
   return { ok: false, wave46ProductionCutoverReady: 0 };
 }
 function buildWorkshop2Wave47RoadmapReadyProbe(_env: Workshop2ProcessEnvLike = process.env) {
@@ -31,7 +33,10 @@ function buildWorkshop2Wave50ProdMergeReadyProbe(_env: Workshop2ProcessEnvLike =
 function buildWorkshop2Wave51ProdCutoverReadyProbe(_env: Workshop2ProcessEnvLike = process.env) {
   return { ok: false, wave51ProdCutoverReady: 0 };
 }
-import { summarizeWorkshop2Wave55InvestorFreezeSignoff, loadWorkshop2Ss27UatSignoffJournal } from '@/lib/production/workshop2-ss27-uat-signoff-journal';
+import {
+  summarizeWorkshop2Wave55InvestorFreezeSignoff,
+  loadWorkshop2Ss27UatSignoffJournal,
+} from '@/lib/production/workshop2-ss27-uat-signoff-journal';
 import { isWorkshop2OpsAppliedChecklistReady } from '@/lib/production/workshop2-wave-ops-applied-status';
 
 export type Workshop2CutoverDashboardProbe = {
@@ -43,7 +48,9 @@ export type Workshop2CutoverDashboardProbe = {
 };
 
 function isWorkshop2InvestorDemoMode(env: Workshop2ProcessEnvLike): boolean {
-  const v = String(env.WORKSHOP2_INVESTOR_DEMO_MODE ?? '').trim().toLowerCase();
+  const v = String(env.WORKSHOP2_INVESTOR_DEMO_MODE ?? '')
+    .trim()
+    .toLowerCase();
   return v === '1' || v === 'true' || v === 'yes';
 }
 
@@ -103,7 +110,9 @@ export function buildWorkshop2CutoverDashboard(env: Workshop2ProcessEnvLike = pr
 } {
   const demoMode = isWorkshop2InvestorDemoMode(env);
   const signoff = summarizeWorkshop2HumanSignoffFromJournal();
-  const wave55Signoff = summarizeWorkshop2Wave55InvestorFreezeSignoff(loadWorkshop2Ss27UatSignoffJournal());
+  const wave55Signoff = summarizeWorkshop2Wave55InvestorFreezeSignoff(
+    loadWorkshop2Ss27UatSignoffJournal()
+  );
   const humanSignoffRequired = !demoMode;
   const humanSignoffGateOk = !humanSignoffRequired || signoff.humanSignoffComplete;
   const wave55FreezeReady = !humanSignoffRequired || wave55Signoff.wave55FreezeComplete;

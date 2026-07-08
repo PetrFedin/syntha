@@ -9,10 +9,7 @@ import {
   summarizeFactoryErpAttentionRu,
   WORKSHOP2_ERP_AUTO_RETRY_MAX,
 } from '@/lib/production/workshop2-erp-retry-hint';
-import {
-  factoryHandoffQueueHrefForDemo,
-  PLATFORM_CORE_DEMO,
-} from '@/lib/platform-core-hub-matrix';
+import { factoryHandoffQueueHrefForDemo, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { factoryProductionOrdersOrderContextHref } from '@/lib/routes';
 
 type QueueItem = {
@@ -117,13 +114,16 @@ export function MfrOpHandoffErpFailedStrip({ factoryId, compact = false }: Props
     >
       <div className="flex flex-wrap items-center gap-1.5">
         <AlertTriangle className="h-3.5 w-3.5 text-rose-700" aria-hidden />
-        <span className="text-[10px] font-semibold text-rose-900" data-testid="mfr-op-handoff-erp-failed-count">
+        <span
+          className="text-[10px] font-semibold text-rose-900"
+          data-testid="mfr-op-handoff-erp-failed-count"
+        >
           ERP · {attention.total}
         </span>
         {!compact ? (
           <span className="text-[10px] text-rose-800">{summary}</span>
         ) : (
-          <span className="text-text-muted text-[10px] line-clamp-1">{summary}</span>
+          <span className="text-text-muted line-clamp-1 text-[10px]">{summary}</span>
         )}
       </div>
       <div className="flex flex-wrap gap-2">

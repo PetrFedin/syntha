@@ -1,8 +1,5 @@
 import type { Product } from '@/lib/types';
-import {
-  defaultSizeScaleIdForLeaf,
-  getAttributeById,
-} from '@/lib/production/attribute-catalog';
+import { defaultSizeScaleIdForLeaf, getAttributeById } from '@/lib/production/attribute-catalog';
 import { findHandbookLeafById } from '@/lib/production/category-handbook-leaves';
 import { getWorkshopParametersForSampleScale } from '@/lib/production/workshop-size-handbook';
 import { resolveLeafIdForMerchCategory } from '@/lib/fashion/brand-attribute-schema';

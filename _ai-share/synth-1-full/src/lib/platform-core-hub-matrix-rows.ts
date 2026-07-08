@@ -151,7 +151,10 @@ export const PLATFORM_CORE_BASELINE_ROWS: readonly CoreHubRoleRow[] = [
         lead: 'Статус производства, окна отгрузки, документы и задержки по отправленному оптовому заказу — представление байера по правилам бренда.',
         actions: [
           { label: 'Трекинг заказа', href: shopB2bTrackingOrderHref(demoOrderId) },
-          { label: 'Заказы в производстве', href: shopB2bOrdersProductionRegistryHref(demoOrderId) },
+          {
+            label: 'Заказы в производстве',
+            href: shopB2bOrdersProductionRegistryHref(demoOrderId),
+          },
           { label: hubCalendarOrderLabel, href: shopCalendarB2bOrderContextHref(demoOrderId) },
         ],
       },

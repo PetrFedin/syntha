@@ -45,9 +45,9 @@ describe('platform-core-wms-reserve-copy', () => {
   });
 
   it('checkout ATP badge + source RU (wave VE)', () => {
-    expect(formatPlatformCoreWmsCheckoutAtpBadgeRu({ loading: false, liveWms: true, atpTotal: 12 })).toContain(
-      '12'
-    );
+    expect(
+      formatPlatformCoreWmsCheckoutAtpBadgeRu({ loading: false, liveWms: true, atpTotal: 12 })
+    ).toContain('12');
     expect(formatPlatformCoreWmsStockAtpSourceRu('wms')).toBe('WMS');
     expect(formatPlatformCoreWmsStockAtpSourceRu('pg+wms')).toContain('PG');
   });

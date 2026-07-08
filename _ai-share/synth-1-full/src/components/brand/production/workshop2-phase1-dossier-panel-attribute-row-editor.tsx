@@ -549,7 +549,9 @@ export function ColorAttributeRow({
                         patchColor({ freeText: `${data.hex} · ${data.label}` });
                       }
                     } catch (error) {
-                      workshop2DevWarn('component', 'Failed to resolve pantone color', { cause: error });
+                      workshop2DevWarn('component', 'Failed to resolve pantone color', {
+                        cause: error,
+                      });
                     } finally {
                       setAiColorLoading(false);
                       setAiColorOpen(false);

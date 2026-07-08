@@ -19,16 +19,17 @@ export async function GET(req: NextRequest) {
     ok: true,
     doc,
     storageMode,
-    messageRu: doc?.articles?.length
-      ? 'Overlay артикулов загружен.'
-      : 'Overlay артикулов пуст.',
+    messageRu: doc?.articles?.length ? 'Overlay артикулов загружен.' : 'Overlay артикулов пуст.',
   });
 }
 
 /** PUT — persist collection inventory overlay to PG (Wave YB · S1). */
 export async function PUT(req: NextRequest) {
-  let body: { collectionId?: string; doc?: CollectionInventoryOverlayDoc; organizationId?: string } =
-    {};
+  let body: {
+    collectionId?: string;
+    doc?: CollectionInventoryOverlayDoc;
+    organizationId?: string;
+  } = {};
   try {
     body = (await req.json()) as typeof body;
   } catch {

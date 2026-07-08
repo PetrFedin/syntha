@@ -23,9 +23,7 @@ export type ShopB2bCartCheckoutPreflight = {
   firstFailedSizeRunArticleId?: string;
 };
 
-async function buildCasePackMap(
-  session: Workshop2B2bCartSession
-): Promise<Map<string, number>> {
+async function buildCasePackMap(session: Workshop2B2bCartSession): Promise<Map<string, number>> {
   const map = new Map<string, number>();
   const collectionIds = [...new Set(session.lines.map((l) => l.collectionId))];
   for (const collectionId of collectionIds) {

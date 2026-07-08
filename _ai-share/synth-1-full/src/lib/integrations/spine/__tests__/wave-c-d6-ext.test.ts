@@ -4,7 +4,10 @@ import {
   getWholesaleExport,
 } from '../wholesale-export.service';
 import { importWholesaleOrder } from '../order-import.service';
-import { importApparelMagicVendorPo, acknowledgeApparelMagicVendorPo } from '../apparel-magic-vendor-po.service';
+import {
+  importApparelMagicVendorPo,
+  acknowledgeApparelMagicVendorPo,
+} from '../apparel-magic-vendor-po.service';
 import { importCentricRfq, acknowledgeCentricRfq } from '../centric-rfq-import.service';
 import { getVendorPoByOrderId } from '../vendor-po-persistence.file';
 import { getCentricRfqById } from '../centric-rfq-persistence.file';
@@ -23,9 +26,11 @@ describe('wave-c-d6-ext', () => {
         lines: [{ sku: 'SS27-M-COAT-01', quantity: 5, unit_price: 100 }],
       },
     });
-    createInitialWorkingOrderVersion(outcome.wholesaleOrderId, [
-      { productId: 'SS27-M-COAT-01', quantity: 5, size: 'M' },
-    ], 'joor');
+    createInitialWorkingOrderVersion(
+      outcome.wholesaleOrderId,
+      [{ productId: 'SS27-M-COAT-01', quantity: 5, size: 'M' }],
+      'joor'
+    );
     const exp = await exportWholesaleOrderAfterConfirm(outcome.wholesaleOrderId);
     expect(exp?.platform).toBe('joor');
     expect(getWholesaleExport(outcome.wholesaleOrderId)?.externalExportId).toMatch(/^EXP-/);

@@ -21,9 +21,11 @@ export type BrandAgentRepCommissionDisputeResponse = {
   messageRu?: string;
 };
 
-export async function fetchBrandAgentRepCommissionDisputes(): Promise<BrandAgentRepCommissionDisputeResponse & {
-  disputes: BrandAgentRepCommissionDisputeRecord[];
-}> {
+export async function fetchBrandAgentRepCommissionDisputes(): Promise<
+  BrandAgentRepCommissionDisputeResponse & {
+    disputes: BrandAgentRepCommissionDisputeRecord[];
+  }
+> {
   const res = await fetch('/api/brand/b2b/commissions/dispute');
   const json = (await res.json()) as BrandAgentRepCommissionDisputeResponse & {
     disputes?: BrandAgentRepCommissionDisputeRecord[];

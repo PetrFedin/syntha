@@ -15,13 +15,17 @@ function resolveSupplierId(req: NextRequest, body?: Record<string, unknown>): st
   return String(body?.supplierId ?? searchParams.get('supplierId') ?? 'supplier-demo').trim();
 }
 
-export const GET = withWorkshop2ApiErrorRu(async function getSupplierMaterialCatalog(req: NextRequest) {
+export const GET = withWorkshop2ApiErrorRu(async function getSupplierMaterialCatalog(
+  req: NextRequest
+) {
   const supplierId = resolveSupplierId(req);
   const listings = await listWorkshop2SupplierMaterialCatalog(supplierId);
   return NextResponse.json({ ok: true, listings, supplierId });
 });
 
-export const POST = withWorkshop2ApiErrorRu(async function postSupplierMaterialCatalog(req: NextRequest) {
+export const POST = withWorkshop2ApiErrorRu(async function postSupplierMaterialCatalog(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 
@@ -65,7 +69,9 @@ export const POST = withWorkshop2ApiErrorRu(async function postSupplierMaterialC
   }
 });
 
-export const DELETE = withWorkshop2ApiErrorRu(async function deleteSupplierMaterialCatalog(req: NextRequest) {
+export const DELETE = withWorkshop2ApiErrorRu(async function deleteSupplierMaterialCatalog(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 

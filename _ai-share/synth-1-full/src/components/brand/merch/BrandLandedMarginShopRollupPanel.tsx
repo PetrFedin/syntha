@@ -126,7 +126,10 @@ export function BrandLandedMarginShopRollupPanel({ collectionId = 'SS27', orderI
             </TableHeader>
             <TableBody>
               {(rows ?? []).map((row) => (
-                <TableRow key={row.lineId} data-testid={`brand-landed-margin-feed-row-${row.lineId}`}>
+                <TableRow
+                  key={row.lineId}
+                  data-testid={`brand-landed-margin-feed-row-${row.lineId}`}
+                >
                   <TableCell className="text-xs">{row.label}</TableCell>
                   <TableCell className="text-right font-mono text-sm">
                     {row.wholesaleRub.toLocaleString('ru-RU')} ₽

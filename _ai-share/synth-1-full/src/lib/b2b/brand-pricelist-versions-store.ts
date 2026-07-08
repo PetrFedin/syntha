@@ -44,7 +44,9 @@ export async function patchBrandPricelistVersion(input: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
-  const json = (await res.json()) as BrandPricelistVersionsResponse & { row?: BrandPricelistVersionRow };
+  const json = (await res.json()) as BrandPricelistVersionsResponse & {
+    row?: BrandPricelistVersionRow;
+  };
   if (!res.ok || !json.ok) return { ok: false };
   return json;
 }

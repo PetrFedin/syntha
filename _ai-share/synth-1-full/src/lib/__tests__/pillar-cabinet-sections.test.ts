@@ -14,9 +14,7 @@ describe('pillar-cabinet-sections', () => {
   });
 
   it('detects empty-cell section mode', () => {
-    expect(
-      pillarCabinetUsesEmptySections('supplier', 'collection_order', 'empty')
-    ).toBe(true);
+    expect(pillarCabinetUsesEmptySections('supplier', 'collection_order', 'empty')).toBe(true);
     expect(pillarCabinetUsesEmptySections('brand', 'development', 'active')).toBe(false);
   });
 

@@ -32,14 +32,20 @@ export function BrandPackRulesPrepackMatrixHonestyStrip({ collectionId, orderId 
   }, [session.collectionId]);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="brand-pack-rules-prepack-matrix-honesty-strip">
+    <div
+      className={hubGadget.goldenPath}
+      data-testid="brand-pack-rules-prepack-matrix-honesty-strip"
+    >
       <Badge variant="outline" data-testid={`brand-pack-rules-prepack-source-${storageMode}`}>
         {storageMode === 'pg' ? 'PG pack rules' : `${storageMode} pack rules`}
       </Badge>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <span className="text-text-secondary text-[10px]" data-testid="brand-pack-rules-prepack-case-count">
+      <span
+        className="text-text-secondary text-[10px]"
+        data-testid="brand-pack-rules-prepack-case-count"
+      >
         {casePackSkus} SKU case pack · {moqSkus} MOQ
       </span>
       <Link

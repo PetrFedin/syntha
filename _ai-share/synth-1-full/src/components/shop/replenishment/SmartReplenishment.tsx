@@ -108,17 +108,14 @@ export default function SmartReplenishment({ collectionId, orderId }: Props) {
             asChild
           >
             <Link href={session.matrixHref} onClick={handleCreateOrders}>
-              <Package className="mr-2 h-4 w-4 inline" />
+              <Package className="mr-2 inline h-4 w-4" />
               Заказать пополнение ({replenishmentAlerts.length})
             </Link>
           </Button>
         </div>
       </header>
 
-      <div
-        className={hubGadget.goldenPath}
-        data-testid="shop-replenishment-cross-links-strip"
-      >
+      <div className={hubGadget.goldenPath} data-testid="shop-replenishment-cross-links-strip">
         <span className="text-text-muted shrink-0 text-xs">Столп 3 · связи</span>
         <span className={hubGadget.goldenSep}>·</span>
         <Link href={session.orderCommsHref} className={hubGadget.goldenLink}>
@@ -335,7 +332,7 @@ export default function SmartReplenishment({ collectionId, orderId }: Props) {
                 asChild
               >
                 <Link href={session.stockAtpHref}>
-                  View Full Report <ArrowUpRight className="ml-2 h-4 w-4 inline" />
+                  View Full Report <ArrowUpRight className="ml-2 inline h-4 w-4" />
                 </Link>
               </Button>
             </div>

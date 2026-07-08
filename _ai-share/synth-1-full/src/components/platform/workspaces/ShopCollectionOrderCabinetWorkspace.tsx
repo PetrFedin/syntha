@@ -53,11 +53,7 @@ type Props = {
 };
 
 /** Столп collection_order · shop: matrix, checkout, registry, detail — native в hub. */
-export function ShopCollectionOrderCabinetWorkspace({
-  collectionId,
-  sectionId,
-  orderId,
-}: Props) {
+export function ShopCollectionOrderCabinetWorkspace({ collectionId, sectionId, orderId }: Props) {
   const resolvedOrder = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
 
   return (

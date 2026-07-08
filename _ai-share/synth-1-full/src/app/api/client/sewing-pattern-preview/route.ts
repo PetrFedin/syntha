@@ -10,8 +10,7 @@ export async function POST(request: Request) {
       { status: 410 }
     );
   }
-  const mod = await import(
-    '../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-preview/route'
-  );
+  const mod =
+    await import('../../../../../_archive/client-b2c/src/app/api/client/sewing-pattern-preview/route');
   return mod.POST(request);
 }

@@ -50,18 +50,15 @@ describe('POST /api/factory/supplier/dossier-materials-batch', () => {
     await getWorkshop2ServerDossierRecord('SS27', 'demo-ss27-01');
     await getWorkshop2ServerDossierRecord('SS27', 'demo-ss27-02');
 
-    const req = new NextRequest(
-      'http://localhost/api/factory/supplier/dossier-materials-batch',
-      {
-        method: 'POST',
-        headers: W2_HEADERS,
-        body: JSON.stringify({
-          collectionId: 'SS27',
-          articleIds: ['demo-ss27-01', 'demo-ss27-02'],
-          limitPerArticle: 4,
-        }),
-      }
-    );
+    const req = new NextRequest('http://localhost/api/factory/supplier/dossier-materials-batch', {
+      method: 'POST',
+      headers: W2_HEADERS,
+      body: JSON.stringify({
+        collectionId: 'SS27',
+        articleIds: ['demo-ss27-01', 'demo-ss27-02'],
+        limitPerArticle: 4,
+      }),
+    });
     const res = await materialsBatchPost(req);
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -86,14 +83,11 @@ describe('POST /api/factory/supplier/dossier-materials-batch', () => {
   });
 
   it('rejects empty articleIds', async () => {
-    const req = new NextRequest(
-      'http://localhost/api/factory/supplier/dossier-materials-batch',
-      {
-        method: 'POST',
-        headers: W2_HEADERS,
-        body: JSON.stringify({ collectionId: 'SS27', articleIds: [] }),
-      }
-    );
+    const req = new NextRequest('http://localhost/api/factory/supplier/dossier-materials-batch', {
+      method: 'POST',
+      headers: W2_HEADERS,
+      body: JSON.stringify({ collectionId: 'SS27', articleIds: [] }),
+    });
     const res = await materialsBatchPost(req);
     expect(res.status).toBe(400);
     const json = await res.json();
@@ -108,8 +102,6 @@ describe('batchWorkshop2DossierMaterialNames (file-store)', () => {
       collectionId: 'SS27',
       articleIds: ['missing-article-xyz'],
     });
-    expect(items).toEqual([
-      { articleId: 'missing-article-xyz', materialNames: [], materials: [] },
-    ]);
+    expect(items).toEqual([{ articleId: 'missing-article-xyz', materialNames: [], materials: [] }]);
   });
 });

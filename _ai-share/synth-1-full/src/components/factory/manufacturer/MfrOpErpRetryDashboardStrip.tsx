@@ -11,10 +11,7 @@ import {
   WORKSHOP2_ERP_AUTO_RETRY_MAX,
 } from '@/lib/production/workshop2-erp-retry-hint';
 import { factoryHandoffNeedsErpAttention } from '@/lib/production/workshop2-factory-handoff-po-status';
-import {
-  factoryHandoffQueueHrefForDemo,
-  PLATFORM_CORE_DEMO,
-} from '@/lib/platform-core-hub-matrix';
+import { factoryHandoffQueueHrefForDemo, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { factoryProductionOrdersOrderContextHref, ROUTES } from '@/lib/routes';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 
@@ -152,17 +149,29 @@ export function MfrOpErpRetryDashboardStrip({ factoryId, collectionId }: Props) 
       </p>
       <div className="flex flex-wrap gap-1.5">
         {attention.errorCount > 0 ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="mfr-op-erp-retry-dashboard-error-count">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="mfr-op-erp-retry-dashboard-error-count"
+          >
             Ошибки · {attention.errorCount}
           </Badge>
         ) : null}
         {attention.journalOnlyCount > 0 ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="mfr-op-erp-retry-dashboard-journal-count">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="mfr-op-erp-retry-dashboard-journal-count"
+          >
             Журнал · {attention.journalOnlyCount}
           </Badge>
         ) : null}
         {attention.pendingCount > 0 ? (
-          <Badge variant="outline" className="text-[9px]" data-testid="mfr-op-erp-retry-dashboard-pending-count">
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid="mfr-op-erp-retry-dashboard-pending-count"
+          >
             Ожидает · {attention.pendingCount}
           </Badge>
         ) : null}

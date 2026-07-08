@@ -171,7 +171,9 @@ export default function ShopHubPage() {
 
       {!coreMode ? (
         <div className="space-y-2">
-          <p className="text-text-muted text-[9px] font-black uppercase tracking-widest">Аналитика</p>
+          <p className="text-text-muted text-[9px] font-black uppercase tracking-widest">
+            Аналитика
+          </p>
           <ShopAnalyticsSegmentErpStrip showErpBanner={false} />
         </div>
       ) : null}

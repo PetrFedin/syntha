@@ -5,7 +5,9 @@
 export function isWorkshop2InvestorDemoMode(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  const v = String(env.WORKSHOP2_INVESTOR_DEMO_MODE ?? '').trim().toLowerCase();
+  const v = String(env.WORKSHOP2_INVESTOR_DEMO_MODE ?? '')
+    .trim()
+    .toLowerCase();
   return v === 'true' || v === '1' || v === 'yes';
 }
 
@@ -19,8 +21,7 @@ export function buildWorkshop2InvestorDemoEnvCheck(
   return {
     WORKSHOP2_INVESTOR_DEMO_MODE: env.WORKSHOP2_INVESTOR_DEMO_MODE ?? null,
     WORKSHOP2_UNIT_TESTS_PASSING: env.WORKSHOP2_UNIT_TESTS_PASSING ?? null,
-    NEXT_PUBLIC_WORKSHOP2_INVESTOR_DEMO_MODE:
-      env.NEXT_PUBLIC_WORKSHOP2_INVESTOR_DEMO_MODE ?? null,
+    NEXT_PUBLIC_WORKSHOP2_INVESTOR_DEMO_MODE: env.NEXT_PUBLIC_WORKSHOP2_INVESTOR_DEMO_MODE ?? null,
     E2E: env.E2E ?? null,
     NEXT_DIST_DIR: env.NEXT_DIST_DIR ?? null,
     demoModeComputed: isWorkshop2InvestorDemoMode(env),

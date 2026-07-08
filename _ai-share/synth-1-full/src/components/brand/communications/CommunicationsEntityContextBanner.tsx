@@ -366,77 +366,75 @@ export function CommunicationsEntityContextBanner({
               </div>
             </div>
             {!platformCoreWorkspace ? (
-            <div className="flex flex-wrap gap-1.5">
-              <Link
-                href={
-                  coreMode && collectionId && articleSeg
-                    ? brandMessagesWorkshop2ArticleContextHref(collectionId, articleSeg)
-                    : brandMessagesSynthaOverlayHref({
-                        collectionId: ctx.collectionId,
-                        articleId: ctx.articleId,
-                        catalogStageId: ctx.catalogStageId,
-                        poRef: ctx.poRef,
-                        skuCode: ctx.skuCode,
-                      })
-                }
-                className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
-              >
-                <MessageSquare className="size-3 opacity-70" aria-hidden />
-                Чат
-              </Link>
-              <Link
-                href={
-                  coreMode && collectionId && articleSeg
-                    ? (workshop2Href ?? workshop2FallbackHref)
-                    : brandCalendarTasksSynthaOverlayHref({
-                        collectionId: ctx.collectionId,
-                        articleId: ctx.articleId,
-                        catalogStageId: ctx.catalogStageId,
-                        poRef: ctx.poRef,
-                        skuCode: ctx.skuCode,
-                      })
-                }
-                className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
-              >
-                <Calendar className="size-3 opacity-70" aria-hidden />
-                {coreMode ? 'Досье W2' : 'Задачи'}
-              </Link>
-              {!coreMode && matrixArticleHref ? (
+              <div className="flex flex-wrap gap-1.5">
                 <Link
-                  href={matrixArticleHref}
-                  className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
-                >
-                  Матрица
-                </Link>
-              ) : null}
-              {!coreMode && workshop2Href ? (
-                <Link
-                  href={workshop2Href}
-                  className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
-                >
-                  {COLLECTION_DEV_HUB_TITLE_RU}
-                </Link>
-              ) : null}
-              {coreMode && factoryDossierHref ? (
-                <Link
-                  href={factoryDossierHref}
-                  data-testid={
-                    variant === 'brand' ? 'brand-cm-article-dossier-link' : undefined
+                  href={
+                    coreMode && collectionId && articleSeg
+                      ? brandMessagesWorkshop2ArticleContextHref(collectionId, articleSeg)
+                      : brandMessagesSynthaOverlayHref({
+                          collectionId: ctx.collectionId,
+                          articleId: ctx.articleId,
+                          catalogStageId: ctx.catalogStageId,
+                          poRef: ctx.poRef,
+                          skuCode: ctx.skuCode,
+                        })
                   }
                   className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
                 >
-                  Досье цеха
+                  <MessageSquare className="size-3 opacity-70" aria-hidden />
+                  Чат
                 </Link>
-              ) : null}
-              {!coreMode && floorStagesHref ? (
                 <Link
-                  href={floorStagesHref}
+                  href={
+                    coreMode && collectionId && articleSeg
+                      ? (workshop2Href ?? workshop2FallbackHref)
+                      : brandCalendarTasksSynthaOverlayHref({
+                          collectionId: ctx.collectionId,
+                          articleId: ctx.articleId,
+                          catalogStageId: ctx.catalogStageId,
+                          poRef: ctx.poRef,
+                          skuCode: ctx.skuCode,
+                        })
+                  }
                   className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
                 >
-                  Пол цеха
+                  <Calendar className="size-3 opacity-70" aria-hidden />
+                  {coreMode ? 'Досье W2' : 'Задачи'}
                 </Link>
-              ) : null}
-            </div>
+                {!coreMode && matrixArticleHref ? (
+                  <Link
+                    href={matrixArticleHref}
+                    className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
+                  >
+                    Матрица
+                  </Link>
+                ) : null}
+                {!coreMode && workshop2Href ? (
+                  <Link
+                    href={workshop2Href}
+                    className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
+                  >
+                    {COLLECTION_DEV_HUB_TITLE_RU}
+                  </Link>
+                ) : null}
+                {coreMode && factoryDossierHref ? (
+                  <Link
+                    href={factoryDossierHref}
+                    data-testid={variant === 'brand' ? 'brand-cm-article-dossier-link' : undefined}
+                    className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
+                  >
+                    Досье цеха
+                  </Link>
+                ) : null}
+                {!coreMode && floorStagesHref ? (
+                  <Link
+                    href={floorStagesHref}
+                    className="text-text-primary hover:bg-bg-surface2 border-border-subtle hover:text-accent-primary inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors"
+                  >
+                    Пол цеха
+                  </Link>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </div>

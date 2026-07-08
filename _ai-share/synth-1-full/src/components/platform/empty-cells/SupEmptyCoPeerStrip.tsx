@@ -39,26 +39,40 @@ export function SupEmptyCoPeerStrip({ demo, orderId }: Props) {
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="sup-empty-co-peer-strip"
     >
-      <Link href={mfrHandoffHref} data-testid="sup-empty-co-mfr-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={mfrHandoffHref}
+        data-testid="sup-empty-co-mfr-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача в цех
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={procurementHref} data-testid="sup-empty-co-procurement-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurementHref}
+        data-testid="sup-empty-co-procurement-link"
+        className={hubGadget.goldenLink}
+      >
         Закупки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.forecastHref} data-testid="sup-empty-co-forecast-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.forecastHref}
+        data-testid="sup-empty-co-forecast-link"
+        className={hubGadget.goldenLink}
+      >
         Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
       <Link
-        href={resolvedOrderId ? shopB2bTrackingOrderHref(resolvedOrderId) : session.shopTrackingHref}
+        href={
+          resolvedOrderId ? shopB2bTrackingOrderHref(resolvedOrderId) : session.shopTrackingHref
+        }
         data-testid="sup-empty-co-tracking-link"
         className={hubGadget.goldenLink}
       >

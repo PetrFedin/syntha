@@ -26,7 +26,8 @@ export async function postShopInventoryLedgerAdjust(input: {
   physicalOnHand: number;
   shopId?: string;
 }): Promise<
-  { ok: true; result: ShopInventoryLedgerAdjustResult; storageMode?: string } | { ok: false; messageRu: string }
+  | { ok: true; result: ShopInventoryLedgerAdjustResult; storageMode?: string }
+  | { ok: false; messageRu: string }
 > {
   const res = await fetch('/api/shop/inventory/reconcile/adjust', {
     method: 'POST',

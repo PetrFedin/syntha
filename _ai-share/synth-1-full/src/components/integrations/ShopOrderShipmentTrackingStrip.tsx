@@ -67,9 +67,7 @@ function previewToUnified(
 export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPreview }: Props) {
   const seeded =
     trackingPreview != null &&
-    (trackingPreview.trackingNumber ||
-      trackingPreview.deliveryLabel ||
-      trackingPreview.wipLabelRu);
+    (trackingPreview.trackingNumber || trackingPreview.deliveryLabel || trackingPreview.wipLabelRu);
   const [tracking, setTracking] = useState<UnifiedOrderTracking | null>(() =>
     seeded ? previewToUnified(wholesaleOrderId, trackingPreview!) : null
   );
@@ -154,9 +152,7 @@ export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPrevi
         </p>
       ) : canPullInbound ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground">
-            Данные отгрузки ещё не получены
-          </span>
+          <span className="text-muted-foreground">Данные отгрузки ещё не получены</span>
           <Button
             type="button"
             size="sm"
@@ -176,11 +172,14 @@ export function ShopOrderShipmentTrackingStrip({ wholesaleOrderId, trackingPrevi
         </div>
       ) : null}
       {delivery?.label ? (
-        <p data-testid={`shop-co-tracking-delivery-${wholesaleOrderId}`} data-audit-legacy={`shop-op-tracking-delivery-${wholesaleOrderId}`}>
+        <p
+          data-testid={`shop-co-tracking-delivery-${wholesaleOrderId}`}
+          data-audit-legacy={`shop-op-tracking-delivery-${wholesaleOrderId}`}
+        >
           Окно поставки: {delivery.label}
         </p>
       ) : null}
-      {pullMsg ? <p className="text-muted-foreground text-[9px]">{pullMsg}</p> : null}
+      {pullMsg ? <p className="text-[9px] text-muted-foreground">{pullMsg}</p> : null}
     </div>
   );
 }

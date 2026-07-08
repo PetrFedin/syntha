@@ -32,7 +32,9 @@ describe('wave TW — chain-status pillar SSE + calendar↔tracking', () => {
 
   it('role-aware tracking href by role (Wave WC)', () => {
     const orderId = 'B2B-DEMO-SHOP1-SS27';
-    expect(platformCoreCmCalendarTrackingHref(orderId, 'shop')).toBe(shopB2bTrackingOrderHref(orderId));
+    expect(platformCoreCmCalendarTrackingHref(orderId, 'shop')).toBe(
+      shopB2bTrackingOrderHref(orderId)
+    );
     expect(platformCoreCmCalendarTrackingHref(orderId)).toBe(shopB2bTrackingOrderHref(orderId));
     expect(platformCoreCmCalendarTrackingHref(orderId, 'brand')).toContain('order_production');
   });

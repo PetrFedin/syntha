@@ -115,8 +115,7 @@ export function Workshop2ReleaseProductionStrip({
                       : 'border-amber-300 bg-amber-50 text-amber-900'
                   )}
                 >
-                  T&amp;A{' '}
-                  {taOverdue > 0 ? `просроч. ${taOverdue}` : `задерж. ${taDelayed}`}
+                  T&amp;A {taOverdue > 0 ? `просроч. ${taOverdue}` : `задерж. ${taDelayed}`}
                 </Badge>
               </Link>
             ) : null}

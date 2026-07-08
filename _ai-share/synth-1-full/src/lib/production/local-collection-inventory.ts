@@ -927,15 +927,15 @@ export function applyWorkshop2PgPublishedArticleRows(
     const prev = next.articlesByCollection[key] ?? [];
     const skuNorm = normalizeLocalSkuCode(row.sku?.trim() || articleId);
     if (
-      prev.some(
-        (l) => l.id === articleId || (skuNorm && normalizeLocalSkuCode(l.sku) === skuNorm)
-      )
+      prev.some((l) => l.id === articleId || (skuNorm && normalizeLocalSkuCode(l.sku) === skuNorm))
     ) {
       skippedDuplicates += 1;
       continue;
     }
     const sku =
-      skuNorm || normalizeLocalSkuCode(articleId) || `W2-${Date.now().toString(36).toUpperCase().slice(-10)}`;
+      skuNorm ||
+      normalizeLocalSkuCode(articleId) ||
+      `W2-${Date.now().toString(36).toUpperCase().slice(-10)}`;
     const season = collectionId.trim() || 'LOCAL';
     const [internalCode, invAfterSeq] = takeNextInternalArticleCode(next);
     next = invAfterSeq;

@@ -50,7 +50,10 @@ export function ManufacturerHandoffQueueGoldenPathStrip({
   };
 
   return (
-    <div className={hubGadget.goldenPath} data-testid="manufacturer-handoff-queue-golden-path-strip">
+    <div
+      className={hubGadget.goldenPath}
+      data-testid="manufacturer-handoff-queue-golden-path-strip"
+    >
       {STEPS.map((step, index) => (
         <span key={step.id} className="contents">
           {index > 0 ? (

@@ -6,9 +6,7 @@ import type { Workshop2HandoffReadinessCheck } from '@/lib/production/workshop2-
 import { buildWorkshop2RoutingStepsFromDossier } from '@/lib/production/workshop2-routing-steps';
 import { isWorkshop2SmartRoutingDemoAllowed } from '@/lib/production/workshop2-smart-routing-demo';
 import { resolveWorkshop2SmartRoutingRulesUrl } from '@/lib/production/workshop2-smart-routing-rules-url';
-import {
-  workshop2PgMirrorStr,
-} from '@/lib/production/workshop2-dossier-pg-mirror-utils';
+import { workshop2PgMirrorStr } from '@/lib/production/workshop2-dossier-pg-mirror-utils';
 
 export function buildWorkshop2SmartRoutingMirror(
   dossier: Workshop2DossierPhase1
@@ -115,10 +113,7 @@ export function evaluateWorkshop2SmartRoutingHandoffGate(
       messageRu: 'Снимок маршрутизации не в досье — сохраните «Маршрут → PG» на конструкции.',
     };
   }
-  if (
-    mirror.blockerHandoff === true ||
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true'
-  ) {
+  if (mirror.blockerHandoff === true || workshop2PgMirrorStr(mirror, 'blockerHandoff') === 'true') {
     return {
       id: 'routing.steps.empty',
       severity: 'blocker',

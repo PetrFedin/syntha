@@ -1,8 +1,6 @@
 import 'server-only';
 
-import {
-  resolveWorkingOrderVersionsForOrder,
-} from '@/lib/server/shop-working-order-version-diff';
+import { resolveWorkingOrderVersionsForOrder } from '@/lib/server/shop-working-order-version-diff';
 import {
   resolveArticleIdFromProductId,
   resolveSpineCollectionIdFromLines,
@@ -74,8 +72,7 @@ export async function mergeShopWorkingOrderToMatrix(input: {
   }
 
   const collectionId =
-    input.collectionId?.trim() ||
-    resolveSpineCollectionIdFromLines(version.lines, 'SS27');
+    input.collectionId?.trim() || resolveSpineCollectionIdFromLines(version.lines, 'SS27');
 
   const eligibleLines = version.lines.filter(
     (line) => Math.max(0, Number(line.quantity ?? 0)) > 0
@@ -108,13 +105,12 @@ export async function mergeShopWorkingOrderToMatrix(input: {
   }
 
   const partialMerge = mergedLines > 0 && mergedLines < eligibleLines;
-  const matrixHref =
-    partialMerge
-      ? shopWorkingOrderMergeMatrixHref(collectionId, wholesaleOrderId, {
-          partialMerge: true,
-          mergedLines,
-        })
-      : shopB2bMatrixReorderHref(collectionId, wholesaleOrderId);
+  const matrixHref = partialMerge
+    ? shopWorkingOrderMergeMatrixHref(collectionId, wholesaleOrderId, {
+        partialMerge: true,
+        mergedLines,
+      })
+    : shopB2bMatrixReorderHref(collectionId, wholesaleOrderId);
 
   const result: ShopWorkingOrderMergeToMatrixResult = {
     ok: mergedLines > 0,

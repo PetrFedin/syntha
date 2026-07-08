@@ -54,8 +54,8 @@ describe('wave WY — mfr comms Gantt bridge + pcTask PG + handoff push + TZ BW 
     expect('MfrCmCalendarAttachTzBwPeerStrip').toContain('AttachTzBw');
     expect('mfr-cm-order-attach-tz-peer-strip').toContain('attach-tz');
     expect('mfr-cm-order-attach-tz-btn').toContain('attach-tz');
-    expect(mfrCmOrderAttachTzPeerHref({ collectionId: COLLECTION, orderId: ORDER, factoryId: FACTORY })).toContain(
-      'pcf=order'
-    );
+    expect(
+      mfrCmOrderAttachTzPeerHref({ collectionId: COLLECTION, orderId: ORDER, factoryId: FACTORY })
+    ).toContain('pcf=order');
   });
 });

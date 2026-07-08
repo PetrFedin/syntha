@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import type { IntegrationPlatform } from '@/lib/integrations/spine/integration-platform';
-import { integrationPlatformLabelRu, integrationPlatformShortLabelRu } from '@/lib/integrations/spine/integration-ui-utils';
+import {
+  integrationPlatformLabelRu,
+  integrationPlatformShortLabelRu,
+} from '@/lib/integrations/spine/integration-ui-utils';
 
 export type MatrixAtsCell = {
   sku: string;
@@ -34,7 +37,9 @@ export function useMatrixIntegrationInventory(platform: IntegrationPlatform, sku
     setLoadState('loading');
     void (async () => {
       try {
-        const res = await fetch(`/api/integrations/v1/${platform}/inventory`, { cache: 'no-store' });
+        const res = await fetch(`/api/integrations/v1/${platform}/inventory`, {
+          cache: 'no-store',
+        });
         if (!res.ok) throw new Error('inventory failed');
         const json = (await res.json()) as {
           data?: { items?: MatrixAtsCell[] };

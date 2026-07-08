@@ -5,7 +5,10 @@ import { summarizeWorkshop2AssignmentSignoffChecklist } from '@/lib/production/w
 import { evaluateWorkshop2AssignmentSignoffGate } from '@/lib/production/workshop2-assignment-signoff-gate';
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
 import type { Workshop2HandoffReadinessCheck } from '@/lib/production/workshop2-handoff-readiness';
-import { workshop2PgMirrorNum, workshop2PgMirrorStr } from '@/lib/production/workshop2-dossier-pg-mirror-utils';
+import {
+  workshop2PgMirrorNum,
+  workshop2PgMirrorStr,
+} from '@/lib/production/workshop2-dossier-pg-mirror-utils';
 
 const MIN_SECTIONS = 4;
 

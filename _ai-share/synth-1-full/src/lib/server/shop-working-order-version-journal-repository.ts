@@ -43,7 +43,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(JOURNAL_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(JOURNAL_FILE, 'utf8')) as ShopWorkingOrderVersionJournalRow[];
+    const parsed = JSON.parse(
+      fs.readFileSync(JOURNAL_FILE, 'utf8')
+    ) as ShopWorkingOrderVersionJournalRow[];
     if (Array.isArray(parsed)) memoryJournal.splice(0, memoryJournal.length, ...parsed);
   } catch {
     /* ignore */

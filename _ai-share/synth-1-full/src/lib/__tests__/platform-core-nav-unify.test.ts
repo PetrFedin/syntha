@@ -93,7 +93,10 @@ describe('platform core nav unify (wave 17)', () => {
         label: 'Old',
         links: [{ label: 'W2', value: 'workshop2', href: '/brand/w2', icon: null }],
       },
-      { id: 'production', links: [{ label: 'P', value: 'shop-floor', href: '/brand/p', icon: null }] },
+      {
+        id: 'production',
+        links: [{ label: 'P', value: 'shop-floor', href: '/brand/p', icon: null }],
+      },
       { id: 'comms', label: 'Old comms', links: [] },
     ]);
     expect(groups.find((g) => g.id === 'development')?.label).toBe(BRAND_DEVELOPMENT_GROUP_LABEL);
@@ -170,7 +173,10 @@ describe('platform core nav unify (wave 17)', () => {
     ]);
     const partners = groups.find((g) => g.id === 'partners')!;
     expect(partners.label).toBe(SHOP_PARTNERS_GROUP_LABEL);
-    expect(partners.links!.map((l) => l.value)).toEqual(['partners-discover-core', 'partners-apply-core']);
+    expect(partners.links!.map((l) => l.value)).toEqual([
+      'partners-discover-core',
+      'partners-apply-core',
+    ]);
   });
 
   it('manufacturer production: handoff queue, orders, dossier flat links', () => {
@@ -264,19 +270,13 @@ describe('platform core nav unify (wave 17)', () => {
     const prev = process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE;
     process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
     try {
-      const {
-        applyBrandNavPipeline,
-        shouldHideNavArchiveCluster,
-      } = jest.requireActual<typeof import('@/lib/cabinet-core-mode')>(
-        '@/lib/cabinet-core-mode'
-      );
+      const { applyBrandNavPipeline, shouldHideNavArchiveCluster } =
+        jest.requireActual<typeof import('@/lib/cabinet-core-mode')>('@/lib/cabinet-core-mode');
       const groups = applyBrandNavPipeline([
         { id: 'development', links: [] },
         {
           id: 'analytics',
-          links: [
-            { label: 'Аналитика', value: 'analytics', href: '/brand/analytics', icon: null },
-          ],
+          links: [{ label: 'Аналитика', value: 'analytics', href: '/brand/analytics', icon: null }],
         },
         {
           id: 'collaborations',
@@ -313,10 +313,8 @@ describe('platform core nav unify (wave 17)', () => {
     const prev = process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE;
     process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE = '1';
     try {
-      const {
-        filterNavGroupsForCoreSidebar,
-        resolveSidebarClustersForCore,
-      } = jest.requireActual<typeof import('@/lib/cabinet-core-mode')>('@/lib/cabinet-core-mode');
+      const { filterNavGroupsForCoreSidebar, resolveSidebarClustersForCore } =
+        jest.requireActual<typeof import('@/lib/cabinet-core-mode')>('@/lib/cabinet-core-mode');
       const { PLATFORM_CORE_SIDEBAR_CLUSTER_LABEL } = jest.requireActual<
         typeof import('@/lib/platform-core-canonical-labels')
       >('@/lib/platform-core-canonical-labels');
@@ -396,7 +394,9 @@ describe('platform core nav unify (wave 17)', () => {
         links: [{ label: 'Showroom', value: 'showroom', href: '/brand/showroom', icon: null }],
       },
     ]);
-    const w2 = groups.find((g) => g.id === 'development')!.links!.find((l) => l.value === 'workshop2')!;
+    const w2 = groups
+      .find((g) => g.id === 'development')!
+      .links!.find((l) => l.value === 'workshop2')!;
     expect(w2.href).toContain('/brand/core?pillar=development');
     expect(w2.href).toContain('collection=SS27');
     expect(w2.description).toMatch(/лайншит/i);
@@ -408,7 +408,9 @@ describe('platform core nav unify (wave 17)', () => {
     const showroom = pim.links!.find((l) => l.value === 'showroom')!;
     expect(showroom.href).toContain('/brand/core?pillar=sample_collection');
 
-    const range = groups.find((g) => g.id === 'development')!.links!.find((l) => l.value === 'range-planner')!;
+    const range = groups
+      .find((g) => g.id === 'development')!
+      .links!.find((l) => l.value === 'range-planner')!;
     expect(range?.href).toContain('/brand/core?pillar=development');
   });
 });

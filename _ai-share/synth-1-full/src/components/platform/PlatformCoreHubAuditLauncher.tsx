@@ -19,7 +19,11 @@ export function PlatformCoreHubAuditLauncher({ collectionId, className }: Props)
       className={cn(platformCoreHubLayout.sectionStack, className)}
     >
       <p className={hubSectionLabelClassName()}>{PLATFORM_CORE_AUDIT_SECTION_TITLE}</p>
-      <PlatformCorePillarRoleScoreMatrix collectionId={collectionId} hideSectionHeader showModeLead={false} />
+      <PlatformCorePillarRoleScoreMatrix
+        collectionId={collectionId}
+        hideSectionHeader
+        showModeLead={false}
+      />
     </section>
   );
 }

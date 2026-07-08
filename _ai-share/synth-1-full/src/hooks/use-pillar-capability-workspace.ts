@@ -24,7 +24,10 @@ export function usePillarCapabilityWorkspace(workspaceId: string): {
 
   const activeFeatureId = useMemo(() => {
     if (!workspace) return '';
-    return resolvePillarWorkspaceFeatureId(workspace, searchParams.get(PILLAR_CAPABILITY_FEATURE_PARAM));
+    return resolvePillarWorkspaceFeatureId(
+      workspace,
+      searchParams.get(PILLAR_CAPABILITY_FEATURE_PARAM)
+    );
   }, [workspace, searchParams]);
 
   const activeFeature = useMemo(() => {

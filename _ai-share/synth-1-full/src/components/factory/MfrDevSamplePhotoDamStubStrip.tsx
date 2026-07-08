@@ -58,7 +58,7 @@ export function MfrDevSamplePhotoDamStubStrip({
 
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs"
       data-testid="mfr-dev-sample-photo-dam-stub-strip"
     >
       <Badge variant="outline" className="text-[9px] uppercase">
@@ -78,7 +78,10 @@ export function MfrDevSamplePhotoDamStubStrip({
         {busy ? 'Загрузка…' : 'Прикрепить фото'}
       </Button>
       {hint ? (
-        <span className="text-text-muted text-[10px]" data-testid="mfr-dev-sample-photo-dam-stub-hint">
+        <span
+          className="text-text-muted text-[10px]"
+          data-testid="mfr-dev-sample-photo-dam-stub-hint"
+        >
           {hint}
         </span>
       ) : null}

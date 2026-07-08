@@ -50,6 +50,8 @@ describe('wave-as spine peers p3', () => {
     expect('shop-co-detail-context-strip').toContain('context-strip');
     expect('shop-co-cabinet-co-spine-peer-strip').toContain('spine-peer');
     expect('shop-co-checkout-registry-link').toContain('registry');
-    expect(factoryProductionDossierHref('demo-ss27-01', { collectionId: 'SS27' })).toContain('dossier');
+    expect(factoryProductionDossierHref('demo-ss27-01', { collectionId: 'SS27' })).toContain(
+      'dossier'
+    );
   });
 });

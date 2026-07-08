@@ -6,9 +6,7 @@ import {
   listWorkshop2B2bOrdersForCollection,
   patchWorkshop2B2bOrderStatus,
 } from '@/lib/server/workshop2-b2b-orders-repository';
-import {
-  appendWorkshop2ContextualSystemMessage,
-} from '@/lib/server/workshop2-contextual-messages-repository';
+import { appendWorkshop2ContextualSystemMessage } from '@/lib/server/workshop2-contextual-messages-repository';
 import {
   canAdvanceFactoryMesReleaseStage,
   factoryMesReleaseStageLabelRu,
@@ -34,7 +32,10 @@ export type { Workshop2B2bOrderRecord };
 import { WORKSHOP2_ARTICLE_CONTEXT_TYPE } from '@/lib/production/workshop2-domain-event-types';
 import { listWorkshop2SampleOrders } from '@/lib/server/workshop2-sample-order-repository';
 import { getPlatformCoreDemoByOrderId } from '@/lib/platform-core-hub-matrix';
-import { areWorkshop2MaterialRequisitionsConfirmedForArticles, listWorkshop2MaterialRequisitions } from '@/lib/server/workshop2-material-requisition-repository';
+import {
+  areWorkshop2MaterialRequisitionsConfirmedForArticles,
+  listWorkshop2MaterialRequisitions,
+} from '@/lib/server/workshop2-material-requisition-repository';
 import { autoCreateMaterialRequestsOnFactoryPoAck } from '@/lib/server/workshop2-factory-po-ack-material-request';
 import type { Workshop2PurchaseOrderStatus } from '@/lib/server/workshop2-purchase-order-repository';
 import { isWorkshop2InternalWmsEnabled } from '@/lib/production/workshop2-internal-wms';
@@ -143,9 +144,7 @@ export async function tryReserveB2bInventoryOnHandoff(input: {
   const reservedQty = result.mirror.reservedQty ?? 0;
   const reserved =
     result.ok &&
-    (result.reservedLines > 0 ||
-      result.reason === 'idempotent_reserve_skip' ||
-      reservedQty > 0);
+    (result.reservedLines > 0 || result.reason === 'idempotent_reserve_skip' || reservedQty > 0);
 
   if (reserved && result.mirror) {
     const nextDossier = persistWorkshop2InternalWmsToDossier(record.dossier, {
@@ -197,8 +196,7 @@ export async function patchWorkshop2B2bInventoryReserve(input: {
   }
 
   const collectionId = order.collectionId?.trim() || 'SS27';
-  const articleId =
-    order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
+  const articleId = order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
   const productionOrderId = workshop2B2bProductionHandoffPoId(orderId);
   const po = await getWorkshop2PurchaseOrderById(productionOrderId, org);
 
@@ -302,8 +300,7 @@ export async function getWorkshop2B2bInventoryReserve(input: {
   }
 
   const collectionId = order.collectionId?.trim() || 'SS27';
-  const articleId =
-    order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
+  const articleId = order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
   const productionOrderId = workshop2B2bProductionHandoffPoId(orderId);
   const po = await getWorkshop2PurchaseOrderById(productionOrderId, org);
   const poInventory = po?.payload?.inventoryReserve as
@@ -312,17 +309,13 @@ export async function getWorkshop2B2bInventoryReserve(input: {
 
   const dossierRecord = await getWorkshop2ServerDossierRecord(collectionId, articleId);
   const wmsMirror = dossierRecord?.dossier.internalWmsMirror;
-  const dossierReservedQty = wmsMirror
-    ? workshop2PgMirrorNum(wmsMirror, 'reservedQty')
-    : 0;
+  const dossierReservedQty = wmsMirror ? workshop2PgMirrorNum(wmsMirror, 'reservedQty') : 0;
   const dossierInventoryReserved =
     dossierReservedQty > 0 &&
     (wmsMirror ? workshop2PgMirrorStr(wmsMirror, 'wmsSyncStatus') : '') === 'internal_pg';
 
   const reserved =
-    order.status === 'allocated' ||
-    poInventory?.reserved === true ||
-    dossierInventoryReserved;
+    order.status === 'allocated' || poInventory?.reserved === true || dossierInventoryReserved;
   const reservedQty =
     poInventory?.reservedQty ??
     (dossierReservedQty > 0 ? dossierReservedQty : reserved && po?.qty ? po.qty : 0);
@@ -374,7 +367,11 @@ export async function confirmWorkshop2B2bOrderByBrand(input: {
     return { ok: false, code: 'not_found', messageRu: 'B2B заказ не найден.' };
   }
 
-  if (existing.status === 'confirmed' || existing.status === 'allocated' || existing.status === 'shipped') {
+  if (
+    existing.status === 'confirmed' ||
+    existing.status === 'allocated' ||
+    existing.status === 'shipped'
+  ) {
     const collectionId = existing.collectionId?.trim() || 'SS27';
     const articleId =
       existing.lines[0]?.articleId?.trim() || existing.articleId?.trim() || 'demo-ss27-01';
@@ -416,9 +413,7 @@ export async function confirmWorkshop2B2bOrderByBrand(input: {
 
   const collectionId = patched.order.collectionId?.trim() || 'SS27';
   const articleId =
-    patched.order.lines[0]?.articleId?.trim() ||
-    patched.order.articleId?.trim() ||
-    'demo-ss27-01';
+    patched.order.lines[0]?.articleId?.trim() || patched.order.articleId?.trim() || 'demo-ss27-01';
   const inventoryReserve = await tryReserveB2bInventoryOnHandoff({
     orderId,
     collectionId,
@@ -568,8 +563,7 @@ export async function getWorkshop2B2bDossierEditLock(input: {
 
   const orders = await listWorkshop2B2bOrdersForCollection(collectionId);
   for (const order of orders) {
-    const lineArticle =
-      order.lines[0]?.articleId?.trim() || order.articleId?.trim() || '';
+    const lineArticle = order.lines[0]?.articleId?.trim() || order.articleId?.trim() || '';
     if (lineArticle !== articleId) continue;
     const productionOrderId = workshop2B2bProductionHandoffPoId(order.id);
     const po = await getWorkshop2PurchaseOrderById(productionOrderId);
@@ -637,8 +631,7 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
   const productionOrderId = workshop2B2bProductionHandoffPoId(orderId);
 
   let order = existing;
-  const alreadyConfirmed =
-    existing.status === 'confirmed' || existing.status === 'allocated';
+  const alreadyConfirmed = existing.status === 'confirmed' || existing.status === 'allocated';
 
   if (existing.status === 'submitted') {
     return {
@@ -657,9 +650,7 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
 
   const articleIdsForMaterials = [
     ...new Set(
-      existing.lines
-        .map((l) => (l.articleId?.trim() || articleId).trim())
-        .filter(Boolean)
+      existing.lines.map((l) => (l.articleId?.trim() || articleId).trim()).filter(Boolean)
     ),
   ];
   const materialsGate = await evaluateWorkshop2HandoffMaterialsGate({
@@ -709,7 +700,7 @@ export async function confirmWorkshop2B2bProductionHandoff(input: {
   const dossierVersionAtHandoff =
     priorHandoffVersion != null && Number.isFinite(priorHandoffVersion)
       ? priorHandoffVersion
-      : dossierAtHandoff?.version ?? 1;
+      : (dossierAtHandoff?.version ?? 1);
 
   await upsertWorkshop2PurchaseOrder({
     id: productionOrderId,
@@ -919,7 +910,7 @@ export async function bulkConfirmWorkshop2B2bProductionHandoff(input: {
   const ok = handedOff.length > 0;
   const messageRu = ok
     ? `Передано в производство: ${handedOff.length} из ${unique.length} заказ(ов).`
-    : errors[0]?.messageRu ?? 'Не удалось передать заказы в производство.';
+    : (errors[0]?.messageRu ?? 'Не удалось передать заказы в производство.');
 
   const result: Workshop2B2bProductionHandoffBulkResult = {
     ok,
@@ -996,7 +987,10 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
       continue;
     }
     if (po.supplierId !== factoryId) {
-      errors.push({ productionOrderId, messageRu: `Серия назначена другому цеху (${po.supplierId}).` });
+      errors.push({
+        productionOrderId,
+        messageRu: `Серия назначена другому цеху (${po.supplierId}).`,
+      });
       continue;
     }
     if (po.collectionId !== collectionId || po.articleId !== articleId) {
@@ -1160,10 +1154,7 @@ export async function bulkAcknowledgeWorkshop2FactoryProductionHandoff(input: {
     acknowledged,
     skipped,
     errors,
-    erp:
-      erp.journalOnly + erp.liveSynced + erp.liveFailed > 0
-        ? erp
-        : undefined,
+    erp: erp.journalOnly + erp.liveSynced + erp.liveFailed > 0 ? erp : undefined,
     materialRequestAuto: materialRequestAuto.length > 0 ? materialRequestAuto : undefined,
   };
 }
@@ -1385,7 +1376,7 @@ export async function bulkRetryWorkshop2FactoryHandoffErpSync(input: {
         ? `ERP sync выполнен для ${succeeded.length} ${succeeded.length === 1 ? 'серии' : 'серий'}.`
         : succeeded.length > 0
           ? `ERP sync: ${succeeded.length} из ${retried.length} серий.`
-          : failed[0]?.messageRu ?? 'ERP sync не выполнен.';
+          : (failed[0]?.messageRu ?? 'ERP sync не выполнен.');
 
   return { ok, retried, succeeded, failed, messageRu };
 }
@@ -1421,11 +1412,13 @@ export async function runWorkshop2FactoryHandoffErpAutoRetries(input: {
       if (nextRaw && Date.parse(String(nextRaw)) > now) continue;
     }
 
-    const maxAttemptsThisRun = input.burst
-      ? WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX - count
-      : 1;
+    const maxAttemptsThisRun = input.burst ? WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX - count : 1;
 
-    for (let i = 0; i < maxAttemptsThisRun && count < WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX; i += 1) {
+    for (
+      let i = 0;
+      i < maxAttemptsThisRun && count < WORKSHOP2_FACTORY_ERP_AUTO_RETRY_MAX;
+      i += 1
+    ) {
       attempted += 1;
       const result = await retryWorkshop2FactoryHandoffErpSync({
         productionOrderId: po.id,
@@ -1583,9 +1576,7 @@ export async function listWorkshop2FactoryProductionHandoffQueue(input: {
       erpNextRetryAt:
         po.payload?.erpNextRetryAt != null ? String(po.payload.erpNextRetryAt) : undefined,
       erpAutoRetryCount:
-        po.payload?.erpAutoRetryCount != null
-          ? Number(po.payload.erpAutoRetryCount)
-          : undefined,
+        po.payload?.erpAutoRetryCount != null ? Number(po.payload.erpAutoRetryCount) : undefined,
       erpLastError:
         po.payload?.erpAutoRetryLastError != null
           ? String(po.payload.erpAutoRetryLastError)
@@ -1700,8 +1691,7 @@ export async function getWorkshop2B2bChainStatus(
   if (!order) return null;
 
   const collectionId = order.collectionId?.trim() || 'SS27';
-  const articleId =
-    order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
+  const articleId = order.lines[0]?.articleId?.trim() || order.articleId?.trim() || 'demo-ss27-01';
   const productionOrderId = workshop2B2bProductionHandoffPoId(id);
   const po = await getWorkshop2PurchaseOrderById(productionOrderId, organizationId);
   const handedOff = po?.payload?.source === WORKSHOP2_B2B_PRODUCTION_HANDOFF_SOURCE;
@@ -1714,9 +1704,7 @@ export async function getWorkshop2B2bChainStatus(
   const poStatus = handedOff && po ? po.status : undefined;
   const poStatusLabelRu = poStatus ? PO_STATUS_LABEL_RU[poStatus] : undefined;
   const brandConfirmed =
-    order.status === 'confirmed' ||
-    order.status === 'allocated' ||
-    order.status === 'shipped';
+    order.status === 'confirmed' || order.status === 'allocated' || order.status === 'shipped';
 
   const poInventory = po?.payload?.inventoryReserve as
     | Workshop2B2bInventoryReserveResult
@@ -1729,12 +1717,9 @@ export async function getWorkshop2B2bChainStatus(
     (wmsMirror ? workshop2PgMirrorStr(wmsMirror, 'wmsSyncStatus') : '') === 'internal_pg';
 
   const inventoryReserved =
-    order.status === 'allocated' ||
-    poInventory?.reserved === true ||
-    dossierInventoryReserved;
+    order.status === 'allocated' || poInventory?.reserved === true || dossierInventoryReserved;
   const inventoryReservedQty =
-    poInventory?.reservedQty ??
-    (inventoryReserved && po?.qty ? po.qty : undefined);
+    poInventory?.reservedQty ?? (inventoryReserved && po?.qty ? po.qty : undefined);
 
   const orderArticleIds = [
     ...new Set(
@@ -1743,8 +1728,7 @@ export async function getWorkshop2B2bChainStatus(
         .filter((aid): aid is string => Boolean(aid))
     ),
   ];
-  const articleIdsForMaterials =
-    orderArticleIds.length > 0 ? orderArticleIds : [articleId];
+  const articleIdsForMaterials = orderArticleIds.length > 0 ? orderArticleIds : [articleId];
   const materialsCheck = await areWorkshop2MaterialRequisitionsConfirmedForArticles({
     collectionId,
     articleIds: articleIdsForMaterials,
@@ -1834,8 +1818,5 @@ export async function getWorkshop2B2bChainStatus(
 /** Детерминированные id для идемпотентного seed (не randomUUID). */
 export function workshop2B2bHandoffSeedMessageIds(orderId: string): string[] {
   const slug = orderId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
-  return [
-    `cccchandoff-${slug}-01`,
-    `cccchandoff-${slug}-02`,
-  ];
+  return [`cccchandoff-${slug}-01`, `cccchandoff-${slug}-02`];
 }

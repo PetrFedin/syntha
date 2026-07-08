@@ -25,7 +25,9 @@ function scopeKey(collectionId: string, articleId: string): string {
 }
 
 function lineId(collectionId: string, articleId: string, index: number): string {
-  return `brand-bom-${collectionId}-${articleId}-${index}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+  return `brand-bom-${collectionId}-${articleId}-${index}`
+    .replace(/[^a-zA-Z0-9_-]/g, '-')
+    .slice(0, 120);
 }
 
 function canUseDiskPersistence(): boolean {
@@ -44,7 +46,8 @@ function hydrateFileIfNeeded(): void {
       rows: BrandSupplierBomFeedRow[];
     }>;
     if (!Array.isArray(parsed)) return;
-    for (const snap of parsed) memoryByScope.set(scopeKey(snap.collectionId, snap.articleId), snap.rows);
+    for (const snap of parsed)
+      memoryByScope.set(scopeKey(snap.collectionId, snap.articleId), snap.rows);
   } catch {
     /* ignore */
   }
@@ -64,7 +67,11 @@ function persistFile(): void {
   }
 }
 
-async function listPg(org: string, collectionId: string, articleId: string): Promise<BrandSupplierBomFeedRow[]> {
+async function listPg(
+  org: string,
+  collectionId: string,
+  articleId: string
+): Promise<BrandSupplierBomFeedRow[]> {
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query<{
     line_index: number;
@@ -163,9 +170,7 @@ export async function listBrandSupplierBomFeedServer(input: {
   if (isWorkshop2PostgresEnabled()) {
     let persisted = await listPg(org, collectionId, articleId);
     if (!persisted.length && input?.seedIfEmpty !== false) {
-      const seedSource = snapshotRows.length
-        ? snapshotRows
-        : buildBrandSupplierBomSeedFeedRows();
+      const seedSource = snapshotRows.length ? snapshotRows : buildBrandSupplierBomSeedFeedRows();
       persisted = await seedPersisted(org, collectionId, articleId, seedSource, 'pg');
     }
     const merged = mergeBrandSupplierBomFeedRows(snapshotRows, persisted);
@@ -205,7 +210,10 @@ export async function refreshBrandSupplierBomFeedServer(input: {
   articleId: string;
   snapshotLines?: readonly SupplierProcurementBomLine[];
   organizationId?: string;
-}): Promise<{ summary: ReturnType<typeof summarizeBrandSupplierBomFeed>; storageMode: BrandSupplierBomFeedStorageMode }> {
+}): Promise<{
+  summary: ReturnType<typeof summarizeBrandSupplierBomFeed>;
+  storageMode: BrandSupplierBomFeedStorageMode;
+}> {
   const snapshotRows = buildBrandSupplierBomFeedRowsFromSnapshot(input.snapshotLines ?? []);
   const seedSource = snapshotRows.length ? snapshotRows : buildBrandSupplierBomSeedFeedRows();
   const mode: BrandSupplierBomFeedStorageMode = isWorkshop2PostgresEnabled()

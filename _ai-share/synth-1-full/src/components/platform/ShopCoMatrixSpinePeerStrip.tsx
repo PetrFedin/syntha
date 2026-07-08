@@ -27,13 +27,21 @@ export function ShopCoMatrixSpinePeerStrip({ collectionId, orderId }: Props) {
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.workingOrderHref} data-testid="shop-co-matrix-working-order-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.workingOrderHref}
+        data-testid="shop-co-matrix-working-order-link"
+        className={hubGadget.goldenLink}
+      >
         Рабочий заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={showroom.replenishmentRulesHref} data-testid="shop-co-matrix-rules-link" className={hubGadget.goldenLink}>
+      <Link
+        href={showroom.replenishmentRulesHref}
+        data-testid="shop-co-matrix-rules-link"
+        className={hubGadget.goldenLink}
+      >
         Правила
       </Link>
     </div>

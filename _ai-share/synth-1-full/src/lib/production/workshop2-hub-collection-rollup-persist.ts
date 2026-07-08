@@ -93,7 +93,8 @@ export function evaluateWorkshop2HubRollupExportGate(
       id: 'hub.rollup.export_ls_fallback',
       severity: 'warning',
       messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') ?? 'ZIP ТЗ: rollup не server-only — «Rollup PG → досье».',
+        workshop2PgMirrorStr(mirror, 'hintRu') ??
+        'ZIP ТЗ: rollup не server-only — «Rollup PG → досье».',
     };
   }
   return null;

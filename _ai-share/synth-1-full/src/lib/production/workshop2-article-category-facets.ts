@@ -29,7 +29,9 @@ function sortedUnique(values: Iterable<string>): string[] {
 }
 
 /** Все L1, встречающиеся среди переданных артикулов. */
-export function collectWorkshop2CategoryL1Options(rows: readonly Workshop2CategoryFacetRow[]): string[] {
+export function collectWorkshop2CategoryL1Options(
+  rows: readonly Workshop2CategoryFacetRow[]
+): string[] {
   const out: string[] = [];
   for (const row of rows) {
     const l1 = normalizeFacetLabel(row.categoryL1);
@@ -74,7 +76,9 @@ export function collectWorkshop2CategoryL3Options(
   return sortedUnique(out);
 }
 
-export function collectWorkshop2AudienceOptions(rows: readonly Workshop2CategoryFacetRow[]): string[] {
+export function collectWorkshop2AudienceOptions(
+  rows: readonly Workshop2CategoryFacetRow[]
+): string[] {
   const out: string[] = [];
   for (const row of rows) {
     const aud = normalizeFacetLabel(row.audienceLabel);
@@ -89,8 +93,7 @@ export function enrichWorkshop2ArticleRowFacets<T extends Workshop2CategoryFacet
   row: T,
   dossierMap?: Record<string, Workshop2DossierPhase1>
 ): T {
-  const map =
-    dossierMap ?? (typeof window !== 'undefined' ? loadWorkshop2Phase1DossierMap() : {});
+  const map = dossierMap ?? (typeof window !== 'undefined' ? loadWorkshop2Phase1DossierMap() : {});
   const articleId = row.id?.trim();
   const dossierLeaf =
     articleId && collectionId

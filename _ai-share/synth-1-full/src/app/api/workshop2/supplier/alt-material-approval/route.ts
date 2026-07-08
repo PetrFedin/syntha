@@ -80,7 +80,9 @@ async function notifyAltMaterialApprovalChange(input: {
   }
 }
 
-export const GET = withWorkshop2ApiErrorRu(async function getAltMaterialApprovals(req: NextRequest) {
+export const GET = withWorkshop2ApiErrorRu(async function getAltMaterialApprovals(
+  req: NextRequest
+) {
   const { searchParams } = new URL(req.url);
   const collectionId = searchParams.get('collectionId')?.trim() ?? '';
   const articleId = searchParams.get('articleId')?.trim() ?? '';
@@ -108,7 +110,9 @@ export const GET = withWorkshop2ApiErrorRu(async function getAltMaterialApproval
   });
 });
 
-export const POST = withWorkshop2ApiErrorRu(async function postAltMaterialApproval(req: NextRequest) {
+export const POST = withWorkshop2ApiErrorRu(async function postAltMaterialApproval(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 
@@ -158,8 +162,7 @@ export const POST = withWorkshop2ApiErrorRu(async function postAltMaterialApprov
     action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'pending';
 
   const actor =
-    resolveWorkshop2UpdatedBy(req, String(body.actor ?? ''), auth.actor) ??
-    'supplier-alt-material';
+    resolveWorkshop2UpdatedBy(req, String(body.actor ?? ''), auth.actor) ?? 'supplier-alt-material';
 
   const saved = await upsertSupplierAltMaterialApprovalServer({
     collectionId,

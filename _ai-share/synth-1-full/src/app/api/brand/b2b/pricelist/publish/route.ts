@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const syncTierToShop =
-    body.syncTierToShop !== false && isBrandPricelistPublishTierSyncEnabled();
+  const syncTierToShop = body.syncTierToShop !== false && isBrandPricelistPublishTierSyncEnabled();
 
   try {
     const result = await publishBrandPricelistWithTierSyncServer({

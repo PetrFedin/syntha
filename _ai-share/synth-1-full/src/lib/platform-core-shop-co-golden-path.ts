@@ -7,9 +7,7 @@ import {
   platformCoreCabinetSectionHref,
   shopCoMatrixEmbeddedTabHref,
 } from '@/lib/platform-core-cabinet-workspace';
-import {
-  ROUTES,
-} from '@/lib/platform-core-routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 
 export type PlatformCoreShopCoGoldenPathStepId =
   | 'matrix'
@@ -25,7 +23,11 @@ export const PLATFORM_CORE_SHOP_CO_GOLDEN_PATH_STEPS: ReadonlyArray<{
 }> = [
   { id: 'matrix', labelRu: 'Матрица', linkTestId: 'shop-co-golden-path-matrix-link' },
   { id: 'checkout', labelRu: 'Оформление', linkTestId: 'shop-co-golden-path-checkout-link' },
-  { id: 'replenishment', labelRu: 'Пополнение', linkTestId: 'shop-co-golden-path-replenishment-link' },
+  {
+    id: 'replenishment',
+    labelRu: 'Пополнение',
+    linkTestId: 'shop-co-golden-path-replenishment-link',
+  },
   { id: 'registry', labelRu: 'Реестр', linkTestId: 'shop-co-golden-path-registry-link' },
   { id: 'tracking', labelRu: 'Трекинг', linkTestId: 'shop-co-golden-path-tracking-link' },
 ];

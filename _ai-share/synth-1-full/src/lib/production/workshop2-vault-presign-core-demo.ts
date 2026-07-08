@@ -5,18 +5,16 @@ import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 import { isWorkshop2VaultS3Configured } from '@/lib/server/workshop2-vault-s3';
 
 function isPublicCoreMode(env: Record<string, string | undefined> = process.env): boolean {
-  const raw = String(env.NEXT_PUBLIC_PLATFORM_CORE_MODE ?? '').trim().toLowerCase();
+  const raw = String(env.NEXT_PUBLIC_PLATFORM_CORE_MODE ?? '')
+    .trim()
+    .toLowerCase();
   return raw === '1' || raw === 'true';
 }
 
 export function isWorkshop2VaultPresignCoreDemoBypassEnabled(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  return (
-    isPublicCoreMode(env) &&
-    isWorkshop2PostgresEnabled() &&
-    !isWorkshop2VaultS3Configured()
-  );
+  return isPublicCoreMode(env) && isWorkshop2PostgresEnabled() && !isWorkshop2VaultS3Configured();
 }
 
 export function buildWorkshop2VaultDemoStoragePath(input: {

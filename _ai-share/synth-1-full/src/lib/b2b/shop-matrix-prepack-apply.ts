@@ -3,7 +3,10 @@ import {
   buildShopMatrixPrepackBreakdown,
   type ShopMatrixSizeCurve,
 } from '@/lib/b2b/shop-matrix-prepack-curve';
-import { mergeCurveIntoStandardGrid, type ShopMatrixSizeCurveView } from '@/lib/b2b/shop-matrix-size-curve';
+import {
+  mergeCurveIntoStandardGrid,
+  type ShopMatrixSizeCurveView,
+} from '@/lib/b2b/shop-matrix-size-curve';
 
 export const SHOP_MATRIX_PREPACK_APPLY_PARAM = 'prepackApply';
 export const SHOP_MATRIX_PREPACK_ARTICLE_PARAM = 'prepackArticle';

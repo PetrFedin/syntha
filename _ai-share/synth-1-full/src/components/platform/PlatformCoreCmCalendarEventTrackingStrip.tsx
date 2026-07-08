@@ -74,7 +74,7 @@ export function PlatformCoreCmCalendarEventTrackingStrip({
 
   return (
     <div
-      className="border-border-subtle mb-2 space-y-1 rounded-md border bg-bg-surface2/40 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/40 mb-2 space-y-1 rounded-md border px-3 py-2 text-xs"
       data-testid={stripTestId}
     >
       <p className="text-text-muted text-[10px] font-semibold uppercase">События · к трекингу</p>

@@ -23,7 +23,10 @@ import { getTaskLinks } from '@/lib/data/entity-links';
 import { RelatedModulesBlock } from '@/components/brand/RelatedModulesBlock';
 import type { BrandTaskRecord, BrandTaskStatus } from '@/lib/production-data';
 import { generateTaskId, getProductionDataPort } from '@/lib/production-data';
-import { loadBrandTasksWithMode, persistBrandTasks } from '@/lib/production-data/brand-tasks-client';
+import {
+  loadBrandTasksWithMode,
+  persistBrandTasks,
+} from '@/lib/production-data/brand-tasks-client';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { demoTasksForProductionStage } from '@/lib/production/stages-comm-demo';
 import { ROUTES } from '@/lib/routes';
@@ -155,28 +158,31 @@ function BrandTasksPageInner() {
     [filteredTasks]
   );
 
-  const setTaskStatus = useCallback((taskId: string, status: BrandTaskStatus) => {
-    const now = new Date().toISOString();
-    if (taskId.startsWith('demo-stage-')) {
-      setDemoTaskStatusOverrides((prev) => {
-        const next = { ...prev, [taskId]: status };
-        try {
-          sessionStorage.setItem(DEMO_TASK_STATUS_STORAGE_KEY, JSON.stringify(next));
-        } catch {
-          /* ignore */
+  const setTaskStatus = useCallback(
+    (taskId: string, status: BrandTaskStatus) => {
+      const now = new Date().toISOString();
+      if (taskId.startsWith('demo-stage-')) {
+        setDemoTaskStatusOverrides((prev) => {
+          const next = { ...prev, [taskId]: status };
+          try {
+            sessionStorage.setItem(DEMO_TASK_STATUS_STORAGE_KEY, JSON.stringify(next));
+          } catch {
+            /* ignore */
+          }
+          return next;
+        });
+        return;
+      }
+      setTasks((prev) => {
+        const next = prev.map((t) => (t.id === taskId ? { ...t, status, updatedAt: now } : t));
+        if (persistMode === 'postgres' && !pgUnavailable) {
+          void persistBrandTasks(next);
         }
         return next;
       });
-      return;
-    }
-    setTasks((prev) => {
-      const next = prev.map((t) => (t.id === taskId ? { ...t, status, updatedAt: now } : t));
-      if (persistMode === 'postgres' && !pgUnavailable) {
-        void persistBrandTasks(next);
-      }
-      return next;
-    });
-  }, [persistMode, pgUnavailable]);
+    },
+    [persistMode, pgUnavailable]
+  );
 
   const addTask = useCallback(() => {
     const title = newTitle.trim();
@@ -236,7 +242,11 @@ function BrandTasksPageInner() {
           }
         />
       ) : pgUnavailable ? (
-        <p className="text-destructive text-xs" role="status" data-testid="brand-tasks-pg-unavailable">
+        <p
+          className="text-xs text-destructive"
+          role="status"
+          data-testid="brand-tasks-pg-unavailable"
+        >
           Kanban недоступен без PostgreSQL — запустите core:bootstrap.
         </p>
       ) : mounted && tasks.length === 0 ? (
@@ -245,7 +255,8 @@ function BrandTasksPageInner() {
           data-testid="brand-tasks-empty-onboarding"
         >
           <p className="text-text-secondary">
-            Kanban пуст — задачи сохраняются в PostgreSQL. Создайте первую задачу или откройте цех W2.
+            Kanban пуст — задачи сохраняются в PostgreSQL. Создайте первую задачу или откройте цех
+            W2.
           </p>
           <Button variant="link" size="sm" className="h-auto px-0 text-[11px]" asChild>
             <Link href={ROUTES.brand.productionWorkshop2}>Цех разработки W2</Link>
@@ -352,7 +363,9 @@ function BrandTasksPageInner() {
 
       <div
         className="grid grid-cols-1 gap-4 md:grid-cols-3"
-        data-testid={persistMode === 'postgres' && !pgUnavailable ? 'brand-tasks-kanban-pg' : undefined}
+        data-testid={
+          persistMode === 'postgres' && !pgUnavailable ? 'brand-tasks-kanban-pg' : undefined
+        }
       >
         {columns.map((col) => (
           <Card key={col.id} className="border-border-subtle rounded-xl border">

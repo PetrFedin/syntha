@@ -31,12 +31,18 @@ export function ManufacturerDevDossierCommentPeerStrip({ collectionId, articleId
     role: 'manufacturer',
   })}&prefill=${encodeURIComponent(body.slice(0, 120))}`;
 
-  const sampleQueueHref = manufacturerHandoffFeatureHref('sample-queue', { collectionId, articleId });
+  const sampleQueueHref = manufacturerHandoffFeatureHref('sample-queue', {
+    collectionId,
+    articleId,
+  });
   const materialsHref = buildMfrDossierCommentMaterialsHref(collectionId);
   const brandDiffHref = brandDossierFactoryDiffViewerHref(collectionId, articleId);
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={WAVE_XN_MFR_DOSSIER_COMMENT_PEER_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={WAVE_XN_MFR_DOSSIER_COMMENT_PEER_STRIP_TESTID}
+    >
       <Link
         href={brandDiffHref}
         data-testid={WAVE_XN_MFR_DOSSIER_COMMENT_BRAND_DIFF_LINK_TESTID}
@@ -47,13 +53,21 @@ export function ManufacturerDevDossierCommentPeerStrip({ collectionId, articleId
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={chatHref} data-testid="mfr-dev-dossier-comment-chat-link" className={hubGadget.goldenLink}>
+      <Link
+        href={chatHref}
+        data-testid="mfr-dev-dossier-comment-chat-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_XN_MFR_DOSSIER_PEER_CHAT_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={sampleQueueHref} data-testid="mfr-dev-dossier-comment-sample-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={sampleQueueHref}
+        data-testid="mfr-dev-dossier-comment-sample-queue-link"
+        className={hubGadget.goldenLink}
+      >
         {WAVE_XN_MFR_DOSSIER_PEER_SAMPLE_QUEUE_RU}
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>

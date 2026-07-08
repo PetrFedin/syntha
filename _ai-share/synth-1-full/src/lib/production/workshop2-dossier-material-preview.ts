@@ -7,9 +7,7 @@ export type Workshop2DossierMaterialPreview = {
 };
 
 /** Единица измерения материала (UoM) — расшифровка для RU UI. */
-export function formatWorkshop2MaterialUnitRu(
-  unit?: 'm' | 'm2' | 'kg' | 'pcs' | 'set'
-): string {
+export function formatWorkshop2MaterialUnitRu(unit?: 'm' | 'm2' | 'kg' | 'pcs' | 'set'): string {
   switch (unit) {
     case 'm':
       return 'м';

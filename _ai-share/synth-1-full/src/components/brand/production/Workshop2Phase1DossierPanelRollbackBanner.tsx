@@ -23,8 +23,7 @@ export function Workshop2Phase1DossierPanelRollbackBanner({
     >
       <div>
         <h3 className="text-sm font-semibold text-amber-900">
-          Статус:{' '}
-          {lifecycleState === 'sent_to_production' ? 'В производстве' : 'Готово к передаче'}
+          Статус: {lifecycleState === 'sent_to_production' ? 'В производстве' : 'Готово к передаче'}
         </h3>
         <p className="text-xs text-amber-800">ТЗ заблокировано для изменений.</p>
       </div>

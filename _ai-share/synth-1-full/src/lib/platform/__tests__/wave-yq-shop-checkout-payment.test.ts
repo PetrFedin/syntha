@@ -74,7 +74,9 @@ describe('wave YQ shop checkout payment intent polish', () => {
         probe: { provider: 'yukassa', status: 'not_connected', messageRu: 'x', market: 'ru' },
       })
     ).toBe(true);
-    expect(formatShopCheckoutPaymentStubAbsentBadgeRu('yukassa')).toMatch(/Заглушка.*ключи не заданы/i);
+    expect(formatShopCheckoutPaymentStubAbsentBadgeRu('yukassa')).toMatch(
+      /Заглушка.*ключи не заданы/i
+    );
     expect(formatShopCheckoutPaymentStubAbsentBadgeRu('stripe')).toMatch(/Stripe/i);
     expect(
       formatShopCheckoutPaymentIntentMessageRu({

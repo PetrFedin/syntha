@@ -6,10 +6,17 @@ export { mergeOperationalOrderLists, partitionOperationalOrders } from './spine-
 export { getIntegrationsV1ConnectorStatus } from './integration-status.service';
 export { getMatrixInventoryForPlatform } from './inventory-adapters';
 export type { MatrixInventoryCell } from './inventory-adapters';
-export { importWholesaleOrder, importWholesaleOrdersBatch, resolveSpineImportBrandName } from './order-import.service';
+export {
+  importWholesaleOrder,
+  importWholesaleOrdersBatch,
+  resolveSpineImportBrandName,
+} from './order-import.service';
 export type { OrderImportOutcome } from './order-import.service';
 export { importCentricStyle } from './centric-style-import.service';
-export type { CentricStyleImportPayload, CentricStyleImportResult } from './centric-style-import.service';
+export type {
+  CentricStyleImportPayload,
+  CentricStyleImportResult,
+} from './centric-style-import.service';
 export {
   enqueueSyncJob,
   listSyncJobs,

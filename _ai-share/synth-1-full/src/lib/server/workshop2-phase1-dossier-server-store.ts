@@ -299,7 +299,9 @@ export async function getWorkshop2FinalExportSnapshotRecord(input: {
 }): Promise<Workshop2FinalExportSnapshotRecord | null> {
   if (shouldUseWorkshop2ServerDossierPostgres()) {
     await ensureWorkshop2PgSchema();
-    const res = await getWorkshop2PgPool().query<{ dossier_json: Workshop2FinalExportSnapshotRecord }>(
+    const res = await getWorkshop2PgPool().query<{
+      dossier_json: Workshop2FinalExportSnapshotRecord;
+    }>(
       `SELECT dossier_json
        FROM workshop2_dossier_snapshots
        WHERE collection_id = $1 AND article_id = $2 AND snapshot_id = $3
@@ -326,7 +328,9 @@ export async function listWorkshop2FinalExportSnapshotMetas(input: {
   const limit = Math.min(Math.max(Math.floor(input.limit ?? 30), 1), 100);
   if (shouldUseWorkshop2ServerDossierPostgres()) {
     await ensureWorkshop2PgSchema();
-    const res = await getWorkshop2PgPool().query<{ dossier_json: Workshop2FinalExportSnapshotRecord }>(
+    const res = await getWorkshop2PgPool().query<{
+      dossier_json: Workshop2FinalExportSnapshotRecord;
+    }>(
       `SELECT dossier_json
        FROM workshop2_dossier_snapshots
        WHERE collection_id = $1 AND article_id = $2
@@ -358,7 +362,9 @@ export async function getWorkshop2FinalExportSnapshotMeta(input: {
 }): Promise<Workshop2FinalExportSnapshotMeta | null> {
   if (shouldUseWorkshop2ServerDossierPostgres()) {
     await ensureWorkshop2PgSchema();
-    const res = await getWorkshop2PgPool().query<{ dossier_json: Workshop2FinalExportSnapshotRecord }>(
+    const res = await getWorkshop2PgPool().query<{
+      dossier_json: Workshop2FinalExportSnapshotRecord;
+    }>(
       `SELECT dossier_json
        FROM workshop2_dossier_snapshots
        WHERE collection_id = $1 AND article_id = $2 AND snapshot_id = $3

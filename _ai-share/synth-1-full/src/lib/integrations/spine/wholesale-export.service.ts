@@ -42,7 +42,9 @@ function exportPath(): string {
 function loadExports(): ExportFileV1 {
   try {
     const j = JSON.parse(fs.readFileSync(exportPath(), 'utf8')) as ExportFileV1;
-    return j?.schemaVersion === 1 ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} } : { schemaVersion: 1, byOrderId: {} };
+    return j?.schemaVersion === 1
+      ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} }
+      : { schemaVersion: 1, byOrderId: {} };
   } catch {
     return { schemaVersion: 1, byOrderId: {} };
   }
@@ -57,7 +59,9 @@ function saveExports(data: ExportFileV1): void {
 }
 
 /** PG hydrate: replace full export snapshot (idempotent). */
-export function replaceWholesaleExportSnapshot(byOrderId: Record<string, WholesaleExportRecord>): void {
+export function replaceWholesaleExportSnapshot(
+  byOrderId: Record<string, WholesaleExportRecord>
+): void {
   saveExports({ schemaVersion: 1, byOrderId });
 }
 
@@ -73,7 +77,8 @@ export async function resolveWholesaleExport(
   if (!id) return undefined;
   const { isSpineOperationalPgPrimary } = await import('./spine-pg-hydrate-guards');
   if (isSpineOperationalPgPrimary()) {
-    const { getWholesaleExportFromPgByOrderId } = await import('./spine-operational-persistence.pg');
+    const { getWholesaleExportFromPgByOrderId } =
+      await import('./spine-operational-persistence.pg');
     const pgHit = await getWholesaleExportFromPgByOrderId(id);
     if (pgHit) return pgHit;
   }

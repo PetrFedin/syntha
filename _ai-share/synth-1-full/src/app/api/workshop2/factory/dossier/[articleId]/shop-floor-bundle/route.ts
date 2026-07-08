@@ -32,7 +32,10 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
     dossier = record?.dossier ?? null;
   }
   if (!dossier) {
-    return NextResponse.json({ ok: false, messageRu: 'Досье артикула не найдено.' }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Досье артикула не найдено.' },
+      { status: 404 }
+    );
   }
 
   const text = await buildPlatformCoreShopFloorBundleText({

@@ -15,10 +15,7 @@ import { workshopTzSignerAllowed } from '@/lib/production/workshop2-tz-signatory
 import type { Workshop2TzSignoffSectionKey } from '@/lib/production/workshop2-dossier-phase1.types';
 
 type Params = CommitSectionSignoffDeps &
-  Pick<
-    RevokeSectionSignoffDeps,
-    'tzRevokersEffective' | 'onTzRevokeDenied'
-  > & {
+  Pick<RevokeSectionSignoffDeps, 'tzRevokersEffective' | 'onTzRevokeDenied'> & {
     updatedByLabel: string;
   };
 
@@ -57,10 +54,7 @@ export function useWorkshop2Phase1DossierSectionSignoffCallbacks(params: Params)
 
   const sectionSignoffSessionTechOk = useMemo(() => {
     if (sectionSignoffPassportPreviews.techPassportMissing) return false;
-    return workshopTzSignerAllowed(
-      updatedByLabel,
-      sectionSignoffPassportPreviews.techPassportName
-    );
+    return workshopTzSignerAllowed(updatedByLabel, sectionSignoffPassportPreviews.techPassportName);
   }, [sectionSignoffPassportPreviews, updatedByLabel]);
 
   const commitSectionSignoff = useCallback(

@@ -10,7 +10,8 @@ export const SHOP_ACCEPT_INVITE_PAGE_PATH = '/shop/b2b/accept-invite' as const;
 
 export const SHOP_ACCEPT_INVITE_PG_TABLE = 'shop_b2b_partner_sessions' as const;
 
-export const SHOP_ACCEPT_INVITE_WAVE_XK_MIGRATION = '042_wave_se_matrix_draft_stages_invite' as const;
+export const SHOP_ACCEPT_INVITE_WAVE_XK_MIGRATION =
+  '042_wave_se_matrix_draft_stages_invite' as const;
 
 export const SHOP_ACCEPT_INVITE_PG_BADGE_TESTID = 'b2b-accept-invite-storage-pg' as const;
 

@@ -26,11 +26,7 @@ const STEPS: { id: PlatformB2bMarketroomGoldenPathStepId; label: string }[] = [
   { id: 'tracking', label: 'Трекинг' },
 ];
 
-export function PlatformB2bMarketroomGoldenPathStrip({
-  collectionId,
-  orderId,
-  activeStep,
-}: Props) {
+export function PlatformB2bMarketroomGoldenPathStrip({ collectionId, orderId, activeStep }: Props) {
   const session = buildPlatformB2bMarketroomSession({ collectionId, orderId });
 
   const hrefFor = (id: PlatformB2bMarketroomGoldenPathStepId): string => {

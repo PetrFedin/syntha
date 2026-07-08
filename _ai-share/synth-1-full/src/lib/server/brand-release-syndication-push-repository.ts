@@ -19,7 +19,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as BrandReleaseSyndicationPushResult[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as BrandReleaseSyndicationPushResult[];
     if (Array.isArray(parsed)) memory.splice(0, memory.length, ...parsed);
   } catch {
     /* ignore */

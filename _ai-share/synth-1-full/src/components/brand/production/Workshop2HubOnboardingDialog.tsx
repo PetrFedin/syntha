@@ -137,7 +137,9 @@ export function Workshop2HubOnboardingDialog({ hasArticle = false }: { hasArticl
         data-testid="workshop2-hub-onboarding"
       >
         <DialogHeader className="border-border-subtle space-y-1 border-b px-4 py-3">
-          <DialogTitle className="text-base">{COLLECTION_DEV_HUB_TITLE_RU} · быстрый старт</DialogTitle>
+          <DialogTitle className="text-base">
+            {COLLECTION_DEV_HUB_TITLE_RU} · быстрый старт
+          </DialogTitle>
           <DialogDescription className="text-xs">
             Шаг {step + 1} из {STEPS.length} · прогресс {progressPct}% · можно пропустить
           </DialogDescription>

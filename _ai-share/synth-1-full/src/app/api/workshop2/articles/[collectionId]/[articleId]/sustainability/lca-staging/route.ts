@@ -45,7 +45,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     txMeta: { eventType: 'workshop2_lca_staging' },
   });
   if (!saved.ok) {
-    return jsonWorkshop2ErrorRu(workshop2DossierPutFailureStatus(saved), workshop2DossierPutFailureMessageRu(saved));
+    return jsonWorkshop2ErrorRu(
+      workshop2DossierPutFailureStatus(saved),
+      workshop2DossierPutFailureMessageRu(saved)
+    );
   }
 
   const mirror = result.dossier.sustainabilityStagingMirror;

@@ -145,11 +145,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
   );
 
   const serverExportContext = useMemo(() => {
-    const {
-      measurementsLeaf: _leaf,
-      exportLanguage,
-      ...rest
-    } = exportContext;
+    const { measurementsLeaf: _leaf, exportLanguage, ...rest } = exportContext;
     return { ...rest, exportLanguage };
   }, [exportContext]);
 
@@ -216,7 +212,11 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
             {releaseGate.ready ? 'Release gate · OK' : 'Release gate · blocked'}
           </Badge>
           {lastExport ? (
-            <Badge variant="outline" className="text-[10px]" data-testid="brand-factory-pack-last-export">
+            <Badge
+              variant="outline"
+              className="text-[10px]"
+              data-testid="brand-factory-pack-last-export"
+            >
               Export {lastExport.sheetsReady}/{lastExport.sheetsTotal}
               {lastExport.snapshotId ? ` · ${lastExport.snapshotId.slice(0, 8)}…` : ''}
             </Badge>
@@ -224,16 +224,14 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
           {!releaseGate.ready && !compact ? (
             <Link
               href={session.releaseGateHref}
-              className="text-primary text-[11px] underline-offset-2 hover:underline"
+              className="text-[11px] text-primary underline-offset-2 hover:underline"
             >
               Launch readiness
             </Link>
           ) : null}
         </div>
 
-        {!compact ? (
-          <BrandWorkshop2TechPackCrossLinksStrip links={session.crossLinks} />
-        ) : null}
+        {!compact ? <BrandWorkshop2TechPackCrossLinksStrip links={session.crossLinks} /> : null}
 
         <Workshop2TechPackConstructionNotesPanel
           dossier={dossier}
@@ -242,7 +240,10 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
         />
 
         {exportOptions.qtyBridgeNote ? (
-          <p className="text-text-muted text-[11px]" data-testid="brand-factory-pack-qty-bridge-note">
+          <p
+            className="text-text-muted text-[11px]"
+            data-testid="brand-factory-pack-qty-bridge-note"
+          >
             {exportOptions.qtyBridgeNote}
             {exportOptions.qtyByColorSize?.length
               ? ` · ${exportOptions.qtyByColorSize.length} строк color×size`
@@ -250,11 +251,7 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
           </p>
         ) : null}
 
-        <div
-          className="flex flex-wrap gap-1"
-          role="tablist"
-          aria-label="Листы фабричного пакета"
-        >
+        <div className="flex flex-wrap gap-1" role="tablist" aria-label="Листы фабричного пакета">
           {WORKSHOP2_TECHPACK_EXPORT_SHEETS.map((sheet) => {
             const row = readiness.rows.find((r) => r.id === sheet.id);
             return (
@@ -275,9 +272,8 @@ export function BrandWorkshop2FactoryPackPreviewPanel({
         </div>
 
         {readiness.rows.find((r) => r.id === activeSheetId && !r.ok)?.missingRu.length ? (
-          <p className="text-amber-800 text-[11px]">
-            Не хватает:{' '}
-            {readiness.rows.find((r) => r.id === activeSheetId)?.missingRu.join(', ')}
+          <p className="text-[11px] text-amber-800">
+            Не хватает: {readiness.rows.find((r) => r.id === activeSheetId)?.missingRu.join(', ')}
           </p>
         ) : null}
 

@@ -56,9 +56,7 @@ export function mapWorkshop2ArticlesToMatrixProducts(
   });
 }
 
-export async function fetchWorkshop2MatrixProducts(
-  collectionId: string
-): Promise<Product[]> {
+export async function fetchWorkshop2MatrixProducts(collectionId: string): Promise<Product[]> {
   const cid = collectionId.trim();
   if (!cid) return [];
   const res = await fetch(

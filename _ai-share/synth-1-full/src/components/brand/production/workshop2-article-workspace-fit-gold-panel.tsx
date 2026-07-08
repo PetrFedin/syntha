@@ -606,9 +606,7 @@ export function Workshop2ArticleFitGoldPanel({
           collectionId={ref.collectionId}
           categoryLeafId={categoryLeafId}
           articleUrlSegment={articleUrlSegment}
-          onDossierPatch={(patch) =>
-            setDossier((prev) => (prev ? { ...prev, ...patch } : prev))
-          }
+          onDossierPatch={(patch) => setDossier((prev) => (prev ? { ...prev, ...patch } : prev))}
         />
       ) : null}
       <div className="border-border-default rounded-xl border bg-white p-4 shadow-sm">

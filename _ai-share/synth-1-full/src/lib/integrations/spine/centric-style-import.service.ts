@@ -28,7 +28,7 @@ export function importCentricStyle(payload: CentricStyleImportPayload): CentricS
   upsertExternalRef({
     platform: 'centric',
     externalId: payload.styleId,
-    externalRevision: approved ? 'Approved' : payload.lifecycleState ?? 'Draft',
+    externalRevision: approved ? 'Approved' : (payload.lifecycleState ?? 'Draft'),
     synthaEntityType: 'article',
     synthaEntityId: articleId,
     lastSyncedAt: new Date().toISOString(),

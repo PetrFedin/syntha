@@ -148,8 +148,7 @@ export function evaluateWorkshop2InspectorReportSampleGate(
       id: 'qc.inspector.not_ready_sample',
       severity: 'blocker',
       messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') ||
-        'Чек-лист инспектора не готов для sample-order.',
+        workshop2PgMirrorStr(mirror, 'hintRu') || 'Чек-лист инспектора не готов для sample-order.',
     };
   }
   return null;

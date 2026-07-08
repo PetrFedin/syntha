@@ -111,9 +111,7 @@ function metadataToOrderFields(
       : undefined,
     paymentTermsDays: typeof m.paymentTermsDays === 'number' ? m.paymentTermsDays : undefined,
     buyerDeliveryAcknowledgedAt:
-      typeof m.buyerDeliveryAcknowledgedAt === 'string'
-        ? m.buyerDeliveryAcknowledgedAt
-        : undefined,
+      typeof m.buyerDeliveryAcknowledgedAt === 'string' ? m.buyerDeliveryAcknowledgedAt : undefined,
   };
 }
 

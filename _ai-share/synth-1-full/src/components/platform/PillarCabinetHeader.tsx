@@ -17,7 +17,7 @@ export function PillarCabinetHeader({ title, subtitle, lead, progress, className
   return (
     <header
       data-testid="pillar-cabinet-header"
-      className={cn('space-y-1 border-b border-border-subtle pb-3', className)}
+      className={cn('border-border-subtle space-y-1 border-b pb-3', className)}
     >
       <h1 className={cabinetTypography.pageTitle}>{title}</h1>
       {subtitle ? <p className={cabinetTypography.caption}>{subtitle}</p> : null}

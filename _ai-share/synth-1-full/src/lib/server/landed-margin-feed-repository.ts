@@ -29,7 +29,9 @@ function feedKey(collectionId: string, orderId: string, lineId: string): string 
 }
 
 function feedId(collectionId: string, orderId: string, lineId: string): string {
-  return `lm-feed-${collectionId}-${orderId}-${lineId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+  return `lm-feed-${collectionId}-${orderId}-${lineId}`
+    .replace(/[^a-zA-Z0-9_-]/g, '-')
+    .slice(0, 120);
 }
 
 function canUseDiskPersistence(): boolean {
@@ -109,7 +111,8 @@ function mapPgRow(row: {
     label: row.label,
     wholesaleRub: row.wholesale_rub,
     landedRub: row.landed_rub,
-    source: row.source === 'pg' || row.source === 'order' ? (row.source as 'pg' | 'order') : 'catalog',
+    source:
+      row.source === 'pg' || row.source === 'order' ? (row.source as 'pg' | 'order') : 'catalog',
     orderId: row.order_id || undefined,
     retailRub: row.retail_rub ?? undefined,
     productionRub: row.production_rub ?? undefined,
@@ -180,9 +183,16 @@ function listPersistedMemory(collectionId: string, orderId: string): LandedMargi
     .sort((a, b) => a.lineId.localeCompare(b.lineId));
 }
 
-function upsertPersistedMemory(collectionId: string, orderId: string, row: LandedMarginFeedRow): void {
+function upsertPersistedMemory(
+  collectionId: string,
+  orderId: string,
+  row: LandedMarginFeedRow
+): void {
   hydrateFileIfNeeded();
-  memoryByKey.set(feedKey(collectionId, orderId, row.lineId), { ...row, orderId: orderId || row.orderId });
+  memoryByKey.set(feedKey(collectionId, orderId, row.lineId), {
+    ...row,
+    orderId: orderId || row.orderId,
+  });
   persistFile();
 }
 

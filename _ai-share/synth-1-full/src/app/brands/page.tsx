@@ -239,58 +239,62 @@ export default function BrandsPage() {
     <div
       className={cn(
         'group/section relative',
-        platformCorePartnersSlim ? 'min-h-0 bg-transparent' : 'bg-bg-canvas min-h-screen overflow-hidden'
+        platformCorePartnersSlim
+          ? 'min-h-0 bg-transparent'
+          : 'bg-bg-canvas min-h-screen overflow-hidden'
       )}
       data-testid={platformCorePartnersSlim ? 'platform-core-b2b-partners-directory' : undefined}
     >
       {!platformCorePartnersSlim ? (
         <>
-      {/* OS Background Elements */}
-      <div className="os-grid-bg pointer-events-none absolute inset-0 opacity-40" />
-      <div className="os-calibration-grid pointer-events-none absolute inset-0 opacity-[0.03]" />
+          {/* OS Background Elements */}
+          <div className="os-grid-bg pointer-events-none absolute inset-0 opacity-40" />
+          <div className="os-calibration-grid pointer-events-none absolute inset-0 opacity-[0.03]" />
 
-      {/* System Pulse Ticker - Unified */}
-      <div className="relative z-50 flex h-8 items-center overflow-hidden border-b border-white/10 bg-black text-white">
-        <div className="flex h-full shrink-0 items-center gap-3 border-r border-white/20 bg-black px-6">
-          <Activity className="text-accent-primary h-3 w-3 animate-pulse" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white">ПУЛЬС</span>
-        </div>
-        <div className="relative flex h-full flex-1 items-center overflow-hidden">
-          <div className="animate-pulse-marquee flex w-max flex-row items-center gap-3 whitespace-nowrap">
-            {[
-              'ЛОГ: Nordic Wool обновили оптовый каталог (Осень-Зима 26)',
-              "AI_STRATEGY: Высокий спрос на 'Activewear' в B2B сегменте (+12.4%)",
-              'СИСТЕМА: Обработано 5 новых запросов на партнерство',
-              'MARKET: 92% положительных откликов на новый индекс BPI',
-              'АНАЛИТИКА: Рост сегмента Contemporary составил +14.2%',
-              'RETAIL: Топовый хаб активности: Moscow_North',
-              'ОС_ОБНОВЛЕНИЕ: Алгоритм мэтчинга оптимизирован до v4.2',
-              'B2B_LOG: Nordic Wool подтвердили участие в осенней сессии заказов',
-            ].map((msg, i) => (
-              <div key={i} className="flex shrink-0 items-center gap-3">
-                <div className="bg-accent-primary h-1 w-1 rounded-full" />
-                <span className="font-mono text-[10px] uppercase tracking-tighter text-white/70">
-                  {msg}
-                </span>
+          {/* System Pulse Ticker - Unified */}
+          <div className="relative z-50 flex h-8 items-center overflow-hidden border-b border-white/10 bg-black text-white">
+            <div className="flex h-full shrink-0 items-center gap-3 border-r border-white/20 bg-black px-6">
+              <Activity className="text-accent-primary h-3 w-3 animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white">
+                ПУЛЬС
+              </span>
+            </div>
+            <div className="relative flex h-full flex-1 items-center overflow-hidden">
+              <div className="animate-pulse-marquee flex w-max flex-row items-center gap-3 whitespace-nowrap">
+                {[
+                  'ЛОГ: Nordic Wool обновили оптовый каталог (Осень-Зима 26)',
+                  "AI_STRATEGY: Высокий спрос на 'Activewear' в B2B сегменте (+12.4%)",
+                  'СИСТЕМА: Обработано 5 новых запросов на партнерство',
+                  'MARKET: 92% положительных откликов на новый индекс BPI',
+                  'АНАЛИТИКА: Рост сегмента Contemporary составил +14.2%',
+                  'RETAIL: Топовый хаб активности: Moscow_North',
+                  'ОС_ОБНОВЛЕНИЕ: Алгоритм мэтчинга оптимизирован до v4.2',
+                  'B2B_LOG: Nordic Wool подтвердили участие в осенней сессии заказов',
+                ].map((msg, i) => (
+                  <div key={i} className="flex shrink-0 items-center gap-3">
+                    <div className="bg-accent-primary h-1 w-1 rounded-full" />
+                    <span className="font-mono text-[10px] uppercase tracking-tighter text-white/70">
+                      {msg}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </div>
         </>
       ) : null}
 
       {!platformCorePartnersSlim ? (
         <>
-      {/* Decorative OS elements */}
-      <div className="os-side-tab group-hover/section:opacity-20">DIRECTORY_BRANDS</div>
-      <div className="os-kernel-overlay flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <Activity className="text-state-success h-3 w-3" />
-          <span className="text-text-muted font-mono text-[8px]">LINK_STATUS: STABLE</span>
-        </div>
-        <div className="os-hex-chip">0xBRND</div>
-      </div>
+          {/* Decorative OS elements */}
+          <div className="os-side-tab group-hover/section:opacity-20">DIRECTORY_BRANDS</div>
+          <div className="os-kernel-overlay flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Activity className="text-state-success h-3 w-3" />
+              <span className="text-text-muted font-mono text-[8px]">LINK_STATUS: STABLE</span>
+            </div>
+            <div className="os-hex-chip">0xBRND</div>
+          </div>
         </>
       ) : null}
 

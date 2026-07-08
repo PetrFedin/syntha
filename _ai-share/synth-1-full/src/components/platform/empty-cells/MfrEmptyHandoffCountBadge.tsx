@@ -53,7 +53,11 @@ export function MfrEmptyHandoffCountBadge({
   if (count == null) return null;
 
   return (
-    <Badge variant={count > 0 ? 'secondary' : 'outline'} className="text-[10px]" data-testid={testId}>
+    <Badge
+      variant={count > 0 ? 'secondary' : 'outline'}
+      className="text-[10px]"
+      data-testid={testId}
+    >
       {formatMfrEmptyHandoffCountBadgeRu(count)}
     </Badge>
   );

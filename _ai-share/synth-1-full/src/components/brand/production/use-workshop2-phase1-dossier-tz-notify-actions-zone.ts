@@ -13,25 +13,15 @@ import type {
   Workshop2TzSignoffSectionKey,
 } from '@/lib/production/workshop2-dossier-phase1.types';
 
-type PersistFn = (
-  dossier: Workshop2DossierPhase1,
-  opts?: { freezeUpdatedAt?: boolean }
-) => void;
+type PersistFn = (dossier: Workshop2DossierPhase1, opts?: { freezeUpdatedAt?: boolean }) => void;
 
 type Workshop2TzNotifySectionKey = 'general' | 'visuals' | 'material' | 'construction';
 
-type SectionReadinessUi = Record<
-  Workshop2TzSignoffSectionKey,
-  { pct: number; label?: string }
->;
+type SectionReadinessUi = Record<Workshop2TzSignoffSectionKey, { pct: number; label?: string }>;
 
 export type UseWorkshop2Phase1DossierTzNotifyActionsZoneInput = {
   setTzNotifyHighlightRowKey: Dispatch<SetStateAction<string | null>>;
-  toast: (p: {
-    title: string;
-    description?: string;
-    variant?: 'default' | 'destructive';
-  }) => void;
+  toast: (p: { title: string; description?: string; variant?: 'default' | 'destructive' }) => void;
   setDossier: Dispatch<SetStateAction<Workshop2DossierPhase1>>;
   persist: PersistFn;
   updatedByLabel: string;
@@ -76,11 +66,8 @@ export function useWorkshop2Phase1DossierTzNotifyActionsZone({
   );
 
   const setSignoffDeadline = useCallback(
-    (
-      section: Workshop2TzNotifySectionKey,
-      side: 'brand' | 'tech',
-      dueAt: string | undefined
-    ) => updateSignoffDeadlineAction({ setDossier, persist, updatedByLabel }, section, side, dueAt),
+    (section: Workshop2TzNotifySectionKey, side: 'brand' | 'tech', dueAt: string | undefined) =>
+      updateSignoffDeadlineAction({ setDossier, persist, updatedByLabel }, section, side, dueAt),
     [updatedByLabel, persist, setDossier]
   );
 

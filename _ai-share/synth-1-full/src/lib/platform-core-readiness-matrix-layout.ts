@@ -29,8 +29,7 @@ export const READINESS_SCORE_BOX =
 
 export const READINESS_ROW_LABEL = 'flex h-full items-center py-0';
 
-export const READINESS_CELL_CORE =
-  'flex h-full items-center justify-center gap-0.5 px-0.5';
+export const READINESS_CELL_CORE = 'flex h-full items-center justify-center gap-0.5 px-0.5';
 
 export const MATRIX_COL_LABEL =
   'text-text-primary block max-w-full text-[8px] font-semibold leading-[1.18] sm:text-[9px]';

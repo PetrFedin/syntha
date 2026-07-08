@@ -96,9 +96,9 @@ describe('wave XB — brand CO CRM segments → linesheet visibility PG wire', (
     expect(retail?.shopShowroomHref).toContain('/shop/b2b/showroom');
     expect(retail?.shopShowroomHref).toContain('focus=retail');
     expect(retail?.shopShowroomHref).toContain('collection=SS27');
-    expect(brandCoCrmLinesheetShopShowroomHref({ collectionId: 'SS27', segmentKey: 'wholesale' })).toContain(
-      'focus=wholesale'
-    );
+    expect(
+      brandCoCrmLinesheetShopShowroomHref({ collectionId: 'SS27', segmentKey: 'wholesale' })
+    ).toContain('focus=wholesale');
   });
 
   it('PG messageRu helper', () => {
@@ -124,7 +124,9 @@ describe('wave XB — brand CO CRM segments → linesheet visibility PG wire', (
     const row = buildBrandCoOtbReplenishmentBuyerRow({
       buyerId: 'shop1',
       collectionId: 'SS27',
-      mix: [{ category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' }],
+      mix: [
+        { category: 'Knit', targetPct: 20, currentPct: 40, gap: 20, skuCount: 3, source: 'pg' },
+      ],
       activePresetId: 'fashion-eos',
     });
     expect(row.syncStatus).toBe('aligned');

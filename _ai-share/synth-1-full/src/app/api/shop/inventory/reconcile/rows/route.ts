@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
   }
 
   const collectionId =
-    String(body.collectionId ?? req.nextUrl.searchParams.get('collection') ?? '').trim() || undefined;
+    String(body.collectionId ?? req.nextUrl.searchParams.get('collection') ?? '').trim() ||
+    undefined;
   const limit = Math.min(Math.max(Number(body.limit) || 12, 1), 48);
   const cycleSessions = Array.isArray(body.cycleSessions)
     ? (body.cycleSessions as CycleCountSession[])

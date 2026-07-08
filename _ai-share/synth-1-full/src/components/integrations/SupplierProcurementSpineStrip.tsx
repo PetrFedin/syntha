@@ -114,7 +114,10 @@ export function SupplierProcurementSpineStrip({
 
   if (useClientFetch && loadState === 'loading') {
     return (
-      <div className="text-muted-foreground flex items-center gap-2 text-xs" data-testid="sup-procurement-spine-loading">
+      <div
+        className="flex items-center gap-2 text-xs text-muted-foreground"
+        data-testid="sup-procurement-spine-loading"
+      >
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
         Закупка по внешнему заказу…
       </div>
@@ -175,7 +178,7 @@ export function SupplierProcurementSpineStrip({
           <p className="text-xs font-medium">
             PLM · RFQ {ctx.centricRfq.rfqId} · {ctx.centricRfq.status}
           </p>
-          <ul className="text-muted-foreground space-y-0.5 text-[11px]">
+          <ul className="space-y-0.5 text-[11px] text-muted-foreground">
             {ctx.centricRfq.lines.slice(0, 4).map((line) => (
               <li key={line.materialName}>
                 {line.materialName} · {line.qty} {line.unit ?? 'ед.'}
@@ -189,7 +192,7 @@ export function SupplierProcurementSpineStrip({
           <p className="text-xs font-medium">
             ERP · заказ поставщику {ctx.vendorPo.vendorPoId} · {ctx.vendorPo.status}
           </p>
-          <ul className="text-muted-foreground space-y-0.5 text-[11px]">
+          <ul className="space-y-0.5 text-[11px] text-muted-foreground">
             {ctx.vendorPo.lines.slice(0, 4).map((line) => (
               <li key={line.materialName}>
                 {line.materialName} · {line.ackQty ?? '—'}/{line.qty} {line.unit ?? 'ед.'}
@@ -206,7 +209,11 @@ export function SupplierProcurementSpineStrip({
               onClick={() => void ackVendorPo()}
               data-testid="sup-procurement-vendor-po-ack-btn"
             >
-              {ackBusy ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Подтвердить поставку (ack)'}
+              {ackBusy ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                'Подтвердить поставку (ack)'
+              )}
             </Button>
           ) : null}
         </div>

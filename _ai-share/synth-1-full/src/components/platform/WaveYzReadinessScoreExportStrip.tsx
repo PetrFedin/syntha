@@ -53,11 +53,8 @@ export function WaveYzReadinessScoreExportStrip({ collectionId, compact = true }
         <span
           key={`${cell.roleId}-${cell.pillarId}`}
           className={cn(
-            'inline-flex items-center gap-0.5 rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums',
-            readinessScoreTone(
-              cell.staticScore,
-              false
-            )
+            'border-border-subtle inline-flex items-center gap-0.5 rounded border px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums',
+            readinessScoreTone(cell.staticScore, false)
           )}
           data-testid={cell.testId}
           title={`${cell.roleLabelRu} · ${cell.pillarLabelRu}`}

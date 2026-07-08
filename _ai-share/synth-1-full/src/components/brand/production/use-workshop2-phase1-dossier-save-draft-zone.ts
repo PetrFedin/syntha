@@ -5,7 +5,10 @@ import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-
 
 export type UseWorkshop2Phase1DossierSaveDraftZoneInput = {
   setSaveError: (error: string | null) => void;
-  persist: (dossier: Workshop2DossierPhase1, opts?: { freezeUpdatedAt?: boolean; immediate?: boolean }) => void;
+  persist: (
+    dossier: Workshop2DossierPhase1,
+    opts?: { freezeUpdatedAt?: boolean; immediate?: boolean }
+  ) => void;
   dossierLatestRef: MutableRefObject<Workshop2DossierPhase1>;
 };
 

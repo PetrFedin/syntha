@@ -23,25 +23,41 @@ export function MfrEmptyCoPeerStrip({ demo, orderId }: Props) {
 
   return (
     <div className={hubGadget.goldenPath} data-testid="mfr-empty-co-peer-strip">
-      <Link href={session.brandHandoffHref} data-testid="mfr-empty-co-brand-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandHandoffHref}
+        data-testid="mfr-empty-co-brand-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="mfr-empty-co-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="mfr-empty-co-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={matrixHref} data-testid="mfr-empty-co-shop-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={matrixHref}
+        data-testid="mfr-empty-co-shop-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.handoffHref} data-testid="mfr-empty-co-handoff-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="mfr-empty-co-handoff-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь передачи
       </Link>
     </div>

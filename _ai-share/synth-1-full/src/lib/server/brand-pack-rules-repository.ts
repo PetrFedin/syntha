@@ -91,7 +91,10 @@ function mapPgRow(row: {
   };
 }
 
-async function listPersistedPg(org: string, collectionId: string): Promise<BrandPackRulesFeedRow[]> {
+async function listPersistedPg(
+  org: string,
+  collectionId: string
+): Promise<BrandPackRulesFeedRow[]> {
   await ensureWorkshop2PgSchema();
   const res = await getWorkshop2PgPool().query(
     `SELECT sku, slug, moq, case_pack, lead_weeks, incoterm, ship_from, source
@@ -243,7 +246,11 @@ export async function patchBrandPackRulesServer(input: {
   const org = input.organizationId ?? DEFAULT_ORG;
   const collectionId = input.collectionId.trim();
   const sku = input.sku.trim();
-  const listed = await listBrandPackRulesServer({ collectionId, organizationId: org, seedIfEmpty: true });
+  const listed = await listBrandPackRulesServer({
+    collectionId,
+    organizationId: org,
+    seedIfEmpty: true,
+  });
   const existing = listed.rows.find((row) => row.sku === sku);
   if (!existing) return { row: null, storageMode: listed.storageMode };
 

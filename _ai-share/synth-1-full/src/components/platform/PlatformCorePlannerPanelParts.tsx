@@ -62,7 +62,10 @@ export function PlannerTaskRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-start gap-2">
           <span
-            className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', PLANNER_STATUS_DOT[item.status])}
+            className={cn(
+              'mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full',
+              PLANNER_STATUS_DOT[item.status]
+            )}
             aria-hidden
           />
           <div className="min-w-0 flex-1">

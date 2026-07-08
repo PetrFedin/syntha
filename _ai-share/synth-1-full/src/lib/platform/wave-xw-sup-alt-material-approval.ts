@@ -15,7 +15,8 @@ import {
 } from '@/lib/production/workshop2-supplier-alt-material-approval';
 
 /** Wave XW — supplier alt-material PG approval + brand dev BOM strip cross-link (sup dev 4.1). */
-export const WAVE_XW_SUP_ALT_MATERIAL_APPROVAL_API = '/api/workshop2/supplier/alt-material-approval';
+export const WAVE_XW_SUP_ALT_MATERIAL_APPROVAL_API =
+  '/api/workshop2/supplier/alt-material-approval';
 export const WAVE_XW_BRAND_ALT_MATERIAL_APPROVAL_API = BRAND_ALT_MATERIAL_APPROVAL_API_PATH;
 
 export const WAVE_XW_ALT_MATERIALS_NOTE_RU =
@@ -35,7 +36,8 @@ export const SUP_DEV_BOM_BRAND_ALT_MATERIAL_LINK_TESTID = 'sup-dev-bom-brand-alt
 export const MATERIALS_ALT_MATERIALS_NAV_TESTID = 'materials-alt-materials-nav';
 export const MATERIALS_ALT_MATERIALS_CATALOG_LINK_TESTID = 'materials-alt-materials-catalog-link';
 export const MATERIALS_ALT_MATERIALS_CABINET_LINK_TESTID = 'materials-alt-materials-cabinet-link';
-export const MATERIALS_ALT_MATERIALS_BRAND_BOM_LINK_TESTID = 'materials-alt-materials-brand-bom-link';
+export const MATERIALS_ALT_MATERIALS_BRAND_BOM_LINK_TESTID =
+  'materials-alt-materials-brand-bom-link';
 export const MATERIALS_ALT_MATERIALS_NOTE_TESTID = 'materials-alt-materials-note';
 
 export type SupplierAltMaterialAction = 'submit' | 'approve' | 'reject';

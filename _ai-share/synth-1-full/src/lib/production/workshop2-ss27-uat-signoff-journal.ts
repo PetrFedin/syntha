@@ -113,8 +113,7 @@ export function summarizeWorkshop2Wave55InvestorFreezeSignoff(
   wave55FreezeComplete: boolean;
   wave55FreezeAt: string | null;
 } {
-  const wave55FreezeSignoffs: Partial<Record<'ops' | 'product', Workshop2Ss27UatSignoffEntry>> =
-    {};
+  const wave55FreezeSignoffs: Partial<Record<'ops' | 'product', Workshop2Ss27UatSignoffEntry>> = {};
   for (const e of journal.entries) {
     if (e.role === 'ops' || e.role === 'product') {
       wave55FreezeSignoffs[e.role] = e;

@@ -17,37 +17,61 @@ export function BrandCmSectionGroupsSpinePeerStrip({ collectionId, orderId }: Pr
 
   return (
     <div className={hubGadget.goldenPath} data-testid="brand-cm-section-groups-spine-peer-strip">
-      <Link href={session.registryHref} data-testid="brand-cm-section-groups-registry-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.registryHref}
+        data-testid="brand-cm-section-groups-registry-link"
+        className={hubGadget.goldenLink}
+      >
         Реестр
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.handoffHref} data-testid="brand-cm-section-groups-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="brand-cm-section-groups-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="brand-cm-section-groups-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="brand-cm-section-groups-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.calendarHref} data-testid="brand-cm-section-groups-calendar-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.calendarHref}
+        data-testid="brand-cm-section-groups-calendar-link"
+        className={hubGadget.goldenLink}
+      >
         Calendar
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.factoryQueueHref} data-testid="brand-cm-section-groups-factory-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.factoryQueueHref}
+        data-testid="brand-cm-section-groups-factory-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь цеха
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={pricelistHref} data-testid="brand-cm-section-groups-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={pricelistHref}
+        data-testid="brand-cm-section-groups-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист
       </Link>
     </div>

@@ -17,43 +17,71 @@ export function PlatformB2bHubCoSpinePeerStrip({ collectionId, orderId }: Props)
 
   return (
     <div className={hubGadget.goldenPath} data-testid="platform-b2b-hub-co-spine-peer-strip">
-      <Link href={session.buyPathHref} data-testid="platform-b2b-hub-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.buyPathHref}
+        data-testid="platform-b2b-hub-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopMatrixHref} data-testid="platform-b2b-hub-matrix-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopMatrixHref}
+        data-testid="platform-b2b-hub-matrix-link"
+        className={hubGadget.goldenLink}
+      >
         Матрица
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.collaborativeHref} data-testid="platform-b2b-hub-collaborative-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.collaborativeHref}
+        data-testid="platform-b2b-hub-collaborative-link"
+        className={hubGadget.goldenLink}
+      >
         Совместный заказ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.replenishmentAtpHref} data-testid="platform-b2b-hub-replenishment-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.replenishmentAtpHref}
+        data-testid="platform-b2b-hub-replenishment-link"
+        className={hubGadget.goldenLink}
+      >
         ATP
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={crmHref} data-testid="platform-b2b-hub-brand-pricelist-link" className={hubGadget.goldenLink}>
+      <Link
+        href={crmHref}
+        data-testid="platform-b2b-hub-brand-pricelist-link"
+        className={hubGadget.goldenLink}
+      >
         Прайс-лист бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopRegistryGreenfieldHref} data-testid="platform-b2b-hub-greenfield-registry-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopRegistryGreenfieldHref}
+        data-testid="platform-b2b-hub-greenfield-registry-link"
+        className={hubGadget.goldenLink}
+      >
         Shop2 registry
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.brandCrmBuyerAssignHref} data-testid="platform-b2b-hub-greenfield-crm-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandCrmBuyerAssignHref}
+        data-testid="platform-b2b-hub-greenfield-crm-link"
+        className={hubGadget.goldenLink}
+      >
         CRM assign
       </Link>
     </div>

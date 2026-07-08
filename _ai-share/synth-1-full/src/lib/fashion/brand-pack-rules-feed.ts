@@ -11,7 +11,10 @@ export type BrandPackRulesFeedRow = PackRuleRow & {
 
 export type BrandPackRulesFeedStorageMode = 'pg' | 'file' | 'memory' | 'demo';
 
-export function buildBrandPackRulesFeedRows(products: Product[], limit = 80): BrandPackRulesFeedRow[] {
+export function buildBrandPackRulesFeedRows(
+  products: Product[],
+  limit = 80
+): BrandPackRulesFeedRow[] {
   return products.slice(0, limit).map((product) => ({
     ...buildPackRuleRow(product),
     source: 'catalog' as const,

@@ -82,4 +82,5 @@ export const WORKSHOP2_PHASE1_DOSSIER_PANEL_DECOMPOSITION_MANIFEST = {
   ],
 } as const;
 
-export type Workshop2Phase1DossierPanelDecompositionZone = keyof typeof WORKSHOP2_PHASE1_DOSSIER_PANEL_DECOMPOSITION_MANIFEST;
+export type Workshop2Phase1DossierPanelDecompositionZone =
+  keyof typeof WORKSHOP2_PHASE1_DOSSIER_PANEL_DECOMPOSITION_MANIFEST;

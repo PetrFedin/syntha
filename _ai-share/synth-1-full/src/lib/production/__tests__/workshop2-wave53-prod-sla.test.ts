@@ -11,9 +11,7 @@ import {
   buildWorkshop2OpsSlaDashboard,
   readWorkshop2SloTargetsFromDisk,
 } from '@/lib/production/workshop2-ops-sla-dashboard';
-import {
-  buildWorkshop2Wave53ProdSlaReadyProbe,
-} from '@/lib/production/workshop2-wave-probes-fs.server';
+import { buildWorkshop2Wave53ProdSlaReadyProbe } from '@/lib/production/workshop2-wave-probes-fs.server';
 import { buildWorkshop2Wave53ProdSlaReadyProbe as liveProbe } from '@/lib/production/workshop2-live-integration-probes';
 
 const root = process.cwd();
@@ -73,7 +71,9 @@ describe('wave53 — ops sla dashboard', () => {
   });
 
   it('probeLastOkAt from env or null', () => {
-    const dash = buildWorkshop2OpsSlaDashboard({ WORKSHOP2_PROBE_LAST_OK_AT: '2026-05-29T00:00:00Z' });
+    const dash = buildWorkshop2OpsSlaDashboard({
+      WORKSHOP2_PROBE_LAST_OK_AT: '2026-05-29T00:00:00Z',
+    });
     expect(dash.probeLastOkAt).toBe('2026-05-29T00:00:00Z');
   });
 });
@@ -107,16 +107,24 @@ describe('wave53 — invoice stub journal_only', () => {
 
 describe('wave53 — routes scripts docs on disk', () => {
   it('sla dashboard API + lib exist', () => {
-    expect(fs.existsSync(path.join(root, 'src/lib/production/workshop2-ops-sla-dashboard.ts'))).toBe(true);
-    expect(fs.existsSync(path.join(root, 'src/app/api/workshop2/ops/sla-dashboard/route.ts'))).toBe(true);
+    expect(
+      fs.existsSync(path.join(root, 'src/lib/production/workshop2-ops-sla-dashboard.ts'))
+    ).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/app/api/workshop2/ops/sla-dashboard/route.ts'))).toBe(
+      true
+    );
   });
 
   it('3d-sla API exists', () => {
-    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/showroom/3d-sla/route.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/showroom/3d-sla/route.ts'))).toBe(
+      true
+    );
   });
 
   it('orders export route exists', () => {
-    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'src/app/api/shop/b2b/orders/export/route.ts'))).toBe(
+      true
+    );
   });
 
   it('probe escalation script fail-closed', () => {
@@ -134,7 +142,10 @@ describe('wave53 — routes scripts docs on disk', () => {
   });
 
   it('sentry doc includes Wave 53 escalation section', () => {
-    const md = fs.readFileSync(path.join(root, '.planning/workshop2-sentry-alert-rules.md'), 'utf8');
+    const md = fs.readFileSync(
+      path.join(root, '.planning/workshop2-sentry-alert-rules.md'),
+      'utf8'
+    );
     expect(md).toContain('Wave 53');
     expect(md).toContain('probe-escalation');
   });

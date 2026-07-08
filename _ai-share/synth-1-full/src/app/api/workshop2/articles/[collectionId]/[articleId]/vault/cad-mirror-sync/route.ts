@@ -68,7 +68,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
   });
 
   if (!saved.ok) {
-    return jsonWorkshop2ErrorRu(workshop2DossierPutFailureStatus(saved), workshop2DossierPutFailureMessageRu(saved));
+    return jsonWorkshop2ErrorRu(
+      workshop2DossierPutFailureStatus(saved),
+      workshop2DossierPutFailureMessageRu(saved)
+    );
   }
 
   return NextResponse.json({

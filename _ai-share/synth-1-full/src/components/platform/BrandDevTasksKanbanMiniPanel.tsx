@@ -5,7 +5,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
-import type { BrandTaskRecord, BrandTaskStatus } from '@/lib/platform-core-ports/legacy/production-data';
+import type {
+  BrandTaskRecord,
+  BrandTaskStatus,
+} from '@/lib/platform-core-ports/legacy/production-data';
 import { generateTaskId } from '@/lib/platform-core-ports/legacy/production-data';
 import {
   loadBrandTasksWithMode,
@@ -66,7 +69,9 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
     () =>
       COLUMN_META.map((col) => ({
         ...col,
-        tasks: filteredTasks.filter((t) => t.status === col.id).slice(0, variant === 'compact' ? 2 : 4),
+        tasks: filteredTasks
+          .filter((t) => t.status === col.id)
+          .slice(0, variant === 'compact' ? 2 : 4),
       })),
     [filteredTasks, variant]
   );
@@ -111,7 +116,7 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
   return (
     <div
       className={cn(
-        'border-border-subtle rounded-lg border bg-bg-surface2/40',
+        'border-border-subtle bg-bg-surface2/40 rounded-lg border',
         variant === 'compact' ? 'px-2 py-1.5' : 'px-3 py-2'
       )}
       data-testid="brand-dev-tasks-kanban-panel"
@@ -125,7 +130,11 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
         </p>
         <div className="flex flex-wrap items-center gap-1">
           {pgUnavailable ? (
-            <Badge variant="destructive" className="text-[9px]" data-testid="brand-dev-tasks-kanban-pg-unavailable">
+            <Badge
+              variant="destructive"
+              className="text-[9px]"
+              data-testid="brand-dev-tasks-kanban-pg-unavailable"
+            >
               {BRAND_DEV_TASKS_KANBAN_PG_UNAVAILABLE_RU}
             </Badge>
           ) : (
@@ -134,7 +143,10 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
             </Badge>
           )}
           {saving ? (
-            <span className="text-text-muted text-[9px]" data-testid="brand-dev-tasks-kanban-saving">
+            <span
+              className="text-text-muted text-[9px]"
+              data-testid="brand-dev-tasks-kanban-saving"
+            >
               {BRAND_DEV_TASKS_KANBAN_SAVING_RU}
             </span>
           ) : null}
@@ -185,7 +197,9 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
               className="border-border-subtle min-w-0 rounded-md border bg-white/70 p-1.5"
               data-testid={`brand-dev-tasks-kanban-column-${col.id}`}
             >
-              <p className="text-text-muted mb-1 text-[9px] font-semibold uppercase">{col.titleRu}</p>
+              <p className="text-text-muted mb-1 text-[9px] font-semibold uppercase">
+                {col.titleRu}
+              </p>
               {col.tasks.length === 0 ? (
                 <p className="text-text-muted py-2 text-[9px]">—</p>
               ) : (
@@ -211,7 +225,11 @@ export function BrandDevTasksKanbanMiniPanel({ collectionId, variant = 'full' }:
                           onClick={() => moveTask(t.id, st.id)}
                           disabled={pgUnavailable}
                         >
-                          {st.id === 'todo' ? 'к выполнению' : st.id === 'in_progress' ? 'в работе' : 'готово'}
+                          {st.id === 'todo'
+                            ? 'к выполнению'
+                            : st.id === 'in_progress'
+                              ? 'в работе'
+                              : 'готово'}
                         </button>
                       ))}
                     </div>

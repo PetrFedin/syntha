@@ -83,7 +83,7 @@ export function BrandChainSpineExportChip({ orderId, brandConfirmed, reloadNonce
           {platform} · {exportId}
         </Badge>
       ) : (
-        <span className="text-muted-foreground text-[10px]">Spine export после confirm</span>
+        <span className="text-[10px] text-muted-foreground">Spine export после confirm</span>
       )}
       {exportId && (platform === 'joor' || platform === 'nuorder') ? (
         <Button

@@ -53,7 +53,7 @@ export function BrandScReleaseGateBlockStrip({ collectionId, compact }: Props) {
       className={
         compact
           ? 'space-y-1.5 rounded border border-amber-200/70 bg-amber-50/40 px-2 py-2 text-[10px]'
-          : 'border-border-subtle mb-4 space-y-2 rounded-md border border-amber-200/60 bg-amber-50/30 px-3 py-3 text-xs'
+          : 'mb-4 space-y-2 rounded-md border border-amber-200/60 bg-amber-50/30 px-3 py-3 text-xs'
       }
       data-testid="brand-sc-release-gate-block-strip"
     >

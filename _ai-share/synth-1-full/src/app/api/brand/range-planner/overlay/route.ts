@@ -7,7 +7,11 @@ import {
   getBrandRangePlannerOverlayServer,
   putBrandRangePlannerOverlayServer,
 } from '@/lib/server/brand-range-planner-overlay-repository';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 /** GET — PG overlay range planner для коллекции. */
 export async function GET(req: NextRequest) {
@@ -29,7 +33,9 @@ export async function GET(req: NextRequest) {
     collectionId,
     overlay,
     storageMode: toBffPgStorageMode(brandRangePlannerOverlayStorageMode()),
-    messageRu: overlay ? 'Overlay загружен из PG.' : 'Overlay не найден — синхронизируйте из development-status.',
+    messageRu: overlay
+      ? 'Overlay загружен из PG.'
+      : 'Overlay не найден — синхронизируйте из development-status.',
   });
 }
 
@@ -47,7 +53,10 @@ export async function PUT(req: NextRequest) {
 
   const collectionId = body.collectionId?.trim() ?? body.overlay?.collectionId?.trim() ?? '';
   if (!collectionId || !body.overlay) {
-    return NextResponse.json({ ok: false, messageRu: 'Нужны collectionId и overlay.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Нужны collectionId и overlay.' },
+      { status: 400 }
+    );
   }
 
   const result = await putBrandRangePlannerOverlayServer({
@@ -58,7 +67,11 @@ export async function PUT(req: NextRequest) {
 
   if (!result.ok) {
     return NextResponse.json(
-      { ok: false, messageRu: 'PG недоступен — overlay не сохранён.', storageMode: toBffPgStorageMode(result.storageMode) },
+      {
+        ok: false,
+        messageRu: 'PG недоступен — overlay не сохранён.',
+        storageMode: toBffPgStorageMode(result.storageMode),
+      },
       { status: 503 }
     );
   }

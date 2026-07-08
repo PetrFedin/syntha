@@ -11,9 +11,15 @@ import {
   appendFactoryDossierComment,
   listFactoryDossierComments,
 } from '@/lib/server/workshop2-factory-dossier-comments';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
-export const GET = withWorkshop2ApiErrorRu(async function getManufacturerDossierComments(req: NextRequest) {
+export const GET = withWorkshop2ApiErrorRu(async function getManufacturerDossierComments(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);
   if (auth instanceof NextResponse) return auth;
 
@@ -29,7 +35,9 @@ export const GET = withWorkshop2ApiErrorRu(async function getManufacturerDossier
   return NextResponse.json(result);
 });
 
-export const POST = withWorkshop2ApiErrorRu(async function postManufacturerDossierComment(req: NextRequest) {
+export const POST = withWorkshop2ApiErrorRu(async function postManufacturerDossierComment(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 
@@ -50,7 +58,8 @@ export const POST = withWorkshop2ApiErrorRu(async function postManufacturerDossi
   }
 
   const actor =
-    resolveWorkshop2UpdatedBy(req, String(b.actor ?? ''), auth.actor) ?? 'manufacturer-dossier-comment';
+    resolveWorkshop2UpdatedBy(req, String(b.actor ?? ''), auth.actor) ??
+    'manufacturer-dossier-comment';
   const result = await appendFactoryDossierComment({
     collectionId,
     articleId,

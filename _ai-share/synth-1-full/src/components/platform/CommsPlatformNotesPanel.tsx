@@ -55,7 +55,11 @@ function statusBadge(note: PlatformCoreNote) {
     );
   }
   return (
-    <Badge variant="outline" className="text-[10px]" data-testid={`comms-note-status-${note.id}-open`}>
+    <Badge
+      variant="outline"
+      className="text-[10px]"
+      data-testid={`comms-note-status-${note.id}-open`}
+    >
       В работе
     </Badge>
   );
@@ -152,10 +156,7 @@ export function CommsPlatformNotesPanel({ variant, collectionId, orderId, classN
   }
 
   return (
-    <div
-      className={cn('space-y-4', className)}
-      data-testid={`${testPrefix}-panel`}
-    >
+    <div className={cn('space-y-4', className)} data-testid={`${testPrefix}-panel`}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <StickyNote className="text-text-muted h-4 w-4" aria-hidden />
@@ -174,7 +175,7 @@ export function CommsPlatformNotesPanel({ variant, collectionId, orderId, classN
 
       <form
         onSubmit={onCreate}
-        className="border-border-subtle space-y-2 rounded-xl border bg-bg-surface p-3"
+        className="border-border-subtle bg-bg-surface space-y-2 rounded-xl border p-3"
         data-testid={`${testPrefix}-create-form`}
       >
         <Input
@@ -198,7 +199,7 @@ export function CommsPlatformNotesPanel({ variant, collectionId, orderId, classN
             <select
               value={assigneeId}
               onChange={(e) => setAssigneeId(e.target.value)}
-              className="border-border-subtle mt-1 h-9 w-full rounded-md border bg-bg-surface px-2 text-[13px]"
+              className="border-border-subtle bg-bg-surface mt-1 h-9 w-full rounded-md border px-2 text-[13px]"
               data-testid={`${testPrefix}-assignee-select`}
             >
               {PLATFORM_CORE_NOTE_ASSIGNEES.map((a) => (
@@ -255,7 +256,7 @@ export function CommsPlatformNotesPanel({ variant, collectionId, orderId, classN
           notes.map((note) => (
             <li
               key={note.id}
-              className="border-border-subtle rounded-xl border bg-bg-surface p-3"
+              className="border-border-subtle bg-bg-surface rounded-xl border p-3"
               data-testid={`${testPrefix}-item-${note.id}`}
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
@@ -286,7 +287,10 @@ export function CommsPlatformNotesPanel({ variant, collectionId, orderId, classN
                     </a>
                   ) : null}
                   {note.sourceHref ? (
-                    <Link href={note.sourceHref} className="text-accent-primary text-[11px] underline">
+                    <Link
+                      href={note.sourceHref}
+                      className="text-accent-primary text-[11px] underline"
+                    >
                       Перейти к контексту
                     </Link>
                   ) : null}

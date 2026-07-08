@@ -44,7 +44,8 @@ describe('platform-core-routes carve-out', () => {
 
   it('platform-core-routes exports ROUTES.brand.coreCabinet', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { ROUTES } = require('@/lib/platform-core-routes') as typeof import('@/lib/platform-core-routes');
+    const { ROUTES } =
+      require('@/lib/platform-core-routes') as typeof import('@/lib/platform-core-routes');
     expect(ROUTES.brand.coreCabinet).toBe('/brand/core');
   });
 

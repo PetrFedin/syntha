@@ -43,12 +43,14 @@ describe('wave WG — shop replenishment WMS ATP feed + filter slices', () => {
   });
 
   it('RU labels for WMS badge and matrix strip', () => {
-    expect(formatShopReplenishmentWmsAtpBadgeRu({
-      loading: false,
-      liveWms: true,
-      atpTotal: 120,
-      skuCount: 8,
-    })).toMatch(/WMS/);
+    expect(
+      formatShopReplenishmentWmsAtpBadgeRu({
+        loading: false,
+        liveWms: true,
+        atpTotal: 120,
+        skuCount: 8,
+      })
+    ).toMatch(/WMS/);
     expect(formatShopReplenishmentWmsAtpSourceBadgeRu('pg+wms')).toBe('PG + WMS');
     expect(SHOP_REPLENISHMENT_MATRIX_AUTO_LINES_STRIP_RU).toMatch(/матриц/i);
     expect(formatShopReplenishmentMatrixAutoLinesLinkRu(3)).toContain('3 SKU');
@@ -64,9 +66,8 @@ describe('shop-replenishment-wms-atp-feed-server', () => {
   });
 
   it('returns feed items for shop1', async () => {
-    const { getShopReplenishmentWmsAtpFeed } = await import(
-      '@/lib/server/shop-replenishment-wms-atp-feed-server'
-    );
+    const { getShopReplenishmentWmsAtpFeed } =
+      await import('@/lib/server/shop-replenishment-wms-atp-feed-server');
     const result = await getShopReplenishmentWmsAtpFeed({
       shopId: 'shop1',
       collectionId: 'SS27',

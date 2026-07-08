@@ -13,10 +13,14 @@ export type BrandPackRulesFeedResponse = {
   storageMode?: 'pg' | 'file' | 'memory' | 'demo';
 };
 
-export async function fetchBrandPackRules(collectionId?: string): Promise<BrandPackRulesFeedResponse> {
+export async function fetchBrandPackRules(
+  collectionId?: string
+): Promise<BrandPackRulesFeedResponse> {
   const params = new URLSearchParams();
   if (collectionId?.trim()) params.set('collectionId', collectionId.trim());
-  const res = await fetch(`/api/brand/merch/pack-rules?${params.toString()}`, { cache: 'no-store' });
+  const res = await fetch(`/api/brand/merch/pack-rules?${params.toString()}`, {
+    cache: 'no-store',
+  });
   const json = (await res.json()) as BrandPackRulesFeedResponse;
   if (!res.ok || !json.ok) {
     return {
@@ -44,7 +48,9 @@ export async function patchBrandPackRules(input: {
   return json;
 }
 
-export async function refreshBrandPackRules(collectionId: string): Promise<BrandPackRulesFeedResponse> {
+export async function refreshBrandPackRules(
+  collectionId: string
+): Promise<BrandPackRulesFeedResponse> {
   const res = await fetch('/api/brand/merch/pack-rules', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

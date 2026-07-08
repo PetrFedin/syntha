@@ -77,7 +77,12 @@ export async function patchCollectionShopProductionVisibility(input: {
      ON CONFLICT (id) DO UPDATE SET
        metadata = EXCLUDED.metadata,
        updated_at = NOW()`,
-    [collectionId, input.organizationId?.trim() || 'org-brand-001', collectionId, JSON.stringify(metadata)]
+    [
+      collectionId,
+      input.organizationId?.trim() || 'org-brand-001',
+      collectionId,
+      JSON.stringify(metadata),
+    ]
   );
 
   return { ok: true };

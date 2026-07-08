@@ -27,7 +27,9 @@ import type { UnifiedOrderTracking } from './order-tracking.types';
 
 export type { UnifiedOrderTracking } from './order-tracking.types';
 
-function deliveryFromImported(wholesaleOrderId: string): UnifiedOrderTracking['deliveryWindow'] | undefined {
+function deliveryFromImported(
+  wholesaleOrderId: string
+): UnifiedOrderTracking['deliveryWindow'] | undefined {
   const persisted = getDeliveryWindow(wholesaleOrderId);
   if (persisted) {
     return { label: persisted.label, estimatedDelivery: persisted.startAt.slice(0, 10) };
@@ -42,8 +44,7 @@ function deliveryFromImported(wholesaleOrderId: string): UnifiedOrderTracking['d
 export function resolveUnifiedOrderTracking(wholesaleOrderId: string): UnifiedOrderTracking {
   const id = wholesaleOrderId.trim();
   const productionOrderId = workshop2B2bProductionHandoffPoId(id);
-  const wip =
-    getProductionWipByB2bOrderId(id) ?? getProductionWipByPoId(productionOrderId);
+  const wip = getProductionWipByB2bOrderId(id) ?? getProductionWipByPoId(productionOrderId);
   const shipment = getOrderTracking(id);
 
   return {
@@ -173,12 +174,14 @@ export function syncSynthaPgTracking(input: {
 }
 
 /** Demo seed: advance WIP one stage for PO after handoff. */
-export function advanceAims360WipDemo(productionOrderId: string, b2bOrderId: string): ProductionWipRecord {
+export function advanceAims360WipDemo(
+  productionOrderId: string,
+  b2bOrderId: string
+): ProductionWipRecord {
   const current = getProductionWipByPoId(productionOrderId);
   const stages: ProductionWipStage[] = ['cutting', 'sewing', 'qc', 'ready_to_ship', 'shipped'];
-  const next =
-    !current
-      ? 'cutting'
-      : stages[Math.min(stages.indexOf(current.poStage) + 1, stages.length - 1)];
+  const next = !current
+    ? 'cutting'
+    : stages[Math.min(stages.indexOf(current.poStage) + 1, stages.length - 1)];
   return syncAims360Wip({ productionOrderId, b2bOrderId, poStage: next });
 }

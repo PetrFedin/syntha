@@ -39,43 +39,47 @@ describe('brand-centric-rfq-quotes pure', () => {
     expect(summary.total).toBe(2);
     expect(summary.pending).toBe(1);
     expect(summary.accepted).toBe(1);
-    expect(pickAcceptedBrandCentricRfqQuote([
-      {
-        quoteId: 'q2',
-        rfqId: 'rfq-1',
-        supplierId: 's2',
-        supplierName: 'B',
-        amountRub: 200,
-        leadTimeDays: 7,
-        currency: 'RUB',
-        status: 'accepted',
-        updatedAt: new Date().toISOString(),
-      },
-    ])?.supplierId).toBe('s2');
-    expect(sortBrandCentricRfqQuotesByAmount([
-      {
-        quoteId: 'q2',
-        rfqId: 'rfq-1',
-        supplierId: 's2',
-        supplierName: 'B',
-        amountRub: 200,
-        leadTimeDays: 7,
-        currency: 'RUB',
-        status: 'pending',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        quoteId: 'q1',
-        rfqId: 'rfq-1',
-        supplierId: 's1',
-        supplierName: 'A',
-        amountRub: 100,
-        leadTimeDays: 10,
-        currency: 'RUB',
-        status: 'pending',
-        updatedAt: new Date().toISOString(),
-      },
-    ])[0]?.amountRub).toBe(100);
+    expect(
+      pickAcceptedBrandCentricRfqQuote([
+        {
+          quoteId: 'q2',
+          rfqId: 'rfq-1',
+          supplierId: 's2',
+          supplierName: 'B',
+          amountRub: 200,
+          leadTimeDays: 7,
+          currency: 'RUB',
+          status: 'accepted',
+          updatedAt: new Date().toISOString(),
+        },
+      ])?.supplierId
+    ).toBe('s2');
+    expect(
+      sortBrandCentricRfqQuotesByAmount([
+        {
+          quoteId: 'q2',
+          rfqId: 'rfq-1',
+          supplierId: 's2',
+          supplierName: 'B',
+          amountRub: 200,
+          leadTimeDays: 7,
+          currency: 'RUB',
+          status: 'pending',
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          quoteId: 'q1',
+          rfqId: 'rfq-1',
+          supplierId: 's1',
+          supplierName: 'A',
+          amountRub: 100,
+          leadTimeDays: 10,
+          currency: 'RUB',
+          status: 'pending',
+          updatedAt: new Date().toISOString(),
+        },
+      ])[0]?.amountRub
+    ).toBe(100);
   });
 });
 

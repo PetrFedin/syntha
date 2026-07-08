@@ -36,7 +36,9 @@ export function useBrandWorkshop2B2bOrdersList(
     let cancelled = false;
     setLoadState('loading');
     const partner =
-      partnerFilter && partnerFilter.trim() && partnerFilter !== 'all' ? partnerFilter.trim() : null;
+      partnerFilter && partnerFilter.trim() && partnerFilter !== 'all'
+        ? partnerFilter.trim()
+        : null;
 
     (async () => {
       try {
@@ -49,7 +51,8 @@ export function useBrandWorkshop2B2bOrdersList(
               headers,
               cache: 'no-store',
             });
-            if (!res.ok) return { orders: [] as Workshop2B2bOrderRecord[], partnerIds: [] as string[] };
+            if (!res.ok)
+              return { orders: [] as Workshop2B2bOrderRecord[], partnerIds: [] as string[] };
             const json = (await res.json()) as {
               ok?: boolean;
               orders?: Workshop2B2bOrderRecord[];

@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const refreshed = await refreshBrandMaterialPassportRollupServer({ collectionId });
-    const listed = await listBrandMaterialPassportRollupServer({ collectionId, seedIfEmpty: false });
+    const listed = await listBrandMaterialPassportRollupServer({
+      collectionId,
+      seedIfEmpty: false,
+    });
     return NextResponse.json({
       ok: true,
       collectionId,

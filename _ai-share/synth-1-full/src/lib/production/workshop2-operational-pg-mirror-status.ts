@@ -106,8 +106,7 @@ export function summarizeWorkshop2FactoryErpPgMirror(input: {
 }): Workshop2OperationalPgMirrorChip {
   const staging = input.dossier?.factoryErpStagingMirror;
   const sync = input.dossier?.factoryErpSync;
-  const erpId =
-    (input.erpOrderId ?? workshop2PgMirrorStr(sync, 'erpOrderId')).trim() || undefined;
+  const erpId = (input.erpOrderId ?? workshop2PgMirrorStr(sync, 'erpOrderId')).trim() || undefined;
 
   if (erpId) {
     return {
@@ -178,8 +177,7 @@ export function summarizeWorkshop2AqlPgMirror(
   return {
     label: `AQL: PG · n=${sampleSize}`,
     tone: 'emerald',
-    title:
-      mirrorTitle(mirror, 'hintRu') || `Запись ${recordedAt} · qty ${orderQty || '—'}.`,
+    title: mirrorTitle(mirror, 'hintRu') || `Запись ${recordedAt} · qty ${orderQty || '—'}.`,
   };
 }
 
@@ -314,7 +312,8 @@ export function summarizeWorkshop2StockWmsPgMirror(input: {
 
   if (workshop2PgMirrorStr(ledger, 'ledgerAt')) {
     const movementCount = workshop2PgMirrorNum(ledger, 'movementCount');
-    const qtyOnHand = workshop2PgMirrorStr(ledger, 'qtyOnHand') || workshop2PgMirrorNum(ledger, 'qtyOnHand');
+    const qtyOnHand =
+      workshop2PgMirrorStr(ledger, 'qtyOnHand') || workshop2PgMirrorNum(ledger, 'qtyOnHand');
     const wmsSyncStatus = workshop2PgMirrorStr(ledger, 'wmsSyncStatus');
     return {
       label: ledger?.negativeBalance === true ? 'WMS: ledger −' : 'WMS: ledger draft',
@@ -325,8 +324,7 @@ export function summarizeWorkshop2StockWmsPgMirror(input: {
             ? 'emerald'
             : 'amber',
       title:
-        mirrorTitle(ledger, 'hintRu') ||
-        `Движений ${movementCount} · остаток ${qtyOnHand || '—'}.`,
+        mirrorTitle(ledger, 'hintRu') || `Движений ${movementCount} · остаток ${qtyOnHand || '—'}.`,
     };
   }
 
@@ -363,8 +361,7 @@ export function summarizeWorkshop2SupplierQcPgMirror(
   return {
     label: `Scorecard: PG · ${passLabel}`,
     tone: 'emerald',
-    title:
-      mirrorTitle(snap, 'hintRu') || `Партий ${totalBatches} · source ${source}.`,
+    title: mirrorTitle(snap, 'hintRu') || `Партий ${totalBatches} · source ${source}.`,
   };
 }
 

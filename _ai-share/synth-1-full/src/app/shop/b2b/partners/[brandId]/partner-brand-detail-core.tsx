@@ -62,49 +62,49 @@ export function ShopB2bPartnerBrandDetailCorePage({ brandSlug }: Props) {
             </Button>
           ) : null}
         </div>
-      <Card>
-        <CardContent className="flex flex-row items-start gap-4 pt-6">
-          {brand.logo ? (
-            <Image
-              src={brand.logo}
-              alt=""
-              width={48}
-              height={48}
-              className="rounded-full border object-cover"
-            />
-          ) : null}
-          <div className="min-w-0 flex-1">
-            <CardDescription>{brand.description}</CardDescription>
-            <p className="text-text-muted mt-2 text-xs">
-              {brand.countryOfOrigin} · {brand.segment}
-            </p>
-          </div>
-          <Badge variant={connected ? 'default' : 'secondary'}>
-            {connected ? 'Активен' : 'Профиль'}
-          </Badge>
-        </CardContent>
-        {connected ? (
-          <CardContent className="flex flex-wrap gap-2">
-            <Button asChild>
-              <Link href={showroomHref}>Витрина</Link>
-            </Button>
-            {spineOrderId ? (
-              <Button variant="outline" asChild>
-                <Link href={shopB2bOrderHref(spineOrderId)}>Текущий заказ</Link>
-              </Button>
+        <Card>
+          <CardContent className="flex flex-row items-start gap-4 pt-6">
+            {brand.logo ? (
+              <Image
+                src={brand.logo}
+                alt=""
+                width={48}
+                height={48}
+                className="rounded-full border object-cover"
+              />
             ) : null}
+            <div className="min-w-0 flex-1">
+              <CardDescription>{brand.description}</CardDescription>
+              <p className="text-text-muted mt-2 text-xs">
+                {brand.countryOfOrigin} · {brand.segment}
+              </p>
+            </div>
+            <Badge variant={connected ? 'default' : 'secondary'}>
+              {connected ? 'Активен' : 'Профиль'}
+            </Badge>
           </CardContent>
-        ) : (
-          <CardContent>
-            <p className="text-text-secondary text-sm">
-              Запрос доступа к лайншиту — через каталог партнёров.
-            </p>
-            <Button className="mt-3" variant="outline" asChild>
-              <Link href={ROUTES.shop.b2bPartnersDiscover}>Discover брендов</Link>
-            </Button>
-          </CardContent>
-        )}
-      </Card>
+          {connected ? (
+            <CardContent className="flex flex-wrap gap-2">
+              <Button asChild>
+                <Link href={showroomHref}>Витрина</Link>
+              </Button>
+              {spineOrderId ? (
+                <Button variant="outline" asChild>
+                  <Link href={shopB2bOrderHref(spineOrderId)}>Текущий заказ</Link>
+                </Button>
+              ) : null}
+            </CardContent>
+          ) : (
+            <CardContent>
+              <p className="text-text-secondary text-sm">
+                Запрос доступа к лайншиту — через каталог партнёров.
+              </p>
+              <Button className="mt-3" variant="outline" asChild>
+                <Link href={ROUTES.shop.b2bPartnersDiscover}>Discover брендов</Link>
+              </Button>
+            </CardContent>
+          )}
+        </Card>
       </PlatformCoreListChrome>
     </CabinetPageContent>
   );

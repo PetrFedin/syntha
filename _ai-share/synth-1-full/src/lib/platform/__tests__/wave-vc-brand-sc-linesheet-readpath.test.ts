@@ -78,9 +78,8 @@ describe('wave VC — partner hero vs dossier priority strip', () => {
 
   it('dossier wins over partner in resolver', async () => {
     const { resolveShopShowroomCoverHero } = await import('@/lib/b2b/shop-showroom-cover-hero');
-    const { shouldShowShopShowroomCoverHeroPriorityStrip } = await import(
-      '@/lib/b2b/shop-showroom-wave-xh'
-    );
+    const { shouldShowShopShowroomCoverHeroPriorityStrip } =
+      await import('@/lib/b2b/shop-showroom-wave-xh');
     const hero = resolveShopShowroomCoverHero({
       dossierHeroUrl: 'https://cdn.example/dossier.jpg',
       partnerCoverUrl: 'https://cdn.example/partner.jpg',

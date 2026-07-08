@@ -42,6 +42,6 @@ export async function POST(req: NextRequest) {
         ? `Подтверждено получение: ${result.acknowledged.length}${result.skipped.length ? ` · уже было: ${result.skipped.length}` : ''}.`
         : result.skipped.length > 0
           ? `Все выбранные заказы уже подтверждены (${result.skipped.length}).`
-          : result.errors[0]?.messageRu ?? 'Не удалось подтвердить получение.',
+          : (result.errors[0]?.messageRu ?? 'Не удалось подтвердить получение.'),
   });
 }

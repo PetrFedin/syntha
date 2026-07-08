@@ -3,9 +3,7 @@
 import Link from 'next/link';
 import { ROUTES, shopB2bCheckoutCollectionHref } from '@/lib/routes';
 
-import {
-  WAVE_WZ_BRAND_SC_GOLDEN_PATH_RELEASE_GATE_RU,
-} from '@/lib/platform/wave-wz-ru-noise-dedup-final';
+import { WAVE_WZ_BRAND_SC_GOLDEN_PATH_RELEASE_GATE_RU } from '@/lib/platform/wave-wz-ru-noise-dedup-final';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 
 export type BrandScGoldenPathOmitStep = 'linesheets' | 'showroom';
@@ -31,7 +29,13 @@ export function BrandScCabinetGoldenPathStrip({
   const shopShowroomHref = `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`;
   const shopMatrixHref = `${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(collectionId)}`;
 
-  const parts: Array<{ key: string; href: string; label: string; testId: string; legacy?: string }> = [];
+  const parts: Array<{
+    key: string;
+    href: string;
+    label: string;
+    testId: string;
+    legacy?: string;
+  }> = [];
 
   if (omitStep !== 'linesheets') {
     parts.push({

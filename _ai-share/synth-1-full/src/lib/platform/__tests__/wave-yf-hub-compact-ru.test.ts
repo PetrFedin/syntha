@@ -104,7 +104,11 @@ export const WAVE_YF_HUB_PILLAR_FIXES = [
   {
     id: 'dev-investor-readiness-strip-compact',
     file: 'components/platform/DevelopmentPillarCard.tsx',
-    mustContain: ['BrandDevInvestorReadinessStrip', 'variant="compact"', 'brand-dev-dashboard-strips'],
+    mustContain: [
+      'BrandDevInvestorReadinessStrip',
+      'variant="compact"',
+      'brand-dev-dashboard-strips',
+    ],
     mustNotContain: [],
   },
 ] as const;

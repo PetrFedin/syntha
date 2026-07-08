@@ -48,7 +48,9 @@ export function plannerDispatchAgentLines(opts: {
   const lines: string[] = [];
   const sub = cursorSubagentForPillar(opts.pillarId);
   if (sub) {
-    lines.push(`Cursor subagent: Use Task tool with subagent_type matching «${sub}» (.cursor/agents/${sub}.md).`);
+    lines.push(
+      `Cursor subagent: Use Task tool with subagent_type matching «${sub}» (.cursor/agents/${sub}.md).`
+    );
   }
   const backend =
     backendAgentForSection(opts.sectionId) ??

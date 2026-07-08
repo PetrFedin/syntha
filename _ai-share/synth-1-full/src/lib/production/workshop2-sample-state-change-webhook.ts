@@ -102,7 +102,8 @@ export function validateWorkshop2SampleStateChangeWebhookPayload(
   if (!toStatus) fieldErrors.push('toStatus');
 
   const fromRaw = raw.fromStatus ?? raw.previousStatus;
-  const fromStatus = fromRaw != null ? normalizeWorkshop2SampleOrderStatus(String(fromRaw)) : undefined;
+  const fromStatus =
+    fromRaw != null ? normalizeWorkshop2SampleOrderStatus(String(fromRaw)) : undefined;
   if (fromRaw != null && !fromStatus) fieldErrors.push('fromStatus');
 
   const orderId = nonEmptyString(raw.orderId) ?? undefined;

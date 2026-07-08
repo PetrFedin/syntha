@@ -151,11 +151,7 @@ export function platformCoreCommsNotesHref(
   demo: Pick<PlatformCoreDemoContext, 'collectionId' | 'demoOrderId' | 'demoArticleId'>
 ): string {
   const roleId: CoreChainRoleId =
-    variant === 'manufacturer'
-      ? 'manufacturer'
-      : variant === 'supplier'
-        ? 'supplier'
-        : variant;
+    variant === 'manufacturer' ? 'manufacturer' : variant === 'supplier' ? 'supplier' : variant;
   return platformCoreCabinetSectionHref(
     roleId,
     'comms',

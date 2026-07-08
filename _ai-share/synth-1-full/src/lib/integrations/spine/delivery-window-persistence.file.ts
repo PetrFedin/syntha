@@ -30,7 +30,9 @@ function pathFile(): string {
 function load(): FileV1 {
   try {
     const j = JSON.parse(fs.readFileSync(pathFile(), 'utf8')) as FileV1;
-    return j?.schemaVersion === 1 ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} } : { ...EMPTY };
+    return j?.schemaVersion === 1
+      ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} }
+      : { ...EMPTY };
   } catch {
     return { ...EMPTY };
   }

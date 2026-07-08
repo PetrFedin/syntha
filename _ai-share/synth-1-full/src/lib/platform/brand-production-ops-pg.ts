@@ -22,10 +22,7 @@ export function brandProductionOpsOperationsPeerHref(
   return `${base}&collection=${encodeURIComponent(collectionId.trim())}`;
 }
 
-export function brandProductionOpsHandoffPeerHref(
-  orderId: string,
-  collectionId?: string
-): string {
+export function brandProductionOpsHandoffPeerHref(orderId: string, collectionId?: string): string {
   const base = brandProductionOpsFeatureHref(orderId, 'handoff');
   if (!collectionId?.trim()) return base;
   return `${base}&collection=${encodeURIComponent(collectionId.trim())}`;

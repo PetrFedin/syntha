@@ -14,8 +14,7 @@ export const WAVE_YL_BRAND_DOSSIER_DIFF_COMPACT_PANEL_TESTID =
 export const WAVE_YL_BRAND_OP_DOSSIER_LOCKED_CROSS_STRIP_TESTID =
   'brand-op-dossier-locked-cross-strip';
 
-export const WAVE_YL_BRAND_OP_DOSSIER_LOCKED_DIFF_LINK_TESTID =
-  'brand-op-dossier-locked-diff-link';
+export const WAVE_YL_BRAND_OP_DOSSIER_LOCKED_DIFF_LINK_TESTID = 'brand-op-dossier-locked-diff-link';
 
 export const WAVE_YL_BRAND_OP_DOSSIER_LOCKED_ATTACH_TZ_LINK_TESTID =
   'brand-op-dossier-locked-attach-tz-link';

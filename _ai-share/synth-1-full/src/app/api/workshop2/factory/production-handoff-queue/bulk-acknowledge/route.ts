@@ -26,7 +26,9 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkAcknowledge(r
   });
   if (auth instanceof NextResponse) return auth;
 
-  const factoryId = String(body.factoryId ?? req.nextUrl.searchParams.get('factoryId') ?? 'fact-1').trim();
+  const factoryId = String(
+    body.factoryId ?? req.nextUrl.searchParams.get('factoryId') ?? 'fact-1'
+  ).trim();
   const rawItems = body.items;
   if (!Array.isArray(rawItems) || rawItems.length === 0) {
     return jsonWorkshop2ErrorRu(400, 'invalid_items', {
@@ -52,7 +54,8 @@ export const POST = withWorkshop2ApiErrorRu(async function postBulkAcknowledge(r
     });
   }
 
-  const actor = resolveWorkshop2UpdatedBy(req, String(body.actor ?? ''), auth.actor) ?? 'factory_bulk_ack';
+  const actor =
+    resolveWorkshop2UpdatedBy(req, String(body.actor ?? ''), auth.actor) ?? 'factory_bulk_ack';
   const result = await bulkAcknowledgeWorkshop2FactoryProductionHandoff({
     factoryId,
     items,

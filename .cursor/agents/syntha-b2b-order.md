@@ -34,6 +34,6 @@ OUT: W2 article development (syntha-w2-development), factory production PO queue
 <verify>
 ```bash
 cd /Users/petr/Projects && npm run smoke:fast
-cd /Users/petr/Projects/_ai-share/synth-1-full && npm test -- --testPathPattern=operational-order
+cd _ai-share/synth-1-full && npm test -- --testPathPattern=operational-order
 ```
 </verify>

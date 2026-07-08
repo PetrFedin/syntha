@@ -1,12 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PLATFORM_CORE_TERM_TIPS } from '@/lib/platform-core-canonical-labels';
 
 type Props = {
@@ -27,11 +22,11 @@ export function PlatformCoreTerm({ term, children }: Props) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="cursor-help border-b border-dashed border-current/40">{label}</span>
+          <span className="border-current/40 cursor-help border-b border-dashed">{label}</span>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-xs text-left text-xs">
           <p className="font-medium">{tip.en}</p>
-          <p className="text-muted-foreground mt-1">{tip.ru}</p>
+          <p className="mt-1 text-muted-foreground">{tip.ru}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

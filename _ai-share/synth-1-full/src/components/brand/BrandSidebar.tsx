@@ -292,7 +292,7 @@ export function BrandSidebar({
       )}
     >
       <div className="space-y-0.5 p-2">
-        {(resolveSidebarClustersForCore()).map((cluster) => {
+        {resolveSidebarClustersForCore().map((cluster) => {
           const raw = groupsByCluster[cluster.id].filter(Boolean);
           const coreOrder = shouldHideNavArchiveCluster()
             ? BRAND_CORE_PILLARS_NAV_ORDER

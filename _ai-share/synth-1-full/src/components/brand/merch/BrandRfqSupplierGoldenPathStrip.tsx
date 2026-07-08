@@ -30,7 +30,10 @@ const STEPS: { id: BrandRfqSupplierGoldenPathStepId; label: string }[] = [
   { id: 'showroom', label: 'Showroom' },
 ];
 
-function hrefForStep(session: BrandRfqSupplierSession, id: BrandRfqSupplierGoldenPathStepId): string {
+function hrefForStep(
+  session: BrandRfqSupplierSession,
+  id: BrandRfqSupplierGoldenPathStepId
+): string {
   if (id === 'upstream') return session.upstreamHref;
   if (id === 'rfq') return session.rfqHref;
   if (id === 'comms') return session.commsHref;

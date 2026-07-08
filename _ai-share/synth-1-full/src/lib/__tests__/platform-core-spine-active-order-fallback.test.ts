@@ -73,10 +73,7 @@ describe('platform-core-spine-active-order-fallback', () => {
 
   it('pickPreferredRegistryOrderId prefers PG checkout over demo pin', () => {
     expect(
-      pickPreferredRegistryOrderId([
-        { id: 'B2B-DEMO-SHOP1-SS27' },
-        { id: 'B2B-1781275919974' },
-      ])
+      pickPreferredRegistryOrderId([{ id: 'B2B-DEMO-SHOP1-SS27' }, { id: 'B2B-1781275919974' }])
     ).toBe('B2B-1781275919974');
   });
 
@@ -96,12 +93,12 @@ describe('platform-core-spine-active-order-fallback', () => {
   });
 
   it('resolvePlatformCoreCabinetOrderId prefers demo pin over ephemeral PG checkout', () => {
-    expect(
-      resolvePlatformCoreCabinetOrderId('B2B-1781562585152', 'B2B-DEMO-SHOP1-SS27')
-    ).toBe('B2B-DEMO-SHOP1-SS27');
-    expect(
-      resolvePlatformCoreCabinetOrderId('B2B-DEMO-SHOP1-SS27', 'B2B-1781562585152')
-    ).toBe('B2B-DEMO-SHOP1-SS27');
+    expect(resolvePlatformCoreCabinetOrderId('B2B-1781562585152', 'B2B-DEMO-SHOP1-SS27')).toBe(
+      'B2B-DEMO-SHOP1-SS27'
+    );
+    expect(resolvePlatformCoreCabinetOrderId('B2B-DEMO-SHOP1-SS27', 'B2B-1781562585152')).toBe(
+      'B2B-DEMO-SHOP1-SS27'
+    );
     expect(resolvePlatformCoreCabinetOrderId('B2B-200', 'B2B-100')).toBe('B2B-200');
   });
 });

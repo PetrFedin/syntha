@@ -11,10 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { B2bChainPhaseBadge } from '@/components/b2b/B2bChainPhaseBadge';
 import { useWorkshop2B2bChainSummaries } from '@/hooks/use-workshop2-b2b-chain-summaries';
-import {
-  factoryProductionOrdersOrderContextHref,
-  ROUTES,
-} from '@/lib/routes';
+import { factoryProductionOrdersOrderContextHref, ROUTES } from '@/lib/routes';
 import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-registry-poll';
 import { useFactoryHandoffQueueSse } from '@/hooks/use-factory-handoff-queue-sse';
 import {
@@ -82,10 +79,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
   const searchParams = useSearchParams();
   const failedPoFilterActive = searchParams.get('failedPo') === '1';
 
-  const orderIds = useMemo(
-    () => items.map((i) => i.b2bOrderId).filter(Boolean),
-    [items]
-  );
+  const orderIds = useMemo(() => items.map((i) => i.b2bOrderId).filter(Boolean), [items]);
   const { summaries: chainSummaries } = useWorkshop2B2bChainSummaries(orderIds, items.length > 0);
   const { tick: registryTick } = usePlatformCoreB2bRegistryPoll(items.length > 0 || loading);
   const { tick: handoffSseTick, sseConnected: handoffSseConnected } = useFactoryHandoffQueueSse(
@@ -159,10 +153,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
     void loadQueue();
   }, [loadQueue, registryTick, handoffSseTick]);
 
-  const pendingItems = useMemo(
-    () => items.filter((i) => isAcknowledgeable(i.status)),
-    [items]
-  );
+  const pendingItems = useMemo(() => items.filter((i) => isAcknowledgeable(i.status)), [items]);
   const selectedPending = useMemo(
     () => pendingItems.filter((i) => selected[i.productionOrderId]),
     [pendingItems, selected]
@@ -210,24 +201,21 @@ export function FactoryWorkshop2ProductionHandoffPanel({
     setAckInFlight(true);
     setAckMessage(null);
     try {
-      const res = await fetch(
-        '/api/workshop2/factory/production-handoff-queue/bulk-acknowledge',
-        {
-          method: 'POST',
-          headers: {
-            ...buildWorkshop2ApiRequestHeaders(),
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            factoryId,
-            items: selectedPending.map((i) => ({
-              productionOrderId: i.productionOrderId,
-              collectionId: i.collectionId,
-              articleId: i.articleId,
-            })),
-          }),
-        }
-      );
+      const res = await fetch('/api/workshop2/factory/production-handoff-queue/bulk-acknowledge', {
+        method: 'POST',
+        headers: {
+          ...buildWorkshop2ApiRequestHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          factoryId,
+          items: selectedPending.map((i) => ({
+            productionOrderId: i.productionOrderId,
+            collectionId: i.collectionId,
+            articleId: i.articleId,
+          })),
+        }),
+      });
       const json = (await res.json()) as {
         ok?: boolean;
         messageRu?: string;
@@ -244,9 +232,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
         selectedPending.find((row) => acknowledgedIds.has(row.productionOrderId)) ??
         selectedPending[0];
       if (navRow?.b2bOrderId && acknowledgedIds.size > 0) {
-        router.push(
-          factoryProductionOrdersOrderContextHref(navRow.b2bOrderId, { factoryId })
-        );
+        router.push(factoryProductionOrdersOrderContextHref(navRow.b2bOrderId, { factoryId }));
       }
     } catch {
       setAckMessage('Сеть недоступна — повторите приёмку.');
@@ -260,25 +246,22 @@ export function FactoryWorkshop2ProductionHandoffPanel({
     setBulkErpInFlight(true);
     setAckMessage(null);
     try {
-      const res = await fetch(
-        '/api/workshop2/factory/production-handoff-queue/bulk-retry-erp',
-        {
-          method: 'POST',
-          headers: {
-            ...buildWorkshop2ApiRequestHeaders(),
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            factoryId,
-            items: erpAttentionRows.map((row) => ({
-              productionOrderId: row.productionOrderId,
-              collectionId: row.collectionId,
-              articleId: row.articleId,
-            })),
-            actor: 'factory-handoff-panel',
-          }),
-        }
-      );
+      const res = await fetch('/api/workshop2/factory/production-handoff-queue/bulk-retry-erp', {
+        method: 'POST',
+        headers: {
+          ...buildWorkshop2ApiRequestHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          factoryId,
+          items: erpAttentionRows.map((row) => ({
+            productionOrderId: row.productionOrderId,
+            collectionId: row.collectionId,
+            articleId: row.articleId,
+          })),
+          actor: 'factory-handoff-panel',
+        }),
+      });
       const json = (await res.json()) as { ok?: boolean; messageRu?: string };
       setAckMessage(json.messageRu ?? (json.ok ? 'ERP sync выполнен.' : 'ERP sync не удался.'));
       await loadQueue();
@@ -332,21 +315,21 @@ export function FactoryWorkshop2ProductionHandoffPanel({
             >
               Обновить
             </Button>
-          {pendingItems.length > 0 ? (
-            <Button
-              size="sm"
-              variant="default"
-              disabled={ackInFlight || selectedPending.length === 0}
-              onClick={() => void handleBulkAcknowledge()}
-              data-testid="factory-handoff-bulk-acknowledge"
-            >
-              {ackInFlight
-                ? 'Приёмка…'
-                : selectedPending.length > 0
-                  ? `Принять выбранные (${selectedPending.length})`
-                  : 'Выберите серии'}
-            </Button>
-          ) : null}
+            {pendingItems.length > 0 ? (
+              <Button
+                size="sm"
+                variant="default"
+                disabled={ackInFlight || selectedPending.length === 0}
+                onClick={() => void handleBulkAcknowledge()}
+                data-testid="factory-handoff-bulk-acknowledge"
+              >
+                {ackInFlight
+                  ? 'Приёмка…'
+                  : selectedPending.length > 0
+                    ? `Принять выбранные (${selectedPending.length})`
+                    : 'Выберите серии'}
+              </Button>
+            ) : null}
           </div>
         </div>
         <MfrOpHandoffQueueRegistrySoTStrip registryHref={ROUTES.factory.productionOrders} />
@@ -381,7 +364,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
                 <PlatformCoreErpRetryHint
                   erpNextRetryAt={erpAlertNextRetryAt}
                   testId="mfr-op-handoff-queue-erp-backoff-hint"
-                  className="text-amber-900/80 text-[10px]"
+                  className="text-[10px] text-amber-900/80"
                 />
               ) : null}
             </div>
@@ -443,7 +426,10 @@ export function FactoryWorkshop2ProductionHandoffPanel({
         {loading ? (
           <p className="text-text-muted text-xs">Загрузка…</p>
         ) : visibleItems.length === 0 ? (
-          <p className="text-text-muted text-xs" data-testid="mfr-op-handoff-failed-po-filter-empty">
+          <p
+            className="text-text-muted text-xs"
+            data-testid="mfr-op-handoff-failed-po-filter-empty"
+          >
             {failedPoFilterActive
               ? 'Нет серий с ошибкой ERP — снимите фильтр.'
               : 'Нет входящих серий.'}
@@ -456,11 +442,11 @@ export function FactoryWorkshop2ProductionHandoffPanel({
               <div
                 key={item.productionOrderId}
                 className="border-border-subtle flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2"
-                  data-testid={
-                    item.b2bOrderId && isPlatformCorePgB2bOrder(item.b2bOrderId)
-                      ? `factory-handoff-row-${item.b2bOrderId}`
-                      : undefined
-                  }
+                data-testid={
+                  item.b2bOrderId && isPlatformCorePgB2bOrder(item.b2bOrderId)
+                    ? `factory-handoff-row-${item.b2bOrderId}`
+                    : undefined
+                }
               >
                 <div className="flex min-w-0 flex-1 items-start gap-2">
                   {ackable ? (
@@ -548,7 +534,7 @@ export function FactoryWorkshop2ProductionHandoffPanel({
                     <>
                       {item.status === 'error' && item.erpLastError ? (
                         <p
-                          className="text-rose-800 max-w-[14rem] text-right text-[9px] leading-snug"
+                          className="max-w-[14rem] text-right text-[9px] leading-snug text-rose-800"
                           data-testid={`factory-handoff-erp-error-${item.productionOrderId}`}
                         >
                           {item.erpLastError.length > 72
@@ -564,17 +550,17 @@ export function FactoryWorkshop2ProductionHandoffPanel({
                           className="text-text-muted text-right text-[9px]"
                         />
                       ) : null}
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className="h-6 text-[9px]"
-                      disabled={erpRetryId === item.productionOrderId}
-                      onClick={() => void handleRetryErp(item)}
-                      data-testid={`factory-handoff-erp-retry-${item.productionOrderId}`}
-                    >
-                      {erpRetryId === item.productionOrderId ? 'ERP…' : 'Повтор ERP'}
-                    </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="h-6 text-[9px]"
+                        disabled={erpRetryId === item.productionOrderId}
+                        onClick={() => void handleRetryErp(item)}
+                        data-testid={`factory-handoff-erp-retry-${item.productionOrderId}`}
+                      >
+                        {erpRetryId === item.productionOrderId ? 'ERP…' : 'Повтор ERP'}
+                      </Button>
                     </>
                   ) : null}
                   <Link

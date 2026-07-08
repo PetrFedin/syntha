@@ -95,9 +95,7 @@ export type PlatformCoreBaselineRoleId = (typeof PLATFORM_CORE_BASELINE_ROLE_IDS
 
 /** Расширенные роли (цех/поставщик) в hub — только с флагом. */
 export function isPlatformCoreExtendedRolesEnabled(): boolean {
-  return (
-    typeof process !== 'undefined' && process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES === '1'
-  );
+  return typeof process !== 'undefined' && process.env.NEXT_PUBLIC_PC_EXTENDED_ROLES === '1';
 }
 
 export function isPlatformCoreTwoRoleBaseline(): boolean {
@@ -122,9 +120,9 @@ export function isPlatformCoreBaselineRoleId(
   return (PLATFORM_CORE_BASELINE_ROLE_IDS as readonly string[]).includes(roleId);
 }
 
-export function filterGoldenCrossRoleStopsForBaseline<
-  T extends { roleId: CoreChainRoleId },
->(stops: readonly T[]): T[] {
+export function filterGoldenCrossRoleStopsForBaseline<T extends { roleId: CoreChainRoleId }>(
+  stops: readonly T[]
+): T[] {
   if (!isPlatformCoreTwoRoleBaseline()) return [...stops];
   return stops.filter((s) => isPlatformCoreBaselineRoleId(s.roleId));
 }
@@ -201,7 +199,9 @@ export function isArticleCreationMode(value: unknown): value is ArticleCreationM
 export function resolveArticleCreationMode(
   line: { articleCreationMode?: unknown } | null | undefined
 ): ArticleCreationMode {
-  return isArticleCreationMode(line?.articleCreationMode) ? line.articleCreationMode : 'full_production';
+  return isArticleCreationMode(line?.articleCreationMode)
+    ? line.articleCreationMode
+    : 'full_production';
 }
 
 export function articleCreationModeSummaryRu(mode: ArticleCreationMode): string {

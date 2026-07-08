@@ -26,7 +26,9 @@ export function extractDossierCompositionText(dossier: Workshop2DossierPhase1): 
   return line?.compositionText?.trim() || undefined;
 }
 
-export function buildBrandMaterialPassportRollupRows(products: Product[]): BrandMaterialPassportRollupRow[] {
+export function buildBrandMaterialPassportRollupRows(
+  products: Product[]
+): BrandMaterialPassportRollupRow[] {
   return buildFabricRollupRows(products).map((row, index) => ({
     ...row,
     slug: products[index]?.slug ?? row.sku.toLowerCase(),

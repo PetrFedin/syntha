@@ -146,14 +146,20 @@ export function BrandRetailersCorePage() {
               Витрина магазина
             </Link>
             <Link
-              href={brandCrmSegmentationFeatureHref('segments', pageCollectionId || PLATFORM_CORE_DEMO.collectionId)}
+              href={brandCrmSegmentationFeatureHref(
+                'segments',
+                pageCollectionId || PLATFORM_CORE_DEMO.collectionId
+              )}
               data-testid="brand-co-retailers-crm-segments-link"
               className="text-accent-primary font-medium hover:underline"
             >
               CRM · сегменты
             </Link>
             <Link
-              href={brandCrmSegmentationFeatureHref('pricelist', pageCollectionId || PLATFORM_CORE_DEMO.collectionId)}
+              href={brandCrmSegmentationFeatureHref(
+                'pricelist',
+                pageCollectionId || PLATFORM_CORE_DEMO.collectionId
+              )}
               data-testid="brand-co-retailers-crm-pricelist-link"
               className="text-accent-primary font-medium hover:underline"
             >

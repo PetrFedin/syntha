@@ -16,9 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { ROUTES } from '@/lib/routes';
 import { products } from '@/lib/products';
 import { assessLaunchReadiness, launchReadinessToCsv } from '@/lib/fashion/launch-readiness';
-import {
-  buildBrandTechPackReleaseGateRows,
-} from '@/lib/fashion/brand-techpack-release-gate-rows';
+import { buildBrandTechPackReleaseGateRows } from '@/lib/fashion/brand-techpack-release-gate-rows';
 import { getWorkshop2Phase1Dossier } from '@/lib/production/workshop2-phase1-dossier-storage';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { ArrowLeft, FileSpreadsheet, Rocket } from 'lucide-react';
@@ -145,38 +143,38 @@ function LaunchReadinessWorkspaceBody() {
                   {rows.map((r) => {
                     const pack = techPackBySku.get(r.product.sku);
                     return (
-                    <TableRow key={r.product.sku}>
-                      <TableCell>
-                        <Link
-                          href={`/products/${r.product.slug}`}
-                          className="font-mono text-xs underline"
-                        >
-                          {r.product.sku}
-                        </Link>
-                        <p className="line-clamp-1 max-w-[220px] text-[10px] text-muted-foreground">
-                          {r.product.name}
-                        </p>
-                      </TableCell>
-                      <TableCell className="font-mono">{r.percent}</TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {pack ? (
-                          <Link href={pack.factoryPackHref} className="underline">
-                            {pack.sheetsReady}/{pack.sheetsTotal}
+                      <TableRow key={r.product.sku}>
+                        <TableCell>
+                          <Link
+                            href={`/products/${r.product.slug}`}
+                            className="font-mono text-xs underline"
+                          >
+                            {r.product.sku}
                           </Link>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        {r.percent === 100 ? (
-                          <span className="text-emerald-600">ready</span>
-                        ) : (
-                          <span className="text-muted-foreground">
-                            {r.failedStr.replace(/\|/g, ', ')}
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
+                          <p className="line-clamp-1 max-w-[220px] text-[10px] text-muted-foreground">
+                            {r.product.name}
+                          </p>
+                        </TableCell>
+                        <TableCell className="font-mono">{r.percent}</TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {pack ? (
+                            <Link href={pack.factoryPackHref} className="underline">
+                              {pack.sheetsReady}/{pack.sheetsTotal}
+                            </Link>
+                          ) : (
+                            '—'
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          {r.percent === 100 ? (
+                            <span className="text-emerald-600">ready</span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {r.failedStr.replace(/\|/g, ', ')}
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
                 </TableBody>

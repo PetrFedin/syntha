@@ -104,7 +104,7 @@ export function ShopReplenishmentRulesForecastSyncStrip({
 
   return (
     <div
-      className="border-border-subtle space-y-2 rounded-md border bg-bg-surface2/60 px-3 py-2 text-xs"
+      className="border-border-subtle bg-bg-surface2/60 space-y-2 rounded-md border px-3 py-2 text-xs"
       data-testid="shop-replenishment-rules-forecast-sync-strip"
     >
       <div className="flex flex-wrap items-center gap-2">

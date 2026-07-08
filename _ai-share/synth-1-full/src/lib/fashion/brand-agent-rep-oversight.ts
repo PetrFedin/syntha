@@ -72,7 +72,8 @@ export function buildBrandAgentRepTerritoryHints(
 ): BrandAgentRepTerritoryHint[] {
   if (!repNames.length || !segments.length) return [];
   const ordered = [...segments].sort(
-    (a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999) || a.segmentKey.localeCompare(b.segmentKey)
+    (a, b) =>
+      (a.displayOrder ?? 999) - (b.displayOrder ?? 999) || a.segmentKey.localeCompare(b.segmentKey)
   );
   const segmentsHref = brandCrmSegmentationFeatureHref('segments', collectionId);
 

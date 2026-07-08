@@ -3,10 +3,7 @@
  * Канон: platform-core-comms-canon.ts · ADR-002 Appendix B.
  */
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import {
-  PLATFORM_CORE_PILLARS,
-  getPlatformCoreHubRow,
-} from '@/lib/platform-core-hub-matrix';
+import { PLATFORM_CORE_PILLARS, getPlatformCoreHubRow } from '@/lib/platform-core-hub-matrix';
 import {
   isPlatformCoreCommsPeerSectionAuditId,
   platformCoreCommsSectionContextQuery,

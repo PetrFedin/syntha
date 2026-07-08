@@ -6,7 +6,10 @@ import { useSearchParams } from 'next/navigation';
 import { PlatformCoreOrderDetailChrome } from '@/components/platform/PlatformCoreOrderDetailChrome';
 import { ShopCoDetailSpinePeerStrip } from '@/components/shop/b2b/ShopCoDetailSpinePeerStrip';
 import { useWorkshop2B2bOrderDetail } from '@/hooks/use-workshop2-b2b-order-detail';
-import { resolvePageCollectionId, getPlatformCoreDemoByOrderId } from '@/lib/platform-core-hub-matrix';
+import {
+  resolvePageCollectionId,
+  getPlatformCoreDemoByOrderId,
+} from '@/lib/platform-core-hub-matrix';
 
 const PlatformCoreB2bOrderDetailFacts = dynamic(
   () =>

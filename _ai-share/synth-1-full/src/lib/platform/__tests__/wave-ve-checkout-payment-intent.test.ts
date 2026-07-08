@@ -88,9 +88,9 @@ describe('wave VE checkout payment intent + WMS reserve UX', () => {
     expect('shop-co-checkout-inventory-s3-link').toContain('inventory-s3');
     expect('shop-co-checkout-wms-tracking-link').toContain('wms-tracking');
     expect('shop-co-checkout-wms-replenishment-link').toContain('wms-replenishment');
-    expect(formatPlatformCoreWmsCheckoutAtpBadgeRu({ loading: true, liveWms: false, atpTotal: 0 })).toMatch(
-      /проверка/i
-    );
+    expect(
+      formatPlatformCoreWmsCheckoutAtpBadgeRu({ loading: true, liveWms: false, atpTotal: 0 })
+    ).toMatch(/проверка/i);
     expect(formatPlatformCoreWmsStockAtpSourceRu('pg+wms')).toMatch(/PG \+ склад WMS/);
   });
 });

@@ -7,9 +7,12 @@ import type { FactoryDossierResolveSource } from '@/lib/production/workshop2-res
 export const WAVE_YA_MFR_DOSSIER_PG_SOT_MIGRATION = '069_wave_ya_mfr_dossier_pg_sot' as const;
 
 export const WAVE_YA_MFR_DOSSIER_SOURCE_STRIP_TESTID = 'mfr-dev-dossier-source-strip' as const;
-export const WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_TESTID = 'mfr-dev-dossier-source-pg-badge' as const;
-export const WAVE_YA_MFR_DOSSIER_SOURCE_LS_BADGE_TESTID = 'mfr-dev-dossier-source-ls-badge' as const;
-export const WAVE_YA_MFR_DOSSIER_READ_ONLY_BADGE_TESTID = 'mfr-dev-dossier-read-only-badge' as const;
+export const WAVE_YA_MFR_DOSSIER_SOURCE_PG_BADGE_TESTID =
+  'mfr-dev-dossier-source-pg-badge' as const;
+export const WAVE_YA_MFR_DOSSIER_SOURCE_LS_BADGE_TESTID =
+  'mfr-dev-dossier-source-ls-badge' as const;
+export const WAVE_YA_MFR_DOSSIER_READ_ONLY_BADGE_TESTID =
+  'mfr-dev-dossier-read-only-badge' as const;
 export const WAVE_YA_MFR_DOSSIER_BRAND_DIFF_PEER_LINK_TESTID =
   'mfr-dev-dossier-brand-diff-peer-link' as const;
 
@@ -18,7 +21,10 @@ export const WAVE_YA_MFR_DOSSIER_SOURCE_LS_BADGE_RU = 'Источник · local
 export const WAVE_YA_MFR_DOSSIER_READ_ONLY_BADGE_RU = 'ТЗ read-only' as const;
 export const WAVE_YA_MFR_DOSSIER_BRAND_DIFF_PEER_LABEL_RU = 'Сверка ТЗ бренд ↔ цех' as const;
 
-export function buildMfrDevDossierBrandDiffPeerHref(collectionId: string, articleId: string): string {
+export function buildMfrDevDossierBrandDiffPeerHref(
+  collectionId: string,
+  articleId: string
+): string {
   return brandDossierFactoryDiffViewerHref(collectionId, articleId);
 }
 

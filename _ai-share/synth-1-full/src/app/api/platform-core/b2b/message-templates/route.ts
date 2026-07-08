@@ -9,7 +9,11 @@ import {
   savePlatformCoreB2bMessageTemplateServer,
 } from '@/lib/server/platform-core-b2b-message-templates-repository';
 import { toBffPgStorageMode } from '@/lib/server/bff-pg-storage-mode';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 function ownerKeyFromRequest(req: NextRequest): string {
   return (

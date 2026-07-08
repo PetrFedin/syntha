@@ -173,7 +173,10 @@ function UniversalInboxInner({ variant }: Props) {
           Входящие по заказам
         </p>
         {summaryLoaded ? (
-          <span className="text-text-muted text-[10px]" data-testid={`${prefix}-universal-inbox-total`}>
+          <span
+            className="text-text-muted text-[10px]"
+            data-testid={`${prefix}-universal-inbox-total`}
+          >
             {totalInboxUnread > 0 ? `${totalInboxUnread} непрочит.` : 'нет новых'}
           </span>
         ) : (
@@ -273,7 +276,10 @@ function UniversalInboxInner({ variant }: Props) {
             })}
           </ul>
         ) : summaryLoaded ? (
-          <p className="text-text-muted text-[10px]" data-testid={`${prefix}-universal-inbox-po-empty`}>
+          <p
+            className="text-text-muted text-[10px]"
+            data-testid={`${prefix}-universal-inbox-po-empty`}
+          >
             Заказы появятся после оформления матрицы
           </p>
         ) : null}

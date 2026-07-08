@@ -10,7 +10,10 @@ import { usePgContextualActorId } from '@/hooks/use-pg-contextual-actor-id';
 import { usePlatformCoreCommsInboxPoll } from '@/hooks/use-platform-core-comms-inbox-poll';
 import { usePlatformCoreB2bRegistryPoll } from '@/hooks/use-platform-core-b2b-registry-poll';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { buildPgUnreadCountByChat, pgThreadToChatId } from '@/lib/platform-core-ports/communications/pg-contextual-unread-metrics';
+import {
+  buildPgUnreadCountByChat,
+  pgThreadToChatId,
+} from '@/lib/platform-core-ports/communications/pg-contextual-unread-metrics';
 import { isPlatformCoreDemoPinOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 import { isPlatformCorePgB2bOrder } from '@/lib/platform-core-demo-order';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/platform-core-ports/api-client-headers';
@@ -210,11 +213,7 @@ export function CommsNotificationCenterStrip({
             const chatId = pgThreadToChatId(t);
             return {
               chatId,
-              label: threadLabel(
-                t.contextType,
-                t.contextId,
-                t.lastMessagePreview ?? undefined
-              ),
+              label: threadLabel(t.contextType, t.contextId, t.lastMessagePreview ?? undefined),
               unread: unreadByChat[chatId] ?? 0,
             };
           })
@@ -327,8 +326,12 @@ export function CommsNotificationCenterStrip({
         >
           {WAVE_YX_NOTIFICATION_DETAIL_RU}
         </Link>
-        {variant === 'shop' ? <PlatformCoreCommsNotificationPrefsStrip role="shop" compact /> : null}
-        {variant === 'brand' ? <PlatformCoreCommsNotificationPrefsStrip role="brand" compact /> : null}
+        {variant === 'shop' ? (
+          <PlatformCoreCommsNotificationPrefsStrip role="shop" compact />
+        ) : null}
+        {variant === 'brand' ? (
+          <PlatformCoreCommsNotificationPrefsStrip role="brand" compact />
+        ) : null}
         {variant === 'manufacturer' ? (
           <PlatformCoreCommsNotificationPrefsStrip role="manufacturer" compact />
         ) : null}
@@ -344,7 +347,7 @@ export function CommsNotificationCenterStrip({
       className={cn(
         'space-y-2',
         panel
-          ? 'border-border-subtle rounded-xl border bg-bg-surface p-3'
+          ? 'border-border-subtle bg-bg-surface rounded-xl border p-3'
           : 'border-border-subtle rounded-lg border bg-slate-50/80 p-2.5'
       )}
       data-testid={`${testIdPrefix}-notification-center${panel ? '-panel' : ''}`}
@@ -400,15 +403,13 @@ export function CommsNotificationCenterStrip({
         )}
         {totalUnread > 0 ? (
           <span
-            className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-primary px-1 text-[11px] font-bold text-white"
+            className="bg-accent-primary inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[11px] font-bold text-white"
             data-testid={`${testIdPrefix}-notification-unread-count`}
           >
             {totalUnread}
           </span>
         ) : null}
-        {!loaded ? (
-          <span className="text-text-muted text-[11px]">Загрузка…</span>
-        ) : null}
+        {!loaded ? <span className="text-text-muted text-[11px]">Загрузка…</span> : null}
       </div>
 
       {unreadThreads.length > 0 ? (
@@ -428,13 +429,19 @@ export function CommsNotificationCenterStrip({
           ))}
         </ul>
       ) : loaded ? (
-        <p className="text-text-muted text-[11px]" data-testid={`${testIdPrefix}-notification-empty`}>
+        <p
+          className="text-text-muted text-[11px]"
+          data-testid={`${testIdPrefix}-notification-empty`}
+        >
           Нет непрочитанных тредов по заказу.
         </p>
       ) : null}
 
       {events.length > 0 ? (
-        <ul className="space-y-1 border-t border-slate-200/80 pt-2" data-testid={`${testIdPrefix}-notification-events-list`}>
+        <ul
+          className="space-y-1 border-t border-slate-200/80 pt-2"
+          data-testid={`${testIdPrefix}-notification-events-list`}
+        >
           {events.map((ev) => (
             <li key={ev.id} className="flex flex-wrap items-center gap-2">
               <Link
@@ -465,7 +472,12 @@ export function CommsNotificationCenterStrip({
           {pgEvents.slice(0, 4).map((ev) => (
             <li key={ev.id}>
               <Link
-                href={ev.href ?? (variant === 'shop' ? shopB2bTrackingOrderHref(orderId) : orderChatHref(variant, orderId))}
+                href={
+                  ev.href ??
+                  (variant === 'shop'
+                    ? shopB2bTrackingOrderHref(orderId)
+                    : orderChatHref(variant, orderId))
+                }
                 className="text-text-secondary inline-flex items-center gap-1 text-[11px] hover:underline"
                 data-testid={`${testIdPrefix}-notification-pg-event-${ev.id}`}
               >

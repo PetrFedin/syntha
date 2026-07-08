@@ -14,17 +14,27 @@ export async function POST(req: NextRequest) {
   } catch {
     body = {};
   }
-  const collectionId = String(body.collectionId ?? req.nextUrl.searchParams.get('collectionId') ?? '').trim();
+  const collectionId = String(
+    body.collectionId ?? req.nextUrl.searchParams.get('collectionId') ?? ''
+  ).trim();
   if (!collectionId) {
     return NextResponse.json(
-      { ok: false as const, error: { code: 'MISSING_COLLECTION', message: 'collectionId required' }, meta: { requestId, mode, apiVersion: 'v1' as const } },
+      {
+        ok: false as const,
+        error: { code: 'MISSING_COLLECTION', message: 'collectionId required' },
+        meta: { requestId, mode, apiVersion: 'v1' as const },
+      },
       { status: 400, headers: { 'x-request-id': requestId } }
     );
   }
   const result = await generateCollectionLinesheet(collectionId);
   enqueueSyncJob({ platform: 'syntha', kind: 'linesheet_gen', resultCount: 1 });
   return NextResponse.json(
-    { ok: true as const, data: { linesheet: result }, meta: { requestId, mode, apiVersion: 'v1' as const } },
+    {
+      ok: true as const,
+      data: { linesheet: result },
+      meta: { requestId, mode, apiVersion: 'v1' as const },
+    },
     { headers: { 'x-request-id': requestId } }
   );
 }

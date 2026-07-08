@@ -142,7 +142,10 @@ export default function BrandSuppliersLegacyPage() {
                   {mockSuppliers.map((s) => (
                     <TableRow key={s.id}>
                       <TableCell className="font-medium">
-                        <Link href={`${ROUTES.brand.suppliers}/${s.id}`} className="hover:underline">
+                        <Link
+                          href={`${ROUTES.brand.suppliers}/${s.id}`}
+                          className="hover:underline"
+                        >
                           {s.name}
                         </Link>
                       </TableCell>
@@ -164,7 +167,9 @@ export default function BrandSuppliersLegacyPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
-                              <Link href={`${ROUTES.brand.suppliers}/${s.id}`}>Карточка поставщика</Link>
+                              <Link href={`${ROUTES.brand.suppliers}/${s.id}`}>
+                                Карточка поставщика
+                              </Link>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

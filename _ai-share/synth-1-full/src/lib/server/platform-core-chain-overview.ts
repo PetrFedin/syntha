@@ -215,9 +215,7 @@ function buildDegradedChainOverview(
   };
 }
 
-async function buildPlatformCoreChainOverviewSafe(
-  cid: string
-): Promise<PlatformCoreChainOverview> {
+async function buildPlatformCoreChainOverviewSafe(cid: string): Promise<PlatformCoreChainOverview> {
   try {
     return await buildPlatformCoreChainOverview(cid);
   } catch (err) {
@@ -228,9 +226,7 @@ async function buildPlatformCoreChainOverviewSafe(
   }
 }
 
-async function buildPlatformCoreChainOverview(
-  cid: string
-): Promise<PlatformCoreChainOverview> {
+async function buildPlatformCoreChainOverview(cid: string): Promise<PlatformCoreChainOverview> {
   const demo = getPlatformCoreDemo(cid);
   if (isPlatformCoreEmptyChainCollection(cid)) {
     return buildEmptyChainOverview(cid, demo);
@@ -250,8 +246,7 @@ async function buildPlatformCoreChainOverview(
     listWorkshop2FactoryProductionHandoffQueue({ factoryId }),
   ]);
   const resolvedOrderId =
-    activeOrderId ||
-    (isPlatformCoreDemoPinOrderId(demoOrderId) ? '' : demoOrderId);
+    activeOrderId || (isPlatformCoreDemoPinOrderId(demoOrderId) ? '' : demoOrderId);
 
   const resolvedBuyerId = resolvedOrderId
     ? await resolveDemoBuyerIdForOrder(resolvedOrderId, demo.demoBuyerId)

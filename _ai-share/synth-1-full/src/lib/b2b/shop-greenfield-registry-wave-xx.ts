@@ -15,8 +15,10 @@ export const SHOP_GREENFIELD_DEFAULT_BUYER_ID = 'shop2' as const;
 export const SHOP_GREENFIELD_DEFAULT_COLLECTION_ID = 'SS27' as const;
 
 /** Cabinet CO · greenfield registry strip (VN + XX). */
-export const SHOP_CO_GREENFIELD_REGISTRY_STRIP_TESTID = 'shop-co-greenfield-registry-strip' as const;
-export const SHOP_CO_GREENFIELD_REGISTRY_BUYER_TESTID = 'shop-co-greenfield-registry-buyer' as const;
+export const SHOP_CO_GREENFIELD_REGISTRY_STRIP_TESTID =
+  'shop-co-greenfield-registry-strip' as const;
+export const SHOP_CO_GREENFIELD_REGISTRY_BUYER_TESTID =
+  'shop-co-greenfield-registry-buyer' as const;
 export const SHOP_CO_GREENFIELD_REGISTRY_BUYER_PG_TESTID =
   'shop-co-greenfield-registry-buyer-pg' as const;
 export const SHOP_CO_GREENFIELD_REGISTRY_PG_TESTID = 'shop-co-greenfield-registry-pg' as const;
@@ -28,7 +30,8 @@ export const SHOP_CO_GREENFIELD_REGISTRY_PRICELIST_TESTID =
 export const SHOP_CO_GREENFIELD_REGISTRY_PATH_TESTID = 'shop-co-greenfield-registry-path' as const;
 export const SHOP_CO_GREENFIELD_REGISTRY_MATRIX_SEED_LINK_TESTID =
   'shop-co-greenfield-registry-matrix-seed-link' as const;
-export const SHOP_CO_GREENFIELD_REGISTRY_STATUS_TESTID = 'shop-co-greenfield-registry-status' as const;
+export const SHOP_CO_GREENFIELD_REGISTRY_STATUS_TESTID =
+  'shop-co-greenfield-registry-status' as const;
 
 /** Registry empty · PG onboarding strip. */
 export const SHOP_CO_REGISTRY_GREENFIELD_ONBOARDING_STRIP_TESTID =
@@ -83,10 +86,7 @@ export type ShopGreenfieldOnboardingSnapshot = {
   firstOrderId?: string;
 };
 
-export function shopGreenfieldOnboardingApiPath(
-  buyerId: string,
-  collectionId: string
-): string {
+export function shopGreenfieldOnboardingApiPath(buyerId: string, collectionId: string): string {
   const params = new URLSearchParams({
     buyerId: buyerId.trim() || SHOP_GREENFIELD_DEFAULT_BUYER_ID,
     collectionId: collectionId.trim() || SHOP_GREENFIELD_DEFAULT_COLLECTION_ID,

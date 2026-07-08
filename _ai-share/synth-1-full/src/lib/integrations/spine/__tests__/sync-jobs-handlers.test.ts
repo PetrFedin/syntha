@@ -4,7 +4,11 @@ import path from 'path';
 
 import { dispatchSyncJobKindAsync } from '../sync-jobs-handlers.server';
 import { enqueueSyncJob } from '../sync-jobs-persistence.file';
-import { processQueuedSyncJobsAsync, resetSyncJobDispatch, setSyncJobDispatch } from '../sync-jobs-worker.service';
+import {
+  processQueuedSyncJobsAsync,
+  resetSyncJobDispatch,
+  setSyncJobDispatch,
+} from '../sync-jobs-worker.service';
 
 describe('sync-jobs-handlers.server', () => {
   let tmpJobs: string;

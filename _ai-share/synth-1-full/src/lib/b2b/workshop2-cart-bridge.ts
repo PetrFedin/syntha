@@ -198,10 +198,7 @@ export async function upsertWorkshop2CartLine(input: {
 const SS27_ARTICLE_ID_RE = /^demo-ss27-\d{2}$/i;
 
 /** Нормализует id корзины → W2 articleId (SS27 demo / явный articleId). */
-export function resolveWorkshop2CartArticleId(
-  item: CartItem,
-  collectionId: string
-): string {
+export function resolveWorkshop2CartArticleId(item: CartItem, collectionId: string): string {
   const ext = item as CartItem & { articleId?: string; sku?: string };
   const fromField = ext.articleId?.trim() || ext.sku?.trim();
   if (fromField) return fromField;
@@ -241,7 +238,13 @@ export async function syncLegacyCartToWorkshop2(input: {
   buyerId?: string;
   tier?: 'standard' | 'vip' | 'prebook';
   sessionId?: string;
-}): Promise<{ ok: boolean; synced: number; failed: number; messageRu: string; sessionId?: string }> {
+}): Promise<{
+  ok: boolean;
+  synced: number;
+  failed: number;
+  messageRu: string;
+  sessionId?: string;
+}> {
   const collectionId = input.collectionId?.trim() || 'SS27';
   let synced = 0;
   let failed = 0;

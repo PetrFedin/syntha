@@ -41,7 +41,8 @@ export function useWorkshop2Phase1DossierPanelTailZone({
   layout,
 }: UseWorkshop2Phase1DossierPanelTailZoneInput): { panelRoot: ReactNode } {
   const sectionBodyInput = assembleWorkshop2Phase1DossierSectionBodyInput(sectionBody);
-  const { sectionBody: sectionBodyNode } = useWorkshop2Phase1DossierSectionBodyZone(sectionBodyInput);
+  const { sectionBody: sectionBodyNode } =
+    useWorkshop2Phase1DossierSectionBodyZone(sectionBodyInput);
 
   const bodyShellProps = useWorkshop2Phase1DossierBodyShellPropsZone({
     shell: { ...bodyShell.shell, sectionBody: sectionBodyNode },

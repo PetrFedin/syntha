@@ -22,10 +22,14 @@ export function SupplierMaterialCatalogPgReadStrip({
 }: Props) {
   return (
     <div
-      className="border-border-subtle flex flex-wrap items-center gap-2 rounded-md border border-dashed bg-bg-surface2/40 px-3 py-2 text-xs text-text-secondary"
+      className="border-border-subtle bg-bg-surface2/40 text-text-secondary flex flex-wrap items-center gap-2 rounded-md border border-dashed px-3 py-2 text-xs"
       data-testid={SUPPLIER_MATERIAL_CATALOG_PG_READ_STRIP_TESTID}
     >
-      <Badge variant="outline" className="text-[9px]" data-testid={SUPPLIER_MATERIAL_CATALOG_PG_READ_BADGE_TESTID}>
+      <Badge
+        variant="outline"
+        className="text-[9px]"
+        data-testid={SUPPLIER_MATERIAL_CATALOG_PG_READ_BADGE_TESTID}
+      >
         {supDevMaterialCatalogPgReadBadgeRu()}
       </Badge>
       <span>

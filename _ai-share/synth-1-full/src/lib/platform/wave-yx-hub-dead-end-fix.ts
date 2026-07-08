@@ -80,9 +80,7 @@ function isBlockedHref(href: string): string | null {
 }
 
 /** Active hub matrix workspace hrefs — no known dead-end prefixes. */
-export function scanWaveYxHubMatrixHrefDeadEnds(
-  cells = WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS
-): string[] {
+export function scanWaveYxHubMatrixHrefDeadEnds(cells = WAVE_YQ_HUB_MATRIX_ACTIVE_CELLS): string[] {
   return scanWaveYqMatrixHrefDeadEnds(cells);
 }
 
@@ -150,7 +148,9 @@ export function waveYxBrandLinesheetsHref(collectionId = WAVE_YX_COLLECTION_ID):
   return waveZdBrandLinesheetsHref(collectionId);
 }
 
-export function waveYxBrandLinesheetsHrefMatchesGolden(collectionId = WAVE_YX_COLLECTION_ID): boolean {
+export function waveYxBrandLinesheetsHrefMatchesGolden(
+  collectionId = WAVE_YX_COLLECTION_ID
+): boolean {
   return waveZdBrandLinesheetsHrefMatchesGolden(collectionId);
 }
 
@@ -166,4 +166,8 @@ export function waveYxHubMatrixCellCount(): number {
   return WAVE_YQ_HUB_MATRIX_CELLS.length;
 }
 
-export { brandLinesheetsHrefForDemo, PLATFORM_CORE_DEMO, SHOP_EMPTY27_ONBOARDING_MATRIX_LINK_TESTID };
+export {
+  brandLinesheetsHrefForDemo,
+  PLATFORM_CORE_DEMO,
+  SHOP_EMPTY27_ONBOARDING_MATRIX_LINK_TESTID,
+};

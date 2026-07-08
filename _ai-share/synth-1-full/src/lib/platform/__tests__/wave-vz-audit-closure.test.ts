@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getReadinessCell, getPlatformCoreReadinessMatrix } from '@/lib/platform-core-readiness-audit';
+import {
+  getReadinessCell,
+  getPlatformCoreReadinessMatrix,
+} from '@/lib/platform-core-readiness-audit';
 
 const SRC = path.join(__dirname, '..', '..', '..');
 
@@ -48,11 +51,7 @@ export const WAVE_VZ_READINESS_AUDIT_CLOSURES = [
     was: 'Read-only shop development bridge',
     testids: ['shop-development-bridge', 'shop-development-bridge-dossier-preview-dialog'],
     sourceFile: 'lib/platform-core-readiness-sections/shop-audit.ts',
-    sourceMustContain: [
-      "id: 'shop-dev-bridge'",
-      'Wave VZ: read-only bridge',
-      'bad: []',
-    ],
+    sourceMustContain: ["id: 'shop-dev-bridge'", 'Wave VZ: read-only bridge', 'bad: []'],
   },
   {
     id: 'sup-logistics-vo',
@@ -76,14 +75,21 @@ export const WAVE_VZ_READINESS_AUDIT_CLOSURES = [
     id: 'mfr-empty-pillars-vs',
     sectionId: 'mfr-dev-status',
     was: 'Empty SC/CO peer strips',
-    testids: ['mfr-empty-sc-peer-strip', 'mfr-empty-co-peer-strip', 'mfr-empty-publish-status-badge'],
+    testids: [
+      'mfr-empty-sc-peer-strip',
+      'mfr-empty-co-peer-strip',
+      'mfr-empty-publish-status-badge',
+    ],
   },
   {
     id: 's1-ls-sweep-vp',
     was: 'S1 localStorage final sweep fail-closed',
     testids: ['workshop2-core-readpath-local-banner'],
     sourceFile: 'lib/production/workshop2-pg-read-path-policy.ts',
-    sourceMustContain: ['isWorkshop2CorePgReadPathOnly', 'shouldUseLocalStorageClientFallbackInCore'],
+    sourceMustContain: [
+      'isWorkshop2CorePgReadPathOnly',
+      'shouldUseLocalStorageClientFallbackInCore',
+    ],
   },
   {
     id: 'pillar-co-checkout-ru-vz',
@@ -103,37 +109,39 @@ describe('wave VZ — readiness audit closure', () => {
     expect(WAVE_VZ_READINESS_AUDIT_CLOSURES.length).toBeLessThanOrEqual(14);
   });
 
-  it.each(
-    WAVE_VZ_READINESS_AUDIT_CLOSURES.filter((c) => 'cell' in c && c.cell)
-  )('$id — cell bad/fix cleared', (closure) => {
-    const cell = getReadinessCell(cells, closure.cell!.role, closure.cell!.pillar);
-    expect(cell?.bad ?? []).toEqual([]);
-    expect(cell?.fix ?? []).toEqual([]);
-    expect(
-      cell?.good.some(
-        (g) =>
-          g.includes('wave VZ') ||
-          g.includes('Wave VZ') ||
-          g.includes('Wave VL') ||
-          g.includes('wave VL') ||
-          g.includes('Wave VS')
-      )
-    ).toBe(true);
-  });
+  it.each(WAVE_VZ_READINESS_AUDIT_CLOSURES.filter((c) => 'cell' in c && c.cell))(
+    '$id — cell bad/fix cleared',
+    (closure) => {
+      const cell = getReadinessCell(cells, closure.cell!.role, closure.cell!.pillar);
+      expect(cell?.bad ?? []).toEqual([]);
+      expect(cell?.fix ?? []).toEqual([]);
+      expect(
+        cell?.good.some(
+          (g) =>
+            g.includes('wave VZ') ||
+            g.includes('Wave VZ') ||
+            g.includes('Wave VL') ||
+            g.includes('wave VL') ||
+            g.includes('Wave VS')
+        )
+      ).toBe(true);
+    }
+  );
 
-  it.each(
-    WAVE_VZ_READINESS_AUDIT_CLOSURES.filter((c) => 'sectionId' in c && c.sectionId)
-  )('$id — section bad/fix cleared', (closure) => {
-    const sectionClosure = closure as (typeof WAVE_VZ_READINESS_AUDIT_CLOSURES)[number] & {
-      sectionId: string;
-    };
-    const hit = cells
-      .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
-      .find((s) => s.id === sectionClosure.sectionId);
-    expect(hit).toBeDefined();
-    expect(hit?.bad ?? []).toEqual([]);
-    expect(hit?.fix ?? []).toEqual([]);
-  });
+  it.each(WAVE_VZ_READINESS_AUDIT_CLOSURES.filter((c) => 'sectionId' in c && c.sectionId))(
+    '$id — section bad/fix cleared',
+    (closure) => {
+      const sectionClosure = closure as (typeof WAVE_VZ_READINESS_AUDIT_CLOSURES)[number] & {
+        sectionId: string;
+      };
+      const hit = cells
+        .flatMap((c) => c.subItems.map((s) => ({ role: c.roleId, pillar: c.pillarId, ...s })))
+        .find((s) => s.id === sectionClosure.sectionId);
+      expect(hit).toBeDefined();
+      expect(hit?.bad ?? []).toEqual([]);
+      expect(hit?.fix ?? []).toEqual([]);
+    }
+  );
 
   it.each(WAVE_VZ_READINESS_AUDIT_CLOSURES)('$id — closure testids wired in source', (closure) => {
     for (const tid of closure.testids) {

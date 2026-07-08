@@ -84,7 +84,7 @@ export function BrandOpAttachTzPdfPeerStrip({
       ref={anchorRef}
       id="brand-op-attach-tz-pdf-peer"
       className={cn(
-        'border-border-subtle rounded-md border bg-bg-surface2/50 px-3 py-2 text-xs',
+        'border-border-subtle bg-bg-surface2/50 rounded-md border px-3 py-2 text-xs',
         searchParams.get('attachTzPdf') === '1' && 'ring-accent-primary/30 ring-1'
       )}
       data-testid="brand-op-attach-tz-pdf-peer-strip"

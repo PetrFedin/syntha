@@ -34,7 +34,11 @@ export function MfrOpDossierCoSpinePeerStrip({ factoryId, collectionId, orderId 
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="mfr-op-dossier-co-spine-peer-strip"
     >
-      <Link href={session.handoffHref} data-testid="mfr-op-dossier-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="mfr-op-dossier-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -50,7 +54,11 @@ export function MfrOpDossierCoSpinePeerStrip({ factoryId, collectionId, orderId 
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={procurementHref} data-testid="mfr-op-dossier-procurement-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurementHref}
+        data-testid="mfr-op-dossier-procurement-link"
+        className={hubGadget.goldenLink}
+      >
         Закупка
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -76,7 +84,11 @@ export function MfrOpDossierCoSpinePeerStrip({ factoryId, collectionId, orderId 
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.techpackAckHref} data-testid="mfr-op-dossier-techpack-ack-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.techpackAckHref}
+        data-testid="mfr-op-dossier-techpack-ack-link"
+        className={hubGadget.goldenLink}
+      >
         Подтверждение ТЗ
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -92,13 +104,21 @@ export function MfrOpDossierCoSpinePeerStrip({ factoryId, collectionId, orderId 
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopOrderCommsHref} data-testid="mfr-op-dossier-shop-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopOrderCommsHref}
+        data-testid="mfr-op-dossier-shop-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат с магазином
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={sampleQueueHref} data-testid="mfr-op-dossier-sample-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={sampleQueueHref}
+        data-testid="mfr-op-dossier-sample-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Образцы
       </Link>
     </div>

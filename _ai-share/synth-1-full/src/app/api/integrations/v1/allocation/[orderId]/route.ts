@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
 import { getAllocationQueue } from '@/lib/integrations/spine/allocation-queue-persistence.file';
-import { ensureSpineOperationalStoreReady, SPINE_ALLOCATION_SCOPES } from '@/lib/integrations/spine/spine-operational-store';
+import {
+  ensureSpineOperationalStoreReady,
+  SPINE_ALLOCATION_SCOPES,
+} from '@/lib/integrations/spine/spine-operational-store';
 
 type RouteCtx = { params: Promise<{ orderId: string }> };
 

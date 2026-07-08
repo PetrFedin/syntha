@@ -16,10 +16,7 @@ export type SupplierBomLineInput = Pick<
 >;
 
 /** Вес строки BOM по критичности роли (main/lining выше trim/label). */
-export const SUPPLIER_BOM_ROLE_WEIGHT: Record<
-  NonNullable<SupplierBomLineInput['role']>,
-  number
-> = {
+export const SUPPLIER_BOM_ROLE_WEIGHT: Record<NonNullable<SupplierBomLineInput['role']>, number> = {
   main: 5,
   lining: 4,
   interlining: 4,
@@ -82,7 +79,9 @@ export function extractSupplierMaterialPricePoints(
   lines: readonly SupplierBomLineInput[]
 ): SupplierMaterialPricePoint[] {
   return lines
-    .filter((l) => l.materialName?.trim() && Number.isFinite(l.unitCostNet) && (l.unitCostNet ?? 0) > 0)
+    .filter(
+      (l) => l.materialName?.trim() && Number.isFinite(l.unitCostNet) && (l.unitCostNet ?? 0) > 0
+    )
     .map((line) => ({
       materialName: line.materialName!.trim(),
       unitCostNet: line.unitCostNet!,
@@ -111,9 +110,7 @@ export function extractSupplierAltMaterials(
     .filter((l) => l.materialName?.trim() && (l.substitutes?.length ?? 0) > 0)
     .map((line) => ({
       primary: line.materialName!.trim(),
-      alternatives: (line.substitutes ?? [])
-        .map(normalizeSubstitute)
-        .filter(Boolean),
+      alternatives: (line.substitutes ?? []).map(normalizeSubstitute).filter(Boolean),
       supplier: line.supplier?.trim() || undefined,
     }))
     .filter((row) => row.alternatives.length > 0);

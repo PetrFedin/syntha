@@ -22,22 +22,38 @@ export const WAVE_YN_COMMS_FIXES = [
   {
     id: 'contextual-thread-link-component',
     file: 'components/platform/CommsContextualThreadLink.tsx',
-    mustContain: ['postCommsContextualThreadEnsure', 'contextualSource', 'CommsContextualThreadLink'],
+    mustContain: [
+      'postCommsContextualThreadEnsure',
+      'contextualSource',
+      'CommsContextualThreadLink',
+    ],
   },
   {
     id: 'tracking-panel-chat-post',
     file: 'components/platform/PlatformCoreShopB2bTrackingPanel.tsx',
-    mustContain: ['CommsContextualThreadLink', 'contextualSource="tracking"', 'shop-co-tracking-order-chat-link'],
+    mustContain: [
+      'CommsContextualThreadLink',
+      'contextualSource="tracking"',
+      'shop-co-tracking-order-chat-link',
+    ],
   },
   {
     id: 'calendar-peer-strips-chat-post',
     file: 'components/platform/BrandCmCalendarContextPeerStrip.tsx',
-    mustContain: ['CommsContextualThreadLink', 'contextualSource="calendar"', 'brand-cm-calendar-order-chat-link'],
+    mustContain: [
+      'CommsContextualThreadLink',
+      'contextualSource="calendar"',
+      'brand-cm-calendar-order-chat-link',
+    ],
   },
   {
     id: 'shop-calendar-peer-chat-post',
     file: 'components/platform/ShopCmCalendarContextPeerStrip.tsx',
-    mustContain: ['CommsContextualThreadLink', 'contextualSource="calendar"', 'shop-cm-calendar-order-chat-link'],
+    mustContain: [
+      'CommsContextualThreadLink',
+      'contextualSource="calendar"',
+      'shop-cm-calendar-order-chat-link',
+    ],
   },
   {
     id: 'order-card-brand-detail-ru',

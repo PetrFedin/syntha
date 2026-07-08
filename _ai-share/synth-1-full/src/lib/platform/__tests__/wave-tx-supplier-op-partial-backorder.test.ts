@@ -5,14 +5,14 @@ import {
   parseSupplierMaterialPartialShipFields,
   supplierMaterialPartialShipJournalFields,
 } from '@/lib/production/workshop2-supplier-material-partial-ship';
-import {
-  isWorkshop2SupplierWmsConfirmWebhookEnabled,
-} from '@/lib/production/workshop2-supplier-wms-confirm-webhook';
+import { isWorkshop2SupplierWmsConfirmWebhookEnabled } from '@/lib/production/workshop2-supplier-wms-confirm-webhook';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 
 describe('wave TX — P2 sup-op partial ship + backorder + WMS webhook', () => {
   it('parses partialShipQty and backorderFlag aliases', () => {
-    expect(parseSupplierMaterialPartialShipFields({ partialShipQty: 12, backorderFlag: true })).toEqual({
+    expect(
+      parseSupplierMaterialPartialShipFields({ partialShipQty: 12, backorderFlag: true })
+    ).toEqual({
       shippedQty: 12,
       backorder: true,
     });

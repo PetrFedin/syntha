@@ -42,8 +42,8 @@ function WorkingOrderWorkspaceBody() {
       <Card data-testid="shop-working-order-missing-order">
         <CardContent className="space-y-3 py-8 text-center text-sm">
           <p className="text-text-secondary">
-            Укажите оптовый заказ — рабочие версии доступны для внешних INT-* заказов после
-            отправки в реестр.
+            Укажите оптовый заказ — рабочие версии доступны для внешних INT-* заказов после отправки
+            в реестр.
           </p>
           <Button variant="outline" size="sm" asChild>
             <Link href={ROUTES.shop.b2bOrders}>Оптовый реестр</Link>
@@ -100,7 +100,10 @@ function WorkingOrderWorkspaceBody() {
         </PlatformCoreWorkspaceStripsGate>
       ) : null}
       <PlatformCoreWorkspaceStripsGate>
-        <ShopWorkingOrderCoSpinePeerStrip wholesaleOrderId={wholesaleOrderId} collectionId={collectionId} />
+        <ShopWorkingOrderCoSpinePeerStrip
+          wholesaleOrderId={wholesaleOrderId}
+          collectionId={collectionId}
+        />
       </PlatformCoreWorkspaceStripsGate>
       {activeFeatureId === 'versions' ? (
         <ShopWorkingOrderVersionsPanel
@@ -109,7 +112,10 @@ function WorkingOrderWorkspaceBody() {
         />
       ) : null}
       {activeFeatureId === 'bulk' ? (
-        <ShopWorkingOrderBulkPanel wholesaleOrderId={wholesaleOrderId} collectionId={collectionId} />
+        <ShopWorkingOrderBulkPanel
+          wholesaleOrderId={wholesaleOrderId}
+          collectionId={collectionId}
+        />
       ) : null}
       {activeFeatureId === 'handoff' ? (
         <ShopWorkingOrderHandoffPanel
@@ -124,7 +130,10 @@ function WorkingOrderWorkspaceBody() {
 export function ShopB2bWorkingOrderCorePage() {
   return (
     <PlatformCoreListChrome highlightRole="shop" pillarId="collection_order">
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-6" data-testid="shop-working-order-core-page">
+      <div
+        className="mx-auto max-w-3xl space-y-4 px-4 py-6"
+        data-testid="shop-working-order-core-page"
+      >
         <Suspense fallback={null}>
           <WorkingOrderWorkspaceBody />
         </Suspense>

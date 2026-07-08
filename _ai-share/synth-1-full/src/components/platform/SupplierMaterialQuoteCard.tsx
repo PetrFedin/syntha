@@ -49,8 +49,7 @@ export function SupplierMaterialQuoteCard({ orderId }: Props) {
       : null;
 
   const bomLines = (live?.bomLines ?? []).filter((l) => l.materialName?.trim());
-  const materialsDone =
-    live?.chainSteps?.find((s) => s.id === 'materials_supplied')?.done === true;
+  const materialsDone = live?.chainSteps?.find((s) => s.id === 'materials_supplied')?.done === true;
   const [deliveryBusy, setDeliveryBusy] = useState(false);
   const [deliveryConfirmed, setDeliveryConfirmed] = useState(false);
   const quoteTemplate = PLATFORM_CORE_B2B_MESSAGE_TEMPLATES.find(
@@ -96,13 +95,10 @@ export function SupplierMaterialQuoteCard({ orderId }: Props) {
   const showDeliveryConfirmed = materialsDone || deliveryConfirmed;
 
   return (
-    <Card
-      className="border-amber-200/60 bg-amber-50/30"
-      data-testid="sup-cm-material-quote-card"
-    >
+    <Card className="border-amber-200/60 bg-amber-50/30" data-testid="sup-cm-material-quote-card">
       <CardContent className="space-y-2 p-3 text-xs">
         <div className="flex flex-wrap items-center gap-2">
-          <FileText className="text-amber-800 h-3.5 w-3.5" aria-hidden />
+          <FileText className="h-3.5 w-3.5 text-amber-800" aria-hidden />
           <p className="text-sm font-semibold">Котировка материалов</p>
           {showDeliveryConfirmed ? (
             <Badge
@@ -138,10 +134,7 @@ export function SupplierMaterialQuoteCard({ orderId }: Props) {
         ) : null}
         <div className="flex flex-wrap gap-1.5">
           <Button size="sm" variant="outline" className="h-7 text-[10px]" asChild>
-            <Link
-              href={articleChatHref}
-              data-testid="sup-cm-quote-send-link"
-            >
+            <Link href={articleChatHref} data-testid="sup-cm-quote-send-link">
               <Send className="mr-1 h-3 w-3" aria-hidden />
               Отправить котировку
             </Link>

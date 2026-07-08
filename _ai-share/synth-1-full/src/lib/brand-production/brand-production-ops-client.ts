@@ -26,7 +26,8 @@ export async function loadBrandProductionOpsWithMode(): Promise<{
     if (res.ok && json.ok && json.state) {
       return {
         state: json.state,
-        storageMode: json.storageMode === 'pg' || json.storageMode === 'postgres' ? 'postgres' : 'unavailable',
+        storageMode:
+          json.storageMode === 'pg' || json.storageMode === 'postgres' ? 'postgres' : 'unavailable',
       };
     }
     return { state: createSeedState(), storageMode: 'unavailable' };

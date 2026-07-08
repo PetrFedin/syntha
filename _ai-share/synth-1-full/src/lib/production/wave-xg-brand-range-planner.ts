@@ -14,8 +14,7 @@ export const SHOP_MATRIX_RANGE_PLANNER_TIER_BADGE_LINK_TESTID =
 
 export const RANGE_PLANNER_BULK_TIER_MAX_BATCH = 48;
 
-export const RANGE_PLANNER_OVERLAY_CONFLICT_BANNER_TITLE_RU =
-  'Расхождение overlay и PostgreSQL';
+export const RANGE_PLANNER_OVERLAY_CONFLICT_BANNER_TITLE_RU = 'Расхождение overlay и PostgreSQL';
 
 export const RANGE_PLANNER_OVERLAY_CONFLICT_SYNC_CTA_RU = 'Синхронизировать';
 export const RANGE_PLANNER_OVERLAY_CONFLICT_PULL_CTA_RU = 'Подтянуть из PG';

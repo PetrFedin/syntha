@@ -71,7 +71,9 @@ export function PlatformCorePillarRoleMap() {
                           ? 'bg-accent-primary/10 text-accent-primary rounded-md px-2 py-0.5 text-[10px] font-semibold hover:underline'
                           : 'text-text-muted rounded-md border border-dashed px-2 py-0.5 text-[10px] opacity-60'
                       }
-                      title={active ? `${role.label} · ${pillar.title}` : `${role.label} · не в роли`}
+                      title={
+                        active ? `${role.label} · ${pillar.title}` : `${role.label} · не в роли`
+                      }
                     >
                       {role.label}
                     </Link>

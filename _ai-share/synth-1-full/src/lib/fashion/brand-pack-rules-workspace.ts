@@ -1,6 +1,11 @@
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
-import { ROUTES, shopB2bCheckoutCollectionHref, shopB2bMatrixPrepackHref, shopB2bMatrixReorderHref } from '@/lib/routes';
+import {
+  ROUTES,
+  shopB2bCheckoutCollectionHref,
+  shopB2bMatrixPrepackHref,
+  shopB2bMatrixReorderHref,
+} from '@/lib/routes';
 
 export type BrandPackRulesSession = {
   collectionId: string;

@@ -2,10 +2,7 @@ import { brandLandedMarginFeatureHref } from '@/lib/b2b/brand-landed-margin';
 import { brandOrderCommsTabHref } from '@/lib/b2b/brand-collection-order-hrefs';
 import { platformB2bMarketroomFeatureHref } from '@/lib/b2b/platform-b2b-marketroom';
 import { platformB2bPartnersFeatureHref } from '@/lib/b2b/platform-b2b-partners';
-import {
-  shopOrderCommsTabHref,
-  shopShowroomTabHref,
-} from '@/lib/b2b/shop-collection-order-hrefs';
+import { shopOrderCommsTabHref, shopShowroomTabHref } from '@/lib/b2b/shop-collection-order-hrefs';
 import { shopLandedMarginFeatureHref } from '@/lib/b2b/shop-landed-margin';
 import { brandAgentRepLedgerHref } from '@/lib/fashion/brand-agent-rep-oversight';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -52,9 +49,7 @@ export function buildBrandPricelistSession(input?: {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
   const base = `${ROUTES.brand.priceLists}?collection=${encodeURIComponent(collectionId)}`;
-  const groupQ = input?.groupId?.trim()
-    ? `&group=${encodeURIComponent(input.groupId.trim())}`
-    : '';
+  const groupQ = input?.groupId?.trim() ? `&group=${encodeURIComponent(input.groupId.trim())}` : '';
 
   return {
     collectionId,

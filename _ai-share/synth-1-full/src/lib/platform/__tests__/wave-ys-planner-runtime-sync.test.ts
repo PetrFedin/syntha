@@ -11,11 +11,7 @@ import {
 } from '@/lib/platform/wave-ys-planner-runtime-sync';
 import type { PlannerRuntimeState } from '@/lib/server/platform-core-planner-runtime.server';
 
-const RUNTIME_PATH = path.join(
-  process.cwd(),
-  '.planning',
-  'platform-core-planner-runtime.json'
-);
+const RUNTIME_PATH = path.join(process.cwd(), '.planning', 'platform-core-planner-runtime.json');
 const PLAYWRIGHT_CORE_CONFIG = path.join(process.cwd(), 'playwright.core.config.ts');
 
 function readRuntime(): PlannerRuntimeState {

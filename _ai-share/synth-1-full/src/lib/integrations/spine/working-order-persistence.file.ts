@@ -32,7 +32,9 @@ function pathFile(): string {
 function load(): FileV1 {
   try {
     const j = JSON.parse(fs.readFileSync(pathFile(), 'utf8')) as FileV1;
-    return j?.schemaVersion === 1 ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} } : { ...EMPTY };
+    return j?.schemaVersion === 1
+      ? { schemaVersion: 1, byOrderId: j.byOrderId ?? {} }
+      : { ...EMPTY };
   } catch {
     return { ...EMPTY };
   }
@@ -48,7 +50,9 @@ function save(data: FileV1): void {
 }
 
 /** PG hydrate: replace full snapshot (idempotent). */
-export function replaceWorkingOrderVersionsSnapshot(byOrderId: Record<string, WorkingOrderVersion[]>): void {
+export function replaceWorkingOrderVersionsSnapshot(
+  byOrderId: Record<string, WorkingOrderVersion[]>
+): void {
   save({ schemaVersion: 1, byOrderId });
 }
 

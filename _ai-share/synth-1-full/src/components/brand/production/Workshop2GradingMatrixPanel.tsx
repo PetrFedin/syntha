@@ -1138,4 +1138,3 @@ export function Workshop2GradingMatrixPanel({
     </Workshop2OperationalPanelShell>
   );
 }
-

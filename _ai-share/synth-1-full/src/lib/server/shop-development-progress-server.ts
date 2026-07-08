@@ -31,7 +31,9 @@ function buildVersionPayload(snapshot: ShopDevelopmentProgressSnapshot): string 
   });
 }
 
-export function buildShopDevelopmentVersionToken(snapshot: ShopDevelopmentProgressSnapshot): string {
+export function buildShopDevelopmentVersionToken(
+  snapshot: ShopDevelopmentProgressSnapshot
+): string {
   return createHash('sha256').update(buildVersionPayload(snapshot)).digest('hex').slice(0, 16);
 }
 
@@ -46,9 +48,7 @@ export function diffShopDevelopmentProgress(
 
   const changes: string[] = [];
   if (previous.articleCount !== current.articleCount) {
-    changes.push(
-      `Артикулов в разработке: ${previous.articleCount} → ${current.articleCount}`
-    );
+    changes.push(`Артикулов в разработке: ${previous.articleCount} → ${current.articleCount}`);
   }
   if (previous.sampleQueueCount !== current.sampleQueueCount) {
     changes.push(

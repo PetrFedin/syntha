@@ -108,7 +108,19 @@ export function shouldShowFloatingRolePanel(): boolean {
 
 /** В core контент кабинета на всю ширину колонки (без узких max-w-5xl). */
 export function resolveCabinetPageMaxWidth(
-  requested: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'screen' | 'full'
+  requested:
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | '6xl'
+    | '7xl'
+    | 'screen'
+    | 'full'
 ): typeof requested {
   if (!isPlatformCoreMode()) return requested;
   return 'full';
@@ -193,7 +205,9 @@ export function applyFactoryCorePillarsClusterOverrides<T extends NavGroupLike>(
 ): T[] {
   if (!isPlatformCoreMode()) return [...groups];
   const allowed =
-    role === 'manufacturer' ? FACTORY_MFR_CORE_PILLARS_GROUP_IDS : FACTORY_SUP_CORE_PILLARS_GROUP_IDS;
+    role === 'manufacturer'
+      ? FACTORY_MFR_CORE_PILLARS_GROUP_IDS
+      : FACTORY_SUP_CORE_PILLARS_GROUP_IDS;
   return archiveExcept(groups, allowed);
 }
 

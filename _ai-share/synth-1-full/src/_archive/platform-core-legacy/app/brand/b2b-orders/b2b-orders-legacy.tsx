@@ -142,11 +142,17 @@ export function BrandB2bOrdersLegacyPage() {
           <TabsTrigger value="amendments" className={cn(cabinetSurface.tabsTrigger, 'h-7 gap-1.5')}>
             Заявки на изменение
           </TabsTrigger>
-          <TabsTrigger value="orders-live" className={cn(cabinetSurface.tabsTrigger, 'h-7 gap-1.5')}>
+          <TabsTrigger
+            value="orders-live"
+            className={cn(cabinetSurface.tabsTrigger, 'h-7 gap-1.5')}
+          >
             <Zap className="h-3.5 w-3.5" />
             LIVE: Заказы
           </TabsTrigger>
-          <TabsTrigger value="approval-live" className={cn(cabinetSurface.tabsTrigger, 'h-7 gap-1.5')}>
+          <TabsTrigger
+            value="approval-live"
+            className={cn(cabinetSurface.tabsTrigger, 'h-7 gap-1.5')}
+          >
             <Radio className="h-3.5 w-3.5" />
             LIVE: Согласование
           </TabsTrigger>
@@ -245,19 +251,31 @@ export function BrandB2bOrdersLegacyPage() {
         <TabsContent value="po" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
           {tab === 'po' && <PoContent />}
         </TabsContent>
-        <TabsContent value="shipments" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
+        <TabsContent
+          value="shipments"
+          className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}
+        >
           {tab === 'shipments' && <ShipmentsContent />}
         </TabsContent>
         <TabsContent value="approval" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
           {tab === 'approval' && <ApprovalContent />}
         </TabsContent>
-        <TabsContent value="amendments" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
+        <TabsContent
+          value="amendments"
+          className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}
+        >
           {tab === 'amendments' && <OrderAmendmentsContent />}
         </TabsContent>
-        <TabsContent value="orders-live" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
+        <TabsContent
+          value="orders-live"
+          className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}
+        >
           {tab === 'orders-live' && <B2BOrdersLiveContent />}
         </TabsContent>
-        <TabsContent value="approval-live" className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}>
+        <TabsContent
+          value="approval-live"
+          className={cn(cabinetSurface.cabinetProfileTabPanel, 'mt-4')}
+        >
           {tab === 'approval-live' && <ApprovalLiveContent />}
         </TabsContent>
       </Tabs>

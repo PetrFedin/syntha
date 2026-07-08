@@ -52,7 +52,9 @@ export function BrandOpChainMaterialsSupplierStrip({
       data-materials-supplied={materialsDone ? 'done' : 'pending'}
     >
       <span className={hubGadget.muted}>
-        {materialsDone ? 'Материалы подтверждены поставщиком' : 'Подтверждение поставки у поставщика'}
+        {materialsDone
+          ? 'Материалы подтверждены поставщиком'
+          : 'Подтверждение поставки у поставщика'}
       </span>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
@@ -69,7 +71,7 @@ export function BrandOpChainMaterialsSupplierStrip({
             ·
           </span>
           <span
-            className="font-mono text-[10px] text-text-muted"
+            className="text-text-muted font-mono text-[10px]"
             data-testid={BRAND_OP_CHAIN_MATERIALS_PO_BADGE_TESTID}
           >
             PO {poId}

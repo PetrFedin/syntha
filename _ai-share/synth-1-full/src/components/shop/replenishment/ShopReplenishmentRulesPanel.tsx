@@ -173,22 +173,24 @@ export function ShopReplenishmentRulesPanel({ collectionId, orderId }: Props) {
       </div>
 
       {activePreset ? (
-        <p className="text-text-muted text-xs" data-testid="shop-replenishment-rules-active-summary">
+        <p
+          className="text-text-muted text-xs"
+          data-testid="shop-replenishment-rules-active-summary"
+        >
           Активно: <strong>{activePreset.titleRu}</strong> · {activePreset.summaryRu}
         </p>
       ) : null}
 
       {allocateResult?.planId ? (
         <p
-          className="text-emerald-800 text-xs"
+          className="text-xs text-emerald-800"
           data-testid="shop-replenishment-rules-allocate-result"
         >
-          План {allocateResult.planId} · allocations{' '}
-          {allocateResult.allocations?.length ?? 0}
+          План {allocateResult.planId} · allocations {allocateResult.allocations?.length ?? 0}
         </p>
       ) : null}
       {allocateError ? (
-        <p className="text-amber-800 text-xs" data-testid="shop-replenishment-rules-allocate-error">
+        <p className="text-xs text-amber-800" data-testid="shop-replenishment-rules-allocate-error">
           {allocateError}
         </p>
       ) : null}
@@ -201,7 +203,7 @@ export function ShopReplenishmentRulesPanel({ collectionId, orderId }: Props) {
               key={preset.id}
               className={cn(
                 'border-border-subtle cursor-pointer transition-colors',
-                active && 'border-accent-primary ring-1 ring-accent-primary/30'
+                active && 'border-accent-primary ring-accent-primary/30 ring-1'
               )}
               onClick={() => setActivePresetId(preset.id)}
               data-testid={`shop-replenishment-rule-preset-${preset.id}`}

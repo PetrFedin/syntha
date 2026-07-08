@@ -11,10 +11,7 @@ const RequestSchema = z.object({
 
 export async function POST(request: Request) {
   if (!isWorkshop2AiConfigured()) {
-    return NextResponse.json(
-      { error: 'Workshop2 AI (Genkit) is not configured' },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: 'Workshop2 AI (Genkit) is not configured' }, { status: 503 });
   }
 
   try {

@@ -84,32 +84,32 @@ export function BrandPreOrdersLegacyPage() {
   return (
     <div className="space-y-4 p-4">
       <SectionInfoCard
-            title="Предзаказы (Pre-orders)"
-            description="Запросы на предзаказ от B2C клиентов. Связь с Production (объёмы под пошив), B2B заказами и Live-трансляциями."
-            icon={Package}
-            iconBg="bg-accent-primary/15"
-            iconColor="text-accent-primary"
-            badges={
-              <>
-                <Badge variant="outline" className="text-[9px]">
-                  B2C → Production
-                </Badge>
-                <Button variant="outline" size="sm" className="ml-1 h-7 text-[9px]" asChild>
-                  <Link href={ROUTES.brand.b2bOrders}>Заказы</Link>
-                </Button>
-                <Button variant="outline" size="sm" className="h-7 text-[9px]" asChild>
-                  <Link href={ROUTES.brand.production}>Production</Link>
-                </Button>
-              </>
-            }
-          />
-          <header>
-            <h1 className="font-headline text-base font-bold">Предзаказы</h1>
-            <p className="text-muted-foreground">
-              Управляйте запросами на предзаказ от клиентов и связывайтесь с ними для оформления
-              покупки.
-            </p>
-          </header>
+        title="Предзаказы (Pre-orders)"
+        description="Запросы на предзаказ от B2C клиентов. Связь с Production (объёмы под пошив), B2B заказами и Live-трансляциями."
+        icon={Package}
+        iconBg="bg-accent-primary/15"
+        iconColor="text-accent-primary"
+        badges={
+          <>
+            <Badge variant="outline" className="text-[9px]">
+              B2C → Production
+            </Badge>
+            <Button variant="outline" size="sm" className="ml-1 h-7 text-[9px]" asChild>
+              <Link href={ROUTES.brand.b2bOrders}>Заказы</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="h-7 text-[9px]" asChild>
+              <Link href={ROUTES.brand.production}>Production</Link>
+            </Button>
+          </>
+        }
+      />
+      <header>
+        <h1 className="font-headline text-base font-bold">Предзаказы</h1>
+        <p className="text-muted-foreground">
+          Управляйте запросами на предзаказ от клиентов и связывайтесь с ними для оформления
+          покупки.
+        </p>
+      </header>
 
       <Card>
         <CardHeader>

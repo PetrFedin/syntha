@@ -12,9 +12,15 @@ import {
   appendFactoryDossierComment,
   listFactoryDossierComments,
 } from '@/lib/server/workshop2-factory-dossier-comments';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
-export const GET = withWorkshop2ApiErrorRu(async function getFactoryDossierComments(req: NextRequest) {
+export const GET = withWorkshop2ApiErrorRu(async function getFactoryDossierComments(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_READ_ROLES);
   if (auth instanceof NextResponse) return auth;
 
@@ -30,7 +36,9 @@ export const GET = withWorkshop2ApiErrorRu(async function getFactoryDossierComme
   return NextResponse.json({ ...result, apiPath: FACTORY_DOSSIER_COMMENTS_API_PATH });
 });
 
-export const POST = withWorkshop2ApiErrorRu(async function postFactoryDossierComment(req: NextRequest) {
+export const POST = withWorkshop2ApiErrorRu(async function postFactoryDossierComment(
+  req: NextRequest
+) {
   const auth = await guardWorkshop2Route(req, WORKSHOP2_WRITE_ROLES);
   if (auth instanceof NextResponse) return auth;
 

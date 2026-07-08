@@ -77,7 +77,10 @@ export function buildWorkshop2B2bRepOfflinePack(input: {
   const repId = input.repId.trim() || 'rep-demo';
   const registry = listWorkshop2BrandTenantRegistry();
   const brandId = input.brandId?.trim() || registry[0]?.brandId || 'demo-brand';
-  const tenantId = input.tenantId?.trim() || registry.find((e) => e.brandId === brandId)?.tenantId || 'tenant-demo';
+  const tenantId =
+    input.tenantId?.trim() ||
+    registry.find((e) => e.brandId === brandId)?.tenantId ||
+    'tenant-demo';
   const sessionId = input.sessionId?.trim() || `rep-offline-${repId}`;
 
   let session = getWorkshop2B2bCartSession(sessionId);

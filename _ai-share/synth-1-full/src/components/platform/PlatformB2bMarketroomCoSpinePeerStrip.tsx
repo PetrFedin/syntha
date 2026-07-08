@@ -15,31 +15,51 @@ export function PlatformB2bMarketroomCoSpinePeerStrip({ collectionId, orderId }:
 
   return (
     <div className={hubGadget.goldenPath} data-testid="platform-b2b-marketroom-co-spine-peer-strip">
-      <Link href={session.platformHubHref} data-testid="platform-b2b-marketroom-hub-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.platformHubHref}
+        data-testid="platform-b2b-marketroom-hub-link"
+        className={hubGadget.goldenLink}
+      >
         Platform hub
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.partnersHref} data-testid="platform-b2b-marketroom-partners-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.partnersHref}
+        data-testid="platform-b2b-marketroom-partners-link"
+        className={hubGadget.goldenLink}
+      >
         Partners
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopBuyHref} data-testid="platform-b2b-marketroom-checkout-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopBuyHref}
+        data-testid="platform-b2b-marketroom-checkout-link"
+        className={hubGadget.goldenLink}
+      >
         Оформление
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopOrderCommsHref} data-testid="platform-b2b-marketroom-order-comms-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopOrderCommsHref}
+        data-testid="platform-b2b-marketroom-order-comms-link"
+        className={hubGadget.goldenLink}
+      >
         Чат по заказу
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.brandPublishHref} data-testid="platform-b2b-marketroom-brand-publish-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandPublishHref}
+        data-testid="platform-b2b-marketroom-brand-publish-link"
+        className={hubGadget.goldenLink}
+      >
         Brand publish
       </Link>
     </div>

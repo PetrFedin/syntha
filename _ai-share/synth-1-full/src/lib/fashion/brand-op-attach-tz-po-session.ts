@@ -1,9 +1,6 @@
 import { brandB2bOrderAttachTzPdfPeerHref } from '@/lib/fashion/brand-op-attach-tz-pdf';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
-import {
-  brandW2ProductionTzHref,
-  factoryProductionOrdersOrderContextHref,
-} from '@/lib/routes';
+import { brandW2ProductionTzHref, factoryProductionOrdersOrderContextHref } from '@/lib/routes';
 import { workshop2B2bProductionHandoffPoId } from '@/lib/production/workshop2-b2b-handoff-po-id';
 
 export type BrandOpAttachTzPoSession = {

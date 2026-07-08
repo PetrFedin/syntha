@@ -89,7 +89,9 @@ export function EventDialog({
             <Input
               id="title"
               value={draft.title}
-              onChange={(e) => !platformEventReadOnly && setDraft({ ...draft, title: e.target.value })}
+              onChange={(e) =>
+                !platformEventReadOnly && setDraft({ ...draft, title: e.target.value })
+              }
               placeholder="Название события"
               readOnly={platformEventReadOnly}
             />

@@ -2,10 +2,7 @@
  * Demo href builders для hub-матрицы (коллекция / заказ / артикул).
  */
 import { ROUTES, factoryProductionHandoffQueueHref } from '@/lib/platform-core-routes';
-import {
-  PLATFORM_CORE_DEMO,
-  type PlatformCoreDemoContext,
-} from '@/lib/platform-core-demo-context';
+import { PLATFORM_CORE_DEMO, type PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
 import { appendPlatformCoreContextToHref } from '@/lib/platform-core-hub-matrix-context';
 
 /** Материалы цеха с контекстом demo-артикула (P1: BOM bridge). */

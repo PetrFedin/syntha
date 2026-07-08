@@ -339,8 +339,12 @@ describe('platform-core-ui-dedup-audit', () => {
     const chainBadge = read(
       path.join(SRC_ROOT, 'components/platform/PlatformCoreChainStatusRefreshBadge.tsx')
     );
-    const diffPanel = read(path.join(SRC_ROOT, 'components/platform/BrandDossierFactoryDiffPanel.tsx'));
-    const diagnostics = read(path.join(SRC_ROOT, 'components/platform/PillarCabinetDiagnostics.tsx'));
+    const diffPanel = read(
+      path.join(SRC_ROOT, 'components/platform/BrandDossierFactoryDiffPanel.tsx')
+    );
+    const diagnostics = read(
+      path.join(SRC_ROOT, 'components/platform/PillarCabinetDiagnostics.tsx')
+    );
     expect(sectionList).toContain('В эфире');
     expect(sectionList).toContain('SSE в эфире');
     expect(sectionList).not.toMatch(/\{liveConnected \? 'Live'/);
@@ -395,7 +399,9 @@ describe('platform-core-ui-dedup-audit', () => {
     expect(handoff).toMatch(
       /!isPlatformCoreMode\(\) \? \([\s\S]{0,500}mfr-op-handoff-queue-chat-link/
     );
-    expect(mfrOpCabinetStrip).toMatch(/\{!coreSlim \? \([\s\S]{0,300}data-testid="mfr-op-cabinet-chat-link"/);
+    expect(mfrOpCabinetStrip).toMatch(
+      /\{!coreSlim \? \([\s\S]{0,300}data-testid="mfr-op-cabinet-chat-link"/
+    );
     expect(op).toMatch(/item\.b2bOrderId && !coreSlim \? \([\s\S]{0,450}mfr-op-queue-chat-/);
     expect(dossier).toContain('mfr-dev-dossier-context-strip');
     expect(dossier).toContain('hubGadget.goldenPath');

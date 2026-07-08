@@ -78,7 +78,14 @@ function normalizeJoorPayload(order: Record<string, unknown>): JoorOrderRaw {
 function normalizeGenericPayload(
   platform: IntegrationPlatform,
   order: Record<string, unknown>
-): { id: string; status?: string; lines?: unknown[]; total?: number; created_at?: string; customer_name?: string } {
+): {
+  id: string;
+  status?: string;
+  lines?: unknown[];
+  total?: number;
+  created_at?: string;
+  customer_name?: string;
+} {
   const id = String(order.id ?? order._id ?? order.orderId ?? '');
   return {
     id,
@@ -155,7 +162,12 @@ export function importWholesaleOrder(params: {
             productId: String(l.sku ?? l.style_id ?? `line-${i}`),
             size: 'M',
             quantity: typeof l.quantity === 'number' ? l.quantity : 1,
-            price: typeof l.unit_price === 'number' ? l.unit_price : typeof l.price === 'number' ? l.price : 0,
+            price:
+              typeof l.unit_price === 'number'
+                ? l.unit_price
+                : typeof l.price === 'number'
+                  ? l.price
+                  : 0,
             currency: 'USD',
           }))
         : [];

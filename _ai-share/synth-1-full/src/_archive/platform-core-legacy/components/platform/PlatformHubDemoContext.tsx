@@ -73,7 +73,7 @@ export function PlatformHubDemoContext({ collectionId: collectionIdProp }: Props
                 aria-current={active ? 'page' : undefined}
                 className={
                   active
-                    ? 'bg-accent-primary/15 text-accent-primary rounded-md border border-accent-primary/30 px-2 py-1 text-[10px] font-semibold'
+                    ? 'bg-accent-primary/15 text-accent-primary border-accent-primary/30 rounded-md border px-2 py-1 text-[10px] font-semibold'
                     : 'bg-bg-surface2 text-text-primary hover:bg-accent-primary/10 hover:text-accent-primary rounded-md border border-transparent px-2 py-1 text-[10px] font-semibold transition-colors'
                 }
               >

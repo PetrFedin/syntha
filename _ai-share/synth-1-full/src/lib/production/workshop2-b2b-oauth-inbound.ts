@@ -22,19 +22,28 @@ export type Workshop2B2bOAuthInboundConfig = {
   live: boolean;
 };
 
-const oauthStateStore = new Map<string, { provider: Workshop2B2bOAuthProvider; expiresAt: number }>();
+const oauthStateStore = new Map<
+  string,
+  { provider: Workshop2B2bOAuthProvider; expiresAt: number }
+>();
 
 export function resolveWorkshop2B2bOAuthProvider(
   env: Record<string, string | undefined> = process.env
 ): Workshop2B2bOAuthProvider {
-  const raw = String(env.WORKSHOP2_B2B_OAUTH_PROVIDER ?? 'joor').trim().toLowerCase();
+  const raw = String(env.WORKSHOP2_B2B_OAUTH_PROVIDER ?? 'joor')
+    .trim()
+    .toLowerCase();
   return raw === 'nuorder' ? 'nuorder' : 'joor';
 }
 
 export function isWorkshop2B2bOAuthInboundEnabled(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  return String(env.WORKSHOP2_B2B_OAUTH_INBOUND_ENABLED ?? '').trim().toLowerCase() === 'true';
+  return (
+    String(env.WORKSHOP2_B2B_OAUTH_INBOUND_ENABLED ?? '')
+      .trim()
+      .toLowerCase() === 'true'
+  );
 }
 
 export function resolveWorkshop2B2bOAuthInboundConfig(
@@ -48,21 +57,30 @@ export function resolveWorkshop2B2bOAuthInboundConfig(
   const redirectUri = String(env.WORKSHOP2_B2B_OAUTH_REDIRECT_URI ?? '').trim();
   const configured = Boolean(clientId && clientSecret);
   const live = configured && Boolean(tokenUrl);
-  return { provider, configured, tokenUrl: tokenUrl || undefined, clientId, clientSecret, redirectUri, live };
+  return {
+    provider,
+    configured,
+    tokenUrl: tokenUrl || undefined,
+    clientId,
+    clientSecret,
+    redirectUri,
+    live,
+  };
 }
 
 export function isWorkshop2B2bOAuthProdLiveReady(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  return (
-    isWorkshop2B2bOAuthInboundEnabled(env) && resolveWorkshop2B2bOAuthInboundConfig(env).live
-  );
+  return isWorkshop2B2bOAuthInboundEnabled(env) && resolveWorkshop2B2bOAuthInboundConfig(env).live;
 }
 
 export function buildWorkshop2B2bOAuthState(provider: Workshop2B2bOAuthProvider): string {
   const nonce = randomBytes(12).toString('hex');
   const payload = `${provider}:${nonce}:${Date.now() + 600_000}`;
-  const sig = createHmac('sha256', 'workshop2-oauth-state').update(payload).digest('hex').slice(0, 16);
+  const sig = createHmac('sha256', 'workshop2-oauth-state')
+    .update(payload)
+    .digest('hex')
+    .slice(0, 16);
   const state = Buffer.from(`${payload}:${sig}`).toString('base64url');
   oauthStateStore.set(state, { provider, expiresAt: Date.now() + 600_000 });
   return state;
@@ -84,7 +102,10 @@ export function parseWorkshop2B2bOAuthState(stateRaw: string | null): {
   }
 }
 
-export function consumeWorkshop2B2bOAuthState(stateRaw: string): { valid: boolean; provider: Workshop2B2bOAuthProvider } {
+export function consumeWorkshop2B2bOAuthState(stateRaw: string): {
+  valid: boolean;
+  provider: Workshop2B2bOAuthProvider;
+} {
   const parsed = parseWorkshop2B2bOAuthState(stateRaw);
   const row = oauthStateStore.get(stateRaw);
   if (!row || row.expiresAt < Date.now()) {
@@ -99,7 +120,9 @@ export type Workshop2B2bOAuthExchangeResult =
   | { ok: true; externalOrderRef: string; live?: boolean; joorOrderId?: string }
   | { ok: false; messageRu: string; httpStatus?: number };
 
-export function mapWorkshop2JoorOrderIdFromOAuthResponse(body: Record<string, unknown>): string | undefined {
+export function mapWorkshop2JoorOrderIdFromOAuthResponse(
+  body: Record<string, unknown>
+): string | undefined {
   const raw = body.joorOrderId ?? body.order_id ?? body.externalOrderId ?? body.orderId;
   const id = raw != null ? String(raw).trim() : '';
   return id || undefined;
@@ -115,8 +138,7 @@ export function exchangeWorkshop2B2bOAuthCodeStub(input: {
     return { ok: false, messageRu: 'B2B OAuth: client credentials не заданы.', httpStatus: 503 };
   }
   const slug = input.code.replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 32);
-  const externalOrderRef =
-    input.provider === 'joor' ? `joor-${slug}` : `nuorder-${slug}`;
+  const externalOrderRef = input.provider === 'joor' ? `joor-${slug}` : `nuorder-${slug}`;
   return {
     ok: true,
     externalOrderRef,
@@ -157,7 +179,9 @@ export async function exchangeWorkshop2B2bOAuthCode(input: {
     const joorOrderId = mapWorkshop2JoorOrderIdFromOAuthResponse(body);
     const externalOrderRef =
       joorOrderId ??
-      String(body.external_order_ref ?? body.externalOrderRef ?? `live-${input.provider}-${Date.now()}`);
+      String(
+        body.external_order_ref ?? body.externalOrderRef ?? `live-${input.provider}-${Date.now()}`
+      );
     return { ok: true, externalOrderRef, live: true, joorOrderId };
   } catch {
     return { ok: false, messageRu: 'B2B OAuth live token exchange failed.', httpStatus: 503 };

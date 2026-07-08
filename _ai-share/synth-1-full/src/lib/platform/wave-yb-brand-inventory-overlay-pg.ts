@@ -8,14 +8,12 @@ export const BRAND_COLLECTION_INVENTORY_OVERLAY_API = '/api/brand/collection-inv
 
 export const BRAND_COLLECTION_INVENTORY_OVERLAY_PG_TABLE = 'brand_collection_inventory_overlay';
 
-export const BRAND_COLLECTION_INVENTORY_OVERLAY_PG_BADGE_RU =
-  'PostgreSQL · overlay артикулов';
+export const BRAND_COLLECTION_INVENTORY_OVERLAY_PG_BADGE_RU = 'PostgreSQL · overlay артикулов';
 export const BRAND_COLLECTION_INVENTORY_OVERLAY_PG_UNAVAILABLE_RU = 'PG недоступен';
 export const BRAND_COLLECTION_INVENTORY_OVERLAY_LOADING_RU = 'Загрузка overlay…';
 export const BRAND_COLLECTION_INVENTORY_OVERLAY_MERGE_RU =
   'Состав коллекции: seed + PG overlay (без localStorage в core)';
-export const BRAND_COLLECTION_INVENTORY_OVERLAY_LEDGER_LINK_RU =
-  'Резерв WMS · inventory ledger →';
+export const BRAND_COLLECTION_INVENTORY_OVERLAY_LEDGER_LINK_RU = 'Резерв WMS · inventory ledger →';
 
 export const BRAND_COLLECTION_INVENTORY_OVERLAY_PG_BADGE_TESTID =
   'brand-collection-inventory-overlay-storage-pg';

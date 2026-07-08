@@ -23,10 +23,7 @@ export function PlatformCoreHubAlertsChips({ collectionId }: Props) {
   if (!isFw27 && !isEmpty) return null;
 
   return (
-    <div
-      data-testid="platform-core-hub-alerts"
-      className="flex flex-wrap items-center gap-2"
-    >
+    <div data-testid="platform-core-hub-alerts" className="flex flex-wrap items-center gap-2">
       {isFw27 ? (
         <span
           className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-amber-200/90 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-950"

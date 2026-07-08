@@ -12,7 +12,11 @@ type RightAsidePanelProps = ComponentProps<typeof Workshop2DossierTzRightAsidePa
 
 export type Workshop2Phase1DossierBodyShellShellBundle = Omit<
   Workshop2Phase1DossierPanelBodyShellProps,
-  'sketchPinLibrary' | 'rightAside' | 'sectionBody' | 'onSelectSection' | 'onSwitchDossierViewToFull'
+  | 'sketchPinLibrary'
+  | 'rightAside'
+  | 'sectionBody'
+  | 'onSelectSection'
+  | 'onSwitchDossierViewToFull'
 > & {
   sectionBody: ReactNode;
   onSelectSection: Workshop2Phase1DossierPanelBodyShellProps['onSelectSection'];

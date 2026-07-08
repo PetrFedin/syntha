@@ -1,4 +1,8 @@
-import { PLATFORM_CORE_DEMO, factoryMaterialsProcurementHrefForDemo, getPlatformCoreDemo } from '@/lib/platform-core-hub-matrix';
+import {
+  PLATFORM_CORE_DEMO,
+  factoryMaterialsProcurementHrefForDemo,
+  getPlatformCoreDemo,
+} from '@/lib/platform-core-hub-matrix';
 import { buildOrderSectionCommsMessagesHref } from '@/lib/platform-core-comms-section-groups';
 import { supplierCommsEntityThreadSupportsAttachTz } from '@/lib/fashion/factory-comms-entity-thread-attach-tz';
 import { PILLAR_CAPABILITY_FEATURE_PARAM } from '@/lib/platform/pillar-capability-workspaces';
@@ -31,11 +35,18 @@ export function buildSupplierCommsEntityThreads(input?: {
   const collectionId = input?.collectionId?.trim() || PLATFORM_CORE_DEMO.collectionId;
   const articleId = input?.articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId || 'demo-ss27-01';
   const orderId = input?.orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
-  const demo = { ...getPlatformCoreDemo(collectionId), demoArticleId: articleId, demoOrderId: orderId };
+  const demo = {
+    ...getPlatformCoreDemo(collectionId),
+    demoArticleId: articleId,
+    demoOrderId: orderId,
+  };
   const baseMessages = factorySupplierMessagesWorkshop2ArticleContextHref(collectionId, articleId);
   const orderMessages = factorySupplierMessagesB2bOrderContextHref(orderId);
 
-  const bomTzHref = workshop2ArticleHref(collectionId, articleId, { w2pane: 'tz', w2sec: 'material' });
+  const bomTzHref = workshop2ArticleHref(collectionId, articleId, {
+    w2pane: 'tz',
+    w2sec: 'material',
+  });
   const specTzHref = workshop2ArticleHref(collectionId, articleId, { w2pane: 'tz', w2sec: 'spec' });
 
   const thread = (

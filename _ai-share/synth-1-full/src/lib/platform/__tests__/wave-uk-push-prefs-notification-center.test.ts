@@ -6,7 +6,9 @@ import { formatPlatformCoreCommsNotificationPrefsSseData } from '@/lib/platform-
 
 describe('wave UK — push prefs + notification center (S2+S4)', () => {
   it('prefs SSE stream + hub bump on PUT', () => {
-    expect('/api/platform-core/comms/notification-prefs-stream').toContain('notification-prefs-stream');
+    expect('/api/platform-core/comms/notification-prefs-stream').toContain(
+      'notification-prefs-stream'
+    );
     expect('bumpPlatformCoreCommsNotificationPrefs').toContain('NotificationPrefs');
     expect('COMMS_NOTIFICATION_PREFS_BUMP').toContain('PREFS_BUMP');
     const chunk = formatPlatformCoreCommsNotificationPrefsSseData({

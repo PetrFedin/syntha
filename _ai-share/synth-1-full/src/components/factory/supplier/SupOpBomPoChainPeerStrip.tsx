@@ -28,25 +28,41 @@ export function SupOpBomPoChainPeerStrip({ collectionId, articleId, orderId, fac
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="sup-op-bom-po-chain-peer-strip"
     >
-      <Link href={mfrQueueHref} data-testid="sup-op-bom-po-mfr-queue-link" className={hubGadget.goldenLink}>
+      <Link
+        href={mfrQueueHref}
+        data-testid="sup-op-bom-po-mfr-queue-link"
+        className={hubGadget.goldenLink}
+      >
         Очередь производства
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.forecastHref} data-testid="sup-op-bom-po-forecast-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.forecastHref}
+        data-testid="sup-op-bom-po-forecast-link"
+        className={hubGadget.goldenLink}
+      >
         Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="sup-op-bom-po-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="sup-op-bom-po-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.handoffHref} data-testid="sup-op-bom-po-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="sup-op-bom-po-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Чтение передачи
       </Link>
     </div>

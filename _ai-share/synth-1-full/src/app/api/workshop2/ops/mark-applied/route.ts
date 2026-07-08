@@ -30,8 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         ok: false,
-        messageRu:
-          'Ops checklist org-applied: нужны pagerdutyApplied и sentryApplied (оба true).',
+        messageRu: 'Ops checklist org-applied: нужны pagerdutyApplied и sentryApplied (оба true).',
       },
       { status: 400 }
     );
@@ -51,7 +50,8 @@ export async function POST(req: Request) {
     updatedAt: journal.updatedAt,
     entriesCount: journal.entries.length,
     statusFile: readWorkshop2OpsAppliedStatus(),
-    messageRu: 'Ops checklist зафиксирован в org journal — cutover opsAppliedChecklist учитывает journal OR env.',
+    messageRu:
+      'Ops checklist зафиксирован в org journal — cutover opsAppliedChecklist учитывает journal OR env.',
   });
 }
 

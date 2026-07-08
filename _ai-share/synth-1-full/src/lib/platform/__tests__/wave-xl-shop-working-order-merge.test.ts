@@ -63,7 +63,8 @@ describe('wave XL — shop working order version diff API polish', () => {
 
 describe('wave XL — working order diff + merge server helpers', () => {
   it('diffShopWorkingOrderVersions returns changedSkuCount for unknown order', async () => {
-    const { diffShopWorkingOrderVersions } = await import('@/lib/server/shop-working-order-version-diff');
+    const { diffShopWorkingOrderVersions } =
+      await import('@/lib/server/shop-working-order-version-diff');
     const diff = await diffShopWorkingOrderVersions({
       wholesaleOrderId: 'INT-NO-SUCH-ORDER-XL',
       persistJournal: false,
@@ -74,7 +75,8 @@ describe('wave XL — working order diff + merge server helpers', () => {
   });
 
   it('mergeShopWorkingOrderToMatrix exposes matrixHref + RU message', async () => {
-    const { mergeShopWorkingOrderToMatrix } = await import('@/lib/server/shop-working-order-merge-to-matrix');
+    const { mergeShopWorkingOrderToMatrix } =
+      await import('@/lib/server/shop-working-order-merge-to-matrix');
     const result = await mergeShopWorkingOrderToMatrix({
       wholesaleOrderId: 'INT-NO-SUCH-ORDER-XL',
       sessionId: 'b2b-cart-xl-test',

@@ -1,7 +1,7 @@
 describe('wave SW — S2 + P2-comms chain-status push prefs PG', () => {
   it('notification prefs API + postgres storageMode', () => {
     expect('/api/platform-core/comms/notification-prefs').toContain('notification-prefs');
-    expect('storageMode: \'postgres\'').toContain('postgres');
+    expect("storageMode: 'postgres'").toContain('postgres');
     expect('platform_core_comms_notification_prefs').toContain('notification_prefs');
   });
 

@@ -7,7 +7,11 @@ import {
   listPlatformCoreUserCalendarTasks,
 } from '@/lib/server/platform-core-user-calendar-task';
 import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 import type { UserRole } from '@/lib/types';
 
 type Body = {

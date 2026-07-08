@@ -39,7 +39,9 @@ export function useWorkshop2Phase1DossierFinalTzExportZone({
   factoryPackDocumentHtml: string;
   factoryPackReleaseGate: Workshop2TechPackReleaseGate;
   finalTzAssignmentChain: ReturnType<typeof buildWorkshop2Phase1DossierFinalTzAssignmentChain>;
-  lastProductionExportBadge: ReturnType<typeof buildWorkshop2Phase1DossierLastProductionExportBadge>;
+  lastProductionExportBadge: ReturnType<
+    typeof buildWorkshop2Phase1DossierLastProductionExportBadge
+  >;
   phase1DossierJsonUtf8Bytes: number;
 } {
   const finalTzExportContext = useMemo(

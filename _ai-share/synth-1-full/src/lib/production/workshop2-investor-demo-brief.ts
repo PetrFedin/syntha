@@ -63,12 +63,28 @@ export type Workshop2InvestorDemoBrief = {
 
 export const WORKSHOP2_INVESTOR_DEMO_PATHS: Workshop2InvestorDemoBrief['demoPaths'] = [
   { id: 'w2_hub', path: '/brand/production/workshop2?w2col=SS27', labelRu: 'W2 Hub SS27' },
-  { id: 'w2_article', path: '/brand/production/workshop2/c/SS27/a/demo-ss27-01', labelRu: 'Досье demo-ss27-01' },
-  { id: 'b2b_showroom', path: '/shop/b2b/showroom?collection=SS27&article=demo-ss27-01', labelRu: 'B2B Showroom + matrix' },
+  {
+    id: 'w2_article',
+    path: '/brand/production/workshop2/c/SS27/a/demo-ss27-01',
+    labelRu: 'Досье demo-ss27-01',
+  },
+  {
+    id: 'b2b_showroom',
+    path: '/shop/b2b/showroom?collection=SS27&article=demo-ss27-01',
+    labelRu: 'B2B Showroom + matrix',
+  },
   { id: 'b2b_checkout', path: '/shop/b2b/checkout', labelRu: 'Оптовое оформление B2B wholesale' },
   { id: 'b2b_rep', path: '/shop/b2b/sales-rep-portal', labelRu: 'Rep portal + offline queue' },
-  { id: 'brief', path: '/brand/production/workshop2/investor-brief', labelRu: 'Бриф для инвестора (read-only)' },
-  { id: 'summary', path: '/brand/production/workshop2/investor-summary', labelRu: 'Сводка для инвестора (read-only)' },
+  {
+    id: 'brief',
+    path: '/brand/production/workshop2/investor-brief',
+    labelRu: 'Бриф для инвестора (read-only)',
+  },
+  {
+    id: 'summary',
+    path: '/brand/production/workshop2/investor-summary',
+    labelRu: 'Сводка для инвестора (read-only)',
+  },
 ];
 
 export function countWorkshop2ProductionKeysConfigured(

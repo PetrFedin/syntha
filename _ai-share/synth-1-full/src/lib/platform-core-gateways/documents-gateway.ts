@@ -16,9 +16,7 @@ export type PlatformCoreDocumentKind =
 
 export type PlatformCoreDocumentStage = 'development' | 'handoff' | 'shipment' | 'closeout';
 
-export type PlatformCoreDocumentsGatewaySource =
-  | 'workshop2_dossier_vault'
-  | 'workshop2_b2b_order';
+export type PlatformCoreDocumentsGatewaySource = 'workshop2_dossier_vault' | 'workshop2_b2b_order';
 
 export type PlatformCoreAdapterIssue = {
   id: string;
@@ -120,7 +118,12 @@ type DossierDocumentsShape = {
 
 type OrderShape = {
   id: string;
-  lines: readonly { articleId?: string; collectionId?: string; qty?: number; deliveryDate?: string }[];
+  lines: readonly {
+    articleId?: string;
+    collectionId?: string;
+    qty?: number;
+    deliveryDate?: string;
+  }[];
 };
 
 function cleanString(v: unknown): string | undefined {
@@ -135,7 +138,9 @@ function parseStage(v: unknown): PlatformCoreDocumentStage {
   return 'handoff';
 }
 
-function adapterStatus(issues: PlatformCoreAdapterIssue[]): PlatformCoreDocumentsEvaluation['status'] {
+function adapterStatus(
+  issues: PlatformCoreAdapterIssue[]
+): PlatformCoreDocumentsEvaluation['status'] {
   if (issues.some((i) => i.severity === 'blocker')) return 'blocked';
   if (issues.some((i) => i.severity === 'warning')) return 'warning';
   return 'core_ready';
@@ -156,7 +161,9 @@ function vaultStoragePath(doc: VaultDoc): string | undefined {
   return (
     cleanString(doc.storagePath) ??
     cleanString(doc.fileUrl) ??
-    cleanString(typeof doc.metadata?.storagePath === 'string' ? doc.metadata.storagePath : undefined)
+    cleanString(
+      typeof doc.metadata?.storagePath === 'string' ? doc.metadata.storagePath : undefined
+    )
   );
 }
 
@@ -226,7 +233,9 @@ function buildPacketItems(input: {
   return docs;
 }
 
-function evaluateDocuments(snapshot: PlatformCoreDocumentsSnapshot): PlatformCoreDocumentsEvaluation {
+function evaluateDocuments(
+  snapshot: PlatformCoreDocumentsSnapshot
+): PlatformCoreDocumentsEvaluation {
   const issues: PlatformCoreAdapterIssue[] = [];
   const { documents, stage, indexMirror } = snapshot;
   const presentKinds = [...new Set(documents.map((d) => d.kind))];
@@ -259,15 +268,15 @@ function evaluateDocuments(snapshot: PlatformCoreDocumentsSnapshot): PlatformCor
     issues.push({
       id: 'documents.index.empty',
       severity: 'warning',
-      message: indexMirror.hintRu ?? 'Индекс документов пуст — ZIP может не содержать vault-файлов.',
+      message:
+        indexMirror.hintRu ?? 'Индекс документов пуст — ZIP может не содержать vault-файлов.',
     });
   } else if (indexMirror?.state === 'partial') {
     issues.push({
       id: 'documents.index.partial',
       severity: 'warning',
       message:
-        indexMirror.hintRu ??
-        'Часть vault-записей без storage_path — не попадут в export packet.',
+        indexMirror.hintRu ?? 'Часть vault-записей без storage_path — не попадут в export packet.',
     });
   }
 
@@ -287,13 +296,13 @@ function evaluateDocuments(snapshot: PlatformCoreDocumentsSnapshot): PlatformCor
 
   const handoffBlocked = Boolean(
     missingKinds.some((k) => REQUIRED_BY_STAGE.handoff.includes(k)) ||
-      indexMirror?.blockerExport ||
-      (stage !== 'development' && !documents.length)
+    indexMirror?.blockerExport ||
+    (stage !== 'development' && !documents.length)
   );
   const shipmentBlocked = Boolean(
     handoffBlocked ||
-      missingKinds.some((k) => REQUIRED_BY_STAGE.shipment.includes(k)) ||
-      stage === 'shipment' && issues.some((i) => i.severity === 'blocker')
+    missingKinds.some((k) => REQUIRED_BY_STAGE.shipment.includes(k)) ||
+    (stage === 'shipment' && issues.some((i) => i.severity === 'blocker'))
   );
 
   return {

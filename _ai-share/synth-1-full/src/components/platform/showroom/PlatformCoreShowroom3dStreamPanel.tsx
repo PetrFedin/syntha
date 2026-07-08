@@ -119,7 +119,8 @@ export function PlatformCoreShowroom3dStreamPanel({
         });
       }
 
-      const scriptUrl = payload.sdkScriptUrl ?? payload.sdkConfig.sdkScriptUrl ?? payload.sdkConfig.sdkUrl;
+      const scriptUrl =
+        payload.sdkScriptUrl ?? payload.sdkConfig.sdkScriptUrl ?? payload.sdkConfig.sdkUrl;
       let scriptEl: HTMLScriptElement | null = null;
       if (scriptUrl && sdkHostRef.current) {
         scriptEl = document.createElement('script');
@@ -204,7 +205,10 @@ export function PlatformCoreShowroom3dStreamPanel({
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center gap-2">
           <CardTitle className="text-base">3D showroom</CardTitle>
-          <Badge variant={payload.mode === 'live' && !payload.demoMode ? 'default' : 'outline'} className="text-[9px]">
+          <Badge
+            variant={payload.mode === 'live' && !payload.demoMode ? 'default' : 'outline'}
+            className="text-[9px]"
+          >
             {embedMode === 'sdk'
               ? sdkReady
                 ? 'Live SDK'
@@ -237,7 +241,7 @@ export function PlatformCoreShowroom3dStreamPanel({
       </CardHeader>
       <CardContent className="p-0 pt-0">
         <div
-          className="relative aspect-video w-full max-h-[min(420px,50vh)] bg-muted/30"
+          className="relative aspect-video max-h-[min(420px,50vh)] w-full bg-muted/30"
           data-testid="b2b-3d-stream-embed"
           data-embed-mode={embedMode}
         >
@@ -248,7 +252,12 @@ export function PlatformCoreShowroom3dStreamPanel({
               data-sdk-url={payload.sdkConfig?.sdkUrl}
               data-sdk-script-url={payload.sdkScriptUrl ?? payload.sdkConfig?.sdkScriptUrl}
             >
-              <div ref={sdkHostRef} className="hidden" aria-hidden data-testid="b2b-3d-sdk-script-host" />
+              <div
+                ref={sdkHostRef}
+                className="hidden"
+                aria-hidden
+                data-testid="b2b-3d-sdk-script-host"
+              />
               <iframe
                 title="3D showroom SDK"
                 src={payload.embedUrl}
@@ -280,7 +289,7 @@ export function PlatformCoreShowroom3dStreamPanel({
               <iframe
                 title="3D showroom sdk-stub preview"
                 src={payload.embedUrl}
-                className="h-full w-full max-h-[320px] border-0 opacity-95"
+                className="h-full max-h-[320px] w-full border-0 opacity-95"
                 loading="lazy"
               />
               <p className="text-[10px] text-muted-foreground">

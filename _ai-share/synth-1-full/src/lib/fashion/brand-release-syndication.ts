@@ -62,7 +62,13 @@ export function buildBrandReleaseSyndicationRows(
 }
 
 export function techPackGateMapFromReleaseRows(
-  rows: readonly { sku: string; ready: boolean; sheetsReady: number; sheetsTotal: number; qtyBridged: boolean }[]
+  rows: readonly {
+    sku: string;
+    ready: boolean;
+    sheetsReady: number;
+    sheetsTotal: number;
+    qtyBridged: boolean;
+  }[]
 ): Map<string, BrandReleaseSyndicationTechPackGate> {
   return new Map(
     rows.map((r) => [

@@ -1,8 +1,4 @@
-import type {
-  Product,
-  ProductScrollSwitcherSection,
-  ScrollExperienceConfig,
-} from '@/lib/types';
+import type { Product, ProductScrollSwitcherSection, ScrollExperienceConfig } from '@/lib/types';
 import { loadScrollExperienceConfig as loadScrollExperienceConfigFromService } from '@/lib/runway/RunwayExperienceService';
 import {
   type ScrollVideoSources,

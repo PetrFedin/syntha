@@ -78,7 +78,10 @@ export function BrandMaterialPassportReleasePanel({ collectionId = 'SS27' }: Pro
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary">Material → release</Badge>
         <Badge variant="outline">Столп 1 → 2</Badge>
-        <Badge variant="outline" data-testid={`brand-material-passport-release-source-${storageMode}`}>
+        <Badge
+          variant="outline"
+          data-testid={`brand-material-passport-release-source-${storageMode}`}
+        >
           {storageMode === 'pg' ? 'PG release' : `${storageMode} release`}
         </Badge>
         {releaseBlocked ? (
@@ -98,7 +101,10 @@ export function BrandMaterialPassportReleasePanel({ collectionId = 'SS27' }: Pro
             SC gate…
           </Badge>
         ) : scGateBlocked ? (
-          <Badge variant="destructive" data-testid="brand-material-passport-release-sc-gate-blocked">
+          <Badge
+            variant="destructive"
+            data-testid="brand-material-passport-release-sc-gate-blocked"
+          >
             SC publish blocked
           </Badge>
         ) : (

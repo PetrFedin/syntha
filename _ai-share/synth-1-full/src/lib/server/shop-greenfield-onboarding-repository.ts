@@ -77,15 +77,14 @@ export async function getShopGreenfieldOnboardingServer(input: {
   }
 
   if (!row) {
-    row =
-      memory.get(scopeKey(buyerId, collectionId)) ?? {
-        buyerId,
-        collectionId,
-        crmReady,
-        pricelistReady: crmReady,
-        matrixSeedHref: shopB2bMatrixReorderHref(collectionId, ''),
-        updatedAt: new Date().toISOString(),
-      };
+    row = memory.get(scopeKey(buyerId, collectionId)) ?? {
+      buyerId,
+      collectionId,
+      crmReady,
+      pricelistReady: crmReady,
+      matrixSeedHref: shopB2bMatrixReorderHref(collectionId, ''),
+      updatedAt: new Date().toISOString(),
+    };
     memory.set(scopeKey(buyerId, collectionId), row);
     return { state: row, storageMode: 'memory' };
   }
@@ -94,7 +93,8 @@ export async function getShopGreenfieldOnboardingServer(input: {
     ...row,
     crmReady: row.crmReady || crmReady,
     pricelistReady: row.pricelistReady || crmReady,
-    matrixSeedHref: row.matrixSeedHref ?? shopB2bMatrixReorderHref(collectionId, row.firstOrderId ?? ''),
+    matrixSeedHref:
+      row.matrixSeedHref ?? shopB2bMatrixReorderHref(collectionId, row.firstOrderId ?? ''),
   };
   memory.set(scopeKey(buyerId, collectionId), merged);
   return {

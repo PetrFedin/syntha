@@ -48,7 +48,10 @@ export function BrandAgentRepShopPortalReadOnlyRuStrip({ collectionId, repId }: 
   const payoutHref = brandAgentRepShopRepPayoutPeerHref({ collectionId, repId });
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={BRAND_AGENT_REP_SHOP_PORTAL_READONLY_RU_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={BRAND_AGENT_REP_SHOP_PORTAL_READONLY_RU_STRIP_TESTID}
+    >
       <Badge variant="outline" className="text-[9px] uppercase">
         Brand rep · WX
       </Badge>
@@ -80,7 +83,10 @@ export function BrandAgentRepShopPortalReadOnlyRuStrip({ collectionId, repId }: 
             Споры: {disputeCount} · {storageMode === 'postgres' ? 'PG' : storageMode}
           </Badge>
           {messageRu ? (
-            <span className="text-text-muted text-[10px]" data-testid="brand-agent-rep-dispute-message-ru">
+            <span
+              className="text-text-muted text-[10px]"
+              data-testid="brand-agent-rep-dispute-message-ru"
+            >
               {messageRu}
             </span>
           ) : null}

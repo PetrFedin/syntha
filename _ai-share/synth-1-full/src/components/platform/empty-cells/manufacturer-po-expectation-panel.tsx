@@ -159,10 +159,7 @@ export default function ManufacturerPoExpectation({
 
   if (compact) {
     return (
-      <section
-        data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID}
-        className="space-y-1"
-      >
+      <section data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID} className="space-y-1">
         <Card data-testid="manufacturer-po-expectation-mini" className="border-emerald-200/60">
           <CardContent className="space-y-1.5 p-3 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -235,10 +232,7 @@ export default function ManufacturerPoExpectation({
   }
 
   return (
-    <section
-      data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID}
-      className="space-y-2"
-    >
+    <section data-testid={MFR_EMPTY_CO_HANDOFF_COUNT_PANEL_TESTID} className="space-y-2">
       <Card data-testid="manufacturer-po-expectation" className="border-emerald-200/60">
         <CardHeader className="pb-2">
           <div className="flex flex-wrap items-start justify-between gap-2">

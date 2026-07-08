@@ -70,7 +70,7 @@ export function ShopB2bTrackingCorePage() {
   return (
     <CabinetPageContent
       maxWidth="4xl"
-      className="min-w-0 space-y-6 pb-safe"
+      className="pb-safe min-w-0 space-y-6"
       data-testid={tid.page('shop-b2b-tracking')}
     >
       <PlatformCoreListChrome highlightRole="shop" pillarId="comms">

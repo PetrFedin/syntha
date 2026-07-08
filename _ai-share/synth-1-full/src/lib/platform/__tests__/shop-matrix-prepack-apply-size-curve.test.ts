@@ -31,9 +31,7 @@ describe('shop-matrix-size-curve', () => {
 
 describe('shop-matrix-prepack-apply', () => {
   it('reads apply params from search params', () => {
-    const sp = new URLSearchParams(
-      'prepackApply=1&prepackArticle=demo-ss27-01&prepackPacks=3'
-    );
+    const sp = new URLSearchParams('prepackApply=1&prepackArticle=demo-ss27-01&prepackPacks=3');
     expect(readShopMatrixPrepackApplyFromSearchParams(sp)).toEqual({
       articleId: 'demo-ss27-01',
       packCount: 3,

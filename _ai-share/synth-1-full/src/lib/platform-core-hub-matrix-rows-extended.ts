@@ -133,7 +133,10 @@ export const PLATFORM_CORE_EXTENDED_ROWS: readonly CoreHubRoleRow[] = [
         lead: 'Сырьё и фурнитура для производственного заказа и спецификации артикула из досье.',
         actions: [
           { label: 'Закупка под производственный заказ', href: factoryMaterialsProcurementHref },
-          { label: 'Очередь передачи в цех', href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO) },
+          {
+            label: 'Очередь передачи в цех',
+            href: factoryHandoffQueueHrefForDemo(PLATFORM_CORE_DEMO),
+          },
           { label: 'Чат · артикул', href: factoryArticleMessagesSupplierHref },
         ],
       },
@@ -147,7 +150,10 @@ export const PLATFORM_CORE_EXTENDED_ROWS: readonly CoreHubRoleRow[] = [
             href: factoryMessagesB2bOrderContextHref(demoOrderId, { role: 'supplier' }),
           },
           { label: 'Чат · артикул', href: factoryArticleMessagesSupplierHref },
-          { label: 'Календарь · логистика', href: factorySupplierCalendarB2bOrderContextHref(demoOrderId) },
+          {
+            label: 'Календарь · логистика',
+            href: factorySupplierCalendarB2bOrderContextHref(demoOrderId),
+          },
         ],
       },
     },

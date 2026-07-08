@@ -4,10 +4,7 @@
  * SoT для core-249 e2e (без legacy `/shop/b2b/*`).
  */
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import {
-  PLATFORM_CORE_DEMO,
-  type PlatformCoreDemoContext,
-} from '@/lib/platform-core-demo-context';
+import { PLATFORM_CORE_DEMO, type PlatformCoreDemoContext } from '@/lib/platform-core-demo-context';
 import {
   BRAND_DEV_DOSSIER_SECTION,
   BRAND_DEV_W2_HUB_SECTION,
@@ -159,12 +156,7 @@ const GOLDEN_CROSS_ROLE_STOP_TEMPLATES: readonly StopTemplate[] = [
     workspaceTestId: 'manufacturer-order-production-cabinet-workspace',
     panelTestId: 'mfr-op-handoff-queue-panel',
     buildHref: (d) =>
-      platformCoreCabinetSectionHref(
-        'manufacturer',
-        'order_production',
-        'mfr-op-handoff-queue',
-        d
-      ),
+      platformCoreCabinetSectionHref('manufacturer', 'order_production', 'mfr-op-handoff-queue', d),
   },
   {
     roleId: 'manufacturer',

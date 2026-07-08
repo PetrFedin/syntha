@@ -5,15 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  X,
-  Check,
-  Info,
-  Sparkles,
-  Globe,
-  Heart,
-  MessageSquare,
-} from 'lucide-react';
+import { X, Check, Info, Sparkles, Globe, Heart, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 

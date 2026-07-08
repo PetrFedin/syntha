@@ -12,10 +12,7 @@ export function showSynthaDemoUiMarker(): boolean {
   if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SYNTHA_HIDE_DEMO_UI === 'true') {
     return false;
   }
-  if (
-    typeof process !== 'undefined' &&
-    process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE === '1'
-  ) {
+  if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_PLATFORM_CORE_MODE === '1') {
     return false;
   }
   return !ENABLE_BACKEND_HTTP;

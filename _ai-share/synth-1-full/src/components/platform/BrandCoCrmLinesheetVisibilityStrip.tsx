@@ -59,7 +59,10 @@ export function BrandCoCrmLinesheetVisibilityStrip({ collectionId }: Props) {
   );
 
   return (
-    <div className={hubGadget.goldenPath} data-testid={BRAND_CO_CRM_LINESHEET_VISIBILITY_STRIP_TESTID}>
+    <div
+      className={hubGadget.goldenPath}
+      data-testid={BRAND_CO_CRM_LINESHEET_VISIBILITY_STRIP_TESTID}
+    >
       <Badge variant="outline" data-testid={BRAND_CO_CRM_LINESHEET_VISIBILITY_SUMMARY_BADGE_TESTID}>
         {BRAND_CO_CRM_LINESHEET_VISIBILITY_SUMMARY_RU}: {summary.autoVisible}/{summary.total}
       </Badge>

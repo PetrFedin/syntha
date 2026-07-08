@@ -71,9 +71,7 @@ function rewriteEntityLinkForPlatformCore(link: EntityLink): EntityLink | null {
 /** Core: убираем mock/side-path и переписываем legacy href на golden path. */
 export function sanitizeEntityLinksForPlatformCore(links: EntityLink[]): EntityLink[] {
   if (!isPlatformCoreMode()) return links;
-  return links
-    .map(rewriteEntityLinkForPlatformCore)
-    .filter((l): l is EntityLink => l !== null);
+  return links.map(rewriteEntityLinkForPlatformCore).filter((l): l is EntityLink => l !== null);
 }
 
 /** Связанные модули: без дублей хаба B2B заказов (legacy + canonical). */
@@ -309,27 +307,29 @@ export function getProductLinks(): EntityLink[] {
 
 /** Ссылки для B2B заказов — FEATURE_BENCHMARK: ship windows, price lists, RFQ, credit */
 export function getB2BLinks(): EntityLink[] {
-  return finalizeRelatedModuleLinks(filterB2B([
-    { label: 'Предзаказы', href: ROUTES.brand.preOrders },
-    { label: 'Прайс-листы', href: ROUTES.brand.priceLists },
-    { label: 'RFQ поставщиков', href: ROUTES.brand.suppliersRfq },
-    { label: 'Net terms (РФ)', href: ROUTES.brand.financeRf },
-    { label: 'Лайншиты', href: ROUTES.brand.b2bLinesheets },
-    { label: 'Production', href: ROUTES.brand.production },
-    { label: 'LIVE B2B', href: ROUTES.brand.processLiveB2b },
-    { label: 'Заявки на изменение', href: ROUTES.brand.orderAmendments },
-    { label: 'ЭДО и Compliance', href: ROUTES.brand.compliance },
-    { label: 'Склад', href: ROUTES.brand.warehouse },
-    { label: 'Логистика', href: ROUTES.brand.logistics },
-    { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
-    { label: 'Финансы', href: ROUTES.brand.finance },
-    { label: 'Dispute Hub', href: ROUTES.brand.disputes },
-    /** Надстройка: коммуникации и сроки поверх ядра заказа ↔ производство */
-    { label: 'Сообщения', href: ROUTES.brand.messages },
-    { label: 'Календарь', href: ROUTES.brand.calendar },
-    { label: 'Выставки', href: ROUTES.brand.tradeShows },
-    { label: 'Партнёры', href: ROUTES.brand.retailers },
-  ]));
+  return finalizeRelatedModuleLinks(
+    filterB2B([
+      { label: 'Предзаказы', href: ROUTES.brand.preOrders },
+      { label: 'Прайс-листы', href: ROUTES.brand.priceLists },
+      { label: 'RFQ поставщиков', href: ROUTES.brand.suppliersRfq },
+      { label: 'Net terms (РФ)', href: ROUTES.brand.financeRf },
+      { label: 'Лайншиты', href: ROUTES.brand.b2bLinesheets },
+      { label: 'Production', href: ROUTES.brand.production },
+      { label: 'LIVE B2B', href: ROUTES.brand.processLiveB2b },
+      { label: 'Заявки на изменение', href: ROUTES.brand.orderAmendments },
+      { label: 'ЭДО и Compliance', href: ROUTES.brand.compliance },
+      { label: 'Склад', href: ROUTES.brand.warehouse },
+      { label: 'Логистика', href: ROUTES.brand.logistics },
+      { label: 'Ритейл: загрузка остатков', href: ROUTES.shop.inventory },
+      { label: 'Финансы', href: ROUTES.brand.finance },
+      { label: 'Dispute Hub', href: ROUTES.brand.disputes },
+      /** Надстройка: коммуникации и сроки поверх ядра заказа ↔ производство */
+      { label: 'Сообщения', href: ROUTES.brand.messages },
+      { label: 'Календарь', href: ROUTES.brand.calendar },
+      { label: 'Выставки', href: ROUTES.brand.tradeShows },
+      { label: 'Партнёры', href: ROUTES.brand.retailers },
+    ])
+  );
 }
 
 /**

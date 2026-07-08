@@ -209,322 +209,326 @@ export function Workshop2ProductionBomByNodesPanel({ dossier, onChange, disabled
           {(() => {
             let bomMaterialInputIndex = 0;
             return model.nodes
-            .filter((n) => !n.notApplicable)
-            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-            .map((node) => {
-              const materials = model.materialLines.filter((m) => m.nodeId === node.id);
-              const trims = model.trimLines.filter((m) => m.nodeId === node.id);
-              return (
-                <div
-                  key={node.id}
-                  className="border-border-subtle bg-bg-surface2/30 rounded-lg border p-3"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <Input
-                      className="hover:border-border-default focus:border-border-default h-8 w-48 border-transparent bg-transparent px-1 text-sm font-semibold transition-colors focus:bg-white"
-                      value={node.label}
-                      disabled={disabled}
-                      onChange={(e) => updateNodeLabel(node.id, e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="h-7 text-[10px]"
+              .filter((n) => !n.notApplicable)
+              .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+              .map((node) => {
+                const materials = model.materialLines.filter((m) => m.nodeId === node.id);
+                const trims = model.trimLines.filter((m) => m.nodeId === node.id);
+                return (
+                  <div
+                    key={node.id}
+                    className="border-border-subtle bg-bg-surface2/30 rounded-lg border p-3"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <Input
+                        className="hover:border-border-default focus:border-border-default h-8 w-48 border-transparent bg-transparent px-1 text-sm font-semibold transition-colors focus:bg-white"
+                        value={node.label}
                         disabled={disabled}
-                        onClick={() => addMaterial(node.id)}
-                      >
-                        + Материал
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="h-7 text-[10px]"
-                        disabled={disabled}
-                        onClick={() => addTrim(node.id)}
-                      >
-                        + Фурнитура
-                      </Button>
+                        onChange={(e) => updateNodeLabel(node.id, e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="h-7 text-[10px]"
+                          disabled={disabled}
+                          onClick={() => addMaterial(node.id)}
+                        >
+                          + Материал
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="h-7 text-[10px]"
+                          disabled={disabled}
+                          onClick={() => addTrim(node.id)}
+                        >
+                          + Фурнитура
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                      {materials.map((m) => {
+                        const cost = (m.yieldPerUnit || 0) * (m.landedCost || m.unitCostNet || 0);
+                        const materialNameTestId =
+                          bomMaterialInputIndex === 0
+                            ? 'workshop2-dossier-material-bom-name-0'
+                            : undefined;
+                        bomMaterialInputIndex += 1;
+                        return (
+                          <div
+                            key={m.id}
+                            className="border-border-subtle/50 mb-2 flex flex-col gap-2 border-b pb-3 last:mb-0 last:border-0 last:pb-0"
+                          >
+                            <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+                              <Input
+                                className="h-8 flex-[2] text-xs font-medium"
+                                placeholder="Материал (название)"
+                                value={m.materialName}
+                                disabled={disabled}
+                                data-testid={materialNameTestId}
+                                onChange={(e) =>
+                                  updateMaterial(m.id, { materialName: e.target.value })
+                                }
+                              />
+                              <Input
+                                className="h-8 flex-1 text-xs"
+                                placeholder="Состав"
+                                value={m.compositionText ?? ''}
+                                disabled={disabled}
+                                onChange={(e) =>
+                                  updateMaterial(m.id, { compositionText: e.target.value })
+                                }
+                              />
+                              <Input
+                                className="h-8 w-20 shrink-0 text-xs"
+                                placeholder="Плотн. (gsm)"
+                                type="number"
+                                value={m.gsm ?? ''}
+                                disabled={disabled}
+                                onChange={(e) =>
+                                  updateMaterial(m.id, {
+                                    gsm: e.target.value ? Number(e.target.value) : undefined,
+                                  })
+                                }
+                              />
+                              <Input
+                                className="h-8 flex-1 text-xs"
+                                placeholder="Цвет"
+                                value={m.color ?? ''}
+                                disabled={disabled}
+                                onChange={(e) => updateMaterial(m.id, { color: e.target.value })}
+                              />
+                              <button
+                                type="button"
+                                className="border-border-subtle flex h-8 w-8 shrink-0 items-center justify-center rounded border text-red-600 hover:bg-red-50"
+                                disabled={disabled}
+                                title="Удалить материал"
+                                onClick={() =>
+                                  save({
+                                    ...model,
+                                    materialLines: model.materialLines.filter((x) => x.id !== m.id),
+                                  })
+                                }
+                              >
+                                <LucideIcons.Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-100 bg-slate-50 p-2 sm:flex-nowrap">
+                              <span className="mr-1 text-[10px] font-bold uppercase text-slate-500">
+                                Расчет:
+                              </span>
+                              <div className="border-border-subtle flex w-32 shrink-0 items-center gap-1 rounded border bg-white px-1">
+                                <input
+                                  className="h-7 w-12 bg-transparent text-xs focus:outline-none"
+                                  placeholder="Расход"
+                                  type="number"
+                                  step="0.01"
+                                  value={m.yieldPerUnit ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateMaterial(m.id, {
+                                      yieldPerUnit: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                />
+                                <span className="text-text-muted text-[10px]">/</span>
+                                <input
+                                  className="h-7 w-10 bg-transparent text-xs focus:outline-none"
+                                  placeholder="Ед."
+                                  value={m.yieldUnit ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateMaterial(m.id, { yieldUnit: e.target.value })
+                                  }
+                                />
+                              </div>
+
+                              <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
+                                <input
+                                  className="h-7 w-14 bg-transparent text-xs focus:outline-none"
+                                  placeholder="Цена (Net)"
+                                  type="number"
+                                  step="0.01"
+                                  value={m.unitCostNet ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateMaterial(m.id, {
+                                      unitCostNet: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                />
+                              </div>
+
+                              <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
+                                <input
+                                  className="h-7 w-14 bg-transparent text-xs focus:outline-none"
+                                  placeholder="Landed"
+                                  type="number"
+                                  step="0.01"
+                                  value={m.landedCost ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateMaterial(m.id, {
+                                      landedCost: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                />
+                              </div>
+
+                              <input
+                                className="border-border-subtle h-7 w-12 shrink-0 rounded border bg-white px-1.5 text-xs"
+                                placeholder="Валюта"
+                                value={m.currency ?? ''}
+                                disabled={disabled}
+                                onChange={(e) => updateMaterial(m.id, { currency: e.target.value })}
+                              />
+
+                              <div className="flex min-w-[4rem] items-center justify-end px-2 text-[11px] font-semibold text-emerald-700">
+                                {cost > 0 ? `Σ ${cost.toFixed(2)} ${m.currency || 'USD'}` : '—'}
+                              </div>
+
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className="ml-auto h-7 border-indigo-200 bg-indigo-50 text-[10px] text-indigo-700 hover:bg-indigo-100"
+                                disabled={disabled}
+                                onClick={() => {
+                                  const newYield = (m.yieldPerUnit || 1) * 0.85;
+                                  updateMaterial(m.id, {
+                                    yieldPerUnit: Number(newYield.toFixed(3)),
+                                  });
+                                  toast({
+                                    title: 'Yield Optimizer',
+                                    description: `AI-оптимизация раскладки: расход снижен до ${newYield.toFixed(3)}.`,
+                                  });
+                                }}
+                              >
+                                <LucideIcons.Wand2 className="mr-1 h-3 w-3" />
+                                Оптимизировать
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {materials.length > 0 && trims.length > 0 && (
+                      <div className="bg-border-subtle/50 my-3 h-px" />
+                    )}
+
+                    <div className="mt-3 grid gap-2">
+                      {trims.map((t) => {
+                        const cost = (t.quantity || 0) * (t.unitCostNet || 0);
+                        return (
+                          <div
+                            key={t.id}
+                            className="border-border-subtle/50 mb-2 flex flex-col gap-2 border-b pb-3 last:mb-0 last:border-0 last:pb-0"
+                          >
+                            <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+                              <Input
+                                className="h-8 flex-[2] text-xs font-medium"
+                                placeholder="Фурнитура (название)"
+                                value={t.name}
+                                disabled={disabled}
+                                onChange={(e) => updateTrim(t.id, { name: e.target.value })}
+                              />
+                              <Input
+                                className="h-8 flex-1 text-xs"
+                                placeholder="Размер/Спека"
+                                value={t.size ?? ''}
+                                disabled={disabled}
+                                onChange={(e) => updateTrim(t.id, { size: e.target.value })}
+                              />
+                              <Input
+                                className="h-8 flex-1 text-xs"
+                                placeholder="Цвет"
+                                value={t.color ?? ''}
+                                disabled={disabled}
+                                onChange={(e) => updateTrim(t.id, { color: e.target.value })}
+                              />
+                              <Input
+                                className="h-8 flex-1 text-xs"
+                                placeholder="Установка"
+                                value={t.placement ?? ''}
+                                disabled={disabled}
+                                onChange={(e) => updateTrim(t.id, { placement: e.target.value })}
+                              />
+                              <button
+                                type="button"
+                                className="border-border-subtle flex h-8 w-8 shrink-0 items-center justify-center rounded border text-red-600 hover:bg-red-50"
+                                disabled={disabled}
+                                title="Удалить фурнитуру"
+                                onClick={() =>
+                                  save({
+                                    ...model,
+                                    trimLines: model.trimLines.filter((x) => x.id !== t.id),
+                                  })
+                                }
+                              >
+                                <LucideIcons.Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-100 bg-slate-50 p-2 sm:flex-nowrap">
+                              <span className="mr-1 text-[10px] font-bold uppercase text-slate-500">
+                                Расчет:
+                              </span>
+                              <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
+                                <span className="text-text-muted text-[10px]">Кол-во</span>
+                                <input
+                                  className="h-7 w-10 bg-transparent text-right text-xs focus:outline-none"
+                                  placeholder="0"
+                                  type="number"
+                                  value={t.quantity ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateTrim(t.id, {
+                                      quantity: e.target.value ? Number(e.target.value) : undefined,
+                                    })
+                                  }
+                                />
+                              </div>
+                              <div className="border-border-subtle flex w-28 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
+                                <input
+                                  className="h-7 w-16 bg-transparent text-xs focus:outline-none"
+                                  placeholder="Цена/ед"
+                                  type="number"
+                                  step="0.01"
+                                  value={t.unitCostNet ?? ''}
+                                  disabled={disabled}
+                                  onChange={(e) =>
+                                    updateTrim(t.id, {
+                                      unitCostNet: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                />
+                                <span className="text-text-muted text-[10px]">₽</span>
+                              </div>
+                              <div className="flex min-w-[4rem] items-center justify-end px-2 text-[11px] font-semibold text-emerald-700">
+                                {cost > 0 ? `Σ ${cost.toFixed(2)} ₽` : '—'}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-
-                  <div className="grid gap-2">
-                    {materials.map((m) => {
-                      const cost = (m.yieldPerUnit || 0) * (m.landedCost || m.unitCostNet || 0);
-                      const materialNameTestId =
-                        bomMaterialInputIndex === 0
-                          ? 'workshop2-dossier-material-bom-name-0'
-                          : undefined;
-                      bomMaterialInputIndex += 1;
-                      return (
-                        <div
-                          key={m.id}
-                          className="border-border-subtle/50 mb-2 flex flex-col gap-2 border-b pb-3 last:mb-0 last:border-0 last:pb-0"
-                        >
-                          <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-                            <Input
-                              className="h-8 flex-[2] text-xs font-medium"
-                              placeholder="Материал (название)"
-                              value={m.materialName}
-                              disabled={disabled}
-                              data-testid={materialNameTestId}
-                              onChange={(e) =>
-                                updateMaterial(m.id, { materialName: e.target.value })
-                              }
-                            />
-                            <Input
-                              className="h-8 flex-1 text-xs"
-                              placeholder="Состав"
-                              value={m.compositionText ?? ''}
-                              disabled={disabled}
-                              onChange={(e) =>
-                                updateMaterial(m.id, { compositionText: e.target.value })
-                              }
-                            />
-                            <Input
-                              className="h-8 w-20 shrink-0 text-xs"
-                              placeholder="Плотн. (gsm)"
-                              type="number"
-                              value={m.gsm ?? ''}
-                              disabled={disabled}
-                              onChange={(e) =>
-                                updateMaterial(m.id, {
-                                  gsm: e.target.value ? Number(e.target.value) : undefined,
-                                })
-                              }
-                            />
-                            <Input
-                              className="h-8 flex-1 text-xs"
-                              placeholder="Цвет"
-                              value={m.color ?? ''}
-                              disabled={disabled}
-                              onChange={(e) => updateMaterial(m.id, { color: e.target.value })}
-                            />
-                            <button
-                              type="button"
-                              className="border-border-subtle flex h-8 w-8 shrink-0 items-center justify-center rounded border text-red-600 hover:bg-red-50"
-                              disabled={disabled}
-                              title="Удалить материал"
-                              onClick={() =>
-                                save({
-                                  ...model,
-                                  materialLines: model.materialLines.filter((x) => x.id !== m.id),
-                                })
-                              }
-                            >
-                              <LucideIcons.Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-100 bg-slate-50 p-2 sm:flex-nowrap">
-                            <span className="mr-1 text-[10px] font-bold uppercase text-slate-500">
-                              Расчет:
-                            </span>
-                            <div className="border-border-subtle flex w-32 shrink-0 items-center gap-1 rounded border bg-white px-1">
-                              <input
-                                className="h-7 w-12 bg-transparent text-xs focus:outline-none"
-                                placeholder="Расход"
-                                type="number"
-                                step="0.01"
-                                value={m.yieldPerUnit ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateMaterial(m.id, {
-                                    yieldPerUnit: e.target.value
-                                      ? Number(e.target.value)
-                                      : undefined,
-                                  })
-                                }
-                              />
-                              <span className="text-text-muted text-[10px]">/</span>
-                              <input
-                                className="h-7 w-10 bg-transparent text-xs focus:outline-none"
-                                placeholder="Ед."
-                                value={m.yieldUnit ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateMaterial(m.id, { yieldUnit: e.target.value })
-                                }
-                              />
-                            </div>
-
-                            <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
-                              <input
-                                className="h-7 w-14 bg-transparent text-xs focus:outline-none"
-                                placeholder="Цена (Net)"
-                                type="number"
-                                step="0.01"
-                                value={m.unitCostNet ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateMaterial(m.id, {
-                                    unitCostNet: e.target.value
-                                      ? Number(e.target.value)
-                                      : undefined,
-                                  })
-                                }
-                              />
-                            </div>
-
-                            <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
-                              <input
-                                className="h-7 w-14 bg-transparent text-xs focus:outline-none"
-                                placeholder="Landed"
-                                type="number"
-                                step="0.01"
-                                value={m.landedCost ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateMaterial(m.id, {
-                                    landedCost: e.target.value ? Number(e.target.value) : undefined,
-                                  })
-                                }
-                              />
-                            </div>
-
-                            <input
-                              className="border-border-subtle h-7 w-12 shrink-0 rounded border bg-white px-1.5 text-xs"
-                              placeholder="Валюта"
-                              value={m.currency ?? ''}
-                              disabled={disabled}
-                              onChange={(e) => updateMaterial(m.id, { currency: e.target.value })}
-                            />
-
-                            <div className="flex min-w-[4rem] items-center justify-end px-2 text-[11px] font-semibold text-emerald-700">
-                              {cost > 0 ? `Σ ${cost.toFixed(2)} ${m.currency || 'USD'}` : '—'}
-                            </div>
-
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              className="ml-auto h-7 border-indigo-200 bg-indigo-50 text-[10px] text-indigo-700 hover:bg-indigo-100"
-                              disabled={disabled}
-                              onClick={() => {
-                                const newYield = (m.yieldPerUnit || 1) * 0.85;
-                                updateMaterial(m.id, { yieldPerUnit: Number(newYield.toFixed(3)) });
-                                toast({
-                                  title: 'Yield Optimizer',
-                                  description: `AI-оптимизация раскладки: расход снижен до ${newYield.toFixed(3)}.`,
-                                });
-                              }}
-                            >
-                              <LucideIcons.Wand2 className="mr-1 h-3 w-3" />
-                              Оптимизировать
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {materials.length > 0 && trims.length > 0 && (
-                    <div className="bg-border-subtle/50 my-3 h-px" />
-                  )}
-
-                  <div className="mt-3 grid gap-2">
-                    {trims.map((t) => {
-                      const cost = (t.quantity || 0) * (t.unitCostNet || 0);
-                      return (
-                        <div
-                          key={t.id}
-                          className="border-border-subtle/50 mb-2 flex flex-col gap-2 border-b pb-3 last:mb-0 last:border-0 last:pb-0"
-                        >
-                          <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-                            <Input
-                              className="h-8 flex-[2] text-xs font-medium"
-                              placeholder="Фурнитура (название)"
-                              value={t.name}
-                              disabled={disabled}
-                              onChange={(e) => updateTrim(t.id, { name: e.target.value })}
-                            />
-                            <Input
-                              className="h-8 flex-1 text-xs"
-                              placeholder="Размер/Спека"
-                              value={t.size ?? ''}
-                              disabled={disabled}
-                              onChange={(e) => updateTrim(t.id, { size: e.target.value })}
-                            />
-                            <Input
-                              className="h-8 flex-1 text-xs"
-                              placeholder="Цвет"
-                              value={t.color ?? ''}
-                              disabled={disabled}
-                              onChange={(e) => updateTrim(t.id, { color: e.target.value })}
-                            />
-                            <Input
-                              className="h-8 flex-1 text-xs"
-                              placeholder="Установка"
-                              value={t.placement ?? ''}
-                              disabled={disabled}
-                              onChange={(e) => updateTrim(t.id, { placement: e.target.value })}
-                            />
-                            <button
-                              type="button"
-                              className="border-border-subtle flex h-8 w-8 shrink-0 items-center justify-center rounded border text-red-600 hover:bg-red-50"
-                              disabled={disabled}
-                              title="Удалить фурнитуру"
-                              onClick={() =>
-                                save({
-                                  ...model,
-                                  trimLines: model.trimLines.filter((x) => x.id !== t.id),
-                                })
-                              }
-                            >
-                              <LucideIcons.Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-100 bg-slate-50 p-2 sm:flex-nowrap">
-                            <span className="mr-1 text-[10px] font-bold uppercase text-slate-500">
-                              Расчет:
-                            </span>
-                            <div className="border-border-subtle flex w-24 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
-                              <span className="text-text-muted text-[10px]">Кол-во</span>
-                              <input
-                                className="h-7 w-10 bg-transparent text-right text-xs focus:outline-none"
-                                placeholder="0"
-                                type="number"
-                                value={t.quantity ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateTrim(t.id, {
-                                    quantity: e.target.value ? Number(e.target.value) : undefined,
-                                  })
-                                }
-                              />
-                            </div>
-                            <div className="border-border-subtle flex w-28 shrink-0 items-center gap-1 rounded border bg-white px-1.5">
-                              <input
-                                className="h-7 w-16 bg-transparent text-xs focus:outline-none"
-                                placeholder="Цена/ед"
-                                type="number"
-                                step="0.01"
-                                value={t.unitCostNet ?? ''}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  updateTrim(t.id, {
-                                    unitCostNet: e.target.value
-                                      ? Number(e.target.value)
-                                      : undefined,
-                                  })
-                                }
-                              />
-                              <span className="text-text-muted text-[10px]">₽</span>
-                            </div>
-                            <div className="flex min-w-[4rem] items-center justify-end px-2 text-[11px] font-semibold text-emerald-700">
-                              {cost > 0 ? `Σ ${cost.toFixed(2)} ₽` : '—'}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            });
+                );
+              });
           })()}
         </div>
       </div>

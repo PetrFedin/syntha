@@ -23,10 +23,7 @@ export async function GET(req: NextRequest) {
     req.nextUrl.searchParams.get('filter') === 'eligible';
 
   if (!collectionId) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'collection обязателен.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ ok: false, messageRu: 'collection обязателен.' }, { status: 400 });
   }
 
   const snapshot = await getShopShowroomEligibleForMatrixServer({

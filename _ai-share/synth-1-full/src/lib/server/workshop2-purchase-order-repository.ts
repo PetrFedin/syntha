@@ -458,13 +458,7 @@ export async function updateWorkshop2PurchaseOrderMesReleaseStage(input: {
          updated_at = NOW()
      WHERE id = $1 AND collection_id = $2 AND article_id = $3
      RETURNING ${PO_SELECT_COLUMNS}`,
-    [
-      input.id,
-      input.collectionId,
-      input.articleId,
-      stage,
-      JSON.stringify(payloadPatch),
-    ]
+    [input.id, input.collectionId, input.articleId, stage, JSON.stringify(payloadPatch)]
   );
   const row = res.rows[0];
   return row ? mapRow(row) : null;

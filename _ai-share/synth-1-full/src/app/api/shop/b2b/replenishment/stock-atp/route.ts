@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import {
-  readReplenishmentStockSliceFromSearchParams,
-} from '@/lib/platform/shop-replenishment-stock-slices';
+import { readReplenishmentStockSliceFromSearchParams } from '@/lib/platform/shop-replenishment-stock-slices';
 import { getShopReplenishmentStockAtpRows } from '@/lib/server/shop-replenishment-stock-atp-server';
 import { resolveShopCoreBuyerIdFromRequest } from '@/lib/order/shop-core-buyer-context';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
@@ -10,7 +8,9 @@ import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-
 function resolveShopId(req: NextRequest, checkoutBuyerId: string): string {
   return resolveShopCoreBuyerIdFromRequest(
     req,
-    req.nextUrl.searchParams.get('shopId') ?? req.nextUrl.searchParams.get('buyerId') ?? checkoutBuyerId
+    req.nextUrl.searchParams.get('shopId') ??
+      req.nextUrl.searchParams.get('buyerId') ??
+      checkoutBuyerId
   );
 }
 

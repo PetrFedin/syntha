@@ -1,7 +1,11 @@
 import 'server-only';
 
 import { listWorkshop2FactorySampleQueue } from '@/lib/production/workshop2-factory-sample-queue';
-import { getWorkshop2PgPool, isWorkshop2PostgresEnabled, withWorkshop2PgFallback } from '@/lib/server/workshop2-pg-pool';
+import {
+  getWorkshop2PgPool,
+  isWorkshop2PostgresEnabled,
+  withWorkshop2PgFallback,
+} from '@/lib/server/workshop2-pg-pool';
 import { ensureWorkshop2PgSchema } from '@/lib/server/workshop2-dossier-repository';
 import { getPlatformCoreDemo, PLATFORM_CORE_DEMO } from '@/lib/platform-core-hub-matrix';
 import { getWorkshop2CoreCollectionRangePlannerMetadataRaw } from '@/lib/production/workshop2-core-collection-range-planner-metadata';
@@ -105,7 +109,10 @@ async function loadCollectionRangePlannerMetadata(
         `SELECT metadata FROM workshop2_collections WHERE id = $1`,
         [collectionId]
       );
-      const merged = mergeRangePlannerCollectionMetadata(res.rows[0]?.metadata ?? null, collectionId);
+      const merged = mergeRangePlannerCollectionMetadata(
+        res.rows[0]?.metadata ?? null,
+        collectionId
+      );
       if (merged) return merged;
       return coreCollectionRangePlannerMetadataFallback(collectionId);
     },

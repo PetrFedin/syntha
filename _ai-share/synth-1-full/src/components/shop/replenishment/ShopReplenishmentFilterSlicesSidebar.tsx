@@ -22,7 +22,9 @@ export function ShopReplenishmentFilterSlicesSidebar({
       className="border-border-subtle bg-bg-surface2/40 w-full shrink-0 space-y-2 rounded-lg border p-3 md:w-44"
       data-testid="shop-replenishment-filter-slices-sidebar"
     >
-      <p className="text-text-muted text-[10px] font-medium uppercase tracking-wide">Срезы фильтра</p>
+      <p className="text-text-muted text-[10px] font-medium uppercase tracking-wide">
+        Срезы фильтра
+      </p>
       <nav className="flex flex-col gap-1" aria-label="Сохранённые срезы пополнения">
         {slices.map((slice) => {
           const active = slice.sliceId === activeSliceId;

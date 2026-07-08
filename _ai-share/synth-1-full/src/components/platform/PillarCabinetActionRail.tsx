@@ -60,7 +60,7 @@ export function PillarCabinetActionRail({
         <Link
           href={secondary.href}
           data-testid={secondary.testId ?? 'role-pillar-secondary-cta'}
-          className="text-text-primary hover:bg-bg-surface2 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-border-subtle px-3 text-[13px] font-medium transition-colors"
+          className="text-text-primary hover:bg-bg-surface2 border-border-subtle inline-flex min-h-11 w-full items-center justify-center rounded-lg border px-3 text-[13px] font-medium transition-colors"
           {...prefetchProps(secondary.href, onPrefetch)}
         >
           {secondary.label}

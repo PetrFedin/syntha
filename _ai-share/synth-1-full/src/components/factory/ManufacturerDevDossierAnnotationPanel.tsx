@@ -129,7 +129,10 @@ export function ManufacturerDevDossierAnnotationPanel({
       className="border-border-subtle space-y-2 rounded-lg border bg-white/80 p-3"
       data-testid={MFR_DEV_DOSSIER_ANNOTATION_PANEL_TESTID}
     >
-      <div className={hubGadget.goldenPath} data-testid={MFR_DEV_DOSSIER_ANNOTATION_PEER_STRIP_TESTID}>
+      <div
+        className={hubGadget.goldenPath}
+        data-testid={MFR_DEV_DOSSIER_ANNOTATION_PEER_STRIP_TESTID}
+      >
         <Link
           href={peers.brandDiffViewerHref}
           data-testid={MFR_DEV_DOSSIER_ANNOTATION_BRAND_DIFF_LINK_TESTID}
@@ -140,13 +143,21 @@ export function ManufacturerDevDossierAnnotationPanel({
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={handoffHref} data-testid="mfr-dev-dossier-annotation-handoff-link" className={hubGadget.goldenLink}>
+        <Link
+          href={handoffHref}
+          data-testid="mfr-dev-dossier-annotation-handoff-link"
+          className={hubGadget.goldenLink}
+        >
           {WAVE_XN_MFR_DOSSIER_PEER_HANDOFF_RU}
         </Link>
         <span className={hubGadget.goldenSep} aria-hidden>
           ·
         </span>
-        <Link href={chatHref} data-testid="mfr-dev-dossier-annotation-chat-link" className={hubGadget.goldenLink}>
+        <Link
+          href={chatHref}
+          data-testid="mfr-dev-dossier-annotation-chat-link"
+          className={hubGadget.goldenLink}
+        >
           {WAVE_XN_MFR_DOSSIER_PEER_ARTICLE_CHAT_RU}
         </Link>
       </div>
@@ -189,7 +200,10 @@ export function ManufacturerDevDossierAnnotationPanel({
           ))}
         </ul>
       ) : loaded ? (
-        <p className="text-text-muted text-[10px]" data-testid={WAVE_XN_MFR_DOSSIER_ANNOTATION_EMPTY_TESTID}>
+        <p
+          className="text-text-muted text-[10px]"
+          data-testid={WAVE_XN_MFR_DOSSIER_ANNOTATION_EMPTY_TESTID}
+        >
           {WAVE_XN_MFR_DOSSIER_COMMENT_EMPTY_RU}
         </p>
       ) : null}

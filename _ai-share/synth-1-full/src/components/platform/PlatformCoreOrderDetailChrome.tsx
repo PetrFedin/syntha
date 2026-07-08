@@ -68,20 +68,12 @@ function PlatformCoreOrderDetailChromeInner({ orderId, variant, children }: Prop
           <p className="text-text-muted mb-2 text-[10px] font-bold uppercase tracking-widest">
             Связи
           </p>
-          <RolePillarCrossRoleLinks
-            roleId={highlightRole}
-            pillarId={pillarId}
-            variant="compact"
-          />
+          <RolePillarCrossRoleLinks roleId={highlightRole} pillarId={pillarId} variant="compact" />
         </div>
       </div>
       <aside className={hubCabinet.orderDetailRail} data-testid="platform-core-order-detail-rail">
         <p className="text-text-muted text-[10px] font-bold uppercase tracking-widest">Связи</p>
-        <RolePillarCrossRoleLinks
-          roleId={highlightRole}
-          pillarId={pillarId}
-          variant="compact"
-        />
+        <RolePillarCrossRoleLinks roleId={highlightRole} pillarId={pillarId} variant="compact" />
       </aside>
     </div>
   );

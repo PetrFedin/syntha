@@ -1,6 +1,9 @@
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
 import type { SupplySnapshot } from '@/lib/production/article-workspace/types';
-import { computeSupplyRiskPrediction, type SupplyRiskPrediction } from '@/lib/production/workshop2-operational-heuristics';
+import {
+  computeSupplyRiskPrediction,
+  type SupplyRiskPrediction,
+} from '@/lib/production/workshop2-operational-heuristics';
 
 /** BOM досье → строки снабжения для эвристики рисков. */
 export function dossierBomToSupplyLines(dossier: Workshop2DossierPhase1): SupplySnapshot['lines'] {

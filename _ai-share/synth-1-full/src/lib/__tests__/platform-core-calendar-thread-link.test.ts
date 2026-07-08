@@ -42,9 +42,7 @@ describe('platform-core-calendar-thread-link', () => {
     );
     expect(href).toContain('/shop/messages');
     expect(href).toContain('B2B-DEMO-SHOP1-SS27');
-    expect(href).toContain(
-      'chat=w2ctx%3Ab2b_order%3AB2B-DEMO-SHOP1-SS27'
-    );
+    expect(href).toContain('chat=w2ctx%3Ab2b_order%3AB2B-DEMO-SHOP1-SS27');
   });
 
   it('brand B2B order → canonical messages href (не syntha overlay)', () => {

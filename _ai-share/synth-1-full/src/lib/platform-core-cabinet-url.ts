@@ -12,7 +12,7 @@ import {
 export function roleCoreCabinetLandingHref(roleId: CoreChainRoleId): string {
   const pillarId = getDefaultPillarForRole(roleId);
   const sectionId = hasEmbeddedPlatformCoreWorkspace(roleId, pillarId)
-    ? PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[pillarId] ?? null
+    ? (PLATFORM_CORE_CABINET_DEFAULT_SECTION[roleId]?.[pillarId] ?? null)
     : null;
   return roleCoreCabinetHref({ roleId, pillarId, sectionId });
 }

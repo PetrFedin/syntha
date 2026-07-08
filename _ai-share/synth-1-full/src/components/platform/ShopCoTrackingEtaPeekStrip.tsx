@@ -55,8 +55,7 @@ export function ShopCoTrackingEtaPeekStrip({
 
   const trackingHref = shopB2bTrackingOrderHref(orderId);
   const etaLabel =
-    deliveryLabel ??
-    (trackingNumberPreview?.trim() ? `ТТН ${trackingNumberPreview.trim()}` : null);
+    deliveryLabel ?? (trackingNumberPreview?.trim() ? `ТТН ${trackingNumberPreview.trim()}` : null);
 
   return (
     <div

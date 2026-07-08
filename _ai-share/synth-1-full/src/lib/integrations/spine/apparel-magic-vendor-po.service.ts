@@ -51,19 +51,19 @@ export async function importApparelMagicVendorPo(
   const org = organizationId?.trim() || 'org-brand-001';
   const b2bOrderId = payload.b2bOrderId.trim();
   const rfq = getCentricRfqByOrderId(b2bOrderId);
-  const lines =
-    payload.lines?.length ?
-      payload.lines
-    : rfq?.lines.map((l) => ({
+  const lines = payload.lines?.length
+    ? payload.lines
+    : (rfq?.lines.map((l) => ({
         materialName: l.materialName,
         qty: l.qty,
         unit: l.unit,
       })) ?? [
         { materialName: 'Main fabric SS27', qty: 1200, unit: 'm' },
         { materialName: 'Lining', qty: 800, unit: 'm' },
-      ];
+      ]);
 
-  const vendorPoId = payload.vendorPoId?.trim() || `AM-VPO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const vendorPoId =
+    payload.vendorPoId?.trim() || `AM-VPO-${b2bOrderId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
   const record = await persistVendorPoWriteThrough({
     vendorPoId,

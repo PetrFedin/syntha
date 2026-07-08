@@ -85,11 +85,15 @@ export async function POST(req: NextRequest) {
       { headers: { 'x-request-id': requestId } }
     );
   } catch (err) {
-    const code = err instanceof Error && err.message === 'RFQ_NOT_FOUND' ? 'RFQ_NOT_FOUND' : 'ERROR';
+    const code =
+      err instanceof Error && err.message === 'RFQ_NOT_FOUND' ? 'RFQ_NOT_FOUND' : 'ERROR';
     return NextResponse.json(
       {
         ok: false as const,
-        error: { code, message: code === 'RFQ_NOT_FOUND' ? 'RFQ not found' : 'Failed to save quote' },
+        error: {
+          code,
+          message: code === 'RFQ_NOT_FOUND' ? 'RFQ not found' : 'Failed to save quote',
+        },
         meta: meta(requestId),
       },
       { status: code === 'RFQ_NOT_FOUND' ? 404 : 500, headers: { 'x-request-id': requestId } }
@@ -133,7 +137,8 @@ export async function PATCH(req: NextRequest) {
       { headers: { 'x-request-id': requestId } }
     );
   } catch (err) {
-    const code = err instanceof Error && err.message === 'QUOTE_NOT_FOUND' ? 'QUOTE_NOT_FOUND' : 'ERROR';
+    const code =
+      err instanceof Error && err.message === 'QUOTE_NOT_FOUND' ? 'QUOTE_NOT_FOUND' : 'ERROR';
     return NextResponse.json(
       {
         ok: false as const,

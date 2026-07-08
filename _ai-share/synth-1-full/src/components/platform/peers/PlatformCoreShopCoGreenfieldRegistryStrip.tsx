@@ -69,22 +69,34 @@ export function PlatformCoreShopCoGreenfieldRegistryStrip({ buyerId, collectionI
         <span className="text-text-muted text-[10px] font-semibold uppercase">
           {SHOP_GREENFIELD_REGISTRY_TITLE_RU}
         </span>
-        <Badge variant="secondary" className="text-[9px]" data-testid={SHOP_CO_GREENFIELD_REGISTRY_BUYER_TESTID}>
+        <Badge
+          variant="secondary"
+          className="text-[9px]"
+          data-testid={SHOP_CO_GREENFIELD_REGISTRY_BUYER_TESTID}
+        >
           {buyerId}
         </Badge>
-        <Badge variant="outline" className="text-[9px]" data-testid={SHOP_CO_GREENFIELD_REGISTRY_BUYER_PG_TESTID}>
+        <Badge
+          variant="outline"
+          className="text-[9px]"
+          data-testid={SHOP_CO_GREENFIELD_REGISTRY_BUYER_PG_TESTID}
+        >
           {shopGreenfieldBuyerLabelRu(buyerId)}
         </Badge>
         {storageMode === 'postgres' ? (
           <Badge
             variant="outline"
-            className="border-sky-500/40 text-sky-700 text-[9px]"
+            className="border-sky-500/40 text-[9px] text-sky-700"
             data-testid={SHOP_CO_GREENFIELD_REGISTRY_PG_TESTID}
           >
             PG
           </Badge>
         ) : storageMode === 'memory' ? (
-          <Badge variant="outline" className="text-[9px]" data-testid={SHOP_CO_GREENFIELD_REGISTRY_MEMORY_TESTID}>
+          <Badge
+            variant="outline"
+            className="text-[9px]"
+            data-testid={SHOP_CO_GREENFIELD_REGISTRY_MEMORY_TESTID}
+          >
             Память
           </Badge>
         ) : null}
@@ -103,7 +115,10 @@ export function PlatformCoreShopCoGreenfieldRegistryStrip({ buyerId, collectionI
           Прайс {state?.pricelistReady ? '✓' : '—'}
         </Badge>
       </div>
-      <p className="text-text-muted text-[10px]" data-testid={SHOP_CO_GREENFIELD_REGISTRY_STATUS_TESTID}>
+      <p
+        className="text-text-muted text-[10px]"
+        data-testid={SHOP_CO_GREENFIELD_REGISTRY_STATUS_TESTID}
+      >
         {statusRu}
       </p>
       {ready ? (

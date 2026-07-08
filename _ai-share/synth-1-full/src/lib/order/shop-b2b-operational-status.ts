@@ -8,8 +8,7 @@ export const SHOP_B2B_OPERATIONAL_MIRROR_STATUSES = [
   'amendment_rejected',
 ] as const;
 
-export type ShopB2bOperationalMirrorStatus =
-  (typeof SHOP_B2B_OPERATIONAL_MIRROR_STATUSES)[number];
+export type ShopB2bOperationalMirrorStatus = (typeof SHOP_B2B_OPERATIONAL_MIRROR_STATUSES)[number];
 
 export type ShopB2bOperationalStatusEntry = {
   orderId: string;

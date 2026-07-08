@@ -19,7 +19,10 @@ export function summarizeBrandPackRulesRows(rows: readonly PackRuleRow[]): {
 }
 
 export function brandPackRulesSizeCurveSummary(packCount = 2): string {
-  const breakdown = buildShopMatrixPrepackBreakdown({ packCount, curve: DEFAULT_SHOP_MATRIX_SIZE_CURVE });
+  const breakdown = buildShopMatrixPrepackBreakdown({
+    packCount,
+    curve: DEFAULT_SHOP_MATRIX_SIZE_CURVE,
+  });
   return shopMatrixPrepackSizeSummary(breakdown.bySize);
 }
 

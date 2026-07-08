@@ -1,8 +1,7 @@
 import { brandW2ProductionTzHref, factoryProductionDossierHref } from '@/lib/routes';
 
 /** Wave XN — factory dossier comment-only annotations (read-only TZ, PG journal). */
-export const FACTORY_DOSSIER_COMMENTS_API_PATH =
-  '/api/workshop2/factory/dossier/comments' as const;
+export const FACTORY_DOSSIER_COMMENTS_API_PATH = '/api/workshop2/factory/dossier/comments' as const;
 
 export const MFR_DOSSIER_COMMENTS_WAVE_XN_MIGRATION =
   '068_wave_xn_factory_dossier_comments_stub' as const;

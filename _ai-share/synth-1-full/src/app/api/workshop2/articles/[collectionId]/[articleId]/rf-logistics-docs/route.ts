@@ -12,7 +12,11 @@ import {
 import { buildWorkshop2RfLogisticsPdfBytes } from '@/lib/production/workshop2-rf-logistics-pdf';
 import { resolveWorkshop2B2bVatRate } from '@/lib/production/workshop2-b2b-checkout-rub';
 import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
-import { guardWorkshop2Route, WORKSHOP2_READ_ROLES, WORKSHOP2_WRITE_ROLES } from '@/lib/server/workshop2-route-auth';
+import {
+  guardWorkshop2Route,
+  WORKSHOP2_READ_ROLES,
+  WORKSHOP2_WRITE_ROLES,
+} from '@/lib/server/workshop2-route-auth';
 
 type RouteCtx = { params: Promise<{ collectionId: string; articleId: string }> };
 

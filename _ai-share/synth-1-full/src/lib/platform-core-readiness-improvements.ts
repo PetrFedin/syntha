@@ -32,16 +32,11 @@ const PILLAR_ORDER: CoreHubPillarId[] = [
 ];
 
 const PILLAR_CHAIN_HINT: Record<CoreHubPillarId, string> = {
-  development:
-    'Вертикаль: усиливает переход «ТЗ → образец» и release gate перед витриной.',
-  sample_collection:
-    'Связка «ТЗ → образец» с витриной и shop matrix (столп «Коллекция → заказ»).',
-  collection_order:
-    'Связка shop↔brand и handoff в «Заказ → производство» + inventory/comms.',
-  order_production:
-    'Связка brand↔shop: исполнение заказа, handoff и buyer tracking после опта.',
-  comms:
-    'Горизонталь brand↔shop вокруг PO; без этого рвётся цепочка статусов и чатов.',
+  development: 'Вертикаль: усиливает переход «ТЗ → образец» и release gate перед витриной.',
+  sample_collection: 'Связка «ТЗ → образец» с витриной и shop matrix (столп «Коллекция → заказ»).',
+  collection_order: 'Связка shop↔brand и handoff в «Заказ → производство» + inventory/comms.',
+  order_production: 'Связка brand↔shop: исполнение заказа, handoff и buyer tracking после опта.',
+  comms: 'Горизонталь brand↔shop вокруг PO; без этого рвётся цепочка статусов и чатов.',
 };
 
 const ROLE_ALIASES: Partial<Record<CoreChainRoleId, string[]>> = {
@@ -54,7 +49,14 @@ const ROLE_ALIASES: Partial<Record<CoreChainRoleId, string[]>> = {
 const PILLAR_KEYWORDS: Partial<Record<CoreHubPillarId, string[]>> = {
   development: ['w2', 'dossier', 'тз', 'tz', 'образец', 'sample', 'release', 'attribute'],
   sample_collection: ['linesheet', 'showroom', 'витрин', 'publish', 'syndication'],
-  collection_order: ['matrix', 'replenish', 'margin', 'working order', 'collaborative', 'pricelist'],
+  collection_order: [
+    'matrix',
+    'replenish',
+    'margin',
+    'working order',
+    'collaborative',
+    'pricelist',
+  ],
   order_production: ['handoff', 'cut ticket', 'qc', 'po', 'bom', 'wip', 'production'],
   comms: ['comms', 'chat', 'tracking', 'messages', 'calendar', 'entity thread'],
 };
@@ -110,7 +112,12 @@ function buildLinkageRu(input: {
     parts.push(
       `Между ролями: ${[input.roleId, ...otherRoles].map((r) => ROLE_LABELS[r]).join(' ↔ ')} — нужен общий контекст заказа/коллекции.`
     );
-  } else if (lower.includes('shop') || lower.includes('brand') || lower.includes('магазин') || lower.includes('бренд')) {
+  } else if (
+    lower.includes('shop') ||
+    lower.includes('brand') ||
+    lower.includes('магазин') ||
+    lower.includes('бренд')
+  ) {
     parts.push(`Между ролями: бренд ↔ магазин — общий контекст коллекции и оптового заказа.`);
   }
 
@@ -156,7 +163,9 @@ function pushItem(
   bucket: Map<string, ReadinessImprovementItem>,
   item: Omit<ReadinessImprovementItem, 'id' | 'priority'> & { priority?: number }
 ) {
-  const key = normalizeKey(`${item.roleId}__${item.pillarId}__${item.sectionLabel ?? 'cell'}__${item.title}`);
+  const key = normalizeKey(
+    `${item.roleId}__${item.pillarId}__${item.sectionLabel ?? 'cell'}__${item.title}`
+  );
   const priority =
     item.priority ??
     scorePriority({
@@ -266,8 +275,7 @@ export function buildPlatformCoreReadinessImprovements(
     const pillarId = options.pillarId;
     items = items.filter(
       (item) =>
-        item.pillarId === pillarId ||
-        detectPillars(item.title, item.pillarId).includes(pillarId)
+        item.pillarId === pillarId || detectPillars(item.title, item.pillarId).includes(pillarId)
     );
   }
   if (options?.minPriority != null) {

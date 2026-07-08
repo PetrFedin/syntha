@@ -198,17 +198,11 @@ export async function createPlatformCoreUserCalendarTask(input: {
   if (shouldPlatformCorePersistAuxiliaryToFile()) {
     hydrateFileIfNeeded();
     const existing = memoryByCollection.get(collectionId) ?? [];
-    memoryByCollection.set(
-      collectionId,
-      [...existing.filter((t) => t.id !== task.id), task]
-    );
+    memoryByCollection.set(collectionId, [...existing.filter((t) => t.id !== task.id), task]);
     flushFile();
   } else if (!isWorkshop2PostgresEnabled()) {
     const existing = memoryByCollection.get(collectionId) ?? [];
-    memoryByCollection.set(
-      collectionId,
-      [...existing.filter((t) => t.id !== task.id), task]
-    );
+    memoryByCollection.set(collectionId, [...existing.filter((t) => t.id !== task.id), task]);
   }
 
   const event = mapPlatformCoreUserTaskToB2bEvent(task);

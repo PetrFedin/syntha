@@ -8,6 +8,8 @@ export function formatPlatformCoreHandoffQueueSseData(
   return `data: ${JSON.stringify(event)}\n\n`;
 }
 
-export function fingerprintWorkshop2HandoffQueue(items: readonly { productionOrderId: string; status: string }[]): string {
+export function fingerprintWorkshop2HandoffQueue(
+  items: readonly { productionOrderId: string; status: string }[]
+): string {
   return items.map((i) => `${i.productionOrderId}:${i.status}`).join('|');
 }

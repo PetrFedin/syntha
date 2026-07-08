@@ -3,9 +3,7 @@ import {
   parseSupplierMaterialPartialShipFields,
   supplierMaterialPartialShipJournalFields,
 } from '@/lib/production/workshop2-supplier-material-partial-ship';
-import {
-  isWorkshop2SupplierWmsConfirmWebhookEnabled,
-} from '@/lib/production/workshop2-supplier-wms-confirm-webhook';
+import { isWorkshop2SupplierWmsConfirmWebhookEnabled } from '@/lib/production/workshop2-supplier-wms-confirm-webhook';
 import {
   WAVE_WI_SUP_BULK_CONFIRM_API,
   WAVE_WI_SUP_BULK_CONFIRM_DEDUP_HINT_RU,
@@ -28,7 +26,9 @@ describe('wave WI — sup-op partial ship + backorder PG + bulk-confirm dedup', 
   });
 
   it('parses partialShipQty/backorderFlag for PATCH and bulk-confirm', () => {
-    expect(parseSupplierMaterialPartialShipFields({ partialShipQty: 4, backorderFlag: true })).toEqual({
+    expect(
+      parseSupplierMaterialPartialShipFields({ partialShipQty: 4, backorderFlag: true })
+    ).toEqual({
       shippedQty: 4,
       backorder: true,
     });

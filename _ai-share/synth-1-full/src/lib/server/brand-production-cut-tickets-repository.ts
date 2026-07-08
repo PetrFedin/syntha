@@ -30,7 +30,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as BrandProductionCutTicketPgRow[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as BrandProductionCutTicketPgRow[];
     if (Array.isArray(parsed)) {
       for (const row of parsed) memoryById.set(row.id, row);
     }
@@ -141,7 +143,10 @@ export async function listBrandProductionCutTickets(input: {
   const org = input.organizationId ?? DEFAULT_ORG;
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 200);
 
-  const filterByOrder = (rows: BrandProductionCutTicketPgRow[], payloads: Map<string, BrandProductionCutTicketPgPayload>) => {
+  const filterByOrder = (
+    rows: BrandProductionCutTicketPgRow[],
+    payloads: Map<string, BrandProductionCutTicketPgPayload>
+  ) => {
     if (!orderId) return rows;
     return rows.filter((r) => {
       const oid = payloads.get(r.id)?.b2bOrderId;
@@ -204,7 +209,15 @@ export async function listBrandProductionCutTickets(input: {
       memoryById.set(seed.id, seed);
     }
     persistFile();
-    rows = filterByOrder(defaultSs27SeedRows(), new Map(defaultSs27SeedRows().map((r) => [r.id, brandProductionCutTicketRowToPgPayload(r, PLATFORM_CORE_DEMO.demoOrderId)])));
+    rows = filterByOrder(
+      defaultSs27SeedRows(),
+      new Map(
+        defaultSs27SeedRows().map((r) => [
+          r.id,
+          brandProductionCutTicketRowToPgPayload(r, PLATFORM_CORE_DEMO.demoOrderId),
+        ])
+      )
+    );
   }
 
   return { rows: rows.slice(0, limit), storageMode: rows.length ? 'file' : 'empty' };

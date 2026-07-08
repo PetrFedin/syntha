@@ -10,8 +10,8 @@ describe('platform-core-placeholder-surfaces', () => {
       true
     );
     expect(PLATFORM_CORE_PLACEHOLDER_SURFACES.some((s) => s.route === '/shop')).toBe(true);
-    expect(
-      matchPlatformCorePlaceholderSurface('/brand/merch/assortment-mix')?.route
-    ).toBe('/brand/merch');
+    expect(matchPlatformCorePlaceholderSurface('/brand/merch/assortment-mix')?.route).toBe(
+      '/brand/merch'
+    );
   });
 });

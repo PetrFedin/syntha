@@ -2,10 +2,7 @@ import type { ShopDevelopmentProgressSnapshot } from '@/lib/server/shop-developm
 
 export type ShopDevelopmentVisitStore = {
   versionToken: string;
-  snapshot: Pick<
-    ShopDevelopmentProgressSnapshot,
-    'articleCount' | 'sampleQueueCount' | 'steps'
-  >;
+  snapshot: Pick<ShopDevelopmentProgressSnapshot, 'articleCount' | 'sampleQueueCount' | 'steps'>;
   visitedAt: string;
 };
 

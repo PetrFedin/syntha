@@ -121,7 +121,8 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
       payload,
       source,
       pdfUrlHint: `${buildWorkshop2B2bSchetOffertaApiUrl(orderId)}?format=pdf`,
-      printHtmlHintRu: 'Accept: text/html — печатная форма; Accept: application/pdf — jsPDF binary.',
+      printHtmlHintRu:
+        'Accept: text/html — печатная форма; Accept: application/pdf — jsPDF binary.',
       invoiceStubUrl: buildWorkshop2B2bInvoiceStubUrl(orderId),
       schetOffertaUrl: buildWorkshop2B2bSchetOffertaApiUrl(orderId),
     },

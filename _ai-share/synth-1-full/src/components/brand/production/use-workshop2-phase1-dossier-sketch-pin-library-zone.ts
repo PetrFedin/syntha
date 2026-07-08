@@ -1,6 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, type ComponentProps, type Dispatch, type SetStateAction } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ComponentProps,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { Workshop2SketchPinLibraryDialog } from '@/components/brand/production/workshop2-phase1-dossier-panel-sketch-pin-library-dialog';
 import { applySaveSketchLabelsSnapshotWithTzLog } from '@/components/brand/production/workshop2-phase1-dossier-panel-sketch-label-snapshot-tz';
@@ -11,7 +19,10 @@ import {
   removeOrgSketchPinTemplate,
   setSketchOrgPinTemplateRepository,
 } from '@/lib/production/sketch-org-templates-repository';
-import { getApiSketchOrgPinTemplateRepository, fetchOrgSketchPinTemplatesRemote } from '@/lib/production/sketch-org-templates-api-client';
+import {
+  getApiSketchOrgPinTemplateRepository,
+  fetchOrgSketchPinTemplatesRemote,
+} from '@/lib/production/sketch-org-templates-api-client';
 import type {
   Workshop2DossierPhase1,
   Workshop2SketchLabelsSnapshot,
@@ -90,11 +101,7 @@ export type UseWorkshop2Phase1DossierSketchPinLibraryZoneInput = {
   dossier: Workshop2DossierPhase1;
   setDossier: Dispatch<SetStateAction<Workshop2DossierPhase1>>;
   updatedByLabel: string;
-  toast: (p: {
-    title: string;
-    description?: string;
-    variant?: 'default' | 'destructive';
-  }) => void;
+  toast: (p: { title: string; description?: string; variant?: 'default' | 'destructive' }) => void;
   sketchMasterTemplateId: string;
   setSketchMasterTemplateId: Dispatch<SetStateAction<string>>;
   orgSketchLibraryRevision: number;
@@ -225,7 +232,11 @@ export function useWorkshop2Phase1DossierSketchPinLibraryZone({
       });
       return;
     }
-    const t = createSketchPinTemplateRecord({ name, sourceLeafId: currentLeafId, annotations: anns });
+    const t = createSketchPinTemplateRecord({
+      name,
+      sourceLeafId: currentLeafId,
+      annotations: anns,
+    });
     void appendOrgSketchPinTemplate(cid, t).then(() => {
       setOrgSketchLibraryRevision((n) => n + 1);
       toast({ title: 'Сохранено в библиотеке коллекции', description: name });
@@ -257,9 +268,9 @@ export function useWorkshop2Phase1DossierSketchPinLibraryZone({
     [dossier.sketchLabelSnapshots]
   );
 
-  const [orgSketchTemplatesList, setOrgSketchTemplatesList] = useState<Workshop2SketchPinTemplate[]>(
-    () => readOrgSketchPinTemplatesSync(collectionId)
-  );
+  const [orgSketchTemplatesList, setOrgSketchTemplatesList] = useState<
+    Workshop2SketchPinTemplate[]
+  >(() => readOrgSketchPinTemplatesSync(collectionId));
 
   useEffect(() => {
     let cancelled = false;

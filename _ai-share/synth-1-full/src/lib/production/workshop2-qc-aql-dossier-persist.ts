@@ -89,8 +89,7 @@ export function evaluateWorkshop2QcAqlHandoffGate(
       id: 'qc.aql.fail_handoff',
       severity: 'blocker',
       messageRu:
-        workshop2PgMirrorStr(mirror, 'hintRu') ||
-        'AQL брак в досье — handoff commit заблокирован.',
+        workshop2PgMirrorStr(mirror, 'hintRu') || 'AQL брак в досье — handoff commit заблокирован.',
     };
   }
   return null;

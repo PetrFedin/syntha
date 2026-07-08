@@ -12,7 +12,10 @@ import { ROUTES } from '@/lib/routes';
 import { workshop2CollectionLinesheetPdfHref } from '@/lib/production/workshop2-collection-linesheet-pdf-href';
 import { buildWorkshop2ApiRequestHeaders } from '@/lib/production/workshop2-api-client-headers';
 import { PlatformCoreListChrome } from '@/components/platform/PlatformCoreListChrome';
-import { PLATFORM_CORE_LINESETS_UNAVAILABLE_RU, platformCoreLinesheetEmptyMessageRu } from '@/lib/platform-core-user-messages';
+import {
+  PLATFORM_CORE_LINESETS_UNAVAILABLE_RU,
+  platformCoreLinesheetEmptyMessageRu,
+} from '@/lib/platform-core-user-messages';
 import { getPlatformCoreDemo, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-demo-context';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
@@ -38,16 +41,12 @@ import {
   BRAND_SC_LINESET_PDF_EMPTY_HINT_TESTID,
   brandScLinesheetPdfEmptyUiHintRu,
 } from '@/lib/b2b/brand-sc-linesheet-readpath';
-import {
-  BRAND_SC_SYNDICATION_WD_AUDIT_BADGE_TESTID,
-} from '@/lib/production/brand-sc-syndication-wd';
+import { BRAND_SC_SYNDICATION_WD_AUDIT_BADGE_TESTID } from '@/lib/production/brand-sc-syndication-wd';
 import { hubGadget } from '@/components/platform/platform-core-hub-gadget-styles';
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
 import { cn } from '@/lib/utils';
 import { COLLECTION_DEV_HUB_TITLE_RU } from '@/lib/production/collection-development-labels';
-import {
-  BRAND_LINESHEET_BATCH_UNPUBLISH_ROLLBACK_API_PATH,
-} from '@/lib/production/brand-linesheet-syndication';
+import { BRAND_LINESHEET_BATCH_UNPUBLISH_ROLLBACK_API_PATH } from '@/lib/production/brand-linesheet-syndication';
 import { BrandScLinesheetSyndicationPanel } from '@/components/platform/BrandScLinesheetSyndicationPanel';
 
 function LinesheetUnpublishButton({
@@ -248,10 +247,7 @@ function LinesheetsPublishedArticlesList({
         data-testid="brand-sc-linesheets-empty"
         data-audit-legacy="brand-linesheets-core-empty"
       >
-        <p
-          className="text-text-secondary text-sm"
-          data-testid="brand-sc-linesheets-empty-copy"
-        >
+        <p className="text-text-secondary text-sm" data-testid="brand-sc-linesheets-empty-copy">
           {platformCoreLinesheetEmptyMessageRu(collectionId)}
         </p>
         <div className="flex flex-wrap justify-center gap-2">
@@ -287,118 +283,118 @@ function LinesheetsPublishedArticlesList({
       >
         <CardContent className={cn('p-0', coreMode && hubCabinet.workspaceTableScroll)}>
           <table className="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr className="bg-bg-surface2/80 border-border-subtle border-b">
-              <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
-                Артикул
-              </th>
-              <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
-                Название
-              </th>
-              <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
-                Опт
-              </th>
-              <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
-                Мин. партия
-              </th>
-              <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
-                Preview qty
-              </th>
-              <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
-                Магазин
-              </th>
-              <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
-                Публикация
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-border-subtle divide-y">
-            {articles.map((article) => (
-              <tr
-                key={`${article.collectionId}:${article.articleId}`}
-                data-testid={`brand-sc-linesheets-article-${article.articleId}`}
-                data-audit-legacy={`brand-linesheet-article-${article.articleId}`}
-              >
-                <td className="px-4 py-3">
-                  <Badge variant="secondary" className="text-[9px] font-black uppercase">
-                    {article.articleId}
-                  </Badge>
-                  <div className="mt-1">
-                    <ShowroomArticlePxmMediaBadge
-                      pxmSource={
-                        (article as PublishedShowroomArticle & { pxmSource?: boolean }).pxmSource
-                      }
-                      pxmAssetCount={
-                        (article as PublishedShowroomArticle & { pxmAssetCount?: number })
-                          .pxmAssetCount
-                      }
-                    />
-                  </div>
-                </td>
-                <td className="text-text-primary px-4 py-3 text-[11px] font-bold uppercase">
-                  {article.name}
-                </td>
-                <td className="px-4 py-3 text-right font-medium tabular-nums">
-                  {article.wholesalePriceRub.toLocaleString('ru-RU')} ₽
-                </td>
-                <td className="text-text-muted px-4 py-3 text-right tabular-nums">
-                  {article.moq ?? '—'}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Badge
-                    variant="outline"
-                    className={
-                      (matrixQtyByArticle[article.articleId] ?? 0) > 0
-                        ? 'h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] tabular-nums text-sky-900'
-                        : 'h-4 border-border-subtle bg-bg-surface2/80 px-1.5 text-[9px] tabular-nums text-text-muted'
-                    }
-                    data-testid={`brand-sc-linesheets-preview-qty-${article.articleId}`}
-                    data-audit-legacy={`brand-linesheet-preview-qty-${article.articleId}`}
-                  >
-                    {(matrixQtyByArticle[article.articleId] ?? 0) > 0
-                      ? matrixQtyByArticle[article.articleId]
-                      : '—'}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-col items-start gap-0.5">
-                    <Link
-                      href={`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(article.collectionId)}`}
-                      data-testid={`brand-sc-linesheets-matrix-link-${article.articleId}`}
-                      data-audit-legacy={`brand-linesheet-matrix-link-${article.articleId}`}
-                      className="text-accent-primary inline-flex items-center gap-1 text-[10px] font-semibold hover:underline"
-                    >
-                      <ShoppingBag className="h-3 w-3" aria-hidden />
-                      Матрица
-                    </Link>
-                    {(matrixQtyByArticle[article.articleId] ?? 0) > 0 ? (
-                      <Badge
-                        variant="outline"
-                        className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] tabular-nums text-sky-900"
-                        data-testid={`brand-sc-linesheets-matrix-qty-${article.articleId}`}
-                        data-audit-legacy={`brand-linesheet-matrix-qty-${article.articleId}`}
-                      >
-                        В матрице: {matrixQtyByArticle[article.articleId]} ед.
-                      </Badge>
-                    ) : null}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <LinesheetUnpublishButton
-                    collectionId={article.collectionId}
-                    articleId={article.articleId}
-                    onDone={() => {
-                      load();
-                      onDataChange?.();
-                    }}
-                  />
-                </td>
+            <thead>
+              <tr className="bg-bg-surface2/80 border-border-subtle border-b">
+                <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
+                  Артикул
+                </th>
+                <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
+                  Название
+                </th>
+                <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
+                  Опт
+                </th>
+                <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
+                  Мин. партия
+                </th>
+                <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
+                  Preview qty
+                </th>
+                <th className="text-text-muted px-4 py-2 text-[9px] font-bold uppercase tracking-widest">
+                  Магазин
+                </th>
+                <th className="text-text-muted px-4 py-2 text-right text-[9px] font-bold uppercase tracking-widest">
+                  Публикация
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </CardContent>
-    </Card>
+            </thead>
+            <tbody className="divide-border-subtle divide-y">
+              {articles.map((article) => (
+                <tr
+                  key={`${article.collectionId}:${article.articleId}`}
+                  data-testid={`brand-sc-linesheets-article-${article.articleId}`}
+                  data-audit-legacy={`brand-linesheet-article-${article.articleId}`}
+                >
+                  <td className="px-4 py-3">
+                    <Badge variant="secondary" className="text-[9px] font-black uppercase">
+                      {article.articleId}
+                    </Badge>
+                    <div className="mt-1">
+                      <ShowroomArticlePxmMediaBadge
+                        pxmSource={
+                          (article as PublishedShowroomArticle & { pxmSource?: boolean }).pxmSource
+                        }
+                        pxmAssetCount={
+                          (article as PublishedShowroomArticle & { pxmAssetCount?: number })
+                            .pxmAssetCount
+                        }
+                      />
+                    </div>
+                  </td>
+                  <td className="text-text-primary px-4 py-3 text-[11px] font-bold uppercase">
+                    {article.name}
+                  </td>
+                  <td className="px-4 py-3 text-right font-medium tabular-nums">
+                    {article.wholesalePriceRub.toLocaleString('ru-RU')} ₽
+                  </td>
+                  <td className="text-text-muted px-4 py-3 text-right tabular-nums">
+                    {article.moq ?? '—'}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Badge
+                      variant="outline"
+                      className={
+                        (matrixQtyByArticle[article.articleId] ?? 0) > 0
+                          ? 'h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] tabular-nums text-sky-900'
+                          : 'border-border-subtle bg-bg-surface2/80 text-text-muted h-4 px-1.5 text-[9px] tabular-nums'
+                      }
+                      data-testid={`brand-sc-linesheets-preview-qty-${article.articleId}`}
+                      data-audit-legacy={`brand-linesheet-preview-qty-${article.articleId}`}
+                    >
+                      {(matrixQtyByArticle[article.articleId] ?? 0) > 0
+                        ? matrixQtyByArticle[article.articleId]
+                        : '—'}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col items-start gap-0.5">
+                      <Link
+                        href={`${ROUTES.shop.b2bMatrix}?collection=${encodeURIComponent(article.collectionId)}`}
+                        data-testid={`brand-sc-linesheets-matrix-link-${article.articleId}`}
+                        data-audit-legacy={`brand-linesheet-matrix-link-${article.articleId}`}
+                        className="text-accent-primary inline-flex items-center gap-1 text-[10px] font-semibold hover:underline"
+                      >
+                        <ShoppingBag className="h-3 w-3" aria-hidden />
+                        Матрица
+                      </Link>
+                      {(matrixQtyByArticle[article.articleId] ?? 0) > 0 ? (
+                        <Badge
+                          variant="outline"
+                          className="h-4 border-sky-200 bg-sky-50 px-1.5 text-[9px] tabular-nums text-sky-900"
+                          data-testid={`brand-sc-linesheets-matrix-qty-${article.articleId}`}
+                          data-audit-legacy={`brand-linesheet-matrix-qty-${article.articleId}`}
+                        >
+                          В матрице: {matrixQtyByArticle[article.articleId]} ед.
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <LinesheetUnpublishButton
+                      collectionId={article.collectionId}
+                      articleId={article.articleId}
+                      onDone={() => {
+                        load();
+                        onDataChange?.();
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
       {coreMode ? (
         <div
           className={cn('grid lg:hidden', hubCabinet.workspaceCardGrid)}
@@ -438,7 +434,8 @@ function LinesheetsPublishedArticlesList({
                   }
                   data-testid={`brand-sc-linesheets-preview-qty-${article.articleId}`}
                 >
-                  Preview: {(matrixQtyByArticle[article.articleId] ?? 0) > 0
+                  Preview:{' '}
+                  {(matrixQtyByArticle[article.articleId] ?? 0) > 0
                     ? matrixQtyByArticle[article.articleId]
                     : '—'}
                 </Badge>
@@ -623,7 +620,10 @@ export function BrandLineSheetsCorePage() {
           `/api/workshop2/collections/${encodeURIComponent(collectionId)}/published-articles`,
           { headers: buildWorkshop2ApiRequestHeaders(), cache: 'no-store' }
         );
-        const json = (await res.json()) as { ok?: boolean; articles?: Array<{ articleId?: string }> };
+        const json = (await res.json()) as {
+          ok?: boolean;
+          articles?: Array<{ articleId?: string }>;
+        };
         if (cancelled) return;
         setPgArticleCount(json.ok ? (json.articles?.length ?? 0) : 0);
         setPublishedArticleIds(
@@ -663,19 +663,18 @@ export function BrandLineSheetsCorePage() {
     };
   }, [collectionId, scReloadNonce]);
 
-  const downloadLabel =
-    emptyChain
-      ? 'PDF · пустая коллекция'
-      : pgLoadState === 'loading'
-        ? 'Скачать PDF…'
-        : pgArticleCount != null && pgArticleCount > 0
-          ? `PDF · ${pgArticleCount} арт.`
-          : 'PDF после публикации';
+  const downloadLabel = emptyChain
+    ? 'PDF · пустая коллекция'
+    : pgLoadState === 'loading'
+      ? 'Скачать PDF…'
+      : pgArticleCount != null && pgArticleCount > 0
+        ? `PDF · ${pgArticleCount} арт.`
+        : 'PDF после публикации';
   const pdfReady =
     !emptyChain && pgLoadState === 'ready' && pgArticleCount != null && pgArticleCount > 0;
 
   return (
-    <CabinetPageContent maxWidth="full" className="w-full space-y-6 pb-safe">
+    <CabinetPageContent maxWidth="full" className="pb-safe w-full space-y-6">
       <PlatformCoreListChrome
         highlightRole="brand"
         pillarId="sample_collection"
@@ -683,7 +682,11 @@ export function BrandLineSheetsCorePage() {
       >
         <div data-testid="brand-sc-linesheets-panel" className="space-y-4">
           <div className={cn(hubGadget.goldenPath, 'items-center')}>
-            <Badge variant="outline" className={hubGadget.chip} data-testid="brand-sc-linesheets-mode-label">
+            <Badge
+              variant="outline"
+              className={hubGadget.chip}
+              data-testid="brand-sc-linesheets-mode-label"
+            >
               Лайншиты
             </Badge>
             <BrandScCabinetGoldenPathStrip
@@ -758,7 +761,10 @@ export function BrandLineSheetsCorePage() {
           ) : null}
           {coreMode ? (
             <>
-              <LinesheetsBatchPublishPanel collectionId={collectionId} onDataChange={bumpScReload} />
+              <LinesheetsBatchPublishPanel
+                collectionId={collectionId}
+                onDataChange={bumpScReload}
+              />
               <BrandScLinesheetSyndicationPanel
                 collectionId={collectionId}
                 articleIds={publishedArticleIds}
@@ -782,10 +788,16 @@ export function BrandLineSheetsCorePage() {
                 compact
               />
               <BrandLinesheetGenPanel collectionId={collectionId} compact />
-              <LinesheetsBatchPublishPanel collectionId={collectionId} onDataChange={bumpScReload} />
+              <LinesheetsBatchPublishPanel
+                collectionId={collectionId}
+                onDataChange={bumpScReload}
+              />
             </>
           ) : null}
-          <LinesheetsPublishedArticlesList collectionId={collectionId} onDataChange={bumpScReload} />
+          <LinesheetsPublishedArticlesList
+            collectionId={collectionId}
+            onDataChange={bumpScReload}
+          />
         </div>
       </PlatformCoreListChrome>
     </CabinetPageContent>

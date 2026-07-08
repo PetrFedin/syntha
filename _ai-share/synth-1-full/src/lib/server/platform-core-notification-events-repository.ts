@@ -239,8 +239,7 @@ export async function recordPlatformCoreChainNotificationEvents(input: {
         kind: input.kind,
         titleRu: input.titleRu,
         bodyRu: input.bodyRu,
-        href:
-          role === 'shop' ? hrefShop : role === 'brand' ? hrefBrand : undefined,
+        href: role === 'shop' ? hrefShop : role === 'brand' ? hrefBrand : undefined,
       })
     )
   );

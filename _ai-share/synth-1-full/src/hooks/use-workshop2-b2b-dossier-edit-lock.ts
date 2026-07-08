@@ -42,9 +42,7 @@ export function useWorkshop2B2bDossierEditLock(
         if (lock?.locked) {
           setState({
             locked: true,
-            messageRu:
-              lock.messageRu ??
-              `ТЗ зафиксировано · заказ ${lock.orderId ?? ''}`.trim(),
+            messageRu: lock.messageRu ?? `ТЗ зафиксировано · заказ ${lock.orderId ?? ''}`.trim(),
             orderId: lock.orderId ?? null,
           });
         } else {

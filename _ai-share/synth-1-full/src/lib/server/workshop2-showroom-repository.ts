@@ -68,7 +68,9 @@ export async function getWorkshop2ShowroomCampaign(input: {
       if (row) {
         const tierRaw = row.visibility_tier ?? 'standard';
         const visibilityTier =
-          tierRaw === 'vip' || tierRaw === 'prebook' || tierRaw === 'standard' ? tierRaw : 'standard';
+          tierRaw === 'vip' || tierRaw === 'prebook' || tierRaw === 'standard'
+            ? tierRaw
+            : 'standard';
         return {
           collectionId: input.collectionId,
           articleId: input.articleId,
@@ -156,11 +158,12 @@ export type Workshop2PublishedShowroomArticle = {
 async function listWorkshop2PublishedShowroomArticlesFromMemoryOrFileStore(
   cid: string
 ): Promise<Workshop2PublishedShowroomArticle[]> {
-  const published = [...memoryCampaigns.values()].filter((c) => c.collectionId === cid && c.published);
+  const published = [...memoryCampaigns.values()].filter(
+    (c) => c.collectionId === cid && c.published
+  );
   if (published.length) {
-    const { getWorkshop2ServerDossierRecord } = await import(
-      '@/lib/server/workshop2-phase1-dossier-server-store'
-    );
+    const { getWorkshop2ServerDossierRecord } =
+      await import('@/lib/server/workshop2-phase1-dossier-server-store');
     return Promise.all(
       published.map(async (c) => {
         const record = await getWorkshop2ServerDossierRecord(cid, c.articleId);
@@ -181,12 +184,10 @@ async function listWorkshop2PublishedShowroomArticlesFromMemoryOrFileStore(
     );
   }
 
-  const { WORKSHOP2_FILE_STORE_DEMO_ARTICLES } = await import(
-    '@/lib/production/workshop2-file-store-demo-bootstrap'
-  );
-  const { getWorkshop2ServerDossierRecord } = await import(
-    '@/lib/server/workshop2-phase1-dossier-server-store'
-  );
+  const { WORKSHOP2_FILE_STORE_DEMO_ARTICLES } =
+    await import('@/lib/production/workshop2-file-store-demo-bootstrap');
+  const { getWorkshop2ServerDossierRecord } =
+    await import('@/lib/server/workshop2-phase1-dossier-server-store');
   const demoItems: Workshop2PublishedShowroomArticle[] = [];
   for (const spec of WORKSHOP2_FILE_STORE_DEMO_ARTICLES) {
     const record = await getWorkshop2ServerDossierRecord(cid, spec.articleId);
@@ -229,9 +230,8 @@ export async function listWorkshop2PublishedShowroomArticles(
          LIMIT 200`,
         [cid]
       );
-      const { getWorkshop2ServerDossierRecord } = await import(
-        '@/lib/server/workshop2-phase1-dossier-server-store'
-      );
+      const { getWorkshop2ServerDossierRecord } =
+        await import('@/lib/server/workshop2-phase1-dossier-server-store');
       const items: Workshop2PublishedShowroomArticle[] = [];
       for (const row of res.rows) {
         const record = await getWorkshop2ServerDossierRecord(cid, row.article_id);

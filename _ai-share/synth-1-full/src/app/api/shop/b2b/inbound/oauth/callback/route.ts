@@ -43,9 +43,10 @@ export async function GET(req: NextRequest) {
 
   const cfg = resolveWorkshop2B2bOAuthInboundConfig(undefined, provider);
   const prodLive = isWorkshop2B2bOAuthProdLiveReady();
-  const exchanged = cfg.tokenUrl && prodLive
-    ? await exchangeWorkshop2B2bOAuthCode({ code, provider })
-    : exchangeWorkshop2B2bOAuthCodeStub({ code, provider });
+  const exchanged =
+    cfg.tokenUrl && prodLive
+      ? await exchangeWorkshop2B2bOAuthCode({ code, provider })
+      : exchangeWorkshop2B2bOAuthCodeStub({ code, provider });
 
   if (!exchanged.ok) {
     const status = 'httpStatus' in exchanged ? (exchanged.httpStatus ?? 503) : 503;

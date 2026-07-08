@@ -25,9 +25,7 @@ function pgCheckoutOrderNumericId(orderId: string): number {
 export function pickPreferredRegistryOrderId(
   orders: ReadonlyArray<{ id?: string | null }>
 ): string {
-  const ids = orders
-    .map((o) => o.id?.trim() ?? '')
-    .filter((id) => id.length > 0);
+  const ids = orders.map((o) => o.id?.trim() ?? '').filter((id) => id.length > 0);
   const pgCheckoutIds = ids.filter((id) => isPlatformCorePgCheckoutOrderId(id));
   if (pgCheckoutIds.length > 0) {
     return [...pgCheckoutIds].sort(
@@ -65,8 +63,7 @@ function compareHandoffQueueRows(
   a: { id: string; handoffAt: string },
   b: { id: string; handoffAt: string }
 ): number {
-  const handoffDelta =
-    Date.parse(a.handoffAt || '') - Date.parse(b.handoffAt || '');
+  const handoffDelta = Date.parse(a.handoffAt || '') - Date.parse(b.handoffAt || '');
   if (Number.isFinite(handoffDelta) && handoffDelta !== 0) return handoffDelta;
   return pgCheckoutOrderNumericId(a.id) - pgCheckoutOrderNumericId(b.id);
 }

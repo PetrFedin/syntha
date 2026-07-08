@@ -33,10 +33,7 @@ export function isEmptyCellInsightVisibleInUi(
   roleId: CoreChainRoleId,
   pillarId: CoreHubPillarId
 ): boolean {
-  return (
-    PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_UI &&
-    hasEmptyCellInsightPanel(roleId, pillarId)
-  );
+  return PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_UI && hasEmptyCellInsightPanel(roleId, pillarId);
 }
 
 /** Hub cabinet: peer-insight панели для empty-cell ролей (forecast, BOM preview). */
@@ -52,10 +49,7 @@ export function isEmptyCellInsightVisibleInHubAudit(
   roleId: CoreChainRoleId,
   pillarId: CoreHubPillarId
 ): boolean {
-  return (
-    PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_HUB_AUDIT &&
-    hasEmptyCellInsightPanel(roleId, pillarId)
-  );
+  return PLATFORM_CORE_SHOW_PEER_INSIGHT_IN_HUB_AUDIT && hasEmptyCellInsightPanel(roleId, pillarId);
 }
 
 /** Столпы в навигации кабинета: active + peer-insight empty (кроме EMPTY27). */

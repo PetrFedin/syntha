@@ -9,7 +9,10 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
   const orderId = id?.trim();
   const aid = amendmentId?.trim();
   if (!orderId || !aid) {
-    return NextResponse.json({ ok: false, messageRu: 'Не указан orderId или amendmentId.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, messageRu: 'Не указан orderId или amendmentId.' },
+      { status: 400 }
+    );
   }
 
   let body: Record<string, unknown> = {};

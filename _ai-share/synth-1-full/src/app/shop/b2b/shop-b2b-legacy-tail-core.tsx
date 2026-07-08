@@ -30,8 +30,7 @@ export function ShopB2bLegacyTailCorePage({ legacyPath }: Props) {
       targetHref={redirect?.href ?? fallbackHref}
       testId={redirect?.testId ?? 'platform-core-b2b-side-path-redirect'}
       message={
-        redirect?.messageRu ??
-        'Раздел вне рабочей цепочки Platform Core → реестр оптовых заказов'
+        redirect?.messageRu ?? 'Раздел вне рабочей цепочки Platform Core → реестр оптовых заказов'
       }
     />
   );

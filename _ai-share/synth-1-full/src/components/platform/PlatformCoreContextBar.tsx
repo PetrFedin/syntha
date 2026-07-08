@@ -62,7 +62,7 @@ function DemoIdChip({
       href={href}
       data-testid={testId}
       title={`${label}: ${value}`}
-      className="bg-bg-surface2 text-text-muted hover:text-text-primary hover:bg-bg-surface inline-flex items-center gap-1 rounded-md border border-border-subtle px-2 py-0.5 font-mono text-[9px] transition-colors hover:underline"
+      className="bg-bg-surface2 text-text-muted hover:text-text-primary hover:bg-bg-surface border-border-subtle inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[9px] transition-colors hover:underline"
     >
       <span className="text-text-muted font-sans text-[8px] font-bold uppercase tracking-wide">
         {label}
@@ -90,9 +90,7 @@ export function PlatformCoreContextBar({
   const collectionId = resolvePageCollectionId({ collection: demo.collectionId });
   const collectionParam =
     collectionId && !isDefaultPlatformCoreCollectionId(collectionId) ? collectionId : undefined;
-  const pillarTitle = pillarId
-    ? PLATFORM_CORE_PILLARS.find((p) => p.id === pillarId)?.title
-    : null;
+  const pillarTitle = pillarId ? PLATFORM_CORE_PILLARS.find((p) => p.id === pillarId)?.title : null;
   const entityHref = pillarId ? getDemoTrailPrimaryHrefForDemo(pillarId, demo) : undefined;
   const cabinetHref =
     workspaceBackHref ??
@@ -106,8 +104,7 @@ export function PlatformCoreContextBar({
   const showOrderChip =
     orderId.length > 0 &&
     (!isPlatformCoreDemoPinOrderId(orderId) || orderId === demo.demoOrderId.trim());
-  const orderHref =
-    roleId === 'shop' ? shopB2bOrderHref(orderId) : brandB2bOrderHref(orderId);
+  const orderHref = roleId === 'shop' ? shopB2bOrderHref(orderId) : brandB2bOrderHref(orderId);
   const brandW2ArticleHref = brandDevelopmentArticleHref(demo.collectionId, demo.demoArticleId);
   const articleHref =
     roleId === 'brand' || roleId === 'shop'
@@ -127,7 +124,11 @@ export function PlatformCoreContextBar({
           aria-label="Контекст Platform Core"
           className={hubCabinet.contextBar}
         >
-          <Link href={homeHref} data-testid="platform-core-cabinet-back-home" className={hubCabinet.contextBarBack}>
+          <Link
+            href={homeHref}
+            data-testid="platform-core-cabinet-back-home"
+            className={hubCabinet.contextBarBack}
+          >
             <ArrowLeft className="h-3 w-3 shrink-0" aria-hidden />
             {PLATFORM_CORE_HOME_CRUMB}
           </Link>
@@ -155,10 +156,7 @@ export function PlatformCoreContextBar({
           ) : null}
         </nav>
         {contextChips && contextChips.length > 0 ? (
-          <div
-            className="flex flex-wrap gap-1.5 pt-1"
-            data-testid="platform-core-context-chips"
-          >
+          <div className="flex flex-wrap gap-1.5 pt-1" data-testid="platform-core-context-chips">
             {contextChips.map((chip) => (
               <Link
                 key={chip.testId}
@@ -241,7 +239,10 @@ export function PlatformCoreContextBar({
         aria-label="Контекст Platform Core"
         className={hubCabinet.contextBar}
       >
-        <Link href="/platform" className="text-text-secondary hover:text-text-primary hover:underline">
+        <Link
+          href="/platform"
+          className="text-text-secondary hover:text-text-primary hover:underline"
+        >
           {PLATFORM_CORE_HOME_CRUMB}
         </Link>
         <span aria-hidden>/</span>

@@ -33,7 +33,9 @@ export function ManufacturerOrderCommsPanel({ orderId, collectionId, factoryId }
             <MessageSquare className="h-4 w-4" />
             <CardTitle className="text-base">Чат по заказу</CardTitle>
           </div>
-          <CardDescription>Столп 5 · B2B PO {session.orderId} · цепочка в golden path.</CardDescription>
+          <CardDescription>
+            Столп 5 · B2B PO {session.orderId} · цепочка в golden path.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button size="sm" asChild>

@@ -2,9 +2,7 @@ import {
   SHOP_PARTNERSHIP_INVITE_API_PATH,
   postShopPartnershipInvite,
 } from '@/lib/b2b/shop-partnership-invite';
-import {
-  SHOP_B2B_PARTNERS_GOLDEN_PATH_UAT_RU,
-} from '@/components/shop/b2b/ShopB2bPartnersGoldenPathStrip';
+import { SHOP_B2B_PARTNERS_GOLDEN_PATH_UAT_RU } from '@/components/shop/b2b/ShopB2bPartnersGoldenPathStrip';
 import {
   SHOP_SHOWROOM_PARTNER_LOGO_DOSSIER_FALLBACK_RU,
   SHOP_SHOWROOM_PARTNER_LOGO_PG_RU,

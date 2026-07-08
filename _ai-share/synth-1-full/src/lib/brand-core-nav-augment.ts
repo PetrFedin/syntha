@@ -94,7 +94,9 @@ function stripBrandNavLinkForCore<T extends NavLinkLike>(link: T): T {
   }
   if (link.subsections?.length) {
     const subsections = link.subsections.filter(
-      (s) => !BRAND_CORE_HIDDEN_QUICK_ACTION_HREFS.has(s.href) && !BRAND_CORE_HIDDEN_LINK_VALUES.has(s.value)
+      (s) =>
+        !BRAND_CORE_HIDDEN_QUICK_ACTION_HREFS.has(s.href) &&
+        !BRAND_CORE_HIDDEN_LINK_VALUES.has(s.value)
     );
     if (subsections.length !== link.subsections.length) {
       next = { ...next, subsections: subsections.length ? subsections : undefined };

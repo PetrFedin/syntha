@@ -71,10 +71,7 @@ export function usePlatformCoreShopTrackingChains(
 
   const idsKey = [...new Set(orderIds.map((id) => id.trim()).filter(Boolean))].sort().join(',');
 
-  const orderIdList = useMemo(
-    () => (idsKey ? idsKey.split(',') : []),
-    [idsKey]
-  );
+  const orderIdList = useMemo(() => (idsKey ? idsKey.split(',') : []), [idsKey]);
   const { tick, refresh, sseConnected } = usePlatformCoreChainStatusPoll(
     enabled && Boolean(idsKey),
     orderIdList
@@ -134,7 +131,9 @@ export function usePlatformCoreShopTrackingChains(
       } finally {
         if (!cancelled) {
           setChains((prev) => {
-            const next = Object.fromEntries(uniqueIds.map((id) => [id, merged[id] ?? prev[id] ?? null]));
+            const next = Object.fromEntries(
+              uniqueIds.map((id) => [id, merged[id] ?? prev[id] ?? null])
+            );
             return next;
           });
           if (Object.values(merged).some(Boolean)) {

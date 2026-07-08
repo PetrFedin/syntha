@@ -35,8 +35,7 @@ const EMPTY: FileV1 = { schemaVersion: 1, byVendorPoId: {}, byOrderId: {} };
 
 function pathFile(): string {
   return (
-    process.env.B2B_VENDOR_PO_FILE?.trim() ||
-    path.join(process.cwd(), 'data', 'b2b-vendor-po.json')
+    process.env.B2B_VENDOR_PO_FILE?.trim() || path.join(process.cwd(), 'data', 'b2b-vendor-po.json')
   );
 }
 

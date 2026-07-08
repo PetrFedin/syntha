@@ -16,11 +16,7 @@ type Props = {
   orderId?: string;
 };
 
-export function SupplierMrpSupplyPanel({
-  collectionId,
-  articleId,
-  orderId,
-}: Props) {
+export function SupplierMrpSupplyPanel({ collectionId, articleId, orderId }: Props) {
   const session = buildSupplierMrpSupplySession({ collectionId, articleId, orderId });
   const orderComms = buildSupplierOrderCommsSession({ collectionId, articleId, orderId });
 
@@ -103,7 +99,13 @@ export function SupplierMrpSupplyPanel({
             <Link href={session.supplyTabHref}>Вкладка поставки</Link>
           </Button>
           <Button size="sm" variant="ghost" asChild>
-            <Link href={supplierOrderCommsFeatureHref(session.orderId, session.collectionId, session.articleId)}>
+            <Link
+              href={supplierOrderCommsFeatureHref(
+                session.orderId,
+                session.collectionId,
+                session.articleId
+              )}
+            >
               Чат по заказу
             </Link>
           </Button>

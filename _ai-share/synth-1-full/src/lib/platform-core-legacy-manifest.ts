@@ -4,10 +4,7 @@
  * Side-paths в core → guards (`platform-core-side-paths-registry.ts`).
  */
 
-export type PlatformCoreLegacyEntryKind =
-  | 'page-split'
-  | 'tail-guard'
-  | 'redirect-component';
+export type PlatformCoreLegacyEntryKind = 'page-split' | 'tail-guard' | 'redirect-component';
 
 export type PlatformCoreLegacyManifestEntry = {
   /** Относительно `src/` */
@@ -260,7 +257,10 @@ export const PLATFORM_CORE_LEGACY_REDIRECT_COMPONENTS: readonly PlatformCoreLega
   [
     { path: 'components/platform/PlatformCoreLegacyPathRedirect.tsx', kind: 'redirect-component' },
     { path: 'components/platform/PlatformCoreLegacyTailPage.tsx', kind: 'redirect-component' },
-    { path: 'components/platform/PlatformCoreLegacyB2bOrderRedirect.tsx', kind: 'redirect-component' },
+    {
+      path: 'components/platform/PlatformCoreLegacyB2bOrderRedirect.tsx',
+      kind: 'redirect-component',
+    },
     { path: 'components/platform/PlatformCoreShopB2bLegacyGuard.tsx', kind: 'redirect-component' },
     { path: 'components/platform/PlatformCoreBrandB2bLegacyGuard.tsx', kind: 'redirect-component' },
     { path: 'app/shop/b2b/shop-b2b-legacy-tail-core.tsx', kind: 'tail-guard' },

@@ -5,7 +5,10 @@ import 'server-only';
 
 import { isSpineOperationalPgPrimary } from '@/lib/integrations/spine/spine-pg-hydrate-guards';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
-import { isWorkshop2PgOnlyMode, shouldWorkshop2PgOnlySkipFileFallback } from '@/lib/production/workshop2-hub-pg-only-policy';
+import {
+  isWorkshop2PgOnlyMode,
+  shouldWorkshop2PgOnlySkipFileFallback,
+} from '@/lib/production/workshop2-hub-pg-only-policy';
 import { isWorkshop2PostgresEnabled } from '@/lib/server/workshop2-pg-pool';
 
 /** Core dev (:3001) с PG — native данные только из PostgreSQL, JSON/file — fallback выкл. */

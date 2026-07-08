@@ -4,7 +4,11 @@
  */
 
 import { B2B_WHOLESALE_ORDER_CONTEXT_QUERY } from '@/lib/domain/cross-role-entity-ids';
-import { workshop2ArticleHref, WORKSHOP2_COL_PARAM, WORKSHOP2_BASE_PATH } from '@/lib/production/workshop2-url';
+import {
+  workshop2ArticleHref,
+  WORKSHOP2_COL_PARAM,
+  WORKSHOP2_BASE_PATH,
+} from '@/lib/production/workshop2-url';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import {
   platformCoreNativeCheckoutHref,
@@ -142,16 +146,13 @@ export function brandB2bOrderHref(orderId: string): string {
   return `/brand/b2b-orders/${encodeURIComponent(orderId)}`;
 }
 
-
 export function brandB2bOrderHandoffContextHref(orderId: string): string {
   return `${brandB2bOrderHref(orderId)}?pillar=order_production#production-handoff`;
 }
 
-
 export function brandB2bOrderChainContextHref(orderId: string): string {
   return `${brandB2bOrderHref(orderId)}?pillar=order_production`;
 }
-
 
 export function brandB2bOrdersRegistryHref(opts?: {
   filter?: 'awaiting_handoff' | 'in_production' | null;
@@ -171,11 +172,9 @@ export function brandB2bOrdersRegistryHref(opts?: {
   return qs ? `${ROUTES.brand.b2bOrders}?${qs}` : ROUTES.brand.b2bOrders;
 }
 
-
 export function brandB2bOrdersAwaitingHandoffRegistryHref(): string {
   return brandB2bOrdersRegistryHref({ filter: 'awaiting_handoff' });
 }
-
 
 export function brandB2bOrdersProductionRegistryHref(orderId?: string): string {
   return brandB2bOrdersRegistryHref({
@@ -184,11 +183,9 @@ export function brandB2bOrdersProductionRegistryHref(orderId?: string): string {
   });
 }
 
-
 export function brandB2bOrdersCollectionRegistryHref(orderId?: string | null): string {
   return brandB2bOrdersRegistryHref({ productionPillar: false, order: orderId ?? null });
 }
-
 
 export function brandCoreOrderProductionCabinetHref(collectionId: string): string {
   return `${ROUTES.brand.coreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
@@ -244,7 +241,6 @@ export function brandW2ProductionTzHref(collectionId: string, articleId: string)
   return brandDevelopmentArticleHref(collectionId, articleId, { section: 'material' });
 }
 
-
 export function factoryProductionDossierHref(
   articleId: string,
   opts?: { collectionId?: string }
@@ -253,7 +249,6 @@ export function factoryProductionDossierHref(
   const cid = opts?.collectionId?.trim();
   return cid ? `${base}?collection=${encodeURIComponent(cid)}` : base;
 }
-
 
 export function factoryProductionDossierContextHref(
   articleId: string,
@@ -267,26 +262,21 @@ export function factoryProductionDossierContextHref(
   return `/factory/production/dossier/${encodeURIComponent(articleId)}?${sp.toString()}`;
 }
 
-
 export function factoryCoreOrderProductionCabinetHref(collectionId: string): string {
   return `${ROUTES.factory.productionCoreCabinet}?pillar=order_production&collection=${encodeURIComponent(collectionId)}`;
 }
-
 
 export function shopB2bOrderHref(orderId: string): string {
   return `/shop/b2b/orders/${encodeURIComponent(orderId)}`;
 }
 
-
 export function shopB2bTrackingOrderHref(orderId: string): string {
   return `${ROUTES.shop.b2bTracking}?order=${encodeURIComponent(orderId)}`;
 }
 
-
 export function shopB2bOrderProductionContextHref(orderId: string): string {
   return `${shopB2bOrderHref(orderId)}#shop-co-buyer-tracking`;
 }
-
 
 export function shopB2bOrdersRegistryHref(opts?: {
   filter?: 'in_production' | null;
@@ -303,7 +293,6 @@ export function shopB2bOrdersRegistryHref(opts?: {
   return qs ? `${ROUTES.shop.b2bOrders}?${qs}` : ROUTES.shop.b2bOrders;
 }
 
-
 export function shopB2bOrdersProductionRegistryHref(orderId?: string): string {
   return shopB2bOrdersRegistryHref({
     filter: 'in_production',
@@ -311,11 +300,9 @@ export function shopB2bOrdersProductionRegistryHref(orderId?: string): string {
   });
 }
 
-
 export function shopB2bOrdersCollectionRegistryHref(orderId?: string | null): string {
   return shopB2bOrdersRegistryHref({ productionPillar: false, order: orderId ?? null });
 }
-
 
 export function factoryProductionOrdersOrderContextHref(
   orderId: string,
@@ -325,7 +312,6 @@ export function factoryProductionOrdersOrderContextHref(
   if (opts?.factoryId?.trim()) sp.set('factoryId', opts.factoryId.trim());
   return `${ROUTES.factory.productionOrders}?${sp.toString()}`;
 }
-
 
 export function factoryProductionHandoffQueueHref(
   orderId: string,
@@ -337,7 +323,6 @@ export function factoryProductionHandoffQueueHref(
   sp.set(PILLAR_CAPABILITY_FEATURE_PARAM, 'handoff');
   return `${ROUTES.factory.production}?${sp.toString()}#handoff-queue`;
 }
-
 
 export function shopB2bCheckoutCollectionHref(
   collectionId: string,
@@ -353,7 +338,6 @@ export function shopB2bCheckoutCollectionHref(
   }
   return `${ROUTES.shop.b2bCheckout}?${sp.toString()}`;
 }
-
 
 export function shopB2bMatrixReorderHref(
   collectionId: string,
@@ -379,11 +363,9 @@ export function shopB2bMatrixReorderHref(
   return `${ROUTES.shop.b2bMatrix}?${sp.toString()}`;
 }
 
-
 export function brandMessagesB2bOrderContextHref(orderId: string): string {
   return `${ROUTES.brand.messages}?${b2bOrderMessagesQuery(orderId)}`;
 }
-
 
 export function brandMessagesWorkshop2ArticleContextHref(
   collectionId: string,
@@ -393,11 +375,9 @@ export function brandMessagesWorkshop2ArticleContextHref(
   return `${ROUTES.brand.messages}?contextType=workshop2_article&contextId=${ctx}`;
 }
 
-
 export function shopMessagesB2bOrderContextHref(orderId: string): string {
   return `${ROUTES.shop.messages}?${b2bOrderMessagesQuery(orderId)}`;
 }
-
 
 export function shopMessagesWorkshop2ArticleContextHref(
   collectionId: string,
@@ -407,7 +387,6 @@ export function shopMessagesWorkshop2ArticleContextHref(
   return `${ROUTES.shop.messages}?contextType=workshop2_article&contextId=${ctx}`;
 }
 
-
 export function factoryMessagesB2bOrderContextHref(
   orderId: string,
   options?: { role?: FactoryMessagesRole }
@@ -416,7 +395,6 @@ export function factoryMessagesB2bOrderContextHref(
   const roleQ = factoryMessagesRoleQuery(options?.role);
   return roleQ ? `${base}&${roleQ}` : base;
 }
-
 
 export function factoryMessagesWorkshop2ArticleContextHref(
   collectionId: string,
@@ -429,11 +407,9 @@ export function factoryMessagesWorkshop2ArticleContextHref(
   return roleQ ? `${base}&${roleQ}` : base;
 }
 
-
 export function factoryMessagesRoleHref(role: FactoryMessagesRole): string {
   return `${ROUTES.factory.messages}?role=${role}`;
 }
-
 
 export function factorySupplierRfqInboxHref(input?: {
   collectionId?: string;
@@ -448,11 +424,9 @@ export function factorySupplierRfqInboxHref(input?: {
   return q ? `${ROUTES.factory.supplierRfqInbox}?${q}` : ROUTES.factory.supplierRfqInbox;
 }
 
-
 export function factorySupplierMessagesB2bOrderContextHref(orderId: string): string {
   return `${ROUTES.factory.supplierMessages}?${b2bOrderMessagesQuery(orderId)}`;
 }
-
 
 export function factorySupplierMessagesWorkshop2ArticleContextHref(
   collectionId: string,
@@ -462,13 +436,11 @@ export function factorySupplierMessagesWorkshop2ArticleContextHref(
   return `${ROUTES.factory.supplierMessages}?contextType=workshop2_article&contextId=${ctx}`;
 }
 
-
 export function brandCalendarB2bOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
   const layers = isPlatformCoreMode() ? 'orders,logistics' : 'tasks';
   return `${ROUTES.brand.calendar}?layers=${layers}&${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
 }
-
 
 export function shopCalendarB2bOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
@@ -477,12 +449,10 @@ export function shopCalendarB2bOrderContextHref(orderId: string): string {
   return `${base}?layers=${layers}&${B2B_CTX.order}=${id}`;
 }
 
-
 export function factoryCalendarB2bOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
   return `${ROUTES.factory.productionCalendar}?layers=tasks,orders,production&${B2B_CTX.order}=${id}`;
 }
-
 
 export function factorySupplierCalendarB2bOrderContextHref(orderId: string): string {
   const sp = new URLSearchParams({
@@ -494,12 +464,10 @@ export function factorySupplierCalendarB2bOrderContextHref(orderId: string): str
   return `${ROUTES.factory.calendar}?${sp.toString()}`;
 }
 
-
 export function shopB2bWorkingOrderOrderContextHref(orderId: string): string {
   const id = encodeURIComponent(orderId);
   return `${ROUTES.shop.b2bWorkingOrder}?wholesaleOrderId=${id}&${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}`;
 }
-
 
 /** @internal narrow routing helper */
 function b2bOrderMessagesQuery(orderId: string): string {
@@ -507,9 +475,7 @@ function b2bOrderMessagesQuery(orderId: string): string {
   return `contextType=b2b_order&contextId=${id}&${B2B_CTX.order}=${id}&${B2B_CTX.orderId}=${id}&q=${encodeURIComponent(`B2B ${orderId}`)}`;
 }
 
-
 /** @internal narrow routing helper */
 function factoryMessagesRoleQuery(role?: FactoryMessagesRole): string {
   return role ? `role=${role}` : '';
 }
-

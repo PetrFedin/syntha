@@ -129,7 +129,9 @@ export function PlatformCoreAgentChat({
       <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-2">
         {messages.length === 0 ? (
           <p className="text-text-muted py-8 text-center text-[11px]">
-            {running ? 'Агент сканирует репозиторий… ответ появится здесь' : 'Ожидание ответа агента…'}
+            {running
+              ? 'Агент сканирует репозиторий… ответ появится здесь'
+              : 'Ожидание ответа агента…'}
           </p>
         ) : (
           messages.map((m, i) => (
@@ -138,7 +140,7 @@ export function PlatformCoreAgentChat({
               className={cn(
                 'rounded-lg px-2.5 py-2 text-[11px] leading-relaxed',
                 m.role === 'user' && 'bg-accent-primary/10 ml-2',
-                m.role === 'assistant' && 'bg-slate-50 mr-1',
+                m.role === 'assistant' && 'mr-1 bg-slate-50',
                 m.role === 'system' && 'border border-amber-200/80 bg-amber-50/80 text-amber-950'
               )}
             >

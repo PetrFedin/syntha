@@ -11,12 +11,15 @@ import {
 } from '@/components/brand/production/workshop2-phase1-dossier-tz-gates';
 import type { DossierSection } from '@/lib/production/dossier-readiness-engine';
 
-export type UseWorkshop2Phase1DossierTzGatesZoneInput = BuildWorkshop2Phase1DossierTzGateSnapshotInput & {
-  sectionWarningsById: Record<DossierSection, string[]>;
-};
+export type UseWorkshop2Phase1DossierTzGatesZoneInput =
+  BuildWorkshop2Phase1DossierTzGateSnapshotInput & {
+    sectionWarningsById: Record<DossierSection, string[]>;
+  };
 
 /** TZ fill gate, gate snapshot, section gate errors, factory send preview (sectionBodies). */
-export function useWorkshop2Phase1DossierTzGatesZone(input: UseWorkshop2Phase1DossierTzGatesZoneInput): {
+export function useWorkshop2Phase1DossierTzGatesZone(
+  input: UseWorkshop2Phase1DossierTzGatesZoneInput
+): {
   tzCoreFieldsFillPctGate: Workshop2Phase1DossierTzCoreFieldsFillPctGate;
   tzGateSnapshot: ReturnType<typeof buildWorkshop2Phase1DossierTzGateSnapshot>;
   sectionGateErrorsById: Record<DossierSection, string[]>;
@@ -46,7 +49,8 @@ export function useWorkshop2Phase1DossierTzGatesZone(input: UseWorkshop2Phase1Do
   );
 
   const sectionGateErrorsById = useMemo(
-    () => buildWorkshop2Phase1DossierSectionGateErrorsById(input.sectionWarningsById, tzGateSnapshot),
+    () =>
+      buildWorkshop2Phase1DossierSectionGateErrorsById(input.sectionWarningsById, tzGateSnapshot),
     [input.sectionWarningsById, tzGateSnapshot]
   );
 

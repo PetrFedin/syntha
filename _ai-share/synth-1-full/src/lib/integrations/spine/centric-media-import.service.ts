@@ -20,8 +20,7 @@ export type CentricMediaImportPayload = {
   assets?: CentricPxmAsset[];
 };
 
-const DEFAULT_HERO =
-  'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&q=80';
+const DEFAULT_HERO = 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&q=80';
 
 export async function importCentricPxmMedia(
   payload: CentricMediaImportPayload,
@@ -29,9 +28,8 @@ export async function importCentricPxmMedia(
 ): Promise<CentricPxmMediaRecord> {
   const org = organizationId?.trim() || 'org-brand-001';
   const heroUrl = payload.heroUrl?.trim() || DEFAULT_HERO;
-  const assets: CentricPxmAsset[] =
-    payload.assets?.length ?
-      payload.assets
+  const assets: CentricPxmAsset[] = payload.assets?.length
+    ? payload.assets
     : [
         { assetId: `${payload.styleId}-hero`, url: heroUrl, kind: 'hero', mimeType: 'image/jpeg' },
         {

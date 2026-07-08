@@ -1,6 +1,9 @@
 import type { ShopMatrixArticleInspectorView } from '@/lib/b2b/shop-matrix-article-inspector.types';
 
-export type { ShopMatrixArticleInspectorView, ShopMatrixArticleFabricLine } from '@/lib/b2b/shop-matrix-article-inspector.types';
+export type {
+  ShopMatrixArticleInspectorView,
+  ShopMatrixArticleFabricLine,
+} from '@/lib/b2b/shop-matrix-article-inspector.types';
 
 export async function fetchShopMatrixArticleInspectorView(input: {
   collectionId: string;

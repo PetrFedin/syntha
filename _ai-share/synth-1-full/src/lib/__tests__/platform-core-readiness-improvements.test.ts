@@ -32,11 +32,15 @@ describe('platform-core-readiness-improvements', () => {
   it('filters by pillar and dedupes repeated audit lines', () => {
     const cells = getPlatformCoreReadinessMatrix('SS27');
     const all = buildPlatformCoreReadinessImprovements(cells);
-    const shopOrder = buildPlatformCoreReadinessImprovements(cells, { pillarId: 'collection_order' });
+    const shopOrder = buildPlatformCoreReadinessImprovements(cells, {
+      pillarId: 'collection_order',
+    });
     expect(shopOrder.length).toBeLessThanOrEqual(all.length);
-    expect(shopOrder.every((item) => item.pillarId === 'collection_order' || item.linkageRu.includes('→'))).toBe(
-      true
-    );
+    expect(
+      shopOrder.every(
+        (item) => item.pillarId === 'collection_order' || item.linkageRu.includes('→')
+      )
+    ).toBe(true);
     const keys = new Set(all.map((item) => item.id));
     expect(keys.size).toBe(all.length);
   });

@@ -125,8 +125,7 @@ describe('wave WD — syndication server mirrors publish audit PG', () => {
       const journal = await auditRepo.listBrandScPublishAuditJournalForCollection('SS27', 8);
       expect(
         journal.some(
-          (r) =>
-            r.articleId === 'demo-ss27-wd-01' && r.eventType === 'linesheet.syndicated'
+          (r) => r.articleId === 'demo-ss27-wd-01' && r.eventType === 'linesheet.syndicated'
         )
       ).toBe(true);
     }
@@ -143,9 +142,7 @@ describe('wave WD — syndication server mirrors publish audit PG', () => {
     });
     if (unpublish.ok) {
       const afterUnpublish = await auditRepo.listBrandScPublishAuditJournalForCollection('SS27', 8);
-      expect(
-        afterUnpublish.some((r) => r.eventType === 'showroom.batch_unpublished')
-      ).toBe(true);
+      expect(afterUnpublish.some((r) => r.eventType === 'showroom.batch_unpublished')).toBe(true);
     }
 
     const rollback = await server.postBrandLinesheetBatchUnpublishRollback({

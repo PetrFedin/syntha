@@ -40,19 +40,31 @@ export function SupCmCabinetSpinePeerStrip({ collectionId, articleId, orderId, f
 
   return (
     <div className={hubGadget.goldenPath} data-testid="sup-cm-cabinet-spine-peer-strip">
-      <Link href={procurementHref} data-testid="sup-cm-cabinet-procurement-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurementHref}
+        data-testid="sup-cm-cabinet-procurement-link"
+        className={hubGadget.goldenLink}
+      >
         Закупки
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={procurement.forecastHref} data-testid="sup-cm-cabinet-forecast-link" className={hubGadget.goldenLink}>
+      <Link
+        href={procurement.forecastHref}
+        data-testid="sup-cm-cabinet-forecast-link"
+        className={hubGadget.goldenLink}
+      >
         Прогноз
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={procurement.rfqHref} data-testid={SUP_CM_CABINET_RFQ_INBOX_PEER_LINK_TESTID} className={hubGadget.goldenLink}>
+      <Link
+        href={procurement.rfqHref}
+        data-testid={SUP_CM_CABINET_RFQ_INBOX_PEER_LINK_TESTID}
+        className={hubGadget.goldenLink}
+      >
         Входящие RFQ
       </Link>
       {resolvedOrderId ? (
@@ -60,13 +72,21 @@ export function SupCmCabinetSpinePeerStrip({ collectionId, articleId, orderId, f
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.brandOrderChatHref} data-testid="sup-cm-cabinet-brand-chat-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.brandOrderChatHref}
+            data-testid="sup-cm-cabinet-brand-chat-link"
+            className={hubGadget.goldenLink}
+          >
             Чат с брендом
           </Link>
           <span className={hubGadget.goldenSep} aria-hidden>
             ·
           </span>
-          <Link href={session.shopTrackingHref} data-testid="sup-cm-cabinet-shop-tracking-link" className={hubGadget.goldenLink}>
+          <Link
+            href={session.shopTrackingHref}
+            data-testid="sup-cm-cabinet-shop-tracking-link"
+            className={hubGadget.goldenLink}
+          >
             Трекинг магазина
           </Link>
         </>
@@ -74,7 +94,11 @@ export function SupCmCabinetSpinePeerStrip({ collectionId, articleId, orderId, f
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.entitiesHref} data-testid="sup-cm-cabinet-entities-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.entitiesHref}
+        data-testid="sup-cm-cabinet-entities-link"
+        className={hubGadget.goldenLink}
+      >
         Треды сущностей
       </Link>
     </div>

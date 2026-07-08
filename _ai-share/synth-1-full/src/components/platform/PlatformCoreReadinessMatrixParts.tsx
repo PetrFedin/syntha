@@ -191,11 +191,7 @@ function ReadinessAuditList({
 }) {
   if (items.length === 0) return null;
   const toneClass =
-    tone === 'good'
-      ? 'text-emerald-800'
-      : tone === 'bad'
-        ? 'text-amber-900'
-        : 'text-sky-900';
+    tone === 'good' ? 'text-emerald-800' : tone === 'bad' ? 'text-amber-900' : 'text-sky-900';
   return (
     <div>
       <p className="text-text-muted text-[10px] font-semibold uppercase tracking-wide">{title}</p>
@@ -230,14 +226,22 @@ function ReadinessSectionAuditDetail({
     <div className="space-y-2 text-left text-[11px] leading-snug">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-semibold">{sub.label}</span>
-        <span className={cn('font-mono font-bold tabular-nums', readinessScoreTone(breakdown.score, live))}>
+        <span
+          className={cn(
+            'font-mono font-bold tabular-nums',
+            readinessScoreTone(breakdown.score, live)
+          )}
+        >
           {formatReadinessScore(breakdown.score)}/10
         </span>
       </div>
       <p className="text-text-muted font-mono text-[10px]">
         static {formatReadinessScore(breakdown.staticScore)}
         {breakdown.liveDelta > 0 ? (
-          <> · live +{formatReadinessScore(breakdown.liveDelta)} (PG/e2e: {breakdown.pgSignals})</>
+          <>
+            {' '}
+            · live +{formatReadinessScore(breakdown.liveDelta)} (PG/e2e: {breakdown.pgSignals})
+          </>
         ) : (
           <> · без PG-бонуса</>
         )}
@@ -350,8 +354,8 @@ export function ReadinessCellSectionsPanel({
           <p className="text-text-secondary mt-2 text-xs leading-relaxed">{cell.summary}</p>
           {cell.subItems.length > 0 ? (
             <p className="text-text-muted mt-2 text-[10px] leading-snug">
-              Оценка ячейки = min(среднее {cell.subItems.length} разделов, cap аудита). Ниже — каждый
-              раздел: static (UI/peers без PG), live (+PG/e2e), списки good/bad/fix.
+              Оценка ячейки = min(среднее {cell.subItems.length} разделов, cap аудита). Ниже —
+              каждый раздел: static (UI/peers без PG), live (+PG/e2e), списки good/bad/fix.
             </p>
           ) : null}
         </div>
@@ -460,7 +464,8 @@ function ReadinessImprovementLink({ item }: { item: ReadinessImprovementItem }) 
             {item.kind === 'fix' ? '→' : '·'} {item.title}
           </p>
           <p className="text-text-muted mt-1 text-[10px] leading-snug">
-            {ROLE_LABELS[item.roleId]} · {PLATFORM_CORE_PILLARS.find((p) => p.id === item.pillarId)?.title}
+            {ROLE_LABELS[item.roleId]} ·{' '}
+            {PLATFORM_CORE_PILLARS.find((p) => p.id === item.pillarId)?.title}
             {item.sectionLabel ? ` · ${item.sectionLabel}` : ''}
           </p>
           <p className="text-text-secondary mt-2 text-[11px] leading-relaxed">{item.linkageRu}</p>

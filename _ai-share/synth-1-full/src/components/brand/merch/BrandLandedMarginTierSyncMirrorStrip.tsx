@@ -58,7 +58,11 @@ export function BrandLandedMarginTierSyncMirrorStrip({ collectionId, orderId }: 
       >
         Shop margin pricelist
       </Link>
-      <Badge variant="outline" className="text-[9px]" data-testid={`brand-landed-margin-tier-sync-source-${storageMode}`}>
+      <Badge
+        variant="outline"
+        className="text-[9px]"
+        data-testid={`brand-landed-margin-tier-sync-source-${storageMode}`}
+      >
         {storageMode === 'pg' ? 'PG' : storageMode}
       </Badge>
     </div>

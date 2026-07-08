@@ -6,9 +6,7 @@ import { usePathname } from 'next/navigation';
 import { PlatformCoreHubViewToggle } from '@/components/platform/PlatformCoreHubViewToggle';
 import { usePlatformCoreHubViews } from '@/hooks/use-platform-core-hub-views';
 import { PLATFORM_CORE_HUB_TITLE } from '@/lib/platform-core-canonical-labels';
-import {
-  isPlatformCoreB2cHubPath,
-} from '@/lib/platform-core-mode-surfaces';
+import { isPlatformCoreB2cHubPath } from '@/lib/platform-core-mode-surfaces';
 import { PLATFORM_CORE_HORIZONTAL_SCROLL } from '@/lib/platform-core-header-controls';
 import { cn } from '@/lib/utils';
 

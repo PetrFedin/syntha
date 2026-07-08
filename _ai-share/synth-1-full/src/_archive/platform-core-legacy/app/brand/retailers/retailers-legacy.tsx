@@ -329,8 +329,7 @@ export function BrandRetailersLegacyPage() {
 
   const filteredRetailers = useMemo(() => {
     if (showCorePillar) {
-      const ids =
-        Object.keys(w2ByRetailer).length > 0 ? Object.keys(w2ByRetailer) : ['shop1'];
+      const ids = Object.keys(w2ByRetailer).length > 0 ? Object.keys(w2ByRetailer) : ['shop1'];
       return ids
         .map((id) => {
           const w2 = w2ByRetailer[id];
@@ -490,87 +489,87 @@ export function BrandRetailersLegacyPage() {
                 ) : null}
                 {/* --- ANALYTICAL GRID --- */}
                 {showCorePillar ? null : (
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                  {[
-                    {
-                      label: 'Стоимость сети',
-                      val: '6.7M ₽',
-                      sub: '+8.2%',
-                      trend: 'up',
-                      icon: Users,
-                      bg: 'bg-accent-primary/10',
-                      hint: 'Совокупный объём бизнеса с подключёнными ритейлерами (демо).',
-                    },
-                    {
-                      label: 'Средний LTV',
-                      val: '2.2M ₽',
-                      sub: 'рост',
-                      trend: 'up',
-                      icon: TrendingUp,
-                      bg: 'bg-emerald-50/50',
-                      hint: 'LTV (Lifetime Value) — средняя пожизненная ценность партнёра для бренда.',
-                    },
-                    {
-                      label: 'Активные рынки',
-                      val: '12',
-                      sub: 'мир',
-                      trend: 'up',
-                      icon: Target,
-                      bg: 'bg-blue-50/50',
-                      hint: 'Количество географий или сегментов, где сеть активна.',
-                    },
-                    {
-                      label: 'Здоровье сети',
-                      val: '84/100',
-                      sub: 'норма',
-                      trend: 'up',
-                      icon: Activity,
-                      bg: 'bg-emerald-50/50',
-                      hint: 'Индекс платежей, выполнения планов и рисков по партнёрам.',
-                    },
-                  ].map((m, i) => (
-                    <Card
-                      key={i}
-                      className="border-border-subtle hover:border-accent-primary/20 group relative overflow-hidden rounded-xl border bg-white p-3.5 shadow-sm transition-all"
-                    >
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="text-text-muted border-border-default cursor-help border-b border-dotted text-[10px] font-bold uppercase leading-none tracking-widest">
-                              {m.label}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs text-[11px] leading-snug">
-                            {m.hint}
-                          </TooltipContent>
-                        </Tooltip>
-                        <div
-                          className={cn(
-                            'border-border-default/50 rounded-lg border p-1.5 shadow-inner',
-                            m.bg
-                          )}
-                        >
-                          <m.icon className="text-text-muted group-hover:text-accent-primary h-3.5 w-3.5" />
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    {[
+                      {
+                        label: 'Стоимость сети',
+                        val: '6.7M ₽',
+                        sub: '+8.2%',
+                        trend: 'up',
+                        icon: Users,
+                        bg: 'bg-accent-primary/10',
+                        hint: 'Совокупный объём бизнеса с подключёнными ритейлерами (демо).',
+                      },
+                      {
+                        label: 'Средний LTV',
+                        val: '2.2M ₽',
+                        sub: 'рост',
+                        trend: 'up',
+                        icon: TrendingUp,
+                        bg: 'bg-emerald-50/50',
+                        hint: 'LTV (Lifetime Value) — средняя пожизненная ценность партнёра для бренда.',
+                      },
+                      {
+                        label: 'Активные рынки',
+                        val: '12',
+                        sub: 'мир',
+                        trend: 'up',
+                        icon: Target,
+                        bg: 'bg-blue-50/50',
+                        hint: 'Количество географий или сегментов, где сеть активна.',
+                      },
+                      {
+                        label: 'Здоровье сети',
+                        val: '84/100',
+                        sub: 'норма',
+                        trend: 'up',
+                        icon: Activity,
+                        bg: 'bg-emerald-50/50',
+                        hint: 'Индекс платежей, выполнения планов и рисков по партнёрам.',
+                      },
+                    ].map((m, i) => (
+                      <Card
+                        key={i}
+                        className="border-border-subtle hover:border-accent-primary/20 group relative overflow-hidden rounded-xl border bg-white p-3.5 shadow-sm transition-all"
+                      >
+                        <div className="mb-2.5 flex items-center justify-between">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="text-text-muted border-border-default cursor-help border-b border-dotted text-[10px] font-bold uppercase leading-none tracking-widest">
+                                {m.label}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs text-[11px] leading-snug">
+                              {m.hint}
+                            </TooltipContent>
+                          </Tooltip>
+                          <div
+                            className={cn(
+                              'border-border-default/50 rounded-lg border p-1.5 shadow-inner',
+                              m.bg
+                            )}
+                          >
+                            <m.icon className="text-text-muted group-hover:text-accent-primary h-3.5 w-3.5" />
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-text-primary text-xl font-black uppercase tabular-nums leading-none tracking-tighter">
-                          {m.val}
-                        </span>
-                        <span
-                          className={cn(
-                            'mt-1 flex h-4 items-center rounded px-1.5 text-[9px] font-bold uppercase tracking-widest',
-                            m.trend === 'up'
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : 'bg-rose-50 text-rose-600'
-                          )}
-                        >
-                          {m.sub}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-text-primary text-xl font-black uppercase tabular-nums leading-none tracking-tighter">
+                            {m.val}
+                          </span>
+                          <span
+                            className={cn(
+                              'mt-1 flex h-4 items-center rounded px-1.5 text-[9px] font-bold uppercase tracking-widest',
+                              m.trend === 'up'
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : 'bg-rose-50 text-rose-600'
+                            )}
+                          >
+                            {m.sub}
+                          </span>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
                 )}
 
                 <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
@@ -753,7 +752,9 @@ export function BrandRetailersLegacyPage() {
                                 <span className="text-text-primary text-[11px] font-bold uppercase tabular-nums leading-none tracking-tighter">
                                   {fmtMoney(retailer.totalValue)}
                                 </span>
-                                {'w2Live' in retailer && retailer.w2Live && retailer.lastW2OrderId ? (
+                                {'w2Live' in retailer &&
+                                retailer.w2Live &&
+                                retailer.lastW2OrderId ? (
                                   <Link
                                     href={ROUTES.brand.b2bOrder(retailer.lastW2OrderId)}
                                     className="text-accent-primary mt-1 block text-[8px] font-bold uppercase tracking-wider hover:underline"

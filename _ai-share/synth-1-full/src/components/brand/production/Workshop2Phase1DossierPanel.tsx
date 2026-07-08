@@ -41,21 +41,15 @@ import type {
   Workshop2PassportPlannedLaunchType,
   Workshop2TzSignoffSectionKey,
 } from '@/lib/production/workshop2-dossier-phase1.types';
-import {
-  W2_MATERIAL_SUBPAGE_ANCHORS,
-} from '@/lib/production/workshop2-material-bom-check';
-import {
-  parseMatRowsFromDossier,
-} from '@/lib/production/workshop2-material-mat-rows';
+import { W2_MATERIAL_SUBPAGE_ANCHORS } from '@/lib/production/workshop2-material-bom-check';
+import { parseMatRowsFromDossier } from '@/lib/production/workshop2-material-mat-rows';
 import { passportCheckpointTitleClass } from '@/lib/production/workshop2-passport-check';
 import { W2_CONSTRUCTION_SUBPAGE_ANCHORS } from '@/lib/production/workshop2-construction-dossier-anchors';
 import { useAuth } from '@/providers/auth-provider';
 import { W2_ARTICLE_SECTION_DOM } from '@/lib/production/workshop2-url';
 import { useWorkshop2DossierView } from '@/components/brand/production/workshop2-dossier-view-context';
 import { useWorkshop2B2bDossierEditLock } from '@/hooks/use-workshop2-b2b-dossier-edit-lock';
-import {
-  type Workshop2DossierViewProfile,
-} from '@/lib/production/workshop2-dossier-view-infrastructure';
+import { type Workshop2DossierViewProfile } from '@/lib/production/workshop2-dossier-view-infrastructure';
 import { WORKSHOP2_TZ_DIGITAL_SIGNOFF_DEFAULT_CAPABILITIES } from '@/lib/production/workshop2-tz-digital-signoff';
 import { useToast } from '@/hooks/use-toast';
 import { useRbac } from '@/hooks/useRbac';
@@ -136,15 +130,11 @@ import {
 } from '@/components/brand/production/workshop2-phase1-dossier-panel-field-hints';
 import { HandbookMultiSelectPopover } from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-multi-select';
 import { resolvedHandbookDisplayLabel } from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-display-label';
-import {
-  clampSampleBasePieceQtyToCap,
-} from '@/components/brand/production/workshop2-phase1-dossier-panel-dossier-mutations';
+import { clampSampleBasePieceQtyToCap } from '@/components/brand/production/workshop2-phase1-dossier-panel-dossier-mutations';
 import { collectWorkshop2Phase1LinkedAttributeIdsForLeaf } from '@/components/brand/production/workshop2-phase1-dossier-panel-sketch-linked-attribute-ids';
 import { exportSketchVisualZipWithGates } from '@/components/brand/production/workshop2-phase1-dossier-panel-export-sketch-visual-zip';
 import { useWorkshop2Phase1DossierSectionSignoffCallbacks } from '@/components/brand/production/use-workshop2-phase1-dossier-section-signoff-callbacks';
-import {
-  type HandbookCheckSnapshot,
-} from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-check-snapshot';
+import { type HandbookCheckSnapshot } from '@/components/brand/production/workshop2-phase1-dossier-panel-handbook-check-snapshot';
 import { useWorkshop2Phase1DossierAttrCardContext } from '@/components/brand/production/workshop2-phase1-dossier-panel-use-attr-card-context';
 import { useWorkshop2Phase1DossierPassportHubZone } from '@/components/brand/production/use-workshop2-phase1-dossier-passport-hub-zone';
 import { useWorkshop2Phase1DossierSectionRowsOrchestration } from '@/components/brand/production/use-workshop2-phase1-dossier-section-rows-orchestration';
@@ -204,10 +194,11 @@ export function Workshop2Phase1DossierPanel({
   const { toast } = useToast();
   const { user } = useAuth();
   useWorkshop2Phase1DossierFactoryPinToast(toast);
-  const { w2MetricsSkuRef, w2DossierMetricsCtx } = useWorkshop2Phase1DossierW2MetricsFlushContextZone({
-    appUserUid: user?.uid,
-    orgId: user?.activeOrganizationId,
-  });
+  const { w2MetricsSkuRef, w2DossierMetricsCtx } =
+    useWorkshop2Phase1DossierW2MetricsFlushContextZone({
+      appUserUid: user?.uid,
+      orgId: user?.activeOrganizationId,
+    });
   const { role, can } = useRbac();
 
   const { profile: dossierViewProfile, setProfile: setDossierViewProfileFromCtx } =
@@ -316,9 +307,7 @@ export function Workshop2Phase1DossierPanel({
 
   const searchParams = useSearchParams();
   const wholesaleOrderId =
-    searchParams.get('order')?.trim() ||
-    searchParams.get('orderId')?.trim() ||
-    undefined;
+    searchParams.get('order')?.trim() || searchParams.get('orderId')?.trim() || undefined;
 
   const applyCommittedServerDossier = useCallback(
     ({ dossier: next }: { version: number; dossier: Workshop2DossierPhase1 }) => {
@@ -337,19 +326,15 @@ export function Workshop2Phase1DossierPanel({
     applyCommittedServerDossier,
   });
 
-  const {
-    attrCommentsById,
-    openAttrComments,
-    postMainTrailAttrComments,
-    setAttrCommentOnlyOpen,
-  } = useWorkshop2Phase1DossierAttrCommentsController({
-    dossier,
-    setDossier,
-    updatedByLabel,
-    dossierCommentsBridgeRef,
-    tzBlockCommentMetricKeys,
-    onTzBlockCommentMetrics,
-  });
+  const { attrCommentsById, openAttrComments, postMainTrailAttrComments, setAttrCommentOnlyOpen } =
+    useWorkshop2Phase1DossierAttrCommentsController({
+      dossier,
+      setDossier,
+      updatedByLabel,
+      dossierCommentsBridgeRef,
+      tzBlockCommentMetricKeys,
+      onTzBlockCommentMetrics,
+    });
 
   const [handbookCheckReportExpanded, setHandbookCheckReportExpanded] = useState(true);
   const {
@@ -504,22 +489,19 @@ export function Workshop2Phase1DossierPanel({
     currentLeaf,
   });
 
-  const {
-    appendPassportPostSignoffJournalNote,
-    logTechPackZipLine,
-    appendTzPulse,
-  } = useWorkshop2Phase1DossierJournalCommitZone({
-    collectionId,
-    articleId,
-    lastPersistedDossierRef,
-    w2DossierMetricsCtx,
-    setDossierMetricsTick,
-    setSaveError,
-    toast,
-    updatedByLabel,
-    tzWriteDisabled,
-    setDossierInternal,
-  });
+  const { appendPassportPostSignoffJournalNote, logTechPackZipLine, appendTzPulse } =
+    useWorkshop2Phase1DossierJournalCommitZone({
+      collectionId,
+      articleId,
+      lastPersistedDossierRef,
+      w2DossierMetricsCtx,
+      setDossierMetricsTick,
+      setSaveError,
+      toast,
+      updatedByLabel,
+      tzWriteDisabled,
+      setDossierInternal,
+    });
 
   const {
     matAttrDef,
@@ -791,19 +773,15 @@ export function Workshop2Phase1DossierPanel({
       handbookWarnings,
     });
 
-  const {
-    tzCoreFieldsFillPctGate,
-    tzGateSnapshot,
-    sectionGateErrorsById,
-    factorySendHubPreview,
-  } = useWorkshop2Phase1DossierTzGatesZone({
-    dossier,
-    techPackSessionBlobById,
-    attrCommentsById: attrCommentsById as Record<string, Workshop2TzGateCommentLike[]>,
-    sectionReadinessUi,
-    activeCategoryLeafId: currentLeaf.leafId,
-    sectionWarningsById,
-  });
+  const { tzCoreFieldsFillPctGate, tzGateSnapshot, sectionGateErrorsById, factorySendHubPreview } =
+    useWorkshop2Phase1DossierTzGatesZone({
+      dossier,
+      techPackSessionBlobById,
+      attrCommentsById: attrCommentsById as Record<string, Workshop2TzGateCommentLike[]>,
+      sectionReadinessUi,
+      activeCategoryLeafId: currentLeaf.leafId,
+      sectionWarningsById,
+    });
 
   const {
     tzRevokeDeniedHint,
@@ -873,21 +851,21 @@ export function Workshop2Phase1DossierPanel({
 
   const { postMainTrailFinalWizard, setFinalTzWizardOpen } =
     useWorkshop2Phase1DossierFinalTzWizardController({
-    dossier,
-    tzWriteDisabled,
-    updatedByLabel,
-    skuDraft,
-    nameDraft,
-    pathLabel: currentLeaf.pathLabel,
-    persist,
-    toast,
-    finalTzSpecDocumentHtml,
-    factoryPackDocumentHtml,
-    factoryPackReleaseGate,
-    phase1DossierJsonUtf8Bytes,
-    exportLanguage,
-    setExportLanguage,
-  });
+      dossier,
+      tzWriteDisabled,
+      updatedByLabel,
+      skuDraft,
+      nameDraft,
+      pathLabel: currentLeaf.pathLabel,
+      persist,
+      toast,
+      finalTzSpecDocumentHtml,
+      factoryPackDocumentHtml,
+      factoryPackReleaseGate,
+      phase1DossierJsonUtf8Bytes,
+      exportLanguage,
+      setExportLanguage,
+    });
 
   const { dossierNavPrimarySections, dossierNavSecondarySections } =
     useWorkshop2Phase1DossierViewNavZone({

@@ -2,9 +2,7 @@ import {
   interpolateB2bMessageTemplateBody,
   savePlatformCoreB2bMessageTemplate,
 } from '@/lib/communications/platform-core-b2b-message-templates-storage';
-import {
-  shouldRequireShopB2bCheckoutJwt,
-} from '@/lib/server/shop-b2b-checkout-auth-policy';
+import { shouldRequireShopB2bCheckoutJwt } from '@/lib/server/shop-b2b-checkout-auth-policy';
 
 describe('platform-core-b2b-message-templates-storage', () => {
   it('interpolates template placeholders', () => {

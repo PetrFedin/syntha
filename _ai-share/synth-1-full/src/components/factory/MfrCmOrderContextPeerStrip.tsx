@@ -27,7 +27,11 @@ export function MfrCmOrderContextPeerStrip({ collectionId, orderId, factoryId }:
       className={cn(hubGadget.goldenPath, hubCabinet.workspaceTableScroll, 'max-md:flex-nowrap')}
       data-testid="mfr-cm-order-context-strip"
     >
-      <Link href={session.handoffHref} data-testid="mfr-cm-order-handoff-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.handoffHref}
+        data-testid="mfr-cm-order-handoff-link"
+        className={hubGadget.goldenLink}
+      >
         Передача
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
@@ -39,25 +43,41 @@ export function MfrCmOrderContextPeerStrip({ collectionId, orderId, factoryId }:
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.brandOrderChatHref} data-testid="mfr-cm-order-brand-chat-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.brandOrderChatHref}
+        data-testid="mfr-cm-order-brand-chat-link"
+        className={hubGadget.goldenLink}
+      >
         Чат бренда
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.shopTrackingHref} data-testid="mfr-cm-order-shop-tracking-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.shopTrackingHref}
+        data-testid="mfr-cm-order-shop-tracking-link"
+        className={hubGadget.goldenLink}
+      >
         Трекинг магазина
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.productionOpsCutTicketHref} data-testid="mfr-cm-order-cut-ticket-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.productionOpsCutTicketHref}
+        data-testid="mfr-cm-order-cut-ticket-link"
+        className={hubGadget.goldenLink}
+      >
         Техкарта раскроя
       </Link>
       <span className={hubGadget.goldenSep} aria-hidden>
         ·
       </span>
-      <Link href={session.entitiesHref} data-testid="mfr-cm-order-entities-link" className={hubGadget.goldenLink}>
+      <Link
+        href={session.entitiesHref}
+        data-testid="mfr-cm-order-entities-link"
+        className={hubGadget.goldenLink}
+      >
         Сущности
       </Link>
     </div>

@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
-import { buildPlatformCorePlanner, type PlatformCorePlannerItem } from '@/lib/platform-core-planner';
+import {
+  buildPlatformCorePlanner,
+  type PlatformCorePlannerItem,
+} from '@/lib/platform-core-planner';
 import {
   isDevPlannerApiEnabled,
   readPlannerRuntimeState,
   runtimeToOverlay,
 } from '@/lib/server/platform-core-planner-runtime.server';
 
-function pickNextOpen(snapshot: ReturnType<typeof buildPlatformCorePlanner>): PlatformCorePlannerItem | null {
+function pickNextOpen(
+  snapshot: ReturnType<typeof buildPlatformCorePlanner>
+): PlatformCorePlannerItem | null {
   return snapshot.queue.find((t) => t.status === 'open') ?? null;
 }
 

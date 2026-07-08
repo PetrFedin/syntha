@@ -64,16 +64,14 @@ export function evaluateWorkshop2ReadinessPulseSampleGate(
     return {
       id: 'readiness.pulse.misaligned',
       severity: 'blocker',
-      messageRu:
-        hintRu || 'Разрыв % ТЗ и pre-flight пульса — устраните блокеры перед образцом.',
+      messageRu: hintRu || 'Разрыв % ТЗ и pre-flight пульса — устраните блокеры перед образцом.',
     };
   }
   if (pulseState === 'at_risk' && preflightBlockerCount === 0) {
     return {
       id: 'readiness.pulse.gap',
       severity: 'warning',
-      messageRu:
-        hintRu || `Разрыв ТЗ ${tzOverallPct}% vs пульс ${preflightScore}/100.`,
+      messageRu: hintRu || `Разрыв ТЗ ${tzOverallPct}% vs пульс ${preflightScore}/100.`,
     };
   }
   return null;

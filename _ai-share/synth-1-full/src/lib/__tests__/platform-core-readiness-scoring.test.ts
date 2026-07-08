@@ -29,7 +29,14 @@ describe('platform-core-readiness scoring', () => {
   });
 
   it('breakdown exposes section composition', () => {
-    const b = buildReadinessScoreBreakdown(7.1, 7.3, ['PG API', 'e2e core-01'], ['poll only'], [], 'live');
+    const b = buildReadinessScoreBreakdown(
+      7.1,
+      7.3,
+      ['PG API', 'e2e core-01'],
+      ['poll only'],
+      [],
+      'live'
+    );
     expect(b.goodCount).toBe(2);
     expect(b.badCount).toBe(1);
     expect(b.pgSignals).toBe(2);

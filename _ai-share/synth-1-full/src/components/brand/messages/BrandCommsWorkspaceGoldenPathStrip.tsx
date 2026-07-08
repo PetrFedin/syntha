@@ -26,11 +26,7 @@ const STEPS: { id: BrandCommsGoldenPathStepId; label: string }[] = [
   { id: 'shop-tracking', label: 'Трекинг магазина' },
 ];
 
-export function BrandCommsWorkspaceGoldenPathStrip({
-  collectionId,
-  orderId,
-  activeStep,
-}: Props) {
+export function BrandCommsWorkspaceGoldenPathStrip({ collectionId, orderId, activeStep }: Props) {
   const session = buildBrandCommsWorkspaceSession({ collectionId, orderId });
 
   const hrefFor = (id: BrandCommsGoldenPathStepId): string => {

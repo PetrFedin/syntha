@@ -40,10 +40,13 @@ export function Workshop2HubSlaOpsPanel({ compact = false }: { compact?: boolean
         data-testid="workshop2-hub-sla-ops-panel"
       >
         {error ? (
-          <span className="text-destructive shrink-0">Панель SLA недоступна</span>
+          <span className="shrink-0 text-destructive">Панель SLA недоступна</span>
         ) : payload ? (
           <>
-            <Badge variant={payload.sloOk ? 'default' : 'destructive'} className="shrink-0 text-[9px]">
+            <Badge
+              variant={payload.sloOk ? 'default' : 'destructive'}
+              className="shrink-0 text-[9px]"
+            >
               SLO {payload.sloOk ? 'в норме' : 'нарушен'}
             </Badge>
             <span className="text-text-muted shrink-0 tabular-nums">
@@ -89,9 +92,9 @@ export function Workshop2HubSlaOpsPanel({ compact = false }: { compact?: boolean
               <dt className="text-muted-foreground">Последняя проверка</dt>
               <dd>{payload.probeLastOkAt ?? '—'}</dd>
             </dl>
-            <p className="text-muted-foreground text-xs">{payload.labelRu}</p>
+            <p className="text-xs text-muted-foreground">{payload.labelRu}</p>
             {payload.sloTargets?.labelRu && (
-              <p className="text-muted-foreground text-xs">{payload.sloTargets.labelRu}</p>
+              <p className="text-xs text-muted-foreground">{payload.sloTargets.labelRu}</p>
             )}
           </>
         )}

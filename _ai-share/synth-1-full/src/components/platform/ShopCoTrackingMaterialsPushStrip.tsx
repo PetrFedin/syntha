@@ -121,10 +121,14 @@ export function ShopCoTrackingMaterialsPushStrip({
       ) : null}
       <span className="min-w-0 flex-1 font-medium">
         {event?.titleRu ??
-          (materialsDone ? 'Материалы подтверждены поставщиком' : 'Ожидаем подтверждение материалов')}
+          (materialsDone
+            ? 'Материалы подтверждены поставщиком'
+            : 'Ожидаем подтверждение материалов')}
       </span>
       {event?.bodyRu ? (
-        <span className="text-text-secondary hidden max-w-[16rem] truncate sm:inline">{event.bodyRu}</span>
+        <span className="text-text-secondary hidden max-w-[16rem] truncate sm:inline">
+          {event.bodyRu}
+        </span>
       ) : null}
       <Badge
         variant="outline"

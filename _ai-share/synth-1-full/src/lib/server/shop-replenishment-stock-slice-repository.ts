@@ -27,7 +27,9 @@ function hydrateFileIfNeeded(): void {
   if (!canUseDiskPersistence()) return;
   try {
     if (!fs.existsSync(STORE_FILE)) return;
-    const parsed = JSON.parse(fs.readFileSync(STORE_FILE, 'utf8')) as ShopReplenishmentStockSliceConfig[];
+    const parsed = JSON.parse(
+      fs.readFileSync(STORE_FILE, 'utf8')
+    ) as ShopReplenishmentStockSliceConfig[];
     if (Array.isArray(parsed)) {
       for (const row of parsed) {
         if (row.buyerId) memory.set(row.buyerId.trim(), row);
@@ -112,14 +114,7 @@ export async function putShopReplenishmentStockSliceServer(
            collection_id = EXCLUDED.collection_id,
            label_ru = EXCLUDED.label_ru,
            updated_at = EXCLUDED.updated_at`,
-        [
-          buyerId,
-          next.orgId,
-          next.seasonId,
-          next.collectionId,
-          next.labelRu,
-          next.updatedAt,
-        ]
+        [buyerId, next.orgId, next.seasonId, next.collectionId, next.labelRu, next.updatedAt]
       );
       pgAvailable = true;
     } catch {

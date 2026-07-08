@@ -43,14 +43,7 @@ export async function appendShopPartnershipInviteJournal(input: {
         `INSERT INTO shop_b2b_partnership_invite_journal
           (id, buyer_id, brand_id, collection_id, action, status)
          VALUES ($1, $2, $3, $4, $5, $6)`,
-        [
-          row.id,
-          row.buyerId,
-          row.brandId,
-          row.collectionId ?? null,
-          row.action,
-          row.status,
-        ]
+        [row.id, row.buyerId, row.brandId, row.collectionId ?? null, row.action, row.status]
       );
     } catch {
       memoryJournal.push(row);

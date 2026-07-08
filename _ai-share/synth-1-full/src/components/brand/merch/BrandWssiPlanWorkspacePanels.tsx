@@ -16,9 +16,7 @@ import {
   patchBrandWssiMixTarget,
   refreshBrandWssiOtb,
 } from '@/lib/fashion/brand-wssi-otb-store';
-import {
-  brandWssiSupplyHref,
-} from '@/lib/fashion/brand-wssi-plan';
+import { brandWssiSupplyHref } from '@/lib/fashion/brand-wssi-plan';
 import { PLATFORM_CORE_DEMO, resolvePageCollectionId } from '@/lib/platform-core-hub-matrix';
 import { ROUTES } from '@/lib/routes';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
@@ -66,7 +64,17 @@ function useBrandWssiOtbFeed(collectionId: string) {
     };
   }, [reload]);
 
-  return { mix, capacity, mixSummary, storageMode, loading, reload, setMix, setMixSummary, setStorageMode };
+  return {
+    mix,
+    capacity,
+    mixSummary,
+    storageMode,
+    loading,
+    reload,
+    setMix,
+    setMixSummary,
+    setStorageMode,
+  };
 }
 
 export function BrandWssiOtbPanel({

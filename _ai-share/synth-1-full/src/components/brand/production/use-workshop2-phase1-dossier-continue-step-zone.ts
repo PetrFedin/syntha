@@ -7,10 +7,12 @@ import {
 } from '@/components/brand/production/workshop2-phase1-dossier-panel-continue-step-validation';
 import type { Workshop2DossierPhase1 } from '@/lib/production/workshop2-dossier-phase1.types';
 
-type MatAttrDef = {
-  requiredForPhase1?: boolean;
-  requiredForPhase2?: boolean;
-} | undefined;
+type MatAttrDef =
+  | {
+      requiredForPhase1?: boolean;
+      requiredForPhase2?: boolean;
+    }
+  | undefined;
 
 export type UseWorkshop2Phase1DossierContinueStepZoneInput = {
   dossier: Workshop2DossierPhase1;

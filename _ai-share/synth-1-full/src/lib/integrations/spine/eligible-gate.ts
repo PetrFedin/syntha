@@ -22,9 +22,7 @@ const SIGNOFF_SECTIONS = ['general', 'material', 'construction', 'assignment'] a
 
 function synthaSignoffEligible(dossier: Workshop2DossierPhase1 | null | undefined): boolean {
   if (!dossier?.sectionSignoffs) return false;
-  return SIGNOFF_SECTIONS.every((s) =>
-    isWorkshop2TzSectionFullySigned(s, dossier.sectionSignoffs)
-  );
+  return SIGNOFF_SECTIONS.every((s) => isWorkshop2TzSectionFullySigned(s, dossier.sectionSignoffs));
 }
 
 function lifecycleEligible(dossier: Workshop2DossierPhase1 | null | undefined): boolean {

@@ -20,7 +20,10 @@ export function platformCorePcTaskIdFromCalendarEventId(eventId: string): string
 export async function ensurePlatformCorePcTaskFromCalendarEvent(input: {
   collectionId: string;
   ownerRole: 'brand' | 'shop' | 'manufacturer' | 'supplier';
-  event: Pick<Workshop2B2bCalendarEvent, 'id' | 'title' | 'startAt' | 'endAt' | 'b2bOrderId' | 'articleId'>;
+  event: Pick<
+    Workshop2B2bCalendarEvent,
+    'id' | 'title' | 'startAt' | 'endAt' | 'b2bOrderId' | 'articleId'
+  >;
   taskId?: string;
 }): Promise<{ taskId: string; created: boolean }> {
   const collectionId = input.collectionId.trim();

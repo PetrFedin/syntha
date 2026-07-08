@@ -353,9 +353,7 @@ export function Workshop2ArticleFlatHub({
         <div
           className={cn(
             'grid w-full min-w-0 gap-1.5',
-            embeddedHub
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'
-              : 'grid-cols-2 sm:grid-cols-5'
+            embeddedHub ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5' : 'grid-cols-2 sm:grid-cols-5'
           )}
         >
           <div className="col-span-2 flex min-w-0 flex-col gap-0.5 sm:col-span-1">
@@ -611,10 +609,14 @@ function ArticleCard({
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span className="font-mono text-sm font-bold leading-tight">{row.sku}</span>
           {idChip ? (
-            <span className="text-text-secondary font-mono text-xs font-medium tabular-nums">{idChip}</span>
+            <span className="text-text-secondary font-mono text-xs font-medium tabular-nums">
+              {idChip}
+            </span>
           ) : null}
         </div>
-        <p className="text-text-primary line-clamp-2 text-sm font-semibold leading-snug">{displayName}</p>
+        <p className="text-text-primary line-clamp-2 text-sm font-semibold leading-snug">
+          {displayName}
+        </p>
         <p className="text-text-secondary text-xs leading-snug" title="Аудитория · категория L1–L3">
           {audienceLine} · {pathCatLine}
         </p>
@@ -640,7 +642,7 @@ function ArticleCard({
       <div className="flex shrink-0 flex-col items-end justify-between gap-2 self-stretch py-0.5">
         <span
           className={cn(
-            'text-right text-xs font-semibold tabular-nums whitespace-nowrap',
+            'whitespace-nowrap text-right text-xs font-semibold tabular-nums',
             hubFinalization.finalized || isComplete ? 'text-emerald-800' : 'text-text-secondary'
           )}
         >

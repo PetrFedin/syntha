@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { ArrowRight, type LucideIcon } from 'lucide-react';
-import { PLATFORM_CORE_HUB_CARD, PLATFORM_CORE_HUB_CARD_ROLE } from '@/lib/platform-core-hub-carousel';
+import {
+  PLATFORM_CORE_HUB_CARD,
+  PLATFORM_CORE_HUB_CARD_ROLE,
+} from '@/lib/platform-core-hub-carousel';
 import { platformCoreHubLayout } from '@/lib/platform-core-hub-layout';
 import { cn } from '@/lib/utils';
 
@@ -41,9 +44,7 @@ function QuickCardBody({
         <h3 className="text-text-primary line-clamp-1 text-[13px] font-semibold leading-tight md:text-sm">
           {title}
         </h3>
-        <p className="text-text-secondary line-clamp-1 text-[11px] leading-snug">
-          {subtitle}
-        </p>
+        <p className="text-text-secondary line-clamp-1 text-[11px] leading-snug">{subtitle}</p>
       </div>
       {showArrow ? (
         <ArrowRight

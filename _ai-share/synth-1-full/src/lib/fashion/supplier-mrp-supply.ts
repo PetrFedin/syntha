@@ -59,9 +59,6 @@ export function buildSupplierMrpSupplySession(input?: {
   };
 }
 
-export function supplierMrpSupplyFeatureHref(
-  collectionId?: string,
-  articleId?: string
-): string {
+export function supplierMrpSupplyFeatureHref(collectionId?: string, articleId?: string): string {
   return buildSupplierMrpSupplySession({ collectionId, articleId }).supplyTabHref;
 }

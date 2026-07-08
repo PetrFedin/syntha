@@ -36,7 +36,9 @@ export const BRAND_PRICELIST_VERSION_SEED: Omit<PriceList, 'id' | 'createdAt'>[]
   },
 ];
 
-export function buildBrandPricelistVersionSeedRows(collectionId: string): BrandPricelistVersionRow[] {
+export function buildBrandPricelistVersionSeedRows(
+  collectionId: string
+): BrandPricelistVersionRow[] {
   return BRAND_PRICELIST_VERSION_SEED.map((seed, index) => ({
     ...seed,
     id: `pl-${seed.channel}-${index}`,

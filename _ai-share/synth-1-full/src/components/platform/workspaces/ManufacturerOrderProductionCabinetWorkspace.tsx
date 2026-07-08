@@ -57,20 +57,16 @@ export function ManufacturerOrderProductionCabinetWorkspace({
   const resolvedArticle = articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId;
 
   return (
-    <div data-testid="manufacturer-order-production-cabinet-workspace" className="min-w-0 space-y-4">
+    <div
+      data-testid="manufacturer-order-production-cabinet-workspace"
+      className="min-w-0 space-y-4"
+    >
       {sectionId === 'mfr-op-handoff-queue' ? (
-        <HandoffPanel
-          factoryId={factoryId}
-          collectionId={collectionId}
-          orderId={resolvedOrder}
-        />
+        <HandoffPanel factoryId={factoryId} collectionId={collectionId} orderId={resolvedOrder} />
       ) : null}
       {sectionId === 'mfr-op-production-orders' ? <ProductionOrdersCore /> : null}
       {sectionId === 'mfr-op-dossier' ? (
-        <FactoryDossierCoreChrome
-          articleId={resolvedArticle}
-          dossierCollectionId={collectionId}
-        >
+        <FactoryDossierCoreChrome articleId={resolvedArticle} dossierCollectionId={collectionId}>
           <span className="sr-only">Досье · техзадание</span>
         </FactoryDossierCoreChrome>
       ) : null}

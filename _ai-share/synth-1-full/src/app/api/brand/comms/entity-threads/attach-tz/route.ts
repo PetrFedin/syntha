@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
   const threadKind = String(body.threadKind ?? '').trim() as BrandCommsEntityThreadKind;
   if (!collectionId || !articleId || !threadKind) {
     return NextResponse.json(
-      { ok: false, error: { code: 'MISSING_FIELDS', message: 'collectionId, articleId, threadKind required' } },
+      {
+        ok: false,
+        error: { code: 'MISSING_FIELDS', message: 'collectionId, articleId, threadKind required' },
+      },
       { status: 400 }
     );
   }
@@ -39,7 +42,10 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof Error && err.message === 'THREAD_KIND_UNSUPPORTED') {
       return NextResponse.json(
-        { ok: false, error: { code: 'THREAD_KIND_UNSUPPORTED', message: 'Only bom/sample threads' } },
+        {
+          ok: false,
+          error: { code: 'THREAD_KIND_UNSUPPORTED', message: 'Only bom/sample threads' },
+        },
         { status: 400 }
       );
     }

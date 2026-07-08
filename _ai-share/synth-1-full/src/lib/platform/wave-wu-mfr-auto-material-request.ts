@@ -10,8 +10,10 @@ export const WAVE_WU_MFR_PO_ACK_MATERIAL_REQUEST_API =
 
 export const WAVE_WU_MFR_MATERIALS_SUPPLIER_STRIP_TESTID = 'mfr-op-materials-supplier-patch-strip';
 export const WAVE_WU_MFR_MATERIALS_SUPPLIER_HINT_TESTID = 'mfr-op-materials-supplier-hint';
-export const WAVE_WU_MFR_MATERIALS_SUPPLIER_LINK_PATCH_TESTID = 'mfr-op-materials-supplier-link-patch';
-export const WAVE_WU_MFR_MATERIALS_SUPPLIER_LINK_DONE_TESTID = 'mfr-op-materials-supplier-link-done';
+export const WAVE_WU_MFR_MATERIALS_SUPPLIER_LINK_PATCH_TESTID =
+  'mfr-op-materials-supplier-link-patch';
+export const WAVE_WU_MFR_MATERIALS_SUPPLIER_LINK_DONE_TESTID =
+  'mfr-op-materials-supplier-link-done';
 export const WAVE_WU_MFR_MATERIALS_SUPPLIER_PO_BADGE_TESTID = 'mfr-op-materials-supplier-po-badge';
 
 export const WAVE_WU_MFR_MATERIALS_SUPPLIER_STRIP_PENDING_RU =

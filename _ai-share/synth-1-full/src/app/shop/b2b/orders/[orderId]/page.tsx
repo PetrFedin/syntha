@@ -9,9 +9,9 @@ import { PlatformCoreLegacyB2bOrderRedirect } from '@/components/platform/Platfo
 
 const ShopB2bOrderDetailLegacyPage = dynamic(
   () =>
-    import(
-      '@/_archive/platform-core-legacy/app/shop/b2b/orders/[orderId]/shop-order-detail-legacy'
-    ).then((m) => m.ShopB2bOrderDetailLegacyPage),
+    import('@/_archive/platform-core-legacy/app/shop/b2b/orders/[orderId]/shop-order-detail-legacy').then(
+      (m) => m.ShopB2bOrderDetailLegacyPage
+    ),
   { ssr: false }
 );
 

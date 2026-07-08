@@ -1,5 +1,8 @@
 import type { BrandCrmSegmentObject } from '@/lib/b2b/brand-crm-segment-object';
-import { sortBrandCrmSegments, summarizeBrandCrmSegmentQuery } from '@/lib/b2b/brand-crm-segment-object';
+import {
+  sortBrandCrmSegments,
+  summarizeBrandCrmSegmentQuery,
+} from '@/lib/b2b/brand-crm-segment-object';
 import { brandCrmSegmentationFeatureHref } from '@/lib/b2b/brand-crm-segmentation';
 import { brandCoCrmLinesheetShopShowroomHref } from '@/lib/b2b/brand-co-crm-wave-xb';
 import { ROUTES } from '@/lib/routes';
@@ -47,7 +50,10 @@ export function buildBrandCoCrmLinesheetVisibilityRows(input: {
   });
 }
 
-export function brandCoCrmLinesheetBrandPreviewHref(collectionId: string, segmentKey: string): string {
+export function brandCoCrmLinesheetBrandPreviewHref(
+  collectionId: string,
+  segmentKey: string
+): string {
   const base = `${ROUTES.brand.b2bLinesheets}?collection=${encodeURIComponent(collectionId)}`;
   return `${base}&${PILLAR_CAPABILITY_FEATURE_PARAM}=preview&segment=${encodeURIComponent(segmentKey)}`;
 }

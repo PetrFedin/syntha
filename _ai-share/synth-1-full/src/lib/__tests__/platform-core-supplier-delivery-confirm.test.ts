@@ -37,7 +37,7 @@ describe('platform-core-supplier-delivery-confirm', () => {
     });
     expect(second.created).toBe(false);
     expect(
-      (await listPlatformCoreUserCalendarTasks({ collectionId: 'SS27', orderId: 'B2B-9001' }))
+      await listPlatformCoreUserCalendarTasks({ collectionId: 'SS27', orderId: 'B2B-9001' })
     ).toHaveLength(1);
   });
 });

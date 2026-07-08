@@ -61,7 +61,10 @@ function ShopShowroomWorkspaceBody() {
         <ShopShowroomBuyPathPanel collectionId={collectionId} orderId={orderId} />
       ) : null}
       {activeFeatureId === '3d-stream' ? (
-        <B2b3dStreamPanel collectionId={collectionId} articleId={searchParams.get('article')?.trim() || 'demo-ss27-01'} />
+        <B2b3dStreamPanel
+          collectionId={collectionId}
+          articleId={searchParams.get('article')?.trim() || 'demo-ss27-01'}
+        />
       ) : null}
     </PillarCapabilityWorkspaceChrome>
   );
@@ -69,7 +72,7 @@ function ShopShowroomWorkspaceBody() {
 
 export function ShopB2bShowroomCorePage() {
   return (
-    <CabinetPageContent maxWidth="5xl" className="space-y-6 pb-safe">
+    <CabinetPageContent maxWidth="5xl" className="pb-safe space-y-6">
       <PlatformCoreListChrome highlightRole="shop" pillarId="sample_collection">
         <Suspense fallback={null}>
           <ShopShowroomWorkspaceBody />

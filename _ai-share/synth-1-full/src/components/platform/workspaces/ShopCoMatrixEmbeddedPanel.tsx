@@ -49,7 +49,8 @@ export function ShopCoMatrixEmbeddedPanel({ collectionId, orderId }: Props) {
     ShopMatrixPrepackApplyRequest | ShopMatrixPrepackApplyRequest[] | undefined
   >(urlPrepackApply);
 
-  const { activeFeatureId, setActiveFeatureId } = usePillarCapabilityWorkspace('shop-wholesale-matrix');
+  const { activeFeatureId, setActiveFeatureId } =
+    usePillarCapabilityWorkspace('shop-wholesale-matrix');
   const matrixTab = activeFeatureId === 'matrix';
   const inspectorTab = activeFeatureId === 'inspector';
   const prepackTab = activeFeatureId === 'prepack';
@@ -84,7 +85,9 @@ export function ShopCoMatrixEmbeddedPanel({ collectionId, orderId }: Props) {
         collectionId={collectionId}
         orderId={resolvedOrder}
         articleId={focusArticleId}
-        activeTab={matrixTab ? 'matrix' : inspectorTab ? 'inspector' : prepackTab ? 'prepack' : undefined}
+        activeTab={
+          matrixTab ? 'matrix' : inspectorTab ? 'inspector' : prepackTab ? 'prepack' : undefined
+        }
         embedded
       />
       {matrixTab ? (

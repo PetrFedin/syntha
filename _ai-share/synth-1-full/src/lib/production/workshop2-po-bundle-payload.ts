@@ -55,8 +55,7 @@ export function buildWorkshop2PoBundlePayload(input: {
   const poRows = input.purchaseOrders ?? [];
   const poQtySum = poRows.reduce((s, po) => s + (Number(po.qty) || 0), 0);
   const planQty = input.dossier.planPoBundleSnapshot?.totalQty ?? 0;
-  const seriesQty =
-    Math.max(0, Math.round(input.seriesQty ?? poQtySum ?? planQty ?? 0)) || 0;
+  const seriesQty = Math.max(0, Math.round(input.seriesQty ?? poQtySum ?? planQty ?? 0)) || 0;
 
   const mappedBom = bomLines
     .filter((line) => line.materialName?.trim())

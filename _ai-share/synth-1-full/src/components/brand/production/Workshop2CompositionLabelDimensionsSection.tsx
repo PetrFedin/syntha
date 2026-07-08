@@ -82,9 +82,7 @@ export function Workshop2CompositionLabelDimensionsSection({
               inputMode="decimal"
               disabled={ro}
               value={s.labelWidthMm ?? ''}
-              onChange={(e) =>
-                patch({ labelWidthMm: e.target.value, labelSizePresetId: '' })
-              }
+              onChange={(e) => patch({ labelWidthMm: e.target.value, labelSizePresetId: '' })}
               placeholder="напр. 50"
             />
           </div>
@@ -99,9 +97,7 @@ export function Workshop2CompositionLabelDimensionsSection({
               inputMode="decimal"
               disabled={ro}
               value={s.labelHeightMm ?? ''}
-              onChange={(e) =>
-                patch({ labelHeightMm: e.target.value, labelSizePresetId: '' })
-              }
+              onChange={(e) => patch({ labelHeightMm: e.target.value, labelSizePresetId: '' })}
               placeholder="напр. 120"
             />
           </div>
@@ -234,9 +230,7 @@ export function Workshop2CompositionLabelDimensionsSection({
             <Checkbox
               disabled={ro}
               checked={Boolean(s.includeFiberCompositionFromTz)}
-              onCheckedChange={(v) =>
-                patch({ includeFiberCompositionFromTz: v === true })
-              }
+              onCheckedChange={(v) => patch({ includeFiberCompositionFromTz: v === true })}
             />
             <span>
               <span
@@ -259,9 +253,7 @@ export function Workshop2CompositionLabelDimensionsSection({
             <Checkbox
               disabled={ro}
               checked={Boolean(s.includeCareSymbolsFromTz)}
-              onCheckedChange={(v) =>
-                patch({ includeCareSymbolsFromTz: v === true })
-              }
+              onCheckedChange={(v) => patch({ includeCareSymbolsFromTz: v === true })}
             />
             <span>
               <span
@@ -280,9 +272,7 @@ export function Workshop2CompositionLabelDimensionsSection({
             <Checkbox
               disabled={ro}
               checked={Boolean(s.includeManufacturerFromTz)}
-              onCheckedChange={(v) =>
-                patch({ includeManufacturerFromTz: v === true })
-              }
+              onCheckedChange={(v) => patch({ includeManufacturerFromTz: v === true })}
             />
             <span>
               <span

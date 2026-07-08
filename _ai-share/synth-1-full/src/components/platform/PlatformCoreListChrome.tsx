@@ -53,16 +53,14 @@ function PlatformCoreListChromeInner({
   const embeddedWorkspace = usePlatformCoreEmbeddedWorkspace();
   const resolvedEntity =
     entityLabel ?? (pillarId ? getPlatformCorePillarEntityLabelForDemo(pillarId, demo) : undefined);
-  const collectionParam =
-    demo.collectionId !== 'SS27' ? demo.collectionId : undefined;
+  const collectionParam = demo.collectionId !== 'SS27' ? demo.collectionId : undefined;
   const cabinetHref = platformCoreRolePillarHref(
     highlightRole,
     pillarId ?? getDefaultPillarForRole(highlightRole),
     collectionParam
   );
   const resolvedBackHref = backHref ?? (coreMode ? cabinetHref : undefined);
-  const resolvedBackLabel =
-    backLabel === 'Назад' && coreMode && !backHref ? 'Кабинет' : backLabel;
+  const resolvedBackLabel = backLabel === 'Назад' && coreMode && !backHref ? 'Кабинет' : backLabel;
 
   if (embeddedWorkspace) {
     return (
@@ -104,7 +102,7 @@ function PlatformCoreListChromeInner({
           <PlatformCoreRolePillarStrip
             roleId={highlightRole}
             activePillarId={pillarId}
-            className="min-w-0 w-full sm:w-auto sm:flex-1"
+            className="w-full min-w-0 sm:w-auto sm:flex-1"
           />
           {highlightRole === 'shop' ? (
             <div className="shrink-0 self-start">
@@ -120,21 +118,14 @@ function PlatformCoreListChromeInner({
       {children}
       {pillarId === 'comms' ? (
         <div className={hubCabinet.commsCrossRoleFooter}>
-          <RolePillarCrossRoleLinks
-            roleId={highlightRole}
-            pillarId={pillarId}
-            variant="compact"
-          />
+          <RolePillarCrossRoleLinks roleId={highlightRole} pillarId={pillarId} variant="compact" />
         </div>
       ) : null}
     </div>
   );
 }
 
-function PlatformCoreListChromeWithCollection({
-  pageCollectionId,
-  ...props
-}: Props) {
+function PlatformCoreListChromeWithCollection({ pageCollectionId, ...props }: Props) {
   const searchParams = useSearchParams();
   const collectionId = resolvePageCollectionId({
     collection: searchParams.get('collection'),

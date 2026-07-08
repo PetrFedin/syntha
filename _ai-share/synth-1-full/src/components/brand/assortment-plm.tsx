@@ -453,13 +453,13 @@ export function AssortmentPlm({
                   <SelectContent>
                     <SelectItem value="all">Уровень 1 (Все)</SelectItem>
                     {filters.audience !== 'all' &&
-                      getCategoryHandbookFilterTree().find((a) => a.id === filters.audience)?.categories.map(
-                        (c) => (
+                      getCategoryHandbookFilterTree()
+                        .find((a) => a.id === filters.audience)
+                        ?.categories.map((c) => (
                           <SelectItem key={c.id} value={c.id}>
                             {c.name}
                           </SelectItem>
-                        )
-                      )}
+                        ))}
                   </SelectContent>
                 </Select>
                 <Select
@@ -473,7 +473,8 @@ export function AssortmentPlm({
                     <SelectItem value="all">Уровень 2 (Все)</SelectItem>
                     {filters.cat1 !== 'all' &&
                       filters.audience !== 'all' &&
-                      getCategoryHandbookFilterTree().find((a) => a.id === filters.audience)
+                      getCategoryHandbookFilterTree()
+                        .find((a) => a.id === filters.audience)
                         ?.categories.find((c) => c.id === filters.cat1)
                         ?.children?.map((sub) => (
                           <SelectItem key={sub.id} value={sub.id}>
@@ -493,7 +494,8 @@ export function AssortmentPlm({
                     <SelectItem value="all">Уровень 3 (Все)</SelectItem>
                     {filters.cat2 !== 'all' &&
                       filters.audience !== 'all' &&
-                      getCategoryHandbookFilterTree().find((a) => a.id === filters.audience)
+                      getCategoryHandbookFilterTree()
+                        .find((a) => a.id === filters.audience)
                         ?.categories.find((c) => c.id === filters.cat1)
                         ?.children?.find((s) => s.id === filters.cat2)
                         ?.children?.map((leaf) => (

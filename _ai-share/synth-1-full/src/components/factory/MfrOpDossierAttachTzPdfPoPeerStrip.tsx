@@ -43,12 +43,16 @@ export function MfrOpDossierAttachTzPdfPoPeerStrip({
       className={cn(
         hubGadget.goldenPath,
         hubCabinet.workspaceTableScroll,
-        'border-border-subtle max-md:flex-nowrap rounded-md border bg-bg-surface2/40 px-2 py-1.5'
+        'border-border-subtle bg-bg-surface2/40 rounded-md border px-2 py-1.5 max-md:flex-nowrap'
       )}
       data-testid={MFR_OP_DOSSIER_ATTACH_TZ_PDF_PO_PEER_STRIP_TESTID}
     >
-      <span className="text-text-muted text-[9px] uppercase">{WAVE_XU_MFR_PO_TZ_PDF_PEER_HINT_RU}</span>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
+      <span className="text-text-muted text-[9px] uppercase">
+        {WAVE_XU_MFR_PO_TZ_PDF_PEER_HINT_RU}
+      </span>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
       <Link
         href={session.poRecordHref}
         data-testid={MFR_OP_DOSSIER_ATTACH_TZ_PDF_PO_LINK_TESTID}
@@ -56,7 +60,9 @@ export function MfrOpDossierAttachTzPdfPoPeerStrip({
       >
         {WAVE_XU_MFR_DOSSIER_PO_RECORD_LABEL_RU}
       </Link>
-      <span className={hubGadget.goldenSep} aria-hidden>·</span>
+      <span className={hubGadget.goldenSep} aria-hidden>
+        ·
+      </span>
       <Link
         href={session.exportPrintHref}
         data-testid={MFR_OP_DOSSIER_ATTACH_TZ_PDF_EXPORT_PRINT_LINK_TESTID}

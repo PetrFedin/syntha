@@ -20,13 +20,12 @@ export function platformCoreCommsNotificationPrefsStorageKey(
   return `platform-core:${role}-comms-notification-prefs`;
 }
 
-export const DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS: PlatformCoreCommsNotificationPrefs =
-  {
-    orderStatus: true,
-    chatMessages: true,
-    calendarReminders: true,
-    chainStatusPush: true,
-  };
+export const DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS: PlatformCoreCommsNotificationPrefs = {
+  orderStatus: true,
+  chatMessages: true,
+  calendarReminders: true,
+  chainStatusPush: true,
+};
 
 /** @deprecated use platformCoreCommsNotificationPrefsStorageKey('shop') */
 export const PLATFORM_CORE_SHOP_COMMS_NOTIFICATION_PREFS_KEY =
@@ -36,7 +35,8 @@ export function readPlatformCoreCommsNotificationPrefs(
   role: PlatformCoreCommsNotificationRole = 'shop'
 ): PlatformCoreCommsNotificationPrefs {
   if (typeof window === 'undefined') return DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS;
-  if (!shouldUseLocalStorageClientFallbackInCore()) return DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS;
+  if (!shouldUseLocalStorageClientFallbackInCore())
+    return DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS;
   try {
     const raw = localStorage.getItem(platformCoreCommsNotificationPrefsStorageKey(role));
     if (!raw) return DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS;
@@ -78,10 +78,12 @@ export async function loadPlatformCoreCommsNotificationPrefs(input?: {
     return { prefs: DEFAULT_PLATFORM_CORE_COMMS_NOTIFICATION_PREFS };
   }
   try {
-    const { fetchPlatformCoreCommsNotificationPrefs } = await import(
-      '@/lib/platform-core-comms-notification-prefs-client'
-    );
-    const remote = await fetchPlatformCoreCommsNotificationPrefs({ role, scopeKey: input?.scopeKey });
+    const { fetchPlatformCoreCommsNotificationPrefs } =
+      await import('@/lib/platform-core-comms-notification-prefs-client');
+    const remote = await fetchPlatformCoreCommsNotificationPrefs({
+      role,
+      scopeKey: input?.scopeKey,
+    });
     if (shouldMirrorPgClientStoreToLocalStorage()) {
       writePlatformCoreCommsNotificationPrefs(remote.prefs, role);
     }
@@ -104,9 +106,8 @@ export async function persistPlatformCoreCommsNotificationPrefs(
   }
   if (typeof window === 'undefined') return {};
   try {
-    const { savePlatformCoreCommsNotificationPrefs } = await import(
-      '@/lib/platform-core-comms-notification-prefs-client'
-    );
+    const { savePlatformCoreCommsNotificationPrefs } =
+      await import('@/lib/platform-core-comms-notification-prefs-client');
     return await savePlatformCoreCommsNotificationPrefs({
       role,
       scopeKey: input?.scopeKey,

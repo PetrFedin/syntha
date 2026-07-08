@@ -155,7 +155,8 @@ export function getPlatformCorePlannerSessionSummary(): PlatformCorePlannerSessi
         title: 'Навигация · sidebar = hub pillars',
         detail:
           'Shop: partners в core после investor spine; pim — витрина+матрица без тройного showroom; b2b — реестр+трекинг. Brand: b2b → «Оптовые заказы». Supplier pim → «Материалы и закупка».',
-        testids: 'shop-sidebar-pim-showroom-core, shop-sidebar-b2b-tracking-core, shop-sidebar-partners',
+        testids:
+          'shop-sidebar-pim-showroom-core, shop-sidebar-b2b-tracking-core, shop-sidebar-partners',
       },
       {
         title: 'comms banner + calendar PG hint',
@@ -192,13 +193,15 @@ export function getPlatformCorePlannerSessionSummary(): PlatformCorePlannerSessi
         title: 'OP/supplier/tracking',
         detail:
           'OP hub: чат только в comms; supplier compact без spine/SSE/дублей; tracking strip без чата; comms hub без placeholder-тредов; detail strips → hubGadget.',
-        testids: 'brand-op-cabinet-cta-strip, shop-co-tracking-context-strip, brand-cm-order-chat-link',
+        testids:
+          'brand-op-cabinet-cta-strip, shop-co-tracking-context-strip, brand-cm-order-chat-link',
       },
       {
         title: 'hub gadget',
         detail:
           'hubGadget на все pillar cards; убран список «Разделы» из role core; dev — один golden strip; brand showroom — BrandScCabinetGoldenPathStrip; matrix без pre-order в coreMode.',
-        testids: 'brand-dev-cabinet-context-strip, brand-sc-unified-audit-path, role-pillar-primary-cta',
+        testids:
+          'brand-dev-cabinet-context-strip, brand-sc-unified-audit-path, role-pillar-primary-cta',
       },
       {
         title: 'Comms/calendar dedupe',
@@ -214,7 +217,8 @@ export function getPlatformCorePlannerSessionSummary(): PlatformCorePlannerSessi
       },
       {
         title: 'Brand CRM invite',
-        detail: 'brand-co-registry-invite-panel — симметрия shop-sc-partners-invite, POST /api/brand/b2b/invites.',
+        detail:
+          'brand-co-registry-invite-panel — симметрия shop-sc-partners-invite, POST /api/brand/b2b/invites.',
         testids: 'brand-co-registry-invite-generate',
       },
       {
@@ -227,13 +231,15 @@ export function getPlatformCorePlannerSessionSummary(): PlatformCorePlannerSessi
         title: 'Factory OP и comms',
         detail:
           'Чат убран с materials/handoff rows/OP cabinet в core; dossier golden strip без чата; FW27 banner короче; мёртвый OrderChatContextStrip удалён.',
-        testids: 'mfr-op-dossier-context-strip, sup-op-procurement-context-strip, platform-core-comms-cross-nav',
+        testids:
+          'mfr-op-dossier-context-strip, sup-op-procurement-context-strip, platform-core-comms-cross-nav',
       },
       {
         title: 'Order detail, materials, tracking',
         detail:
           'Shop amend-card скрыт в core; chain card без дубля PO-link; materials без chain workspace; tracking без SSE/Выпуск; короткий PO/досье copy.',
-        testids: 'brand-co-detail-chat-link, shop-co-tracking-context-strip, sup-op-procurement-context-strip',
+        testids:
+          'brand-co-detail-chat-link, shop-co-tracking-context-strip, sup-op-procurement-context-strip',
       },
       {
         title: 'Comms и реестр',

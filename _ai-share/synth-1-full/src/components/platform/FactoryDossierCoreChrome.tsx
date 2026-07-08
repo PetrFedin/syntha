@@ -111,15 +111,17 @@ function FactoryDossierCoreChromeInner({
         const json = (await res.json()) as {
           ok?: boolean;
           chain?: ChainDossierMeta & {
-            dossierDiff?: { dossierVersionAtHandoff?: number; dossierChangedSinceHandoff?: boolean };
+            dossierDiff?: {
+              dossierVersionAtHandoff?: number;
+              dossierChangedSinceHandoff?: boolean;
+            };
           };
         };
         if (!cancelled && json.ok && json.chain) {
           setChainMeta({
             productionOrderId: json.chain.productionOrderId,
             handedOff: json.chain.handedOff,
-            dossierVersionAtHandoff:
-              json.chain.dossierDiff?.dossierVersionAtHandoff ?? undefined,
+            dossierVersionAtHandoff: json.chain.dossierDiff?.dossierVersionAtHandoff ?? undefined,
             dossierChangedSinceHandoff:
               json.chain.dossierDiff?.dossierChangedSinceHandoff ?? undefined,
           });
@@ -175,82 +177,88 @@ function FactoryDossierCoreChromeInner({
       ) : null}
       {!productionPillar && demo ? (
         <>
-        {articleId && dossierSource ? (
-          <MfrDevDossierPgSourceStrip
-            collectionId={dossierCollectionId ?? demo.collectionId}
-            articleId={articleId}
-            source={dossierSource}
-          />
-        ) : null}
-        <div
-          className={cn(
-            hubGadget.goldenPath,
-            hubCabinet.workspaceTableScroll,
-            'max-md:flex-nowrap'
-          )}
-          data-testid="mfr-dev-dossier-context-strip"
-        >
-          {brandW2ArticleHref ? (
-            <>
-              <Link
-                href={brandW2ArticleHref}
-                data-testid="mfr-dev-dossier-brand-w2-link"
-                className={hubGadget.goldenLink}
-              >
-                ТЗ бренда
-              </Link>
-              <span className={hubGadget.goldenSep} aria-hidden>
-                ·
-              </span>
-            </>
+          {articleId && dossierSource ? (
+            <MfrDevDossierPgSourceStrip
+              collectionId={dossierCollectionId ?? demo.collectionId}
+              articleId={articleId}
+              source={dossierSource}
+            />
           ) : null}
-          <Link
-            href={factoryMaterialsHrefForDemo(demo)}
-            data-testid="mfr-dev-dossier-materials-link"
-            className={hubGadget.goldenLink}
+          <div
+            className={cn(
+              hubGadget.goldenPath,
+              hubCabinet.workspaceTableScroll,
+              'max-md:flex-nowrap'
+            )}
+            data-testid="mfr-dev-dossier-context-strip"
           >
-            Материалы / BOM
-          </Link>
-          <span className={hubGadget.goldenSep} aria-hidden>
-            ·
-          </span>
-          <Link
-            href={`${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`}
-            data-testid="mfr-dev-dossier-cabinet-link"
-            className={hubGadget.goldenLink}
-          >
-            Кабинет
-          </Link>
-        </div>
-        {articleId ? (
-          <ManufacturerDevDossierCommentPeerStrip collectionId={demo.collectionId} articleId={articleId} />
-        ) : null}
-        {articleId ? (
-          <ManufacturerDevDossierAnnotationPanel
-            collectionId={demo.collectionId}
-            articleId={articleId}
-            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
-            orderId={orderId || undefined}
-          />
-        ) : null}
-        {articleId ? (
-          <MfrDevDossierProductionSpinePeerStrip
-            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
-            collectionId={demo.collectionId}
-            articleId={articleId}
-          />
-        ) : null}
-        {articleId ? (
-          <ManufacturerArticleAttachTzPeerStrip collectionId={demo.collectionId} articleId={articleId} />
-        ) : null}
-        {articleId ? (
-          <MfrDevSamplePhotoDamStubStrip
-            collectionId={demo.collectionId}
-            articleId={articleId}
-            orderId={orderId || undefined}
-            factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
-          />
-        ) : null}
+            {brandW2ArticleHref ? (
+              <>
+                <Link
+                  href={brandW2ArticleHref}
+                  data-testid="mfr-dev-dossier-brand-w2-link"
+                  className={hubGadget.goldenLink}
+                >
+                  ТЗ бренда
+                </Link>
+                <span className={hubGadget.goldenSep} aria-hidden>
+                  ·
+                </span>
+              </>
+            ) : null}
+            <Link
+              href={factoryMaterialsHrefForDemo(demo)}
+              data-testid="mfr-dev-dossier-materials-link"
+              className={hubGadget.goldenLink}
+            >
+              Материалы / BOM
+            </Link>
+            <span className={hubGadget.goldenSep} aria-hidden>
+              ·
+            </span>
+            <Link
+              href={`${ROUTES.factory.productionCoreCabinet}?pillar=development&collection=${encodeURIComponent(demo.collectionId)}`}
+              data-testid="mfr-dev-dossier-cabinet-link"
+              className={hubGadget.goldenLink}
+            >
+              Кабинет
+            </Link>
+          </div>
+          {articleId ? (
+            <ManufacturerDevDossierCommentPeerStrip
+              collectionId={demo.collectionId}
+              articleId={articleId}
+            />
+          ) : null}
+          {articleId ? (
+            <ManufacturerDevDossierAnnotationPanel
+              collectionId={demo.collectionId}
+              articleId={articleId}
+              factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+              orderId={orderId || undefined}
+            />
+          ) : null}
+          {articleId ? (
+            <MfrDevDossierProductionSpinePeerStrip
+              factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+              collectionId={demo.collectionId}
+              articleId={articleId}
+            />
+          ) : null}
+          {articleId ? (
+            <ManufacturerArticleAttachTzPeerStrip
+              collectionId={demo.collectionId}
+              articleId={articleId}
+            />
+          ) : null}
+          {articleId ? (
+            <MfrDevSamplePhotoDamStubStrip
+              collectionId={demo.collectionId}
+              articleId={articleId}
+              orderId={orderId || undefined}
+              factoryId={demo.factoryId ?? PLATFORM_CORE_DEMO.factoryId}
+            />
+          ) : null}
         </>
       ) : null}
       {productionPillar && demo && orderId ? (
@@ -261,57 +269,57 @@ function FactoryDossierCoreChromeInner({
             orderId={orderId}
           />
         ) : (
-        <div
-          className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
-          data-testid="mfr-op-dossier-context-strip"
-        >
-          <Link
-            href={factoryProductionOrdersOrderContextHref(orderId, {
-              factoryId: demo.factoryId,
-            })}
-            data-testid="mfr-op-dossier-prod-orders-link"
-            className="text-accent-primary font-medium hover:underline"
+          <div
+            className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
+            data-testid="mfr-op-dossier-context-strip"
           >
-            Заказы цеха
-          </Link>
-          <Link
-            href={factoryProductionHandoffQueueHref(orderId, {
-              factoryId: demo.factoryId,
-              collectionId: demo.collectionId,
-            })}
-            data-testid="mfr-op-dossier-handoff-link"
-            className="text-accent-primary font-medium hover:underline"
-          >
-            Очередь передачи
-          </Link>
-          <Link
-            href={factoryMaterialsProcurementHrefForDemo(demo)}
-            data-testid="mfr-op-dossier-procurement-link"
-            className="text-accent-primary font-medium hover:underline"
-          >
-            Закупка
-          </Link>
-          <Link
-            href={shopB2bTrackingOrderHref(orderId)}
-            data-testid="mfr-op-dossier-shop-tracking-link"
-            className="text-accent-primary font-medium hover:underline"
-          >
-            Трекинг магазина
-          </Link>
-          <Link
-            href={buildOrderSectionCommsMessagesHref({
-              roleId: 'manufacturer',
-              orderId,
-              collectionId: demo.collectionId,
-              sectionId: 'mfr-op-dossier',
-              pillarId: 'order_production',
-            })}
-            data-testid="mfr-op-dossier-order-chat-link"
-            className="text-accent-primary font-medium hover:underline"
-          >
-            Чат заказа
-          </Link>
-        </div>
+            <Link
+              href={factoryProductionOrdersOrderContextHref(orderId, {
+                factoryId: demo.factoryId,
+              })}
+              data-testid="mfr-op-dossier-prod-orders-link"
+              className="text-accent-primary font-medium hover:underline"
+            >
+              Заказы цеха
+            </Link>
+            <Link
+              href={factoryProductionHandoffQueueHref(orderId, {
+                factoryId: demo.factoryId,
+                collectionId: demo.collectionId,
+              })}
+              data-testid="mfr-op-dossier-handoff-link"
+              className="text-accent-primary font-medium hover:underline"
+            >
+              Очередь передачи
+            </Link>
+            <Link
+              href={factoryMaterialsProcurementHrefForDemo(demo)}
+              data-testid="mfr-op-dossier-procurement-link"
+              className="text-accent-primary font-medium hover:underline"
+            >
+              Закупка
+            </Link>
+            <Link
+              href={shopB2bTrackingOrderHref(orderId)}
+              data-testid="mfr-op-dossier-shop-tracking-link"
+              className="text-accent-primary font-medium hover:underline"
+            >
+              Трекинг магазина
+            </Link>
+            <Link
+              href={buildOrderSectionCommsMessagesHref({
+                roleId: 'manufacturer',
+                orderId,
+                collectionId: demo.collectionId,
+                sectionId: 'mfr-op-dossier',
+                pillarId: 'order_production',
+              })}
+              data-testid="mfr-op-dossier-order-chat-link"
+              className="text-accent-primary font-medium hover:underline"
+            >
+              Чат заказа
+            </Link>
+          </div>
         )
       ) : null}
       {productionPillar && chainMeta?.dossierVersionAtHandoff != null ? (
@@ -402,7 +410,10 @@ function FactoryDossierCoreChromeInner({
       </div>
       {articleId && !productionPillar ? (
         <div className="min-w-0" data-testid="factory-dossier-sample-queue-slot">
-          <PlatformCoreDossierSampleQueueCard articleId={articleId} orderId={orderId || undefined} />
+          <PlatformCoreDossierSampleQueueCard
+            articleId={articleId}
+            orderId={orderId || undefined}
+          />
         </div>
       ) : null}
       <div className="min-w-0">{children}</div>

@@ -124,10 +124,7 @@ export function evaluateWorkshop2SketchCoverageHandoffGate(
         live.hintRu ?? 'Скетч частично готов — расставьте метки BOM и зафиксируйте ревизию.',
     };
   }
-  if (
-    mirror.blockerHandoff !== true &&
-    workshop2PgMirrorStr(mirror, 'blockerHandoff') !== 'true'
-  ) {
+  if (mirror.blockerHandoff !== true && workshop2PgMirrorStr(mirror, 'blockerHandoff') !== 'true') {
     return null;
   }
   return checkFromMirror(

@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
-import { ensureSpineOperationalStoreReady, SPINE_TRACKING_READ_SCOPES } from '@/lib/integrations/spine/spine-operational-store';
+import {
+  ensureSpineOperationalStoreReady,
+  SPINE_TRACKING_READ_SCOPES,
+} from '@/lib/integrations/spine/spine-operational-store';
 import { resolveUnifiedOrderTracking } from '@/lib/integrations/spine/order-tracking.service';
 import { isPlatformCorePgLogisticsWholesaleOrderId } from '@/lib/platform-core-spine-active-order-fallback';
 
@@ -28,10 +31,12 @@ export async function GET(req: NextRequest, ctx: RouteCtx) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
   let tracking = resolveUnifiedOrderTracking(wholesaleOrderId);
 
-  if (!tracking.shipment?.trackingNumber?.trim() && isPlatformCorePgLogisticsWholesaleOrderId(wholesaleOrderId)) {
-    const { resolveWorkshop2B2bLogisticsTracking } = await import(
-      '@/lib/server/workshop2-b2b-order-logistics-tracking'
-    );
+  if (
+    !tracking.shipment?.trackingNumber?.trim() &&
+    isPlatformCorePgLogisticsWholesaleOrderId(wholesaleOrderId)
+  ) {
+    const { resolveWorkshop2B2bLogisticsTracking } =
+      await import('@/lib/server/workshop2-b2b-order-logistics-tracking');
     const snap = await resolveWorkshop2B2bLogisticsTracking(wholesaleOrderId);
     if (snap.trackingNumber) {
       tracking = {

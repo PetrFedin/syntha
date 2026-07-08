@@ -53,16 +53,15 @@ export function IntegrationProductionWipStrip({
     setBusy(true);
     setAutoPullMsg(null);
     try {
-      const nextStage =
-        !tracking?.wip?.poStage
-          ? 'cutting'
-          : tracking.wip.poStage === 'cutting'
-            ? 'sewing'
-            : tracking.wip.poStage === 'sewing'
-              ? 'qc'
-              : tracking.wip.poStage === 'qc'
-                ? 'ready_to_ship'
-                : 'shipped';
+      const nextStage = !tracking?.wip?.poStage
+        ? 'cutting'
+        : tracking.wip.poStage === 'cutting'
+          ? 'sewing'
+          : tracking.wip.poStage === 'sewing'
+            ? 'qc'
+            : tracking.wip.poStage === 'qc'
+              ? 'ready_to_ship'
+              : 'shipped';
       const res = await fetch('/api/integrations/v1/aims360/wip/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -74,7 +73,11 @@ export function IntegrationProductionWipStrip({
       });
       const json = (await res.json()) as {
         data?: {
-          autoPull?: { pulled?: boolean; platform?: string; shipment?: { trackingNumber?: string } };
+          autoPull?: {
+            pulled?: boolean;
+            platform?: string;
+            shipment?: { trackingNumber?: string };
+          };
         };
       };
       if (res.ok && json.data?.autoPull?.pulled) {
@@ -91,7 +94,10 @@ export function IntegrationProductionWipStrip({
 
   if (loading) {
     return (
-      <span className="text-text-muted text-[9px]" data-testid={`${variant}-wip-loading-${wholesaleOrderId}`}>
+      <span
+        className="text-text-muted text-[9px]"
+        data-testid={`${variant}-wip-loading-${wholesaleOrderId}`}
+      >
         WIP…
       </span>
     );
@@ -115,12 +121,14 @@ export function IntegrationProductionWipStrip({
               </Badge>
             ))}
           </div>
-          <p className="text-text-muted text-[9px]">
-            Склад · WIP · {tracking.wip.labelRu}
-          </p>
+          <p className="text-text-muted text-[9px]">Склад · WIP · {tracking.wip.labelRu}</p>
         </>
       ) : (
-        <Badge variant="outline" className="text-[8px]" data-testid={`${prefix}-wip-empty-${wholesaleOrderId}`}>
+        <Badge
+          variant="outline"
+          className="text-[8px]"
+          data-testid={`${prefix}-wip-empty-${wholesaleOrderId}`}
+        >
           WIP производства —
         </Badge>
       )}
@@ -138,13 +146,19 @@ export function IntegrationProductionWipStrip({
         </Button>
       ) : null}
       {tracking?.shipment?.trackingNumber ? (
-        <p className="text-text-muted text-[9px]" data-testid={`${prefix}-wip-shipment-${wholesaleOrderId}`}>
+        <p
+          className="text-text-muted text-[9px]"
+          data-testid={`${prefix}-wip-shipment-${wholesaleOrderId}`}
+        >
           Отгрузка · {integrationPlatformLabelRu(tracking.shipment.platform)} ·{' '}
           <span className="font-mono">{tracking.shipment.trackingNumber}</span>
         </p>
       ) : null}
       {autoPullMsg ? (
-        <p className="text-emerald-800 text-[9px]" data-testid={`${prefix}-wip-autopull-${wholesaleOrderId}`}>
+        <p
+          className="text-[9px] text-emerald-800"
+          data-testid={`${prefix}-wip-autopull-${wholesaleOrderId}`}
+        >
           {autoPullMsg}
         </p>
       ) : null}

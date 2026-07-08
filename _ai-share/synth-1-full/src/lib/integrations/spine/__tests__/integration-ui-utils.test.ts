@@ -1,4 +1,7 @@
-import { mapOperationalStatusLabelRu, isIntegrationImportedWholesaleOrderId } from '../integration-ui-utils';
+import {
+  mapOperationalStatusLabelRu,
+  isIntegrationImportedWholesaleOrderId,
+} from '../integration-ui-utils';
 
 describe('integration-ui-utils', () => {
   it('detects INT-JOOR wholesale ids', () => {

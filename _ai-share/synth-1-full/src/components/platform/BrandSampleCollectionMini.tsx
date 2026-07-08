@@ -30,9 +30,7 @@ import { PlatformCorePillarInsightSkeleton } from '@/components/platform/Platfor
 import { PlatformCorePillarNotificationCenterCompact } from '@/components/platform/PlatformCorePillarNotificationCenterCompact';
 import { usePlatformCoreAuditUi } from '@/hooks/use-platform-core-audit-ui';
 import { usePlatformCoreHubAuditLegacyAttrs } from '@/hooks/use-platform-core-hub-audit-legacy-attrs';
-import {
-  shouldShowHubCabinetPublishedCountSyncBadge,
-} from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
+import { shouldShowHubCabinetPublishedCountSyncBadge } from '@/lib/platform-core-ports/platform/wave-yt-hub-noise-pass2';
 import { WAVE_ZE_SC_COLLECTION_ERROR_RU } from '@/lib/platform-core-ports/platform/wave-ze-hub-diagnostics-ru';
 import { platformCoreUiHref } from '@/lib/platform-core-ui-href';
 import { BrandScLinesheetSyndicationPanel } from '@/components/platform/BrandScLinesheetSyndicationPanel';
@@ -108,7 +106,9 @@ export function BrandSampleCollectionMini({
               omitMatrixPrefillCta={coreMode}
             />
           )}
-          {isPublishSection && coreMode ? <BrandScPublishReleasePeerStrip collectionId={collectionId} /> : null}
+          {isPublishSection && coreMode ? (
+            <BrandScPublishReleasePeerStrip collectionId={collectionId} />
+          ) : null}
           {coreMode && !minimalChrome && !isPublishSection ? (
             <BrandScCabinetRetailPeerStrip collectionId={collectionId} omitBuyPath />
           ) : null}
@@ -161,9 +161,7 @@ export function BrandSampleCollectionMini({
                 </p>
               ) : loadState === 'error' ? (
                 <div className="space-y-2" data-testid="brand-sc-cabinet-error">
-                  <p className={hubGadget.muted}>
-                    {error ?? WAVE_ZE_SC_COLLECTION_ERROR_RU}
-                  </p>
+                  <p className={hubGadget.muted}>{error ?? WAVE_ZE_SC_COLLECTION_ERROR_RU}</p>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
@@ -175,7 +173,13 @@ export function BrandSampleCollectionMini({
                     >
                       Повторить
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-7 text-[10px]" asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px]"
+                      asChild
+                    >
                       <Link
                         href={brandLinesheetsHrefForDemo(demo)}
                         data-testid="brand-sc-cabinet-error-linesheet-link"
@@ -183,9 +187,17 @@ export function BrandSampleCollectionMini({
                         Лайншиты
                       </Link>
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-7 text-[10px]" asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px]"
+                      asChild
+                    >
                       <Link
-                        href={platformCoreUiHref(`${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`)}
+                        href={platformCoreUiHref(
+                          `${ROUTES.shop.b2bShowroom}?collection=${encodeURIComponent(collectionId)}`
+                        )}
                         data-testid="brand-sc-cabinet-error-showroom-link"
                       >
                         Шоурум магазина
@@ -232,7 +244,7 @@ export function BrandSampleCollectionMini({
         />
       ) : null}
       {isShowroomSection && coreMode ? (
-        <div className="flex flex-wrap gap-2 border-t border-border-subtle pt-2">
+        <div className="border-border-subtle flex flex-wrap gap-2 border-t pt-2">
           <Button type="button" variant="outline" size="sm" className="h-7 text-[10px]" asChild>
             <Link
               href={`${ROUTES.brand.showroom}?collection=${encodeURIComponent(collectionId)}`}
@@ -261,27 +273,27 @@ export function BrandSampleCollectionMini({
         />
       ) : null}
       {!(compact && minimalChrome) && !isPublishSection ? (
-      <div
-        className="border-border-subtle flex flex-col gap-1.5 border-t pt-2"
-        data-testid="brand-sc-upstream-strip"
-      >
-        <BrandCentricStyleImportPanel
-          collectionId={collectionId}
-          articleId={demoArticleId}
-          compact
-        />
-        <BrandCentricMediaImportPanel
-          collectionId={collectionId}
-          articleId={demoArticleId}
-          compact
-          onImportSuccess={() => setLinesheetReloadNonce((n) => n + 1)}
-        />
-        <BrandLinesheetGenPanel
-          collectionId={collectionId}
-          compact
-          reloadNonce={linesheetReloadNonce}
-        />
-      </div>
+        <div
+          className="border-border-subtle flex flex-col gap-1.5 border-t pt-2"
+          data-testid="brand-sc-upstream-strip"
+        >
+          <BrandCentricStyleImportPanel
+            collectionId={collectionId}
+            articleId={demoArticleId}
+            compact
+          />
+          <BrandCentricMediaImportPanel
+            collectionId={collectionId}
+            articleId={demoArticleId}
+            compact
+            onImportSuccess={() => setLinesheetReloadNonce((n) => n + 1)}
+          />
+          <BrandLinesheetGenPanel
+            collectionId={collectionId}
+            compact
+            reloadNonce={linesheetReloadNonce}
+          />
+        </div>
       ) : null}
     </div>
   );

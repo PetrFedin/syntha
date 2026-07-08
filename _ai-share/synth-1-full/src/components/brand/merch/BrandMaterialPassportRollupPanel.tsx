@@ -54,7 +54,9 @@ export function BrandMaterialPassportRollupPanel({ collectionId = 'SS27' }: Prop
   const summary = useMemo(() => summarizeBrandMaterialPassportRollup(rows), [rows]);
 
   const downloadCsv = () => {
-    const blob = new Blob([brandMaterialPassportRollupToCsv(rows)], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([brandMaterialPassportRollupToCsv(rows)], {
+      type: 'text/csv;charset=utf-8',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -94,13 +96,18 @@ export function BrandMaterialPassportRollupPanel({ collectionId = 'SS27' }: Prop
         >
           JSON
         </Button>
-        <Badge variant="secondary">Composition: {summary.withComposition}/{summary.total}</Badge>
+        <Badge variant="secondary">
+          Composition: {summary.withComposition}/{summary.total}
+        </Badge>
         {dossierLinked ? (
           <Badge variant="outline" data-testid="brand-material-passport-rollup-dossier-linked">
             ТЗ dossier
           </Badge>
         ) : null}
-        <Badge variant="outline" data-testid={`brand-material-passport-rollup-source-${storageMode}`}>
+        <Badge
+          variant="outline"
+          data-testid={`brand-material-passport-rollup-source-${storageMode}`}
+        >
           {storageMode === 'pg' ? 'PG rollup' : `${storageMode} rollup`}
         </Badge>
         <Button variant="outline" size="sm" type="button" onClick={() => void reload()}>
@@ -140,9 +147,14 @@ export function BrandMaterialPassportRollupPanel({ collectionId = 'SS27' }: Prop
             </TableHeader>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.sku} data-testid={`brand-material-passport-rollup-row-${row.sku}`}>
+                <TableRow
+                  key={row.sku}
+                  data-testid={`brand-material-passport-rollup-row-${row.sku}`}
+                >
                   <TableCell className="font-mono text-xs">{row.sku}</TableCell>
-                  <TableCell className="max-w-[160px] truncate text-xs">{row.name.replace(/""/g, '"')}</TableCell>
+                  <TableCell className="max-w-[160px] truncate text-xs">
+                    {row.name.replace(/""/g, '"')}
+                  </TableCell>
                   <TableCell className="text-xs">{row.color}</TableCell>
                   <TableCell className="text-xs">{row.season}</TableCell>
                   <TableCell
@@ -151,8 +163,12 @@ export function BrandMaterialPassportRollupPanel({ collectionId = 'SS27' }: Prop
                   >
                     {row.compositionText.replace(/""/g, '"') || '—'}
                   </TableCell>
-                  <TableCell className="font-mono text-[10px] text-muted-foreground">{row.careIds || '—'}</TableCell>
-                  <TableCell className="text-[10px] uppercase text-muted-foreground">{sourceLabel(row.source)}</TableCell>
+                  <TableCell className="font-mono text-[10px] text-muted-foreground">
+                    {row.careIds || '—'}
+                  </TableCell>
+                  <TableCell className="text-[10px] uppercase text-muted-foreground">
+                    {sourceLabel(row.source)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

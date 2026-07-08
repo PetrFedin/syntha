@@ -1,7 +1,10 @@
 import 'server-only';
 
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import { getPlatformCoreDemo, isPlatformCoreEmptyChainCollection } from '@/lib/platform-core-hub-matrix';
+import {
+  getPlatformCoreDemo,
+  isPlatformCoreEmptyChainCollection,
+} from '@/lib/platform-core-hub-matrix';
 import { getPlatformCoreB2bCalendarEvents } from '@/lib/server/platform-core-calendar-events';
 import { listWorkshop2ContextualMessageThreads } from '@/lib/server/workshop2-contextual-messages-repository';
 import {
@@ -10,15 +13,16 @@ import {
   workshop2B2bOrderStatusLabelRu,
   type Workshop2B2bOrderStatus,
 } from '@/lib/production/workshop2-b2b-order-lifecycle';
-import { getWorkshop2DevelopmentStatus, filterWorkshop2DevelopmentStepsForManufacturer } from '@/lib/server/workshop2-development-status';
+import {
+  getWorkshop2DevelopmentStatus,
+  filterWorkshop2DevelopmentStepsForManufacturer,
+} from '@/lib/server/workshop2-development-status';
 import { getWorkshop2SampleCollectionStatus } from '@/lib/server/workshop2-sample-collection-status';
 import { getWorkshop2ServerDossierRecord } from '@/lib/server/workshop2-phase1-dossier-server-store';
 import { listWorkshop2FactorySampleQueue } from '@/lib/production/workshop2-factory-sample-queue';
 import { extractWorkshop2DossierMaterialPreviews } from '@/lib/production/workshop2-dossier-material-preview';
 import { resolveB2bChainStatusUnified } from '@/lib/integrations/spine/operational-import-handoff.service';
-import {
-  filterChainStepsForShopBuyer,
-} from '@/lib/platform-core-shop-production-visibility';
+import { filterChainStepsForShopBuyer } from '@/lib/platform-core-shop-production-visibility';
 import { resolveShopProductionVisibilityPolicyForOrder } from '@/lib/server/workshop2-shop-production-visibility-repository';
 import { resolveSpineActiveWholesaleOrderIdServer } from '@/lib/integrations/spine/spine-active-order.server';
 import { getImportedOrderRecord } from '@/lib/integrations/spine/imported-orders-persistence';
@@ -52,9 +56,7 @@ import type {
   SupplierProcurementSpineSnapshot,
 } from '@/lib/platform-core-pillar-snapshot.types';
 import { batchWorkshop2DossierMaterialNames } from '@/lib/server/workshop2-dossier-materials-batch';
-import {
-  batchWorkshop2SupplierConfirmedByArticle,
-} from '@/lib/server/workshop2-material-requisition-repository';
+import { batchWorkshop2SupplierConfirmedByArticle } from '@/lib/server/workshop2-material-requisition-repository';
 import { mapOperationalItemsToForecastLines } from '@/lib/integrations/spine/spine-production-forecast-lines';
 import { listWorkshop2FactoryProductionHandoffQueue } from '@/lib/server/workshop2-b2b-production-handoff';
 import {
@@ -68,9 +70,8 @@ type OrderProductionVariant = 'brand' | 'shop' | 'manufacturer';
 async function resolveSpineOrderTracking(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
   if (isPlatformCoreSpinePgPrimary()) {
-    const { getOrderTrackingShipmentFromPg } = await import(
-      '@/lib/integrations/spine/spine-operational-persistence.pg'
-    );
+    const { getOrderTrackingShipmentFromPg } =
+      await import('@/lib/integrations/spine/spine-operational-persistence.pg');
     const fromPg = await getOrderTrackingShipmentFromPg(orderId);
     if (fromPg) return fromPg;
   }
@@ -80,9 +81,8 @@ async function resolveSpineOrderTracking(orderId: string) {
 async function resolveSpineProductionWipByB2bOrderId(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
   if (isPlatformCoreSpinePgPrimary()) {
-    const { getProductionWipByB2bOrderIdFromPg } = await import(
-      '@/lib/integrations/spine/spine-operational-persistence.pg'
-    );
+    const { getProductionWipByB2bOrderIdFromPg } =
+      await import('@/lib/integrations/spine/spine-operational-persistence.pg');
     const fromPg = await getProductionWipByB2bOrderIdFromPg(orderId);
     if (fromPg) return fromPg;
   }
@@ -92,9 +92,8 @@ async function resolveSpineProductionWipByB2bOrderId(orderId: string) {
 async function resolveSpineDeliveryWindow(orderId: string) {
   await ensureSpineOperationalStoreReady(SPINE_TRACKING_READ_SCOPES);
   if (isPlatformCoreSpinePgPrimary()) {
-    const { getDeliveryWindowFromPg } = await import(
-      '@/lib/integrations/spine/spine-operational-persistence.pg'
-    );
+    const { getDeliveryWindowFromPg } =
+      await import('@/lib/integrations/spine/spine-operational-persistence.pg');
     const fromPg = await getDeliveryWindowFromPg(orderId);
     if (fromPg) return fromPg;
   }
@@ -130,8 +129,7 @@ async function resolveHandoffQueueOrderId(
     items[0];
   const orderId = preferred || resolved?.b2bOrderId || spineOrderId || '';
   const queueHit = Boolean(orderId && items.some((i) => i.b2bOrderId === orderId));
-  const matched =
-    orderId ? items.find((i) => i.b2bOrderId === orderId) ?? resolved : resolved;
+  const matched = orderId ? (items.find((i) => i.b2bOrderId === orderId) ?? resolved) : resolved;
   return {
     orderId,
     queueHit,
@@ -408,9 +406,7 @@ async function buildOrderProductionSnapshot(
       : await resolveShopProductionVisibilityPolicyForOrder({ collectionId });
   const rawSteps = chain?.steps ?? [];
   const chainSteps =
-    variant === 'shop'
-      ? filterChainStepsForShopBuyer(rawSteps, buyerPolicy)
-      : rawSteps;
+    variant === 'shop' ? filterChainStepsForShopBuyer(rawSteps, buyerPolicy) : rawSteps;
   const productionOrderId = chain?.productionOrderId ?? null;
 
   let handoffItems: OrderProductionPillarSnapshot['handoffItems'] = [];
@@ -543,10 +539,7 @@ async function buildSupplierProcurementSnapshot(
     items[0];
 
   const orderId =
-    wholesaleOrderIdInput?.trim() ||
-    spineHit?.b2bOrderId ||
-    spineOrderId ||
-    w2Fallback;
+    wholesaleOrderIdInput?.trim() || spineHit?.b2bOrderId || spineOrderId || w2Fallback;
 
   const hit = items.find((i) => i.b2bOrderId === orderId);
   let poQty = hit?.qty ?? 0;
@@ -556,7 +549,8 @@ async function buildSupplierProcurementSnapshot(
   }
 
   const poReady =
-    Boolean(hit) || (Boolean(orderId) && isIntegrationImportedWholesaleOrderId(orderId) && poQty > 0);
+    Boolean(hit) ||
+    (Boolean(orderId) && isIntegrationImportedWholesaleOrderId(orderId) && poQty > 0);
 
   const bomLines = (dossier?.dossier?.productionModel?.materialLines ??
     []) as SupplierProcurementBomLine[];
@@ -707,11 +701,7 @@ export async function getPlatformCorePillarSnapshot(input: {
     }
     return {
       pillarId: 'collection_order',
-      collectionOrder: await buildCollectionOrderSnapshot(
-        cid,
-        factoryId,
-        input.wholesaleOrderId
-      ),
+      collectionOrder: await buildCollectionOrderSnapshot(cid, factoryId, input.wholesaleOrderId),
     };
   }
 
@@ -764,9 +754,8 @@ export async function getPlatformCorePillarSnapshotResilient(input: {
     return await getPlatformCorePillarSnapshot(input);
   } catch (err) {
     if (!isWorkshop2PgConnectionError(err)) throw err;
-    const { buildPlatformCorePillarSnapshotOffline } = await import(
-      '@/lib/server/platform-core-pillar-snapshot-offline'
-    );
+    const { buildPlatformCorePillarSnapshotOffline } =
+      await import('@/lib/server/platform-core-pillar-snapshot-offline');
     return buildPlatformCorePillarSnapshotOffline(input);
   }
 }

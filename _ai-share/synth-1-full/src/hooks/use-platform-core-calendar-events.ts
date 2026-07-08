@@ -27,9 +27,7 @@ export function usePlatformCoreCalendarEvents({
   const [loading, setLoading] = useState(!(initialEvents && initialEvents.length > 0));
   const [error, setError] = useState<string | null>(null);
   const lastLoadedKeyRef = useRef<string | null>(
-    initialEvents?.length
-      ? `${collectionId.trim()}\0${orderId?.trim() ?? ''}`
-      : null
+    initialEvents?.length ? `${collectionId.trim()}\0${orderId?.trim() ?? ''}` : null
   );
   const loadedCountRef = useRef(initialEvents?.length ?? 0);
   const [reloadToken, setReloadToken] = useState(0);
@@ -63,10 +61,10 @@ export function usePlatformCoreCalendarEvents({
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
         let res: Response;
         try {
-          res = await fetch(
-            `/api/workshop2/platform-core/calendar-events?${params.toString()}`,
-            { headers: buildWorkshop2ApiRequestHeaders(), signal: controller.signal }
-          );
+          res = await fetch(`/api/workshop2/platform-core/calendar-events?${params.toString()}`, {
+            headers: buildWorkshop2ApiRequestHeaders(),
+            signal: controller.signal,
+          });
         } finally {
           clearTimeout(timeoutId);
         }

@@ -6,7 +6,9 @@ export function verifyIntegrationsSpineWebhookSecret(input: {
   env?: Record<string, string | undefined>;
 }): { ok: boolean; status?: 401; messageRu?: string } {
   const expected = String(
-    input.env?.INTEGRATIONS_SPINE_WEBHOOK_SECRET ?? process.env.INTEGRATIONS_SPINE_WEBHOOK_SECRET ?? ''
+    input.env?.INTEGRATIONS_SPINE_WEBHOOK_SECRET ??
+      process.env.INTEGRATIONS_SPINE_WEBHOOK_SECRET ??
+      ''
   ).trim();
 
   if (!expected) {

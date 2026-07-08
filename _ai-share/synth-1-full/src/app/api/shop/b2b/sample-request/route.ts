@@ -96,8 +96,7 @@ export async function POST(req: NextRequest) {
   const { bumpPlatformCoreDevelopmentStatus } =
     await import('@/lib/server/platform-core-development-status-hub');
   bumpPlatformCoreDevelopmentStatus([collectionId]);
-  const { bumpPlatformCoreCommsInbox } =
-    await import('@/lib/server/platform-core-comms-inbox-hub');
+  const { bumpPlatformCoreCommsInbox } = await import('@/lib/server/platform-core-comms-inbox-hub');
   bumpPlatformCoreCommsInbox('sample_order.status_changed');
   const { bumpPlatformCoreB2bRegistry } =
     await import('@/lib/server/platform-core-b2b-registry-hub');

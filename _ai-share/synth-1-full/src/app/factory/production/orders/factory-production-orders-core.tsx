@@ -403,9 +403,7 @@ export function FactoryProductionOrdersCorePage() {
     : factoryHandoffQueueHrefForDemo({ ...PLATFORM_CORE_DEMO, collectionId: pageCollectionId });
   const productionHubHref = factoryCoreOrderProductionCabinetHref(pageCollectionId);
   const focusedRow =
-    focusOrderId != null
-      ? scopedItems.find((row) => row.b2bOrderId === focusOrderId)
-      : undefined;
+    focusOrderId != null ? scopedItems.find((row) => row.b2bOrderId === focusOrderId) : undefined;
 
   return (
     <Card data-testid="factory-production-orders-core">
@@ -652,7 +650,8 @@ export function FactoryProductionOrdersCorePage() {
           >
             <p className="text-text-muted">Нет производственных серий в очереди цеха.</p>
             <p className="text-text-muted text-xs">
-              Серии появятся после передачи от бренда — проверьте очередь передачи или кабинет выпуска.
+              Серии появятся после передачи от бренда — проверьте очередь передачи или кабинет
+              выпуска.
             </p>
             <div className="flex flex-wrap justify-center gap-3 text-[10px] font-semibold uppercase">
               <Link

@@ -73,7 +73,7 @@ export function BrandApparelMagicVendorPoPanel() {
             {vendorPoId}
           </Badge>
         ) : null}
-        {msg ? <p className="text-xs text-text-secondary">{msg}</p> : null}
+        {msg ? <p className="text-text-secondary text-xs">{msg}</p> : null}
         <Button size="sm" disabled={busy || !spineOrderId} onClick={() => void importVendorPo()}>
           {busy ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
           Импорт vendor PO

@@ -57,7 +57,14 @@ describe('imported-orders-read.server', () => {
         externalKey: 'joor:1',
         record: {
           wholesaleOrderId: 'INT-JOOR-1',
-          order: { order: 'INT-JOOR-1', shop: 'S', brand: 'B', status: 'pending', amount: '1', date: 'd' },
+          order: {
+            order: 'INT-JOOR-1',
+            shop: 'S',
+            brand: 'B',
+            status: 'pending',
+            amount: '1',
+            date: 'd',
+          },
           lineItems: [],
           importedAt: '2026-06-01',
         },

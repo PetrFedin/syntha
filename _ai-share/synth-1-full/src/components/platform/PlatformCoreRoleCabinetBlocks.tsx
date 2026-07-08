@@ -39,11 +39,7 @@ export function PlatformCoreRoleCabinetBlocks() {
         {getPlatformCoreHubRowsForUi().map((row) => (
           <PlatformCoreHubQuickCard
             key={row.id}
-            href={platformCoreRolePillarHref(
-              row.id,
-              getDefaultPillarForRole(row.id),
-              collectionId
-            )}
+            href={platformCoreRolePillarHref(row.id, getDefaultPillarForRole(row.id), collectionId)}
             testId={`role-block-${row.id}`}
             icon={ROLE_ICONS[row.id]}
             title={row.label}

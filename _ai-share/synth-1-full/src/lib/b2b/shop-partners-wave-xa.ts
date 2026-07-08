@@ -2,7 +2,10 @@ import { SHOP_PARTNERSHIP_INVITE_API_PATH } from '@/lib/b2b/shop-partnership-inv
 import { ROUTES } from '@/lib/routes';
 
 /** Wave XA — shop SC partners catalog: invite PG stub + eligible-for-matrix cross-link. */
-export { SHOP_PARTNERSHIP_INVITE_API_PATH, postShopPartnershipInvite } from '@/lib/b2b/shop-partnership-invite';
+export {
+  SHOP_PARTNERSHIP_INVITE_API_PATH,
+  postShopPartnershipInvite,
+} from '@/lib/b2b/shop-partnership-invite';
 
 export const SHOP_PARTNERSHIP_INVITE_PG_TABLE = 'shop_b2b_partnership_invite_journal' as const;
 
@@ -14,8 +17,7 @@ export const SHOP_B2B_PARTNERS_GOLDEN_PATH_UAT_RU =
 export const SHOP_SC_PARTNERS_SHOWROOM_ELIGIBLE_LINK_TESTID =
   'shop-sc-partners-showroom-eligible-for-matrix-link';
 
-export const SHOP_SC_PARTNERS_INVITE_STORAGE_BADGE_TESTID =
-  'shop-sc-partners-invite-storage-badge';
+export const SHOP_SC_PARTNERS_INVITE_STORAGE_BADGE_TESTID = 'shop-sc-partners-invite-storage-badge';
 
 export const SHOP_SC_PARTNERS_ELIGIBLE_MATRIX_PEER_LABEL_RU = 'Витрина · eligible-for-matrix';
 

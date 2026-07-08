@@ -94,7 +94,10 @@ export function BrandCentricStyleImportPanel({
           {busy ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
           Import Approved
         </Button>
-        <Link href={ROUTES.brand.integrationsCentric} className="text-accent-primary hover:underline">
+        <Link
+          href={ROUTES.brand.integrationsCentric}
+          className="text-accent-primary hover:underline"
+        >
           PLM →
         </Link>
         {msg ? <span className="text-text-muted text-[9px]">{msg}</span> : null}
@@ -113,8 +116,9 @@ export function BrandCentricStyleImportPanel({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="text-xs text-text-secondary">
-          <span className="font-mono">{collectionId}</span> / <span className="font-mono">{articleId}</span>
+        <div className="text-text-secondary text-xs">
+          <span className="font-mono">{collectionId}</span> /{' '}
+          <span className="font-mono">{articleId}</span>
         </div>
         {loadState === 'ready' && gate ? (
           <div className="flex flex-wrap gap-2">
@@ -136,7 +140,12 @@ export function BrandCentricStyleImportPanel({
             {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
             Import Approved style
           </Button>
-          <Button size="sm" variant="outline" disabled={busy} onClick={() => void importStyle('Draft')}>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={busy}
+            onClick={() => void importStyle('Draft')}
+          >
             Import Draft (no eligible)
           </Button>
           <Link href={brandShowroomHref(collectionId)}>

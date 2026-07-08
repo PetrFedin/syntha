@@ -26,7 +26,7 @@ describe('brand-techpack-release-gate-rows', () => {
     const rows = buildBrandTechPackReleaseGateRows({
       products: products.slice(0, 3),
       collectionId: 'SS27',
-      resolveDossier: () => ({ schemaVersion: 1, assignments: [] } as Workshop2DossierPhase1),
+      resolveDossier: () => ({ schemaVersion: 1, assignments: [] }) as Workshop2DossierPhase1,
     });
     expect(rows.length).toBe(3);
     const summary = summarizeBrandTechPackReleaseGate(rows);

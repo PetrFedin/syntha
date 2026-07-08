@@ -1,7 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import type { CoreChainRoleId, CoreHubPillarId, PlatformCoreDemoContext } from '@/lib/platform-core-hub-matrix';
+import type {
+  CoreChainRoleId,
+  CoreHubPillarId,
+  PlatformCoreDemoContext,
+} from '@/lib/platform-core-hub-matrix';
 import { hasEmptyCellInsightPanel } from '@/lib/platform-core-empty-cell-registry';
 
 export { hasEmptyCellInsightPanel };
@@ -64,9 +68,7 @@ export function PlatformCoreEmptyCellPanels({
   embedCrossRole = false,
 }: Props) {
   if (roleId === 'shop' && pillarId === 'development') {
-    return (
-      <ShopDevelopmentBridgePanel demo={demo} hideLead embedCrossRole={embedCrossRole} />
-    );
+    return <ShopDevelopmentBridgePanel demo={demo} hideLead embedCrossRole={embedCrossRole} />;
   }
   if (roleId === 'manufacturer' && pillarId === 'collection_order') {
     return (
@@ -89,17 +91,11 @@ export function PlatformCoreEmptyCellPanels({
     );
   }
   if (roleId === 'supplier' && pillarId === 'sample_collection') {
-    return (
-      <SupplierBomPreviewPanel demo={demo} hideLead embedCrossRole={embedCrossRole} compact />
-    );
+    return <SupplierBomPreviewPanel demo={demo} hideLead embedCrossRole={embedCrossRole} compact />;
   }
   if (roleId === 'supplier' && pillarId === 'collection_order') {
     return (
-      <SupplierCollectionOrderForecastPanel
-        demo={demo}
-        hideLead
-        embedCrossRole={embedCrossRole}
-      />
+      <SupplierCollectionOrderForecastPanel demo={demo} hideLead embedCrossRole={embedCrossRole} />
     );
   }
   return null;
