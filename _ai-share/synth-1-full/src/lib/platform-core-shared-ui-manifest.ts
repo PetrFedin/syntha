@@ -14,6 +14,8 @@ export type PlatformCoreSharedUiComponentManifestItem = {
   migrationRuleRu: string;
 };
 
+export const PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH = '@/components/platform/shared';
+
 /**
  * Canonical shared UI building blocks for Platform Core.
  *
@@ -24,7 +26,7 @@ export const PLATFORM_CORE_SHARED_UI_MANIFEST: readonly PlatformCoreSharedUiComp
   {
     componentId: 'section_header',
     componentName: 'PlatformCoreSectionHeader',
-    importPath: '@/components/platform/shared/PlatformCoreSectionHeader',
+    importPath: PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH,
     replacesRu: ['локальные заголовки секций', 'hero header в рабочих кабинетах', 'дубли primary CTA'],
     requiredFor: ['visible section header', 'pillar workspace header', 'registry header'],
     migrationRuleRu:
@@ -33,7 +35,7 @@ export const PLATFORM_CORE_SHARED_UI_MANIFEST: readonly PlatformCoreSharedUiComp
   {
     componentId: 'data_table',
     componentName: 'PlatformCoreDataTable',
-    importPath: '@/components/platform/shared/PlatformCoreDataTable',
+    importPath: PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH,
     replacesRu: ['локальные table shells', 'разные registry wrappers', 'несогласованные list containers'],
     requiredFor: ['order registry', 'article registry', 'tracking list', 'documents list'],
     migrationRuleRu:
@@ -42,7 +44,7 @@ export const PLATFORM_CORE_SHARED_UI_MANIFEST: readonly PlatformCoreSharedUiComp
   {
     componentId: 'empty_state',
     componentName: 'PlatformCoreEmptyState',
-    importPath: '@/components/platform/shared/PlatformCoreEmptyState',
+    importPath: PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH,
     replacesRu: ['пустые блоки без объяснения', 'No data заглушки', 'декоративные coming soon cards'],
     requiredFor: ['empty registry', 'empty section', 'hidden pending workflow explanation'],
     migrationRuleRu:
