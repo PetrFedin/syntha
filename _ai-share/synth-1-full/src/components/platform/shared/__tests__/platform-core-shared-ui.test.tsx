@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH,
   PLATFORM_CORE_SHARED_UI_MANIFEST,
   getPlatformCoreSharedUiComponentNames,
   getPlatformCoreSharedUiManifestItem,
@@ -71,6 +72,7 @@ describe('Platform Core shared UI shells', () => {
   });
 
   it('shared UI manifest lists only existing canonical shared components', () => {
+    expect(PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH).toBe('@/components/platform/shared');
     expect(getPlatformCoreSharedUiComponentNames()).toEqual([
       'PlatformCoreSectionHeader',
       'PlatformCoreDataTable',
@@ -79,7 +81,7 @@ describe('Platform Core shared UI shells', () => {
 
     for (const item of PLATFORM_CORE_SHARED_UI_MANIFEST) {
       expect(item.componentName).toMatch(/^PlatformCore/);
-      expect(item.importPath).toMatch(/^@\/components\/platform\/shared\//);
+      expect(item.importPath).toBe(PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH);
       expect(item.replacesRu.length).toBeGreaterThanOrEqual(2);
       expect(item.requiredFor.length).toBeGreaterThanOrEqual(2);
       expect(item.migrationRuleRu.length).toBeGreaterThan(40);
