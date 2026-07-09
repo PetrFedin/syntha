@@ -37,4 +37,15 @@ describe('Platform Core shared UI shells', () => {
     expect(src).toMatch(/table_shell/);
     expect(src).toMatch(/overflow-x-auto/);
   });
+
+  it('PlatformCoreSectionHeader standardizes title, context and one primary action', () => {
+    const src = readSharedComponent('PlatformCoreSectionHeader.tsx');
+    expect(src).toMatch(/data-platform-core-section-header="canonical"/);
+    expect(src).toMatch(/primaryAction/);
+    expect(src).toMatch(/secondaryActions/);
+    expect(src).toMatch(/getPlatformCoreTypographyRole/);
+    expect(src).toMatch(/section_title/);
+    expect(src).toMatch(/meta/);
+    expect(src).not.toMatch(/hero/i);
+  });
 });
