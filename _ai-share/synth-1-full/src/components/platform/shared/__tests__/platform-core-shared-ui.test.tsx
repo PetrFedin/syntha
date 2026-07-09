@@ -44,6 +44,13 @@ describe('Platform Core shared UI shells', () => {
     expect(src).toMatch(/overflow-x-auto/);
   });
 
+  it('PlatformCoreDataTable reuses PlatformCoreSectionHeader instead of local header typography', () => {
+    const src = readSharedComponent('PlatformCoreDataTable.tsx');
+    expect(src).toMatch(/PlatformCoreSectionHeader/);
+    expect(src).not.toMatch(/getPlatformCoreTypographyRole/);
+    expect(src).not.toMatch(/sectionTitle/);
+  });
+
   it('PlatformCoreSectionHeader standardizes title, context and one primary action', () => {
     const src = readSharedComponent('PlatformCoreSectionHeader.tsx');
     expect(src).toMatch(/data-platform-core-section-header="canonical"/);
