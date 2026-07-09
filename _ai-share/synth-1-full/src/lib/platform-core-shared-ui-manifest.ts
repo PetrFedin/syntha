@@ -3,7 +3,8 @@ import type { ComponentType } from 'react';
 export type PlatformCoreSharedUiComponentId =
   | 'section_header'
   | 'data_table'
-  | 'empty_state';
+  | 'empty_state'
+  | 'publish_cta';
 
 export type PlatformCoreSharedUiComponentManifestItem = {
   componentId: PlatformCoreSharedUiComponentId;
@@ -49,6 +50,15 @@ export const PLATFORM_CORE_SHARED_UI_MANIFEST: readonly PlatformCoreSharedUiComp
     requiredFor: ['empty registry', 'empty section', 'hidden pending workflow explanation'],
     migrationRuleRu:
       'Пустое состояние обязано объяснять причину пустоты и давать одно следующее действие по lifecycle.',
+  },
+  {
+    componentId: 'publish_cta',
+    componentName: 'PlatformCorePublishCta',
+    importPath: PLATFORM_CORE_SHARED_UI_BARREL_IMPORT_PATH,
+    replacesRu: ['локальные кнопки публикации', 'разные publish CTA в linesheet/showroom', 'ручной publish state copy'],
+    requiredFor: ['brand sample collection publish', 'linesheet publish handoff', 'showroom publish handoff'],
+    migrationRuleRu:
+      'Publish CTA в Sample Collection должен использовать PlatformCorePublishCta, чтобы label, disabled state и next step шли из publish CTA model.',
   },
 ] as const;
 
