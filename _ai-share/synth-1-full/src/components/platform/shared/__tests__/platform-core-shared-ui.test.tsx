@@ -62,6 +62,14 @@ describe('Platform Core shared UI shells', () => {
     expect(src).not.toMatch(/hero/i);
   });
 
+  it('shared barrel exports all canonical Platform Core UI shells', () => {
+    const src = readSharedComponent('index.ts');
+    expect(src).toMatch(/PlatformCoreDataTable/);
+    expect(src).toMatch(/PlatformCoreEmptyState/);
+    expect(src).toMatch(/PlatformCoreSectionHeader/);
+    expect(src).not.toMatch(/default/);
+  });
+
   it('shared UI manifest lists only existing canonical shared components', () => {
     expect(getPlatformCoreSharedUiComponentNames()).toEqual([
       'PlatformCoreSectionHeader',
