@@ -3,13 +3,11 @@
 import type { ReactNode } from 'react';
 
 import { hubCabinet } from '@/lib/platform-core-cabinet-chrome';
-import {
-  getPlatformCoreContainerRole,
-  getPlatformCoreTypographyRole,
-} from '@/lib/platform-core-ui-density-contract';
+import { getPlatformCoreContainerRole } from '@/lib/platform-core-ui-density-contract';
 import { cn } from '@/lib/utils';
 
 import { PlatformCoreEmptyState } from './PlatformCoreEmptyState';
+import { PlatformCoreSectionHeader } from './PlatformCoreSectionHeader';
 
 type Props = {
   /** Stable test id for registry/matrix tables. */
@@ -47,8 +45,6 @@ export function PlatformCoreDataTable({
   emptyNextActionHref,
 }: Props) {
   const tableShell = getPlatformCoreContainerRole('table_shell');
-  const sectionTitle = getPlatformCoreTypographyRole('section_title');
-  const body = getPlatformCoreTypographyRole('body');
 
   if (isEmpty) {
     return (
@@ -68,33 +64,12 @@ export function PlatformCoreDataTable({
       style={{ border: tableShell?.border, borderRadius: tableShell?.radius }}
     >
       {(title || description || toolbar) && (
-        <div className="flex items-start justify-between gap-4 border-b border-neutral-200 px-4 py-3">
-          <div className="min-w-0">
-            {title ? (
-              <div
-                style={{
-                  fontSize: sectionTitle?.fontSize,
-                  lineHeight: sectionTitle?.lineHeight,
-                  fontWeight: sectionTitle?.fontWeight,
-                }}
-              >
-                {title}
-              </div>
-            ) : null}
-            {description ? (
-              <p
-                className="mt-1 text-neutral-600"
-                style={{
-                  fontSize: body?.fontSize,
-                  lineHeight: body?.lineHeight,
-                  fontWeight: body?.fontWeight,
-                }}
-              >
-                {description}
-              </p>
-            ) : null}
-          </div>
-          {toolbar ? <div className="shrink-0">{toolbar}</div> : null}
+        <div className="border-b border-neutral-200 px-4 py-3">
+          <PlatformCoreSectionHeader
+            title={title ?? 'Реестр'}
+            description={description}
+            primaryAction={toolbar}
+          />
         </div>
       )}
       <div className="overflow-x-auto">{children}</div>
