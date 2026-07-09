@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  PLATFORM_CORE_SHARED_UI_MANIFEST,
+  getPlatformCoreSharedUiComponentNames,
+  getPlatformCoreSharedUiManifestItem,
+} from '@/lib/platform-core-shared-ui-manifest';
+
 const repoRoot = path.join(__dirname, '..', '..', '..', '..');
 
 function readSharedComponent(fileName: string): string {
@@ -47,5 +53,34 @@ describe('Platform Core shared UI shells', () => {
     expect(src).toMatch(/section_title/);
     expect(src).toMatch(/meta/);
     expect(src).not.toMatch(/hero/i);
+  });
+
+  it('shared UI manifest lists only existing canonical shared components', () => {
+    expect(getPlatformCoreSharedUiComponentNames()).toEqual([
+      'PlatformCoreSectionHeader',
+      'PlatformCoreDataTable',
+      'PlatformCoreEmptyState',
+    ]);
+
+    for (const item of PLATFORM_CORE_SHARED_UI_MANIFEST) {
+      expect(item.componentName).toMatch(/^PlatformCore/);
+      expect(item.importPath).toMatch(/^@\/components\/platform\/shared\//);
+      expect(item.replacesRu.length).toBeGreaterThanOrEqual(2);
+      expect(item.requiredFor.length).toBeGreaterThanOrEqual(2);
+      expect(item.migrationRuleRu.length).toBeGreaterThan(40);
+      expect(readSharedComponent(`${item.componentName}.tsx`)).toContain(`export function ${item.componentName}`);
+    }
+  });
+
+  it('shared UI manifest has lookup helpers for migration-safe usage', () => {
+    expect(getPlatformCoreSharedUiManifestItem('section_header')?.componentName).toBe(
+      'PlatformCoreSectionHeader'
+    );
+    expect(getPlatformCoreSharedUiManifestItem('data_table')?.componentName).toBe(
+      'PlatformCoreDataTable'
+    );
+    expect(getPlatformCoreSharedUiManifestItem('empty_state')?.componentName).toBe(
+      'PlatformCoreEmptyState'
+    );
   });
 });
