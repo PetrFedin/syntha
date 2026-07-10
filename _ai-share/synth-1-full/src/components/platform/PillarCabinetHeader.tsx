@@ -12,17 +12,25 @@ type Props = {
   className?: string;
 };
 
-/** Единый заголовок кабинета столпа (без дублей section label + insight header). */
+/** Единый compact header столпа: title + progress, затем только полезный контекст. */
 export function PillarCabinetHeader({ title, subtitle, lead, progress, className }: Props) {
   return (
     <header
       data-testid="pillar-cabinet-header"
-      className={cn('border-border-subtle space-y-1 border-b pb-3', className)}
+      className={cn('border-border-subtle border-b pb-2', className)}
     >
-      <h1 className={cabinetTypography.pageTitle}>{title}</h1>
-      {subtitle ? <p className={cabinetTypography.caption}>{subtitle}</p> : null}
-      {lead ? <p className={cabinetTypography.body}>{lead}</p> : null}
-      {progress ? <div className="pt-1">{progress}</div> : null}
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className={cn(cabinetTypography.pageTitle, 'truncate')}>{title}</h1>
+          {subtitle ? (
+            <p className={cn(cabinetTypography.caption, 'mt-0.5 line-clamp-1')}>{subtitle}</p>
+          ) : null}
+        </div>
+        {progress ? <div className="shrink-0 pt-0.5">{progress}</div> : null}
+      </div>
+      {lead ? (
+        <p className={cn(cabinetTypography.body, 'mt-1 max-w-3xl line-clamp-2')}>{lead}</p>
+      ) : null}
     </header>
   );
 }
