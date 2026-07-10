@@ -21,8 +21,14 @@ export type PlatformCoreEmbeddedWorkspaceKey = `${CoreChainRoleId}:${CoreHubPill
 
 const EMBEDDED: readonly PlatformCoreEmbeddedWorkspaceKey[] = [
   'brand:development',
+  'brand:sample_collection',
   'brand:collection_order',
+  'brand:order_production',
+  'brand:comms',
+  'shop:sample_collection',
   'shop:collection_order',
+  'shop:order_production',
+  'shop:comms',
   'manufacturer:order_production',
   'manufacturer:comms',
   'supplier:development',
@@ -34,8 +40,19 @@ const EMBEDDED: readonly PlatformCoreEmbeddedWorkspaceKey[] = [
 export const PLATFORM_CORE_CABINET_DEFAULT_SECTION: Partial<
   Record<CoreChainRoleId, Partial<Record<CoreHubPillarId, string>>>
 > = {
-  brand: { development: 'brand-dev-w2-hub', collection_order: 'brand-co-registry' },
-  shop: { collection_order: 'shop-co-matrix' },
+  brand: {
+    development: 'brand-dev-w2-hub',
+    sample_collection: 'brand-sc-linesheets',
+    collection_order: 'brand-co-registry',
+    order_production: 'brand-op-cabinet',
+    comms: 'brand-cm-order',
+  },
+  shop: {
+    sample_collection: 'shop-sc-showroom',
+    collection_order: 'shop-co-matrix',
+    order_production: 'shop-op-tracking',
+    comms: 'shop-cm-order',
+  },
   manufacturer: {
     order_production: 'mfr-op-handoff-queue',
     comms: 'mfr-cm-order',
