@@ -4,7 +4,10 @@ import {
   evaluatePlatformCoreOrderConfirmationGuards,
   toPlatformCoreLifecycleCustomGuards,
 } from '@/lib/platform-core-commercial-lifecycle-guards';
-import { applyPlatformCoreLifecycleTransition } from '@/lib/platform-core-lifecycle-engine';
+import {
+  applyPlatformCoreLifecycleTransition,
+  evaluatePlatformCoreLifecycleTransition,
+} from '@/lib/platform-core-lifecycle-engine';
 import { calculatePlatformCoreOrderPricing } from '@/lib/platform-core-pricing-engine';
 
 function buildPricingResult() {
@@ -99,7 +102,25 @@ describe('Platform Core commercial lifecycle integration', () => {
       productionOrderCreated: false,
     });
 
-    expect(missingProductionOrder.some((guard) => guard.code === 'production_order_missing' && !guard.passed)).toBe(true);
+    expect(
+      missingProductionOrder.some(
+        (guard) => guard.code === 'production_order_missing' && !guard.passed
+      )
+    ).toBe(true);
+
+    const blocked = evaluatePlatformCoreLifecycleTransition({
+      from: 'fulfillment_planned',
+      action: 'start_fulfillment',
+      context: {
+        entityId: 'ORDER-001',
+        customGuards: toPlatformCoreLifecycleCustomGuards(missingProductionOrder),
+      },
+    });
+
+    expect(blocked.allowed).toBe(false);
+    expect(blocked.blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: 'custom_guard_failed' })])
+    );
 
     const ready = evaluatePlatformCoreFulfillmentStartGuards({
       articleOrigin: 'own_development',
@@ -127,8 +148,21 @@ describe('Platform Core commercial lifecycle integration', () => {
       productionOrderCreated: false,
     });
 
-    expect(missingSupplierPo.some((guard) => guard.code === 'supplier_po_missing' && !guard.passed)).toBe(true);
+    expect(
+      missingSupplierPo.some((guard) => guard.code === 'supplier_po_missing' && !guard.passed)
+    ).toBe(true);
     expect(missingSupplierPo.some((guard) => guard.code === 'production_order_missing')).toBe(false);
+
+    const blocked = evaluatePlatformCoreLifecycleTransition({
+      from: 'fulfillment_planned',
+      action: 'start_fulfillment',
+      context: {
+        entityId: 'ORDER-001',
+        customGuards: toPlatformCoreLifecycleCustomGuards(missingSupplierPo),
+      },
+    });
+
+    expect(blocked.allowed).toBe(false);
 
     const ready = evaluatePlatformCoreFulfillmentStartGuards({
       articleOrigin: 'ready_made_sourcing',
@@ -147,6 +181,30 @@ describe('Platform Core commercial lifecycle integration', () => {
     });
 
     expect(nextState).toBe('fulfillment_in_progress');
+  });
+
+  it('rejects a fulfillment route that conflicts with article origin', () => {
+    const guards = evaluatePlatformCoreFulfillmentStartGuards({
+      articleOrigin: 'own_development',
+      selectedFulfillmentRoute: 'supplier_purchase_order',
+      supplierPoCreated: true,
+      productionOrderCreated: false,
+    });
+
+    expect(
+      guards.some((guard) => guard.code === 'fulfillment_route_missing' && !guard.passed)
+    ).toBe(true);
+
+    const blocked = evaluatePlatformCoreLifecycleTransition({
+      from: 'fulfillment_planned',
+      action: 'start_fulfillment',
+      context: {
+        entityId: 'ORDER-001',
+        customGuards: toPlatformCoreLifecycleCustomGuards(guards),
+      },
+    });
+
+    expect(blocked.allowed).toBe(false);
   });
 
   it('blocks confirmation when allocation is incomplete', () => {
@@ -172,6 +230,8 @@ describe('Platform Core commercial lifecycle integration', () => {
       allocation,
     });
 
-    expect(guards.some((guard) => guard.code === 'allocation_shortfall' && !guard.passed)).toBe(true);
+    expect(
+      guards.some((guard) => guard.code === 'allocation_shortfall' && !guard.passed)
+    ).toBe(true);
   });
 });
