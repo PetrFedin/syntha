@@ -41,6 +41,9 @@ export type PlatformCoreOrderPricingLine = {
   appliedUnitPrice: number;
   lineSubtotal: number;
   meetsMoq: boolean;
+  meetsCasePack: boolean;
+  priceIsActive: boolean;
+  commercialBlocks: readonly string[];
 };
 
 export type PlatformCoreOrderPricingResult = {
@@ -50,7 +53,11 @@ export type PlatformCoreOrderPricingResult = {
   requiredPrepayment: number;
   remainingBalance: number;
   creditExposureAfterOrder: number;
+  commercialHold: boolean;
   creditHold: boolean;
+  commercialBlockReasons: readonly string[];
+  creditHoldReasons: readonly string[];
+  /** Compatibility aggregate for existing callers. */
   holdReasons: readonly string[];
 };
 
@@ -66,6 +73,21 @@ function assertPositiveInteger(value: number, label: string): number {
     throw new Error(`${label} must be a positive integer`);
   }
   return value;
+}
+
+function isPricingActive(pricing: PlatformCoreArticlePricing, at: Date): boolean {
+  const timestamp = at.getTime();
+  const validFrom = pricing.validFrom ? new Date(pricing.validFrom).getTime() : undefined;
+  const validTo = pricing.validTo ? new Date(pricing.validTo).getTime() : undefined;
+
+  if (validFrom !== undefined && Number.isNaN(validFrom)) {
+    throw new Error(`Invalid validFrom for article ${pricing.articleId}`);
+  }
+  if (validTo !== undefined && Number.isNaN(validTo)) {
+    throw new Error(`Invalid validTo for article ${pricing.articleId}`);
+  }
+
+  return (validFrom === undefined || timestamp >= validFrom) && (validTo === undefined || timestamp <= validTo);
 }
 
 export function validatePlatformCorePaymentTerms(terms: PlatformCorePaymentTerms): void {
@@ -100,6 +122,7 @@ export function getPlatformCoreWholesaleUnitPrice(
 export function calculatePlatformCoreOrderPricing(args: {
   lines: readonly { pricing: PlatformCoreArticlePricing; quantity: number }[];
   shopCredit: PlatformCoreShopCreditProfile;
+  evaluatedAt?: Date;
 }): PlatformCoreOrderPricingResult {
   if (args.lines.length === 0) {
     throw new Error('At least one pricing line is required');
@@ -110,7 +133,10 @@ export function calculatePlatformCoreOrderPricing(args: {
     throw new Error('All pricing lines must use the same currency');
   }
 
-  const holdReasons: string[] = [];
+  const evaluatedAt = args.evaluatedAt ?? new Date();
+  const commercialBlockReasons: string[] = [];
+  const creditHoldReasons: string[] = [];
+
   const lines = args.lines.map(({ pricing, quantity }) => {
     validatePlatformCorePaymentTerms(pricing.paymentTerms);
     const safeQuantity = assertPositiveInteger(quantity, 'quantity');
@@ -119,9 +145,15 @@ export function calculatePlatformCoreOrderPricing(args: {
       'wholesaleUnitPrice'
     );
     const meetsMoq = safeQuantity >= pricing.minimumOrderQty;
-    if (!meetsMoq) {
-      holdReasons.push(`MOQ not met for article ${pricing.articleId}`);
-    }
+    const casePackQty = pricing.casePackQty ?? 1;
+    const meetsCasePack = safeQuantity % assertPositiveInteger(casePackQty, 'casePackQty') === 0;
+    const priceIsActive = isPricingActive(pricing, evaluatedAt);
+    const lineBlocks: string[] = [];
+
+    if (!meetsMoq) lineBlocks.push(`MOQ not met for article ${pricing.articleId}`);
+    if (!meetsCasePack) lineBlocks.push(`Case pack not met for article ${pricing.articleId}`);
+    if (!priceIsActive) lineBlocks.push(`Price is not active for article ${pricing.articleId}`);
+    commercialBlockReasons.push(...lineBlocks);
 
     return {
       articleId: pricing.articleId,
@@ -130,23 +162,28 @@ export function calculatePlatformCoreOrderPricing(args: {
       appliedUnitPrice: unitPrice,
       lineSubtotal: unitPrice * safeQuantity,
       meetsMoq,
+      meetsCasePack,
+      priceIsActive,
+      commercialBlocks: lineBlocks,
     } satisfies PlatformCoreOrderPricingLine;
   });
 
   const subtotal = lines.reduce((sum, line) => sum + line.lineSubtotal, 0);
-  const weightedPrepayment = args.lines.reduce((sum, line) => {
+  const requiredPrepayment = args.lines.reduce((sum, line) => {
     const lineSubtotal = getPlatformCoreWholesaleUnitPrice(line.pricing, line.quantity) * line.quantity;
     return sum + lineSubtotal * (line.pricing.paymentTerms.prepaymentPercent / 100);
   }, 0);
-  const requiredPrepayment = weightedPrepayment;
   const remainingBalance = subtotal - requiredPrepayment;
   const creditExposureAfterOrder = args.shopCredit.openBalance + remainingBalance;
 
-  if (args.shopCredit.manualHold) holdReasons.push('Shop is on manual credit hold');
-  if (args.shopCredit.overdueBalance > 0) holdReasons.push('Shop has overdue balance');
+  if (args.shopCredit.manualHold) creditHoldReasons.push('Shop is on manual credit hold');
+  if (args.shopCredit.overdueBalance > 0) creditHoldReasons.push('Shop has overdue balance');
   if (creditExposureAfterOrder > args.shopCredit.creditLimit) {
-    holdReasons.push('Credit limit exceeded');
+    creditHoldReasons.push('Credit limit exceeded');
   }
+
+  const uniqueCommercialReasons = [...new Set(commercialBlockReasons)];
+  const uniqueCreditReasons = [...new Set(creditHoldReasons)];
 
   return {
     currency,
@@ -155,13 +192,16 @@ export function calculatePlatformCoreOrderPricing(args: {
     requiredPrepayment,
     remainingBalance,
     creditExposureAfterOrder,
-    creditHold: holdReasons.length > 0,
-    holdReasons: [...new Set(holdReasons)],
+    commercialHold: uniqueCommercialReasons.length > 0,
+    creditHold: uniqueCreditReasons.length > 0,
+    commercialBlockReasons: uniqueCommercialReasons,
+    creditHoldReasons: uniqueCreditReasons,
+    holdReasons: [...uniqueCommercialReasons, ...uniqueCreditReasons],
   };
 }
 
 export function canPlatformCoreConfirmPricedOrder(
   result: PlatformCoreOrderPricingResult
 ): boolean {
-  return !result.creditHold && result.lines.every((line) => line.meetsMoq);
+  return !result.creditHold && !result.commercialHold;
 }
