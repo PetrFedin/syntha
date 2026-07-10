@@ -83,7 +83,6 @@ type TransitionRule = {
     | 'sample_approved'
     | 'collection_publish'
     | 'order_confirm'
-    | 'production_start'
     | 'shipment_ready'
     | 'delivery_acceptance'
     | 'claim_resolution';
@@ -97,7 +96,7 @@ export const PLATFORM_CORE_LIFECYCLE_TRANSITIONS: readonly TransitionRule[] = [
   { from: 'order_revision_pending', action: 'approve_revision', to: 'order_confirmed' },
   { from: 'order_draft', action: 'confirm_order', to: 'order_confirmed', requiredDocumentStage: 'order_confirm' },
   { from: 'order_confirmed', action: 'plan_fulfillment', to: 'fulfillment_planned' },
-  { from: 'fulfillment_planned', action: 'start_fulfillment', to: 'fulfillment_in_progress', requiredDocumentStage: 'production_start' },
+  { from: 'fulfillment_planned', action: 'start_fulfillment', to: 'fulfillment_in_progress' },
   { from: 'fulfillment_in_progress', action: 'mark_shipment_ready', to: 'shipment_ready', requiredDocumentStage: 'shipment_ready' },
   { from: 'shipment_ready', action: 'dispatch_shipment', to: 'shipment_dispatched' },
   { from: 'shipment_dispatched', action: 'accept_delivery', to: 'delivery_accepted', requiredDocumentStage: 'delivery_acceptance' },
