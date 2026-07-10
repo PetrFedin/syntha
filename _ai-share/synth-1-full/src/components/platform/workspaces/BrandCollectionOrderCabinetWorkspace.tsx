@@ -6,7 +6,9 @@ import {
   type BrandCoEmbeddedSectionId,
 } from '@/components/platform/BrandCoRegistryDetailPeerStrip';
 import { PlatformCoreEmbeddedWorkspaceProvider } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
+import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
+import { brandCoreHref } from '@/lib/platform-core-routes';
 
 const BrandB2bOrdersCorePage = dynamic(
   () =>
@@ -46,6 +48,14 @@ type Props = {
   orderId?: string | null;
 };
 
+const BRAND_COLLECTION_ORDER_SECTIONS = new Set([
+  'brand-co-registry',
+  'brand-co-detail',
+  'brand-co-chain',
+  'brand-co-retailers',
+  'brand-co-cabinet',
+]);
+
 /** Столп collection_order · brand: реестр, карточка заказа, ритейлеры, overview. */
 export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, orderId }: Props) {
   const resolvedOrder = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
@@ -55,12 +65,13 @@ export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, 
       : sectionId === 'brand-co-detail' || sectionId === 'brand-co-chain'
         ? 'brand-co-detail'
         : undefined;
+  const sectionKnown = BRAND_COLLECTION_ORDER_SECTIONS.has(sectionId);
 
   return (
     <PlatformCoreEmbeddedWorkspaceProvider>
       <div
         data-testid="brand-collection-order-cabinet-workspace"
-        className="min-w-0 space-y-4"
+        className="min-w-0 space-y-2.5"
         data-collection-id={collectionId}
       >
         {peerActiveSection ? (
@@ -71,22 +82,30 @@ export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, 
             embedded
           />
         ) : null}
+
         {sectionId === 'brand-co-registry' ? <BrandB2bOrdersCorePage /> : null}
+
         {sectionId === 'brand-co-detail' || sectionId === 'brand-co-chain' ? (
           <BrandB2bOrderDetailCorePage orderId={resolvedOrder} />
         ) : null}
+
         {sectionId === 'brand-co-retailers' ? <BrandRetailersCorePage /> : null}
+
         {sectionId === 'brand-co-cabinet' ? (
           <CollectionOrderPillarCard variant="brand" compact minimalChrome />
         ) : null}
-        {![
-          'brand-co-registry',
-          'brand-co-detail',
-          'brand-co-chain',
-          'brand-co-retailers',
-          'brand-co-cabinet',
-        ].includes(sectionId) ? (
-          <CollectionOrderPillarCard variant="brand" compact={false} minimalChrome />
+
+        {!sectionKnown ? (
+          <PlatformCoreEmptyState
+            title="Раздел заказа не найден"
+            reason="Ссылка устарела или раздел больше не входит в рабочий контур Collection Order."
+            nextActionLabel="Открыть реестр заказов"
+            nextActionHref={brandCoreHref({
+              pillar: 'collection_order',
+              collection: collectionId,
+              section: 'brand-co-registry',
+            })}
+          />
         ) : null}
       </div>
     </PlatformCoreEmbeddedWorkspaceProvider>
