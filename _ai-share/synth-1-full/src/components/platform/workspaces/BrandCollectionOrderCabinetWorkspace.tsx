@@ -8,7 +8,7 @@ import {
 import { PlatformCoreEmbeddedWorkspaceProvider } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
 import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
-import { brandCoreHref } from '@/lib/platform-core-routes';
+import { ROUTES } from '@/lib/platform-core-routes';
 
 const BrandB2bOrdersCorePage = dynamic(
   () =>
@@ -56,6 +56,15 @@ const BRAND_COLLECTION_ORDER_SECTIONS = new Set([
   'brand-co-cabinet',
 ]);
 
+function brandCollectionOrderRegistryHref(collectionId: string): string {
+  const params = new URLSearchParams({
+    pillar: 'collection_order',
+    collection: collectionId,
+    section: 'brand-co-registry',
+  });
+  return `${ROUTES.brand.coreCabinet}?${params.toString()}`;
+}
+
 /** Столп collection_order · brand: реестр, карточка заказа, ритейлеры, overview. */
 export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, orderId }: Props) {
   const resolvedOrder = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
@@ -100,11 +109,7 @@ export function BrandCollectionOrderCabinetWorkspace({ collectionId, sectionId, 
             title="Раздел заказа не найден"
             reason="Ссылка устарела или раздел больше не входит в рабочий контур Collection Order."
             nextActionLabel="Открыть реестр заказов"
-            nextActionHref={brandCoreHref({
-              pillar: 'collection_order',
-              collection: collectionId,
-              section: 'brand-co-registry',
-            })}
+            nextActionHref={brandCollectionOrderRegistryHref(collectionId)}
           />
         ) : null}
       </div>
