@@ -1,8 +1,12 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import { resolveCabinetWorkspaceSection } from '@/lib/platform-core-cabinet-workspace';
+import {
+  resolveCabinetWorkspaceSection,
+  roleCoreCabinetHref,
+} from '@/lib/platform-core-cabinet-workspace';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
 
 const BrandDevelopmentCabinetWorkspace = dynamic(
@@ -243,5 +247,17 @@ export function PlatformCoreRolePillarWorkspace({
     return <SupplierCommsCabinetWorkspace sectionId={sectionId} />;
   }
 
-  return null;
+  return (
+    <PlatformCoreEmptyState
+      title="Рабочий раздел недоступен"
+      reason="Для этой комбинации роли и столпа ещё нет подключённого рабочего пространства."
+      nextActionLabel="Вернуться в кабинет"
+      nextActionHref={roleCoreCabinetHref({
+        roleId,
+        pillarId,
+        collectionId,
+      })}
+      meta={`${roleId} · ${pillarId}`}
+    />
+  );
 }
