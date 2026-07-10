@@ -19,7 +19,7 @@ type Props = {
   articleId: string;
 };
 
-/** Досье артикула в `/brand/core?pillar=development&article=…` — wayfinding + форма W2. */
+/** Досье артикула: компактный контекст сверху, рабочая форма — главный экран. */
 export function BrandDevelopmentArticleWorkspace({ collectionId, articleId }: Props) {
   const state = useWorkshop2LocalState();
   const articleLine = state.getArticleLine(collectionId, articleId);
@@ -43,35 +43,46 @@ export function BrandDevelopmentArticleWorkspace({ collectionId, articleId }: Pr
 
   return (
     <div
-      className="workshop2-article-workspace-page w-full min-w-0 max-w-none space-y-4 pb-20"
+      className="workshop2-article-workspace-page w-full min-w-0 max-w-none space-y-2.5 pb-10"
       data-testid="brand-development-article-workspace"
     >
-      <PlatformCoreArticleSpineGoldenPathStrip
-        demo={{ ...getPlatformCoreDemo(collectionId), collectionId, demoArticleId: articleId }}
-        activeStep="brand-dev-dossier"
-      />
-      <PlatformCoreArticleCreationModeStrip
-        value={creationMode}
-        onChange={handleCreationModeChange}
-      />
-      <Workshop2ArticleCoreWayfinding collectionId={collectionId} articleId={articleId} />
+      <section
+        className="border-border-subtle bg-bg-surface space-y-1.5 rounded-md border p-2"
+        aria-label="Контекст артикула"
+      >
+        <PlatformCoreArticleSpineGoldenPathStrip
+          demo={{ ...getPlatformCoreDemo(collectionId), collectionId, demoArticleId: articleId }}
+          activeStep="brand-dev-dossier"
+        />
+        <div className="grid min-w-0 gap-1.5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <Workshop2ArticleCoreWayfinding collectionId={collectionId} articleId={articleId} />
+          <PlatformCoreArticleCreationModeStrip
+            value={creationMode}
+            onChange={handleCreationModeChange}
+          />
+        </div>
+      </section>
+
       {state.storageStaleBanner ? (
         <div
-          className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50/90 px-3 py-2.5 text-[12px] text-amber-950"
+          className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50/80 px-2.5 py-2 text-[11px] text-amber-950"
           role="status"
         >
-          <span>Данные обновлены в другой вкладке.</span>
+          <span>Данные изменены в другой вкладке.</span>
           <Button
             type="button"
             size="sm"
-            className="h-8 text-[11px]"
+            variant="outline"
+            className="h-7 rounded-md px-2 text-[10px]"
             onClick={state.reloadInventoryAfterExternalChange}
           >
-            Обновить
+            Обновить данные
           </Button>
         </div>
       ) : null}
+
       <Workshop2BackendStatusBanner />
+
       <Workshop2ArticleWorkspace
         collectionId={collectionId}
         articleId={articleId}
