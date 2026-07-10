@@ -13,6 +13,46 @@ const BrandDevelopmentCabinetWorkspace = dynamic(
   { ssr: false }
 );
 
+const BrandSampleCollectionMini = dynamic(
+  () =>
+    import('@/components/platform/BrandSampleCollectionMini').then((m) => ({
+      default: m.BrandSampleCollectionMini,
+    })),
+  { ssr: false }
+);
+
+const ShopShowroomMini = dynamic(
+  () =>
+    import('@/components/platform/ShopShowroomMini').then((m) => ({
+      default: m.ShopShowroomMini,
+    })),
+  { ssr: false }
+);
+
+const BrandOrderProductionWorkspace = dynamic(
+  () =>
+    import('@/components/platform/pillars/OrderProductionPillarCardBrand').then((m) => ({
+      default: m.OrderProductionPillarCardBrand,
+    })),
+  { ssr: false }
+);
+
+const ShopOrderProductionWorkspace = dynamic(
+  () =>
+    import('@/components/platform/ShopOrderProductionPillarCard').then((m) => ({
+      default: m.ShopOrderProductionPillarCard,
+    })),
+  { ssr: false }
+);
+
+const BaselineCommsWorkspace = dynamic(
+  () =>
+    import('@/components/platform/pillars/CommsPillarCardBaseline').then((m) => ({
+      default: m.CommsPillarCardBaseline,
+    })),
+  { ssr: false }
+);
+
 const ManufacturerOrderProductionCabinetWorkspace = dynamic(
   () =>
     import('@/components/platform/workspaces/ManufacturerOrderProductionCabinetWorkspace').then(
@@ -90,12 +130,41 @@ export function PlatformCoreRolePillarWorkspace({
   factoryId = PLATFORM_CORE_DEMO.factoryId,
 }: Props) {
   const sectionId = resolveCabinetWorkspaceSection(roleId, pillarId, sectionFromUrl) ?? 'unknown';
+  const demo = {
+    ...PLATFORM_CORE_DEMO,
+    collectionId,
+    demoArticleId: articleId?.trim() || PLATFORM_CORE_DEMO.demoArticleId,
+    demoOrderId: orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId,
+    factoryId,
+  };
 
   if (roleId === 'brand' && pillarId === 'development') {
     return (
       <BrandDevelopmentCabinetWorkspace
         collectionId={collectionId}
         articleId={articleId}
+        sectionId={sectionId}
+      />
+    );
+  }
+
+  if (roleId === 'brand' && pillarId === 'sample_collection') {
+    return (
+      <BrandSampleCollectionMini
+        demo={demo}
+        compact={false}
+        minimalChrome
+        sectionId={sectionId}
+      />
+    );
+  }
+
+  if (roleId === 'shop' && pillarId === 'sample_collection') {
+    return (
+      <ShopShowroomMini
+        demo={demo}
+        compact={false}
+        minimalChrome
         sectionId={sectionId}
       />
     );
@@ -119,6 +188,22 @@ export function PlatformCoreRolePillarWorkspace({
         orderId={orderId}
       />
     );
+  }
+
+  if (roleId === 'brand' && pillarId === 'order_production') {
+    return <BrandOrderProductionWorkspace compact={false} minimalChrome />;
+  }
+
+  if (roleId === 'shop' && pillarId === 'order_production') {
+    return <ShopOrderProductionWorkspace compact={false} minimalChrome />;
+  }
+
+  if (roleId === 'brand' && pillarId === 'comms') {
+    return <BaselineCommsWorkspace variant="brand" compact={false} minimalChrome />;
+  }
+
+  if (roleId === 'shop' && pillarId === 'comms') {
+    return <BaselineCommsWorkspace variant="shop" compact={false} minimalChrome />;
   }
 
   if (roleId === 'manufacturer' && pillarId === 'order_production') {
