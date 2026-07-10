@@ -2,9 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import { PlatformCoreEmbeddedWorkspaceProvider } from '@/components/platform/PlatformCoreEmbeddedWorkspaceContext';
+import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import { ShopCoMatrixEmbeddedPanel } from '@/components/platform/workspaces/ShopCoMatrixEmbeddedPanel';
 import { ShopCoCabinetTrackingEmbed } from '@/components/platform/ShopCoCabinetTrackingEmbed';
 import { PLATFORM_CORE_DEMO } from '@/lib/platform-core-demo-context';
+import { ROUTES } from '@/lib/platform-core-routes';
 
 const ShopB2bCheckoutCorePage = dynamic(
   () =>
@@ -52,42 +54,66 @@ type Props = {
   orderId?: string | null;
 };
 
+const SHOP_COLLECTION_ORDER_SECTIONS = new Set([
+  'shop-co-matrix',
+  'shop-co-checkout',
+  'shop-co-registry',
+  'shop-co-detail',
+  'shop-co-buyer-tracking',
+  'shop-co-working-order',
+  'shop-co-cabinet',
+]);
+
+function shopCollectionOrderRegistryHref(collectionId: string): string {
+  const params = new URLSearchParams({
+    pillar: 'collection_order',
+    collection: collectionId,
+    section: 'shop-co-registry',
+  });
+  return `${ROUTES.shop.coreCabinet}?${params.toString()}`;
+}
+
 /** Столп collection_order · shop: matrix, checkout, registry, detail — native в hub. */
 export function ShopCollectionOrderCabinetWorkspace({ collectionId, sectionId, orderId }: Props) {
   const resolvedOrder = orderId?.trim() || PLATFORM_CORE_DEMO.demoOrderId;
+  const sectionKnown = SHOP_COLLECTION_ORDER_SECTIONS.has(sectionId);
 
   return (
     <PlatformCoreEmbeddedWorkspaceProvider>
       <div
         data-testid="shop-collection-order-cabinet-workspace"
-        className="min-w-0 space-y-4"
+        className="min-w-0 space-y-2.5"
         data-collection-id={collectionId}
       >
         {sectionId === 'shop-co-matrix' ? (
           <ShopCoMatrixEmbeddedPanel collectionId={collectionId} orderId={resolvedOrder} />
         ) : null}
+
         {sectionId === 'shop-co-checkout' ? <ShopB2bCheckoutCorePage /> : null}
+
         {sectionId === 'shop-co-registry' ? <ShopB2bOrdersCorePage /> : null}
+
         {sectionId === 'shop-co-detail' ? (
           <ShopB2bOrderDetailCorePage orderId={resolvedOrder} />
         ) : null}
+
         {sectionId === 'shop-co-buyer-tracking' ? (
           <ShopCoCabinetTrackingEmbed orderId={resolvedOrder} />
         ) : null}
+
         {sectionId === 'shop-co-working-order' ? <ShopB2bWorkingOrderCorePage /> : null}
+
         {sectionId === 'shop-co-cabinet' ? (
           <CollectionOrderPillarCard variant="shop" compact minimalChrome />
         ) : null}
-        {![
-          'shop-co-matrix',
-          'shop-co-checkout',
-          'shop-co-registry',
-          'shop-co-detail',
-          'shop-co-buyer-tracking',
-          'shop-co-working-order',
-          'shop-co-cabinet',
-        ].includes(sectionId) ? (
-          <CollectionOrderPillarCard variant="shop" compact={false} minimalChrome />
+
+        {!sectionKnown ? (
+          <PlatformCoreEmptyState
+            title="Раздел заказа не найден"
+            reason="Ссылка устарела или раздел больше не входит в рабочий контур Collection Order."
+            nextActionLabel="Открыть мои заказы"
+            nextActionHref={shopCollectionOrderRegistryHref(collectionId)}
+          />
         ) : null}
       </div>
     </PlatformCoreEmbeddedWorkspaceProvider>
