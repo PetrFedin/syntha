@@ -9,7 +9,8 @@
  * 4. Shop CO: матрица → checkout → реестр → карточка → tracking (Wholesale order)
  * 5. Brand CO: реестр → карточка (Order management)
  * 6. Brand OP: передача / PO / досье серии (Fulfillment в кабинете бренда)
- * 7. Comms: чат · календарь · заметки
+ * 7. Shop OP: tracking исполнения и переход к приёмке
+ * 8. Comms: чат · календарь · заметки
  */
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import {
@@ -19,10 +20,7 @@ import {
 import type { ReadinessSubItem } from '@/lib/platform-core-readiness-audit';
 
 /**
- * Platform Core baseline теперь работает по строгому visible allowlist.
- *
- * Причина: denylist скрывал только CRM/WSSI/supplier-only хвосты, но оставлял риск,
- * что demo/legacy/partial секции попадут в кабинет и создадут пустые вкладки.
+ * Platform Core baseline работает по строгому visible allowlist.
  * В v1 показываем только явно подтверждённые рабочие секции brand/shop.
  */
 export const PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST: Partial<
@@ -44,6 +42,7 @@ export const PLATFORM_CORE_TWO_ROLE_VISIBLE_SECTION_ALLOWLIST: Partial<
       'shop-co-detail',
       'shop-co-buyer-tracking',
     ],
+    order_production: ['shop-op-tracking'],
     comms: ['shop-cm-order-chat', 'shop-cm-calendar-order'],
   },
 };
@@ -63,7 +62,7 @@ export const PLATFORM_CORE_TWO_ROLE_PENDING_SECTION_BACKLOG: Partial<
   shop: {
     development: ['shop-dev-bridge'],
     collection_order: ['shop-co-revision'],
-    order_production: ['shop-op-tracking', 'shop-op-acceptance', 'shop-op-closeout'],
+    order_production: ['shop-op-acceptance', 'shop-op-closeout'],
     comms: ['shop-cm-collection-chat'],
   },
 };
@@ -188,10 +187,10 @@ export const PLATFORM_CORE_TWO_ROLE_WHOLESALE_FLOW: readonly TwoRoleWholesaleFlo
   {
     step: 12,
     roleId: 'shop',
-    pillarId: 'collection_order',
-    sectionId: 'shop-co-buyer-tracking',
-    labelRu: 'Статус заказа',
-    joorNuorderAnalogRu: 'Buyer order tracking',
+    pillarId: 'order_production',
+    sectionId: 'shop-op-tracking',
+    labelRu: 'Трекинг исполнения',
+    joorNuorderAnalogRu: 'Buyer fulfillment tracking',
   },
 ] as const;
 
