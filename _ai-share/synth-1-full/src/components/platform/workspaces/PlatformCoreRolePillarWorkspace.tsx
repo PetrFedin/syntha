@@ -33,26 +33,26 @@ const ShopSampleCollectionCabinetWorkspace = dynamic(
   { ssr: false }
 );
 
-const BrandOrderProductionWorkspace = dynamic(
+const BrandOrderProductionCabinetWorkspace = dynamic(
   () =>
-    import('@/components/platform/pillars/OrderProductionPillarCardBrand').then((m) => ({
-      default: m.OrderProductionPillarCardBrand,
+    import('@/components/platform/workspaces/BrandOrderProductionCabinetWorkspace').then((m) => ({
+      default: m.BrandOrderProductionCabinetWorkspace,
     })),
   { ssr: false }
 );
 
-const ShopOrderProductionWorkspace = dynamic(
+const ShopOrderProductionCabinetWorkspace = dynamic(
   () =>
-    import('@/components/platform/ShopOrderProductionPillarCard').then((m) => ({
-      default: m.ShopOrderProductionPillarCard,
+    import('@/components/platform/workspaces/ShopOrderProductionCabinetWorkspace').then((m) => ({
+      default: m.ShopOrderProductionCabinetWorkspace,
     })),
   { ssr: false }
 );
 
-const BaselineCommsWorkspace = dynamic(
+const BaselineCommunicationsCabinetWorkspace = dynamic(
   () =>
-    import('@/components/platform/pillars/CommsPillarCardBaseline').then((m) => ({
-      default: m.CommsPillarCardBaseline,
+    import('@/components/platform/workspaces/BaselineCommunicationsCabinetWorkspace').then((m) => ({
+      default: m.BaselineCommunicationsCabinetWorkspace,
     })),
   { ssr: false }
 );
@@ -181,19 +181,49 @@ export function PlatformCoreRolePillarWorkspace({
   }
 
   if (roleId === 'brand' && pillarId === 'order_production') {
-    return <BrandOrderProductionWorkspace compact={false} minimalChrome />;
+    return (
+      <BrandOrderProductionCabinetWorkspace
+        collectionId={collectionId}
+        sectionId={sectionId}
+        orderId={orderId}
+        articleId={articleId}
+      />
+    );
   }
 
   if (roleId === 'shop' && pillarId === 'order_production') {
-    return <ShopOrderProductionWorkspace compact={false} minimalChrome />;
+    return (
+      <ShopOrderProductionCabinetWorkspace
+        collectionId={collectionId}
+        sectionId={sectionId}
+        orderId={orderId}
+        articleId={articleId}
+      />
+    );
   }
 
   if (roleId === 'brand' && pillarId === 'comms') {
-    return <BaselineCommsWorkspace variant="brand" compact={false} minimalChrome />;
+    return (
+      <BaselineCommunicationsCabinetWorkspace
+        role="brand"
+        collectionId={collectionId}
+        sectionId={sectionId}
+        orderId={orderId}
+        articleId={articleId}
+      />
+    );
   }
 
   if (roleId === 'shop' && pillarId === 'comms') {
-    return <BaselineCommsWorkspace variant="shop" compact={false} minimalChrome />;
+    return (
+      <BaselineCommunicationsCabinetWorkspace
+        role="shop"
+        collectionId={collectionId}
+        sectionId={sectionId}
+        orderId={orderId}
+        articleId={articleId}
+      />
+    );
   }
 
   if (roleId === 'manufacturer' && pillarId === 'order_production') {
