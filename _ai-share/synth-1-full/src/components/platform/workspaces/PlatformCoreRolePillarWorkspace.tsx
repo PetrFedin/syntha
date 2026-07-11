@@ -17,18 +17,18 @@ const BrandDevelopmentCabinetWorkspace = dynamic(
   { ssr: false }
 );
 
-const BrandSampleCollectionMini = dynamic(
+const BrandSampleCollectionCabinetWorkspace = dynamic(
   () =>
-    import('@/components/platform/BrandSampleCollectionMini').then((m) => ({
-      default: m.BrandSampleCollectionMini,
+    import('@/components/platform/workspaces/BrandSampleCollectionCabinetWorkspace').then((m) => ({
+      default: m.BrandSampleCollectionCabinetWorkspace,
     })),
   { ssr: false }
 );
 
-const ShopShowroomMini = dynamic(
+const ShopSampleCollectionCabinetWorkspace = dynamic(
   () =>
-    import('@/components/platform/ShopShowroomMini').then((m) => ({
-      default: m.ShopShowroomMini,
+    import('@/components/platform/workspaces/ShopSampleCollectionCabinetWorkspace').then((m) => ({
+      default: m.ShopSampleCollectionCabinetWorkspace,
     })),
   { ssr: false }
 );
@@ -153,25 +153,11 @@ export function PlatformCoreRolePillarWorkspace({
   }
 
   if (roleId === 'brand' && pillarId === 'sample_collection') {
-    return (
-      <BrandSampleCollectionMini
-        demo={demo}
-        compact={false}
-        minimalChrome
-        sectionId={sectionId}
-      />
-    );
+    return <BrandSampleCollectionCabinetWorkspace demo={demo} sectionId={sectionId} />;
   }
 
   if (roleId === 'shop' && pillarId === 'sample_collection') {
-    return (
-      <ShopShowroomMini
-        demo={demo}
-        compact={false}
-        minimalChrome
-        sectionId={sectionId}
-      />
-    );
+    return <ShopSampleCollectionCabinetWorkspace demo={demo} sectionId={sectionId} />;
   }
 
   if (roleId === 'brand' && pillarId === 'collection_order') {
