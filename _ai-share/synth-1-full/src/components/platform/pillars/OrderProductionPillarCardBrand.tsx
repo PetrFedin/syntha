@@ -17,10 +17,8 @@ import { BrandOrderShipmentSpineStrip } from '@/components/integrations/BrandOrd
 import { BrandAllocationSpinePanel } from '@/components/integrations/BrandAllocationSpinePanel';
 import { BrandCollectionAllocationQueueBadge } from '@/components/integrations/BrandCollectionAllocationQueueBadge';
 import {
-  brandB2bOrderHandoffContextHref,
   brandB2bOrderHref,
   brandB2bOrdersProductionRegistryHref,
-  brandMessagesB2bOrderContextHref,
 } from '@/lib/platform-core-routes';
 import { brandOpFactoryProductionOrderPeerHref } from '@/lib/platform-core-baseline-peer-hrefs';
 import { resolvePlatformCoreCabinetOrderId } from '@/lib/platform-core-spine-active-order-fallback';
@@ -32,30 +30,23 @@ import { PlatformCorePillarNotificationCenterCompact } from '@/components/platfo
 import { usePlatformCoreHubAuditLegacyAttrs } from '@/hooks/use-platform-core-hub-audit-legacy-attrs';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { isPlatformCoreTwoRoleBaseline } from '@/lib/platform-core-article-spine';
-import {
-  formatPlatformCoreWmsReserveBrandBadgeRu,
-  formatPlatformCoreWmsReserveCabinetLongRu,
-} from '@/lib/platform-core-wms-reserve-copy';
+import { formatPlatformCoreWmsReserveBrandBadgeRu } from '@/lib/platform-core-wms-reserve-copy';
 import { BrandOpCabinetSpinePeerStrip } from '@/components/platform/BrandOpCabinetSpinePeerStrip';
 import { BrandOpChainSseDedupStrip } from '@/components/platform/BrandOpChainSseDedupStrip';
+import { BrandOrderProductionWorkflowPanel } from '@/components/platform/BrandOrderProductionWorkflowPanel';
 import { BRAND_OP_CABINET_SSE_DEDUP_STRIP_TESTID } from '@/lib/platform-core-ports/fashion/brand-op-wave-vq';
 import { buildBrandOpChainMaterialsSupplierPatchHref } from '@/lib/platform-core-ports/fashion/brand-op-wave-xm';
-import {
-  WAVE_WZ_OP_NO_ORDER_RU,
-} from '@/lib/platform-core-ports/platform/wave-wz-ru-noise-dedup-final';
+import { WAVE_WZ_OP_NO_ORDER_RU } from '@/lib/platform-core-ports/platform/wave-wz-ru-noise-dedup-final';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** @deprecated Hub всегда compact; prop сохранён для совместимости. */
   compact?: boolean;
   minimalChrome?: boolean;
 };
 
-const linkClass = 'text-accent-primary text-xs font-medium hover:underline';
-
 const OP_RESOLVE_BRAND = ['w2_registry', 'handoff', 'allocation', 'operational'] as const;
 
-/** Baseline brand order→production pillar — без factory/extended imports. */
+/** Baseline Brand Order Production: hub insight в compact и рабочий workflow в полном режиме. */
 export function OrderProductionPillarCardBrand({
   compact = false,
   minimalChrome = false,
@@ -90,11 +81,10 @@ export function OrderProductionPillarCardBrand({
     chainPollEnabled,
     pollOrderIds
   );
-  const pillarReloadNonce = chainPollTick;
 
   useEffect(() => {
-    setSpineReload(pillarReloadNonce);
-  }, [pillarReloadNonce]);
+    setSpineReload(chainPollTick);
+  }, [chainPollTick]);
 
   const { snapshot, loading: snapshotLoading } = usePillarSnapshot({
     collectionId,
@@ -103,50 +93,45 @@ export function OrderProductionPillarCardBrand({
     pillarVariant: 'brand',
     wholesaleOrderId: orderId || undefined,
     factoryId,
-    reloadNonce: pillarReloadNonce,
+    reloadNonce: chainPollTick,
   });
   const op = pickOrderProductionSnapshot(snapshot);
   const chainSteps = op?.chainSteps ?? [];
   const productionOrderId = op?.productionOrderId ?? undefined;
   const bomLineCount = op?.bomLineCount ?? null;
-
   const materialsSuppliedDone =
-    chainSteps.find((s) => s.id === 'materials_supplied')?.done === true;
+    chainSteps.find((step) => step.id === 'materials_supplied')?.done === true;
   const inventoryReservedDone =
-    chainSteps.find((s) => s.id === 'inventory_reserved')?.done === true;
-  const steps = chainSteps;
-
-  const panelTestId = 'brand-op-cabinet-panel';
+    chainSteps.find((step) => step.id === 'inventory_reserved')?.done === true;
   const coreSlim = isPlatformCoreMode();
   const twoRoleBaseline = isPlatformCoreTwoRoleBaseline();
 
   if (compact && snapshotLoading && !op) {
-    return (
-      <PlatformCorePillarInsightSkeleton testId="brand-op-pillar-insight-skeleton" />
-    );
+    return <PlatformCorePillarInsightSkeleton testId="brand-op-pillar-insight-skeleton" />;
   }
 
   return (
     <Card
-      data-testid={panelTestId}
+      data-testid="brand-op-cabinet-panel"
       {...auditLegacy('order-production-pillar-card')}
       data-variant="brand"
       data-active-order-id={orderId}
       data-spine-order={isSpineActive ? 'true' : 'false'}
-      className={cn(compact ? hubGadget.pillarCard : 'border-amber-200/50')}
+      className={cn(compact ? hubGadget.pillarCard : 'border-border-subtle shadow-none')}
     >
-      <CardContent className={cn(compact ? hubGadget.pillarBody : 'space-y-2 p-3')}>
+      <CardContent className={cn(compact ? hubGadget.pillarBody : 'space-y-2.5 p-3')}>
         {compact && !minimalChrome ? (
           <PillarInsightHeader
             icon={Package}
             title="Заказ → производство"
             subtitle={
               twoRoleBaseline
-                ? 'Исполнение опта: передача в цех, PO и статус серии.'
+                ? 'Исполнение опта: передача, PO и статус серии.'
                 : 'Передача, PO и статус серии у цеха.'
             }
           />
         ) : null}
+
         {compact && !minimalChrome && hasActiveOrder ? (
           <PlatformCorePillarNotificationCenterCompact
             variant="brand"
@@ -156,27 +141,31 @@ export function OrderProductionPillarCardBrand({
             orderScoped
           />
         ) : null}
-        {!compact ? (
-          <PlatformCoreChainStatusRefreshBadge
-            sseConnected={sseConnected}
-            enabled={chainPollEnabled}
-            sseTestId="brand-op-cabinet-sse-live-badge"
-            pollTestId="brand-op-cabinet-poll-badge"
-            sseLegacyTestId="brand-op-chain-sse-live-badge"
-          />
+
+        {!compact && !minimalChrome ? (
+          <div className="flex justify-end">
+            <PlatformCoreChainStatusRefreshBadge
+              sseConnected={sseConnected}
+              enabled={chainPollEnabled}
+              sseTestId="brand-op-cabinet-sse-live-badge"
+              pollTestId="brand-op-cabinet-poll-badge"
+              sseLegacyTestId="brand-op-chain-sse-live-badge"
+            />
+          </div>
         ) : null}
-        {!(compact && minimalChrome) ? (
+
+        {compact ? (
           <ul
             className="space-y-1.5"
             data-testid="brand-op-cabinet-chain-steps"
             data-audit-legacy="brand-op-chain-steps"
           >
-            {!hasActiveOrder && steps.length === 0 ? (
+            {!hasActiveOrder && chainSteps.length === 0 ? (
               <li className="text-[10px] text-muted-foreground">
-                {compact ? 'Нет активного заказа.' : WAVE_WZ_OP_NO_ORDER_RU}
+                {WAVE_WZ_OP_NO_ORDER_RU}
               </li>
             ) : null}
-            {steps.map((step) => (
+            {chainSteps.map((step) => (
               <li
                 key={step.id}
                 className="flex flex-wrap items-start gap-x-2 gap-y-0.5 text-xs"
@@ -184,27 +173,19 @@ export function OrderProductionPillarCardBrand({
                 data-done={step.done ? 'true' : 'false'}
               >
                 {step.done ? (
-                  <CheckCircle2
-                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
-                    aria-hidden
-                  />
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
                 ) : (
-                  <Circle className="text-text-muted mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <Circle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
                 )}
                 <span>{step.labelRu}</span>
                 {step.id === 'materials_supplied' && !twoRoleBaseline ? (
                   <Link
                     href={buildBrandOpChainMaterialsSupplierPatchHref({
                       orderId: cabinetOrderId,
-                      productionOrderId: productionOrderId ?? undefined,
+                      productionOrderId,
                       collectionId: demoWithOrder.collectionId,
                       articleId: demoWithOrder.demoArticleId,
                     })}
-                    data-testid={
-                      step.done
-                        ? 'brand-op-cabinet-materials-step-link'
-                        : 'brand-op-cabinet-materials-pending-link'
-                    }
                     className="text-accent-primary text-[10px] font-medium hover:underline"
                   >
                     {step.done ? 'Закупка' : 'Закупка →'}
@@ -213,27 +194,36 @@ export function OrderProductionPillarCardBrand({
               </li>
             ))}
           </ul>
-        ) : null}
+        ) : hasActiveOrder ? (
+          <BrandOrderProductionWorkflowPanel
+            collectionId={collectionId}
+            orderId={cabinetOrderId}
+            articleId={demoArticleId}
+            productionOrderId={productionOrderId}
+            chainSteps={chainSteps}
+          />
+        ) : (
+          <p className="rounded-md border border-border-subtle bg-bg-surface2/50 px-2.5 py-2 text-[11px] text-text-muted">
+            {WAVE_WZ_OP_NO_ORDER_RU}
+          </p>
+        )}
+
         {hasActiveOrder && compact ? (
           <p className="text-text-muted text-[10px]" data-testid="brand-op-cabinet-sot-strip">
-            Hub insight · полные факты в{' '}
-            <Link
-              href={brandB2bOrderHref(cabinetOrderId)}
-              className="text-accent-primary font-medium hover:underline"
-              data-testid="brand-op-cabinet-order-detail-sot-link"
-            >
+            Полные факты в{' '}
+            <Link href={brandB2bOrderHref(cabinetOrderId)} className="font-medium text-accent-primary hover:underline">
               карточке заказа
             </Link>
-            {' · '}список в{' '}
+            {' · '}
             <Link
               href={brandB2bOrdersProductionRegistryHref(cabinetOrderId)}
-              className="text-accent-primary font-medium hover:underline"
-              data-testid="brand-op-cabinet-registry-sot-link"
+              className="font-medium text-accent-primary hover:underline"
             >
               реестре
             </Link>
           </p>
         ) : null}
+
         {hasActiveOrder && compact && coreSlim ? (
           <BrandOpChainSseDedupStrip
             orderId={cabinetOrderId}
@@ -242,76 +232,70 @@ export function OrderProductionPillarCardBrand({
             chainLinkTestId="brand-op-cabinet-sse-dedup-chain-link"
           />
         ) : null}
-        {productionOrderId ? (
-          <Link
-            href={brandOpFactoryProductionOrderPeerHref(cabinetOrderId, { factoryId })}
-            className="inline-flex"
-            data-testid="brand-op-po-id-badge"
-          >
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {productionOrderId ? (
+            <Link
+              href={brandOpFactoryProductionOrderPeerHref(cabinetOrderId, { factoryId })}
+              className="inline-flex"
+              data-testid="brand-op-po-id-badge"
+            >
+              <Badge variant="outline" className={compact ? hubGadget.metaBadge : 'h-5 rounded px-1.5 text-[10px]'}>
+                PO {productionOrderId}
+              </Badge>
+            </Link>
+          ) : null}
+
+          {compact ? <BrandCollectionAllocationQueueBadge reloadNonce={chainPollTick} /> : null}
+
+          {chainSteps.some((step) => step.id === 'inventory_reserved') && !compact ? (
             <Badge
               variant="outline"
-              className={
-                compact
-                  ? hubGadget.metaBadge
-                  : 'h-4 border-emerald-200 bg-emerald-50 px-1.5 font-mono text-[9px] text-emerald-900 hover:bg-emerald-100'
-              }
+              data-testid="brand-op-cabinet-wms-reserve-badge"
+              className={cn(
+                'h-5 rounded px-1.5 text-[10px]',
+                inventoryReservedDone
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                  : 'border-amber-200 bg-amber-50 text-amber-800'
+              )}
             >
-              PO {productionOrderId}
+              {formatPlatformCoreWmsReserveBrandBadgeRu(inventoryReservedDone)}
             </Badge>
-          </Link>
-        ) : null}
-        {compact ? (
-          <BrandCollectionAllocationQueueBadge reloadNonce={chainPollTick} />
-        ) : null}
-        {chainSteps.some((s) => s.id === 'inventory_reserved') && !compact ? (
-          <Badge
-            variant="outline"
-            data-testid="brand-op-cabinet-wms-reserve-badge"
-            className={
-              compact
-                ? hubGadget.metaBadge
-                : inventoryReservedDone
-                  ? 'h-4 border-emerald-200 bg-emerald-50 px-1.5 text-[9px] text-emerald-800'
-                  : 'h-4 border-amber-200 bg-amber-50 px-1.5 text-[9px] text-amber-800'
-            }
-          >
-            {formatPlatformCoreWmsReserveBrandBadgeRu(inventoryReservedDone)}
-          </Badge>
-        ) : null}
-        {bomLineCount != null && bomLineCount > 0 && !compact ? (
-          <Badge
-            variant="outline"
-            data-testid="brand-op-bom-preview-badge"
-            className={
-              materialsSuppliedDone || !chainSteps.some((s) => s.id === 'materials_supplied')
-                ? 'h-4 border-emerald-200 bg-emerald-50 px-1.5 text-[9px] text-emerald-800'
-                : 'h-4 border-amber-200 bg-amber-50 px-1.5 text-[9px] text-amber-800'
-            }
-          >
-            BOM {bomLineCount}
-            {chainSteps.some((s) => s.id === 'materials_supplied')
-              ? materialsSuppliedDone
-                ? ' · материалы ✓'
-                : ' · материалы…'
-              : ''}
-          </Badge>
-        ) : null}
+          ) : null}
+
+          {bomLineCount != null && bomLineCount > 0 && !compact ? (
+            <Badge
+              variant="outline"
+              data-testid="brand-op-bom-preview-badge"
+              className={cn(
+                'h-5 rounded px-1.5 text-[10px]',
+                materialsSuppliedDone || !chainSteps.some((step) => step.id === 'materials_supplied')
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                  : 'border-amber-200 bg-amber-50 text-amber-800'
+              )}
+            >
+              BOM {bomLineCount}
+              {chainSteps.some((step) => step.id === 'materials_supplied')
+                ? materialsSuppliedDone
+                  ? ' · материалы ✓'
+                  : ' · материалы…'
+                : ''}
+            </Badge>
+          ) : null}
+        </div>
+
         {isSpineActive && !compact ? (
-          <div
-            className="space-y-2 border-t border-amber-100/80 pt-2"
-            data-testid="brand-op-spine-strips"
-          >
+          <div className="space-y-2 border-t border-border-subtle pt-2" data-testid="brand-op-spine-strips">
             <BrandAllocationSpinePanel orderId={orderId} />
             <BrandOrderShipmentSpineStrip orderId={orderId} />
           </div>
         ) : null}
-        <div className={compact ? undefined : 'space-y-1.5 border-t border-amber-100/80 pt-2'}>
-          {hasActiveOrder && !minimalChrome ? (
-            <div data-testid="brand-op-cabinet-cta-strip">
-              <BrandOpCabinetSpinePeerStrip orderId={cabinetOrderId} collectionId={collectionId} />
-            </div>
-          ) : null}
-        </div>
+
+        {!compact && hasActiveOrder && !minimalChrome ? (
+          <div className="border-t border-border-subtle pt-2" data-testid="brand-op-cabinet-cta-strip">
+            <BrandOpCabinetSpinePeerStrip orderId={cabinetOrderId} collectionId={collectionId} />
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );
