@@ -1,4 +1,11 @@
 import type { CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
+import type {
+  PlatformCoreAcceptanceStatus,
+  PlatformCoreCloseoutStatus,
+  PlatformCorePackingStatus,
+  PlatformCoreQcStatus,
+  PlatformCoreShipmentStatus,
+} from '@/lib/platform-core-order-production-tail';
 
 type PillarStep = { id: string; labelRu: string; done: boolean };
 
@@ -52,7 +59,6 @@ export type CollectionOrderPillarSnapshot = {
   trackingNumber: string | null;
 };
 
-/** Manufacturer × collection_order empty-cell — handoff queue + chain (BFF). */
 export type ManufacturerCollectionOrderInsightSnapshot = {
   orderId: string;
   orderStatusLabel: string | null;
@@ -68,13 +74,11 @@ export type SupplierCollectionOrderForecastRow = {
   supplierConfirmed: boolean;
 };
 
-/** Supplier × collection_order empty-cell — order lines × BOM forecast (BFF). */
 export type SupplierCollectionOrderForecastSnapshot = {
   orderId: string;
   orderStatusLabel: string | null;
   totalUnits: number;
   rows: SupplierCollectionOrderForecastRow[];
-  /** Handoff queue PG · read-only expected PO date for supplier empty CO. */
   productionOrderId?: string | null;
   expectedHandoffAt?: string | null;
 };
@@ -88,6 +92,15 @@ export type OrderProductionHandoffItem = {
   wipStatus?: string;
 };
 
+export type OrderProductionDocumentSnapshot = {
+  id: string;
+  type: string;
+  title?: string;
+  status?: string;
+  href?: string | null;
+  issuedAt?: string | null;
+};
+
 export type OrderProductionPillarSnapshot = {
   orderId: string;
   chainSteps: PillarStep[];
@@ -95,14 +108,23 @@ export type OrderProductionPillarSnapshot = {
   handoffItems: OrderProductionHandoffItem[];
   bomLineCount: number | null;
   bomPreviewLines: Array<{ materialName?: string }>;
-  /** Shop INT-* · из PG spine (без dup client fetch tracking API). */
   trackingPreview?: {
     trackingNumber?: string;
     carrier?: string;
     status?: string;
     wipLabelRu?: string;
     deliveryLabel?: string;
+    eta?: string | null;
+    asnNumber?: string | null;
   } | null;
+  /** Optional tail fields keep older snapshot producers backward compatible. */
+  qcStatus?: PlatformCoreQcStatus;
+  packingStatus?: PlatformCorePackingStatus;
+  shipmentStatus?: PlatformCoreShipmentStatus;
+  acceptanceStatus?: PlatformCoreAcceptanceStatus;
+  closeoutStatus?: PlatformCoreCloseoutStatus;
+  hasOpenClaim?: boolean;
+  documents?: OrderProductionDocumentSnapshot[];
 };
 
 export type CommsPillarSnapshot = {
@@ -120,7 +142,6 @@ export type SupplierProcurementBomLine = {
   unit?: string;
 };
 
-/** Spine overlay для INT-* (из getSpineProcurementContext, без client fetch). */
 export type SupplierProcurementSpineSnapshot = {
   b2bOrderId: string;
   isSpineImported: boolean;
@@ -146,7 +167,6 @@ export type SupplierProcurementSpineSnapshot = {
   };
 };
 
-/** Supplier × order_production — один server snapshot вместо 4+ client fetch. */
 export type SupplierProcurementPillarSnapshot = {
   orderId: string;
   productionOrderId: string | null;
