@@ -10,6 +10,7 @@ import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import { ShopCoTrackingEtaPeekStrip } from '@/components/platform/ShopCoTrackingEtaPeekStrip';
 import { ShopOpCabinetSpinePeerStrip } from '@/components/platform/ShopOpCabinetSpinePeerStrip';
 import { ShopOrderProductionReceivingPanel } from '@/components/platform/ShopOrderProductionReceivingPanel';
+import { ShopOrderProductionClaimPanel } from '@/components/platform/ShopOrderProductionClaimPanel';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
@@ -34,6 +35,91 @@ type Props = {
   compact?: boolean;
   minimalChrome?: boolean;
 };
+
+type TimelineStage = {
+  id: string;
+  label: string;
+  detail: string;
+  done: boolean;
+  active: boolean;
+};
+
+function buildTimeline(op: ReturnType<typeof pickOrderProductionSnapshot>): TimelineStage[] {
+  const qcStatus = op?.qcStatus ?? 'not_started';
+  const packingStatus = op?.packingStatus ?? 'not_started';
+  const shipmentStatus = op?.shipmentStatus ?? 'not_ready';
+  const acceptanceStatus = op?.acceptanceStatus ?? 'pending';
+  const closeoutStatus = op?.closeoutStatus ?? 'open';
+
+  return [
+    {
+      id: 'qc',
+      label: 'QC',
+      detail: qcStatus === 'passed' || qcStatus === 'waived' ? 'Проверка завершена' : 'Ожидает завершения',
+      done: qcStatus === 'passed' || qcStatus === 'waived',
+      active: qcStatus === 'in_progress' || qcStatus === 'failed',
+    },
+    {
+      id: 'packing',
+      label: 'Packing',
+      detail: packingStatus === 'issued' ? 'Упаковка и документы готовы' : 'Подготовка упаковки',
+      done: packingStatus === 'issued',
+      active: packingStatus === 'in_progress' || packingStatus === 'ready',
+    },
+    {
+      id: 'shipping',
+      label: 'Shipping',
+      detail:
+        shipmentStatus === 'delivered'
+          ? 'Поставка доставлена'
+          : shipmentStatus === 'dispatched' || shipmentStatus === 'partially_delivered'
+            ? 'Поставка в пути'
+            : 'Ожидает отгрузки',
+      done: shipmentStatus === 'delivered',
+      active: shipmentStatus === 'dispatched' || shipmentStatus === 'partially_delivered',
+    },
+    {
+      id: 'receiving',
+      label: 'Receiving',
+      detail:
+        ['dispatched', 'partially_delivered', 'delivered'].includes(shipmentStatus)
+          ? 'Приёмка доступна магазину'
+          : 'Ожидает отправки',
+      done: acceptanceStatus !== 'pending',
+      active:
+        acceptanceStatus === 'pending' &&
+        ['dispatched', 'partially_delivered', 'delivered'].includes(shipmentStatus),
+    },
+    {
+      id: 'acceptance',
+      label: 'Acceptance',
+      detail:
+        acceptanceStatus === 'accepted'
+          ? 'Принято без расхождений'
+          : acceptanceStatus === 'accepted_with_discrepancy'
+            ? 'Принято с расхождениями'
+            : acceptanceStatus === 'rejected'
+              ? 'Поставка отклонена'
+              : 'Решение не принято',
+      done: acceptanceStatus === 'accepted',
+      active: acceptanceStatus === 'accepted_with_discrepancy' || acceptanceStatus === 'rejected',
+    },
+    {
+      id: 'closeout',
+      label: 'Closeout',
+      detail:
+        closeoutStatus === 'closed'
+          ? 'Заказ закрыт'
+          : closeoutStatus === 'ready_to_close'
+            ? 'Готов к закрытию'
+            : closeoutStatus === 'blocked'
+              ? 'Закрытие заблокировано'
+              : 'Ожидает завершения',
+      done: closeoutStatus === 'closed',
+      active: closeoutStatus === 'ready_to_close' || closeoutStatus === 'blocked',
+    },
+  ];
+}
 
 /** Shop · order_production: tracking, timeline, receiving, acceptance and claims. */
 export function ShopOrderProductionPillarCard({ compact = false, minimalChrome = false }: Props) {
@@ -73,12 +159,12 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
   });
 
   const op = pickOrderProductionSnapshot(snapshot);
-  const chainSteps = op?.chainSteps ?? [];
   const productionOrderId = op?.productionOrderId ?? null;
   const trackingPreview = op?.trackingPreview ?? null;
-  const completedSteps = chainSteps.filter((step) => step.done).length;
-  const nextStep = chainSteps.find((step) => !step.done) ?? null;
   const trackingHref = shopCoCabinetTrackingEmbedAnchorHref(collectionId, cabinetOrderId);
+  const timeline = buildTimeline(op);
+  const completedTimeline = timeline.filter((stage) => stage.done).length;
+  const activeStage = timeline.find((stage) => stage.active) ?? timeline.find((stage) => !stage.done) ?? null;
 
   if (loading && !op) {
     return <PlatformCorePillarInsightSkeleton testId="shop-op-cabinet-skeleton" />;
@@ -162,7 +248,7 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
             </Badge>
           ) : null}
           <span className="text-[11px] text-text-secondary">
-            Выполнено {completedSteps} из {chainSteps.length || '—'} этапов
+            Выполнено {completedTimeline} из {timeline.length} этапов
           </span>
           {trackingPreview?.asnNumber ? (
             <span className="text-[11px] text-text-muted">ASN {trackingPreview.asnNumber}</span>
@@ -179,45 +265,50 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
           ) : null}
         </div>
 
-        {nextStep ? (
+        {activeStage ? (
           <div className="flex items-start gap-2 rounded-md bg-amber-50/70 px-2.5 py-2 text-[11px] text-amber-950">
             <Circle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
             <div className="min-w-0">
-              <p className="font-medium">Следующий этап</p>
-              <p className="truncate">{nextStep.labelRu}</p>
+              <p className="font-medium">Текущий этап</p>
+              <p className="truncate">{activeStage.label} · {activeStage.detail}</p>
             </div>
           </div>
         ) : null}
 
-        {chainSteps.length > 0 ? (
-          <section className="space-y-1.5" aria-label="Timeline поставки">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-[12px] font-semibold text-text-primary">Timeline поставки</h2>
-              <span className="text-[10px] text-text-muted">
-                {completedSteps}/{chainSteps.length}
-              </span>
-            </div>
-            <ol className="grid gap-1 md:grid-cols-2" data-testid="shop-op-cabinet-chain-steps">
-              {chainSteps.map((step) => (
-                <li
-                  key={step.id}
-                  className="border-border-subtle flex min-h-8 items-center gap-1.5 rounded-md border px-2 py-1.5 text-[11px]"
-                  data-testid={`shop-op-cabinet-chain-step-${step.id}`}
-                  data-done={step.done ? 'true' : 'false'}
-                >
-                  {step.done ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-                  ) : (
-                    <Circle className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
-                  )}
-                  <span className="min-w-0 truncate">{step.labelRu}</span>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ) : (
-          <p className="text-[11px] text-text-muted">Этапы исполнения ещё не опубликованы брендом.</p>
-        )}
+        <section className="space-y-1.5" aria-label="Timeline поставки">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-[12px] font-semibold text-text-primary">Timeline поставки</h2>
+            <span className="text-[10px] text-text-muted">
+              {completedTimeline}/{timeline.length}
+            </span>
+          </div>
+          <ol className="grid gap-1 md:grid-cols-2 xl:grid-cols-3" data-testid="shop-op-cabinet-timeline">
+            {timeline.map((stage) => (
+              <li
+                key={stage.id}
+                className={`flex min-h-12 items-start gap-1.5 rounded-md border px-2 py-1.5 text-[11px] ${
+                  stage.done
+                    ? 'border-emerald-200 bg-emerald-50/50'
+                    : stage.active
+                      ? 'border-amber-200 bg-amber-50/60'
+                      : 'border-border-subtle bg-bg-surface'
+                }`}
+                data-testid={`shop-op-timeline-${stage.id}`}
+                data-stage-state={stage.done ? 'done' : stage.active ? 'active' : 'pending'}
+              >
+                {stage.done ? (
+                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
+                ) : (
+                  <Circle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
+                )}
+                <span className="min-w-0">
+                  <span className="block font-medium text-text-primary">{stage.label}</span>
+                  <span className="block text-[10px] leading-4 text-text-muted">{stage.detail}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
 
         <ShopCoTrackingEtaPeekStrip
           orderId={cabinetOrderId}
@@ -234,6 +325,13 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
           asnNumber={trackingPreview?.asnNumber}
           eta={trackingPreview?.eta ?? trackingPreview?.deliveryLabel}
           onSaved={() => setReceivingReload((value) => value + 1)}
+        />
+
+        <ShopOrderProductionClaimPanel
+          collectionId={collectionId}
+          orderId={cabinetOrderId}
+          acceptanceStatus={op?.acceptanceStatus ?? 'pending'}
+          hasOpenClaim={op?.hasOpenClaim ?? false}
         />
 
         {!minimalChrome ? (
