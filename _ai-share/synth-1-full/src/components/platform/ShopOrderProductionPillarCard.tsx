@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Circle, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,7 @@ import { PlatformCoreChainStatusRefreshBadge } from '@/components/platform/Platf
 import { PlatformCoreEmptyState } from '@/components/platform/shared';
 import { ShopCoTrackingEtaPeekStrip } from '@/components/platform/ShopCoTrackingEtaPeekStrip';
 import { ShopOpCabinetSpinePeerStrip } from '@/components/platform/ShopOpCabinetSpinePeerStrip';
+import { ShopOrderProductionReceivingPanel } from '@/components/platform/ShopOrderProductionReceivingPanel';
 import { usePlatformCoreDemoContext } from '@/components/platform/usePlatformCoreChainOverview';
 import { usePlatformCoreChainStatusPoll } from '@/hooks/use-platform-core-chain-status-poll';
 import { usePlatformCoreChainStatusPushEnabled } from '@/hooks/use-platform-core-chain-status-push-enabled';
@@ -33,13 +35,14 @@ type Props = {
   minimalChrome?: boolean;
 };
 
-/** Shop · order_production: компактный статус, timeline и один следующий шаг. */
+/** Shop · order_production: tracking, timeline, receiving, acceptance and claims. */
 export function ShopOrderProductionPillarCard({ compact = false, minimalChrome = false }: Props) {
   const demo = usePlatformCoreDemoContext();
   const auditUi = usePlatformCoreAuditUi();
   const suppressChainBadge = shouldSuppressHubCabinetChainStatusBadge({ compact, auditUi });
   const { collectionId, demoOrderId: fallbackOrderId } = demo;
   const w2Fallback = fallbackOrderId.startsWith('__') ? '' : fallbackOrderId;
+  const [receivingReload, setReceivingReload] = useState(0);
 
   const { activeOrderId: orderId } = useSpineActiveWholesaleOrderId({
     fallbackOrderId: w2Fallback,
@@ -66,7 +69,7 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
     roleId: 'shop',
     pillarVariant: 'shop',
     wholesaleOrderId: cabinetOrderId || undefined,
-    reloadNonce: chainPollTick,
+    reloadNonce: chainPollTick + receivingReload,
   });
 
   const op = pickOrderProductionSnapshot(snapshot);
@@ -128,12 +131,14 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
             {!minimalChrome ? (
               <PillarInsightHeader
                 icon={Package}
-                title="Исполнение заказа"
+                title="Исполнение и приёмка заказа"
                 subtitle={formatWholesaleOrderDisplayId(cabinetOrderId)}
               />
             ) : (
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-text-primary">Исполнение заказа</p>
+                <p className="truncate text-sm font-semibold text-text-primary">
+                  Исполнение и приёмка заказа
+                </p>
                 <p className="truncate text-[11px] text-text-muted">
                   {formatWholesaleOrderDisplayId(cabinetOrderId)}
                 </p>
@@ -159,8 +164,18 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
           <span className="text-[11px] text-text-secondary">
             Выполнено {completedSteps} из {chainSteps.length || '—'} этапов
           </span>
-          {trackingPreview?.deliveryLabel ? (
-            <span className="text-[11px] text-text-muted">ETA {trackingPreview.deliveryLabel}</span>
+          {trackingPreview?.asnNumber ? (
+            <span className="text-[11px] text-text-muted">ASN {trackingPreview.asnNumber}</span>
+          ) : null}
+          {trackingPreview?.eta || trackingPreview?.deliveryLabel ? (
+            <span className="text-[11px] text-text-muted">
+              ETA {trackingPreview.eta || trackingPreview.deliveryLabel}
+            </span>
+          ) : null}
+          {op?.hasOpenClaim ? (
+            <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-800">
+              Claim открыт
+            </span>
           ) : null}
         </div>
 
@@ -175,23 +190,31 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
         ) : null}
 
         {chainSteps.length > 0 ? (
-          <ol className="grid gap-1 md:grid-cols-2" data-testid="shop-op-cabinet-chain-steps">
-            {chainSteps.map((step) => (
-              <li
-                key={step.id}
-                className="border-border-subtle flex min-h-8 items-center gap-1.5 rounded-md border px-2 py-1.5 text-[11px]"
-                data-testid={`shop-op-cabinet-chain-step-${step.id}`}
-                data-done={step.done ? 'true' : 'false'}
-              >
-                {step.done ? (
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-                ) : (
-                  <Circle className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
-                )}
-                <span className="min-w-0 truncate">{step.labelRu}</span>
-              </li>
-            ))}
-          </ol>
+          <section className="space-y-1.5" aria-label="Timeline поставки">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-[12px] font-semibold text-text-primary">Timeline поставки</h2>
+              <span className="text-[10px] text-text-muted">
+                {completedSteps}/{chainSteps.length}
+              </span>
+            </div>
+            <ol className="grid gap-1 md:grid-cols-2" data-testid="shop-op-cabinet-chain-steps">
+              {chainSteps.map((step) => (
+                <li
+                  key={step.id}
+                  className="border-border-subtle flex min-h-8 items-center gap-1.5 rounded-md border px-2 py-1.5 text-[11px]"
+                  data-testid={`shop-op-cabinet-chain-step-${step.id}`}
+                  data-done={step.done ? 'true' : 'false'}
+                >
+                  {step.done ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
+                  ) : (
+                    <Circle className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
+                  )}
+                  <span className="min-w-0 truncate">{step.labelRu}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
         ) : (
           <p className="text-[11px] text-text-muted">Этапы исполнения ещё не опубликованы брендом.</p>
         )}
@@ -202,14 +225,16 @@ export function ShopOrderProductionPillarCard({ compact = false, minimalChrome =
           trackingNumberPreview={trackingPreview?.trackingNumber}
         />
 
-        <Link
-          href={trackingHref}
-          className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-accent-primary px-3 text-[12px] font-semibold text-accent-primary-foreground transition-opacity hover:opacity-90 sm:w-auto"
-          data-testid="shop-op-primary-tracking-action"
-        >
-          Открыть трекинг и приёмку
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-        </Link>
+        <ShopOrderProductionReceivingPanel
+          orderId={cabinetOrderId}
+          shipmentStatus={op?.shipmentStatus ?? 'not_ready'}
+          acceptanceStatus={op?.acceptanceStatus ?? 'pending'}
+          hasOpenClaim={op?.hasOpenClaim ?? false}
+          documents={op?.documents ?? []}
+          asnNumber={trackingPreview?.asnNumber}
+          eta={trackingPreview?.eta ?? trackingPreview?.deliveryLabel}
+          onSaved={() => setReceivingReload((value) => value + 1)}
+        />
 
         {!minimalChrome ? (
           <ShopOpCabinetSpinePeerStrip collectionId={collectionId} orderId={cabinetOrderId} />
