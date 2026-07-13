@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import type { CoreChainRoleId, CoreHubPillarId } from '@/lib/platform-core-hub-matrix';
 import { isCoreHubPillarId } from '@/lib/platform-core-hub-matrix';
-import { getPlatformCorePillarSnapshotResilient } from '@/lib/server/platform-core-pillar-snapshot';
-
+import { getPlatformCorePillarSnapshotEnriched } from '@/lib/server/platform-core-pillar-snapshot-enriched';
 import { guardWorkshop2Route, WORKSHOP2_READ_ROLES } from '@/lib/server/workshop2-route-auth';
 
 /** GET /api/workshop2/platform-core/pillar-snapshot?collectionId=&pillarId=&roleId=&orderId= */
@@ -29,18 +28,15 @@ export async function GET(req: NextRequest) {
       ? pillarVariantRaw
       : undefined;
 
-  try {
-    const snapshot = await getPlatformCorePillarSnapshotResilient({
-      collectionId,
-      pillarId: pillarIdRaw as CoreHubPillarId,
-      roleId,
-      factoryId,
-      wholesaleOrderId,
-      articleId,
-      pillarVariant,
-    });
-    return NextResponse.json({ ok: true, snapshot });
-  } catch (err) {
-    throw err;
-  }
+  const snapshot = await getPlatformCorePillarSnapshotEnriched({
+    collectionId,
+    pillarId: pillarIdRaw as CoreHubPillarId,
+    roleId,
+    factoryId,
+    wholesaleOrderId,
+    articleId,
+    pillarVariant,
+  });
+
+  return NextResponse.json({ ok: true, snapshot });
 }
