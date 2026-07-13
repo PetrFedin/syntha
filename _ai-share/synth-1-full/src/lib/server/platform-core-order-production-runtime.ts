@@ -9,7 +9,10 @@ import type {
   PlatformCoreOrderProductionMutationResult,
   PlatformCoreOrderProductionSnapshot,
 } from '@/lib/platform-core-order-production-port';
-import { createPlatformCoreOrderProductionTail } from '@/lib/platform-core-order-production-tail';
+import {
+  createPlatformCoreOrderProductionTail,
+  type PlatformCoreShipmentStatus,
+} from '@/lib/platform-core-order-production-tail';
 import { getWorkshop2PgPool } from '@/lib/server/workshop2-pg-pool';
 
 const transactionClient = new AsyncLocalStorage<PoolClient>();
@@ -178,14 +181,38 @@ export const platformCoreOrderProductionRuntime =
     createEventId: randomUUID,
   });
 
+function bootstrapTail(orderId: string, shipmentStatus: PlatformCoreShipmentStatus) {
+  const tail = createPlatformCoreOrderProductionTail({ orderId });
+  if (['dispatched', 'partially_delivered', 'delivered'].includes(shipmentStatus)) {
+    return {
+      ...tail,
+      qcStatus: 'passed' as const,
+      packingStatus: 'issued' as const,
+      shipmentStatus,
+    };
+  }
+  if (shipmentStatus === 'ready_to_dispatch') {
+    return {
+      ...tail,
+      qcStatus: 'passed' as const,
+      packingStatus: 'issued' as const,
+      shipmentStatus,
+    };
+  }
+  return { ...tail, shipmentStatus };
+}
+
 /** Creates the canonical tail once; subsequent commands use optimistic locking. */
-export async function ensurePlatformCoreOrderProductionTail(orderId: string): Promise<void> {
-  const id = orderId.trim();
+export async function ensurePlatformCoreOrderProductionTail(args: {
+  orderId: string;
+  shipmentStatus?: PlatformCoreShipmentStatus;
+}): Promise<void> {
+  const id = args.orderId.trim();
   if (!id) throw new Error('orderId is required');
   const current = await persistence.getByOrderId(id);
   if (current) return;
   await persistence.save({
-    tail: createPlatformCoreOrderProductionTail({ orderId: id }),
+    tail: bootstrapTail(id, args.shipmentStatus ?? 'not_ready'),
     version: 1,
     updatedAt: new Date().toISOString(),
   });
