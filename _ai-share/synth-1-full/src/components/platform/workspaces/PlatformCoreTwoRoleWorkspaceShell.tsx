@@ -102,7 +102,7 @@ export function PlatformCoreTwoRoleWorkspaceShell({
                     : hubCabinet.pillarSegmentBtnIdle
                 )}
               >
-                {pillar.label}
+                {pillar.title}
               </Link>
             ))}
           </div>
@@ -124,11 +124,11 @@ export function PlatformCoreTwoRoleWorkspaceShell({
                   >
                     <span className="flex items-center gap-1.5">
                       <span className="font-mono text-[10px] text-text-muted">{index + 1}</span>
-                      <span className={hubCabinet.pillarBtnTitle}>{pillar.label}</span>
+                      <span className={hubCabinet.pillarBtnTitle}>{pillar.title}</span>
                     </span>
                     {active ? (
                       <span className="mt-0.5 text-[10px] leading-4 text-text-muted">
-                        {activePillar?.description}
+                        {activePillar?.subtitle}
                       </span>
                     ) : null}
                   </Link>
