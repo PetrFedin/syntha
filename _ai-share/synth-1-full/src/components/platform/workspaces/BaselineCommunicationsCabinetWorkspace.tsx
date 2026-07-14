@@ -87,7 +87,7 @@ function sectionMeta(sectionId: string) {
   };
 }
 
-/** Brand/Shop Communications: единый entity-aware workspace поверх canonical comms engine. */
+/** Brand/Shop Communications: единый entity-aware split workspace. */
 export function BaselineCommunicationsCabinetWorkspace({
   role,
   collectionId,
@@ -140,7 +140,7 @@ export function BaselineCommunicationsCabinetWorkspace({
         />
       </header>
 
-      <CommsPillarCardBaseline variant={role} compact={false} minimalChrome />
+      <CommsPillarCardBaseline variant={role} compact minimalChrome />
     </div>
   );
 }
