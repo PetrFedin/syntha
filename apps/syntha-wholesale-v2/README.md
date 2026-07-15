@@ -44,7 +44,7 @@ apps/syntha-wholesale-v2/
 │   ├── 11_SECURITY_AND_DATA.md
 │   ├── 12_CURSOR_TASK_TEMPLATE.md
 │   ├── 13_PRODUCT_PRINCIPLES.md
-│   └── 14_ADAPTIVE_UI_VISUAL_SYSTEM.md
+│   └── 14_RESPONSIVE_VISUAL_SYSTEM.md
 ├── design-system/
 │   ├── tokens.json
 │   └── responsive-contract.json
@@ -62,7 +62,7 @@ apps/syntha-wholesale-v2/
 4. `02_FUNCTIONAL_MAP.md` — полный каталог функций P0/P1/P2.
 5. `03_DOMAIN_MODEL.md` — сущности, статусы, связи и инварианты.
 6. `04_UX_CONSTITUTION.md` — обязательные правила интерфейса.
-7. `14_ADAPTIVE_UI_VISUAL_SYSTEM.md` — каноническое визуальное оформление iPhone, iPad, MacBook и fullscreen desktop.
+7. `14_RESPONSIVE_VISUAL_SYSTEM.md` — каноническое визуальное оформление iPhone, iPad, MacBook и fullscreen desktop.
 8. `design-system/tokens.json` — машинно-читаемые цвета, typography, spacing, controls и dimensions.
 9. `design-system/responsive-contract.json` — машинно-читаемые breakpoints, grids и responsive behaviour.
 10. `08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
@@ -79,11 +79,11 @@ apps/syntha-wholesale-v2/
 
 - тёплые нейтральные поверхности;
 - графитовый основной текст;
-- один сдержанный тёмно-зелёный accent;
-- Inter для рабочего интерфейса;
+- один сдержанный глубокий navy accent;
+- Inter Variable для рабочего интерфейса;
 - optional Source Serif 4 только для buyer-facing editorial hero;
 - минимальные тени;
-- радиусы 6–12 px для рабочего UI;
+- радиусы 4–14 px по канонической шкале;
 - один App Shell и один набор компонентов для Brand и Shop;
 - адаптацию layout, а не уменьшенную desktop-копию на iPhone.
 
@@ -147,7 +147,7 @@ Cursor должен:
 - соблюдать `CURSOR_MASTER_RULES.md`;
 - брать задачи только из `tasks/`;
 - использовать шаблон `docs/12_CURSOR_TASK_TEMPLATE.md`;
-- соблюдать `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` без локальных визуальных исключений;
+- соблюдать `docs/14_RESPONSIVE_VISUAL_SYSTEM.md` без локальных визуальных исключений;
 - генерировать runtime tokens только из `design-system/tokens.json`;
 - реализовывать responsive behaviour по `design-system/responsive-contract.json`;
 - не импортировать legacy UI напрямую;
@@ -164,7 +164,7 @@ Cursor должен:
 - Functional map: draft complete;
 - Domain model: draft complete;
 - UX constitution: draft complete;
-- Adaptive UI and visual system: draft complete;
+- Responsive UI and visual system: draft complete;
 - Machine-readable visual tokens: draft complete;
 - Responsive implementation contract: draft complete;
 - Component/API/security foundations: draft complete;
