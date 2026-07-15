@@ -2,107 +2,123 @@
 
 ## 1. Identity
 
-- **Role:** Brand
-- **Route:** `/wholesale-v2/brand/collections/:collectionId/products`
-- **Template:** Entity Registry / Dense Data Workspace
-- **Priority:** P0
-- **Capabilities:** CAP-COL-004–006,010–011; CAP-CAT-001–019
-- **Primary action:** `Add products`
+- **Role:** Brand.
+- **Route:** `/wholesale-v2/brand/collections/:collectionId/products`.
+- **Template:** Entity Registry / Dense Data Workspace.
+- **Priority:** P0.
+- **Capabilities:** CAP-COL-004–006, CAP-COL-010–011, CAP-CAT-001–019.
+- **Workflows:** WF-004, WF-005.
+- **Primary action:** `Add products`.
 
 ## 2. User goal
 
-Build a commercially complete, buyer-ready collection catalogue with products, colourways, sizes, media, prices, delivery, MOQ/pack and presentation ordering without deep PLM complexity.
+Build a commercially complete buyer-ready Collection with products, colourways, sizes, media, prices, delivery, MOQ/pack and merchandising order without adding deep PLM complexity.
 
 ## 3. Modes
 
-- table — default operational mode;
-- gallery — visual merchandising/review;
-- import — structured onboarding flow;
-- bulk edit — multi-product commercial updates;
-- reorder — presentation ordering.
+- `table` — default operational mode;
+- `gallery` — visual review and merchandising;
+- `import` — CSV/XLSX structured onboarding;
+- `bulk_edit` — multi-product commercial changes;
+- `reorder` — presentation sequence.
 
-Mode is URL-stable.
+Mode, filters, sort and visible columns persist in URL/user view.
 
-## 4. Desktop layout
+## 4. Layout
+
+Desktop:
 
 ```text
 EntityHeader + Collection tabs
 Readiness issue strip
-FilterBar + view switcher + Add products
-Canonical DataTable / ProductGallery
-BulkActionBar after selection
+FilterBar + View switcher + Add products
+Canonical DataTable or ProductGallery
+BulkActionBar when rows selected
 Right Product Quick Editor 480–560 px
-Import flow as full workspace or large drawer
+Import flow as dedicated workspace or large drawer
 ```
 
-## 5. Required table columns
+Mobile/iPad:
 
-- drag/order handle when reorder mode;
-- checkbox;
-- image thumbnail;
+- iPad keeps reduced columns and right drawer;
+- iPhone uses product list cards and full-screen editor;
+- import mapping/execution is desktop/iPad-primary;
+- phone can monitor jobs and fix simple row errors;
+- no compressed desktop table.
+
+## 5. Table columns
+
+Required:
+
+- reorder handle in reorder mode;
+- selection checkbox;
+- image;
 - style code;
 - product name;
 - category/subcategory;
 - colourway count;
 - size scale;
-- wholesale price state;
-- suggested retail state;
+- wholesale price status;
+- suggested retail status;
 - delivery windows;
 - MOQ/pack;
 - availability;
 - drop/capsule;
 - media completeness;
-- buyer description completeness;
+- description/spec completeness;
 - readiness issues;
-- action menu.
+- actions.
 
-Columns can be configured, but identity, price status, delivery and issues remain high priority.
+Identity, price state, delivery and issues cannot all be hidden.
 
 ## 6. Search and filters
 
-- style code/name;
+- style/name/code;
 - category/subcategory;
 - drop/capsule;
 - colour;
 - size scale;
-- price missing/complete;
-- media missing/complete;
-- delivery window;
+- price complete/partial/missing;
+- media complete/missing;
+- delivery;
 - MOQ/pack type;
 - availability;
 - readiness severity;
-- highlighted/not highlighted;
-- recently imported/updated.
+- highlighted;
+- recent import/update;
+- master product state.
 
-## 7. Add products options
+## 7. Add product options
 
-1. Add existing Brand catalogue products.
-2. Create new product.
+1. Add existing Brand catalogue product.
+2. Create new commercial product.
 3. Import CSV/XLSX.
 4. Import from configured PIM/ERP P1.
 5. Duplicate from another Collection.
 
-## 8. Quick editor sections
+Each option produces `CollectionProduct` references; no copied disconnected product JSON.
+
+## 8. Quick Editor
 
 ### Identity
 
 - name;
-- category;
-- buyer description;
+- category/subcategory;
+- buyer-facing description;
 - drop/capsule;
-- highlight.
+- highlighted flag.
 
 ### Variants
 
 - colour code/name;
-- variant media;
-- status.
+- status;
+- primary and additional variant media.
 
 ### Sizes
 
 - size scale;
-- size availability metadata;
-- pack/curve.
+- available size metadata;
+- pack/curve rule.
 
 ### Commercial
 
@@ -110,6 +126,7 @@ Columns can be configured, but identity, price status, delivery and issues remai
 - suggested retail;
 - delivery windows;
 - MOQ;
+- order/pack constraints;
 - availability state.
 
 ### Media
@@ -117,68 +134,68 @@ Columns can be configured, but identity, price status, delivery and issues remai
 - primary image;
 - gallery;
 - video;
-- alt text/crop.
+- alt text;
+- crop/focal point.
 
-### Notes
+### Notes/specifications
 
-- Brand internal note;
-- buyer-facing specification.
+- buyer-facing structured specs;
+- Brand-internal note with explicit visibility.
 
 ## 9. Import workflow
 
-### Upload
+### 9.1 Upload
 
 - CSV/XLSX;
-- file size/type validation;
+- file type/size check;
 - encoding/locale detection;
-- template download.
+- template download;
+- presigned secure upload and malware validation.
 
-### Mapping
+### 9.2 Mapping
 
-- source headers;
-- canonical targets;
-- reusable mapping profile;
-- transforms/defaults;
+- source column/path;
+- canonical target;
+- required marker;
+- transform/default;
 - enum/category lookup;
-- required field indication.
+- reference lookup;
+- reusable versioned mapping profile.
 
-### Preview
+### 9.3 Preview
 
 Every row classified:
 
 ```text
-CREATE
-UPDATE
-UNCHANGED
-SKIP
-ERROR
-CONFLICT
+CREATE | UPDATE | UNCHANGED | SKIP | ERROR | CONFLICT
 ```
 
 Preview shows before/after for updates and total counts.
 
-### Validation
+### 9.4 Validation
 
 - style/variant identity;
-- duplicate external/internal identifiers;
+- duplicate identifiers;
 - currency/price format;
-- size scale existence;
+- size scale;
 - colour code;
-- date/delivery validity;
+- delivery date/window;
 - media URL/type;
 - category mapping;
 - price-list mapping;
-- pack JSON/columns.
+- pack data;
+- referenced product/variant state.
 
-### Execute
+### 9.5 Execute
 
 - idempotency key;
-- batch processing;
+- batches;
 - progress;
-- cancel before committed phase where possible;
-- partial failure report;
+- resumable worker;
+- partial result;
 - retry failed rows;
-- download error file.
+- downloadable error file;
+- source file/mapping fingerprint retained.
 
 ## 10. Data contracts
 
@@ -209,14 +226,39 @@ type CollectionProductRow = {
   deliveryWindows: DeliveryWindowSummary[];
   minimumOrderQuantity?: number;
   packRule?: PackRuleSummary;
-  availability: string;
+  availability: 'available' | 'limited' | 'unavailable' | 'unknown';
   drop?: DropSummary;
   readinessIssues: ReadinessIssueSummary[];
   version: string;
 };
 ```
 
-## 11. Commands
+Import:
+
+```ts
+type ImportJobVM = {
+  id: string;
+  status: 'uploaded' | 'parsing' | 'mapping' | 'validated' | 'executing' | 'partial' | 'failed' | 'completed';
+  mappingProfile?: MappingProfileSummary;
+  counts: { total: number; create: number; update: number; skip: number; error: number; conflict: number };
+  rows: CursorPage<ImportPreviewRow>;
+  version: string;
+};
+```
+
+## 11. Queries and commands
+
+Queries:
+
+```text
+ListCollectionProducts
+GetProductFacets
+GetCollectionProductEditor
+GetImportJob
+GetImportMappingProfiles
+```
+
+Commands:
 
 ```text
 AddExistingProductsToCollection
@@ -226,9 +268,11 @@ BulkUpdateCollectionProducts
 RemoveProductFromCollection
 ReorderCollectionProducts
 CreateImportJob
+SaveImportMapping
 ValidateImportJob
 ExecuteImportJob
 RetryImportRows
+CancelImportJob
 ```
 
 ## 12. Bulk actions
@@ -239,108 +283,124 @@ P0:
 - assign delivery window;
 - assign size scale;
 - assign MOQ/pack;
-- set availability state;
+- set availability;
 - highlight/unhighlight;
-- remove from collection;
+- remove from Collection;
 - export selected.
+
+Risky bulk changes show preview and per-row result.
 
 P1:
 
-- price update by rule;
+- rule-based price update;
 - media operations;
-- buyer visibility rules.
-
-Every bulk command provides preview and per-row result for risky changes.
+- buyer visibility assignment.
 
 ## 13. Readiness integration
 
-After relevant changes, readiness recalculates incrementally.
+Relevant changes trigger incremental readiness recalculation.
 
-Issue deep links focus:
+Issue deep links target exact:
 
-- specific row;
-- specific field/tab;
+- row;
+- field/tab;
 - import error;
-- price list assignment.
+- price-list assignment.
 
 Blocking examples:
 
 - no active colourway;
-- missing price for required buyer context;
+- missing required price;
 - missing size scale;
-- invalid delivery window;
-- no primary image where required;
+- invalid delivery;
+- missing primary media where required;
 - duplicate style/colour identity;
-- referenced archived product.
+- archived product;
+- invalid pack rule.
 
-## 14. Version/concurrency
+## 14. Concurrency and versioning
 
-- each row has version token;
-- bulk command uses expected versions or snapshot fingerprint;
-- stale quick editor shows compare/reload;
-- reorder sends ordered IDs + expected collection version;
-- published release unaffected by draft edits.
+- row version token;
+- collection version for reorder/bulk context;
+- stale quick editor shows reload/compare;
+- import execution uses fingerprint/idempotency;
+- published release remains unchanged;
+- submitted Order snapshots remain unchanged.
 
 ## 15. Permissions
 
-- read `collection.read/product.read`;
-- add/update `collection.update/product.update`;
-- import `product.import`;
-- bulk `product.bulk_update`;
-- pricing fields require `pricing.manage` where separated;
-- internal notes require `product.internal_note`;
-- media requires `media.manage`.
+- read: `collection.read`, `product.read`;
+- add/update: `collection.update`, `product.update`;
+- import: `product.import`;
+- bulk: `product.bulk_update`;
+- pricing fields: `pricing.manage`;
+- media: `media.manage`;
+- internal notes: `product.internal_note`.
 
-## 16. Mobile/iPad
+Fields/actions are server-redacted when permission is absent.
 
-### iPad landscape
+## 16. States
 
-- reduced columns;
-- quick editor right drawer;
-- horizontal scroll only for genuinely dense table;
-- gallery option preferred for visual review.
+- loading table/gallery;
+- empty Collection;
+- no filter results;
+- editor loading/saving/saved/error/conflict;
+- import uploading/parsing/mapping/validating/executing/partial/failed/completed;
+- bulk preview/executing/partial;
+- forbidden;
+- product archived externally;
+- price/reference unavailable.
 
-### iPhone
-
-- product list cards;
-- search/filter sheets;
-- individual product editor full-screen;
-- bulk edit limited to safe actions;
-- import mapping/execution is desktop/iPad-primary; phone can monitor result and fix simple rows.
-
-## 17. Analytics/audit
-
-Track operational events:
+## 17. Events and audit
 
 ```text
-collection_product_added
-collection_product_updated
-collection_product_removed
-product_import_started
-product_import_completed
-product_import_failed
-bulk_update_completed
+collection.products_changed
+product.created
+product.updated
+product.import_started
+product.import_completed
+product.import_failed
+collection.readiness_changed
 ```
 
-Audit sensitive commercial changes and imports.
+Audit import source, mapping profile, actor, counts and commercial bulk changes.
 
-## 18. Acceptance criteria
+## 18. Performance
 
-- [ ] Products can be added via existing catalogue and structured import.
-- [ ] Import preview accurately classifies create/update/error.
-- [ ] Re-running same import does not duplicate records.
-- [ ] Table supports filters, selection, bulk actions and all universal states.
-- [ ] Quick editor updates contextual CollectionProduct and master Product intentionally.
-- [ ] Readiness reflects changes and links to exact issue.
-- [ ] Published release is unchanged by draft edits.
-- [ ] Permission boundaries apply at field/action level.
-- [ ] Partial import failure is visible and recoverable.
-- [ ] Mobile does not render compressed desktop table.
+- cursor pagination or virtualization;
+- image lazy loading;
+- bulk operations execute server-side;
+- filter/search debounced;
+- large imports handled asynchronously;
+- row update does not refetch unrelated app data.
 
-## 19. Non-goals
+## 19. Accessibility
+
+- semantic table headers;
+- keyboard row navigation;
+- accessible reorder alternative;
+- status not colour-only;
+- validation summary and row links;
+- 44×44 touch targets on tablet/mobile.
+
+## 20. Acceptance criteria
+
+- [ ] Existing and new products can be added.
+- [ ] Import preview accurately classifies every row.
+- [ ] Repeated import does not duplicate records.
+- [ ] Partial failure is visible, downloadable and recoverable.
+- [ ] Quick editor intentionally updates Product vs CollectionProduct fields.
+- [ ] Bulk actions report per-row result.
+- [ ] Readiness updates and links to exact problem.
+- [ ] Published release is not mutated.
+- [ ] Field/action permissions are enforced server-side.
+- [ ] Desktop/iPad/iPhone layouts comply with visual system.
+
+## 21. Non-goals
 
 - BOM/tech packs;
-- supplier/costing workflow;
-- raw material data;
-- production SKU planning;
-- factory inventory.
+- supplier/costing;
+- raw materials;
+- factory inventory;
+- production planning;
+- PLM lifecycle execution.
