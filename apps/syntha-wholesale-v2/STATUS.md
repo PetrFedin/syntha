@@ -11,7 +11,10 @@ Last structured update: 2026-07-15
 | Information architecture | DRAFT COMPLETE | Requires route and navigation sign-off |
 | Functional map | DRAFT COMPLETE | P0/P1/P2 priorities defined |
 | Domain model | DRAFT COMPLETE | Requires schema/ID/money decisions |
-| UX constitution | DRAFT COMPLETE | Requires visual design sign-off |
+| UX constitution | DRAFT COMPLETE | Core interaction rules defined |
+| Adaptive UI visual bible | DRAFT COMPLETE | iPhone, iPad, MacBook and fullscreen specifications written |
+| Machine design tokens | DRAFT COMPLETE | `design-system/tokens.json` aligned with visual bible |
+| Responsive contract | DRAFT COMPLETE | `design-system/responsive-contract.json` aligned with visual bible |
 | Component library | DRAFT COMPLETE | Implementation not started |
 | API bible | DRAFT COMPLETE | Runtime/framework choice pending |
 | Security/data | DRAFT COMPLETE | Legal/retention decisions pending |
@@ -35,8 +38,8 @@ Implementation must not start before these gates are accepted.
 
 - [ ] Approve Brand navigation.
 - [ ] Approve Shop navigation.
-- [ ] Approve universal Workspace / Entity / Builder / Split templates.
-- [ ] Approve desktop and iPad as primary targets.
+- [ ] Approve Registry / Entity / Builder / Showroom / Split Communication templates.
+- [ ] Approve iPhone, iPad and MacBook support model.
 
 ### Gate G2 — Domain freeze
 
@@ -48,18 +51,56 @@ Implementation must not start before these gates are accepted.
 
 ### Gate G3 — UX foundation freeze
 
-- [ ] Approve tokens.
+- [ ] Approve neutral warm-grey palette and dark-green accent.
+- [ ] Approve Inter as operational font.
+- [ ] Approve optional Source Serif 4 only for buyer-facing editorial hero.
+- [ ] Approve typography scales for MacBook, iPad and iPhone.
+- [ ] Approve AppShell dimensions.
+- [ ] Approve button/input/table dimensions.
+- [ ] Approve card radii and elevation limits.
+- [ ] Approve mandatory 390/768/1024/1440/1728 viewport review.
+- [ ] Approve mobile Order Builder as guided flow, not compressed matrix.
+- [ ] Approve `design-system/tokens.json` as runtime token source.
+- [ ] Approve `design-system/responsive-contract.json` as responsive source.
+
+### Gate G4 — Canonical component freeze
+
 - [ ] Approve AppShell.
-- [ ] Approve DataTable.
-- [ ] Approve EntityHeader.
-- [ ] Approve BuilderShell.
-- [ ] Approve Empty/Loading/Error states.
+- [ ] Approve WorkspaceHeader and EntityHeader.
+- [ ] Approve DataTable and mobile list transformation.
+- [ ] Approve ProductCard and product media ratios.
+- [ ] Approve BuilderShell and Order Matrix.
+- [ ] Approve Showroom shell and selection tray.
+- [ ] Approve DealSpace split layout.
+- [ ] Approve Calendar structure.
+- [ ] Approve Empty/Loading/No-results/Error/Conflict states.
+
+## Visual system decisions currently proposed
+
+```text
+Theme:               light in MVP
+Canvas:              warm neutral
+Operational surface: white
+Text:                restrained graphite
+Accent:              dark muted green
+Operational font:    Inter
+Editorial font:      Source Serif 4, hero only
+Desktop sidebar:     240 px expanded / 72 px collapsed
+Desktop top bar:     56 px
+iPhone top bar:      52 px
+iPhone bottom nav:   56 px + safe area
+Minimum touch:       44 × 44 px
+Operational radius:  6–12 px
+Editorial radius:    up to 16 px
+Accessibility:       WCAG 2.2 AA
+```
 
 ## Recommended next work
 
 1. Review and freeze `00_PRODUCT_CANON.md`.
-2. Review `01_INFORMATION_ARCHITECTURE.md` with screenshots/wireframes.
-3. Write individual screen specs for first vertical slice:
+2. Review and freeze `14_ADAPTIVE_UI_VISUAL_SYSTEM.md`.
+3. Approve `design-system/tokens.json` and `design-system/responsive-contract.json`.
+4. Write individual screen specs for first vertical slice:
    - BR-002 Campaign Registry;
    - BR-003 Campaign Overview;
    - BR-008 Collection Registry;
@@ -74,8 +115,8 @@ Implementation must not start before these gates are accepted.
    - SH-013 Order Validation;
    - BR-027 Incoming Orders;
    - BR-028 Brand Order Detail.
-4. Generate Cursor tasks from `12_CURSOR_TASK_TEMPLATE.md`.
-5. Only then scaffold the new application runtime.
+5. Generate Cursor tasks from `12_CURSOR_TASK_TEMPLATE.md`.
+6. Only then scaffold the new application runtime and implement design-system foundations before feature screens.
 
 ## First implementation milestone
 
@@ -126,9 +167,10 @@ Both parties can work in one order DealSpace.
 
 - No runtime/framework decision has been committed for V2.
 - No database schema or migration exists for V2.
-- Competitive claims are not yet verified.
+- Competitive claims are not yet fully verified.
 - Individual screen specs are not yet complete.
-- No design assets or approved visual reference are stored in this folder yet.
+- No approved screenshot/wireframe reference set is stored yet.
+- Design tokens are specified but not implemented in runtime code.
 
 ## Rule
 
