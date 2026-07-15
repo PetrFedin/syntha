@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "name": "Syntha Wholesale V2 Responsive Contract",
+    "version": "0.1.0",
+    "status": "canonical-draft",
+    "source": "docs/14_RESPONSIVE_VISUAL_SYSTEM.md"
+  },
+  "breakpoints": {
+    "xs": {"min": 0, "max": 479, "target": "iPhone compact"},
+    "sm": {"min": 480, "max": 767, "target": "iPhone large / narrow tablet"},
+    "md": {"min": 768, "max": 1023, "target": "iPad portrait"},
+    "lg": {"min": 1024, "max": 1279, "target": "iPad landscape / small MacBook window"},
+    "xl": {"min": 1280, "max": 1535, "target": "MacBook standard"},
+    "2xl": {"min": 1536, "max": 1919, "target": "MacBook full-screen / desktop"},
+    "3xl": {"min": 1920, "max": null, "target": "large desktop"}
+  },
+  "requiredViewports": [
+    {"name": "iPhone standard", "width": 390, "height": 844},
+    {"name": "iPad portrait", "width": 768, "height": 1024},
+    {"name": "iPad landscape", "width": 1024, "height": 768},
+    {"name": "MacBook Pro", "width": 1440, "height": 900},
+    {"name": "Desktop full-screen", "width": 1728, "height": 1117}
+  ],
+  "grid": {
+    "mobile": {"columns": 4, "gutter": 12, "pagePadding": 16},
+    "tabletPortrait": {"columns": 8, "gutter": 16, "pagePadding": 20},
+    "tabletLandscape": {"columns": 12, "gutter": 20, "pagePaddingMin": 20, "pagePaddingMax": 24},
+    "desktop": {"columns": 12, "gutter": 24, "pagePaddingMin": 24, "pagePaddingMax": 40}
+  },
+  "shell": {
+    "desktop": {
+      "sidebar": "248px expanded or 72px compact",
+      "topBar": 48,
+      "navigation": "persistent",
+      "inspector": "persistent when workspace remains usable; otherwise drawer"
+    },
+    "tabletLandscape": {
+      "sidebar": "72px icon-only, expands as 280px overlay",
+      "topBar": 52,
+      "primaryAction": "header or sticky bottom action bar"
+    },
+    "tabletPortrait": {
+      "sidebar": "none persistent",
+      "topBar": 56,
+      "navigation": "menu drawer or maximum five-item bottom navigation",
+      "contextRail": "drawer or collapsible section"
+    },
+    "mobile": {
+      "topBar": 52,
+      "navigation": "bottom navigation only at root workspace level",
+      "primaryAction": "sticky bottom action bar",
+      "contextRail": "bottom sheet or dedicated screen",
+      "safeAreaRequired": true
+    }
+  },
+  "layoutTemplates": {
+    "registryWorkspace": ["AppShell", "WorkspaceHeader", "FilterBar", "DataTableOrGallery", "OptionalInspector"],
+    "entityWorkspace": ["AppShell", "Breadcrumb", "EntityHeader", "Tabs", "MainContent", "OptionalContextRail"],
+    "builderWorkspace": ["BuilderHeader", "Source", "CanvasOrMatrix", "ResultInspector", "StickyValidationAction"],
+    "splitWorkspace": ["ListRail", "PrimaryDetail", "OptionalContextInspector"]
+  },
+  "productGrid": {
+    "mobile": {"columns": 2, "gapMin": 8, "gapMax": 12},
+    "tabletPortrait": {"columns": 3, "gap": 16},
+    "tabletLandscape": {"columns": 4, "gap": 16},
+    "desktop1280": {"columnsMin": 4, "columnsMax": 5, "gap": 20},
+    "desktop1440Plus": {"columnsMin": 5, "columnsMax": 6, "gapMin": 20, "gapMax": 24}
+  },
+  "orderBuilder": {
+    "desktop": {
+      "minimumFullLayoutWidth": 1280,
+      "sourceRailMin": 280,
+      "sourceRailMax": 320,
+      "matrixMin": 640,
+      "totalsInspectorMin": 320,
+      "totalsInspectorMax": 360,
+      "behaviorBelowMinimum": "collapse one side panel to drawer"
+    },
+    "tabletLandscape": {
+      "source": "drawer",
+      "matrix": "main surface with sticky identity and horizontal scroll",
+      "totals": "280px compact rail or drawer"
+    },
+    "tabletPortrait": {
+      "mode": "step flow",
+      "steps": ["Products", "Quantities", "Deliveries", "Review"],
+      "persistentSummary": ["units", "value", "validationCount", "saveState"]
+    },
+    "mobile": {
+      "mode": "guided flow",
+      "steps": ["Product list", "Product quantity editor", "Delivery assignment", "Budget and validation", "Review and submit"],
+      "desktopMatrixForbidden": true
+    }
+  },
+  "showroom": {
+    "desktopFullScreen": {
+      "topBar": 48,
+      "selectionTrayMin": 320,
+      "selectionTrayMax": 380,
+      "modes": ["editorial", "grid", "looks", "linesheet", "fullscreen"]
+    },
+    "tabletLandscape": {
+      "priority": "guided appointment",
+      "selectionRail": "collapsible",
+      "minimumTouchTarget": 44
+    },
+    "mobile": {
+      "layout": "single-column story or grid",
+      "selection": "bottom tray",
+      "productDetail": "full-screen",
+      "quantityEditor": "bottom sheet"
+    }
+  },
+  "dealSpace": {
+    "desktop": {"conversationList": 280, "conversation": "flexible", "contextInspector": 320},
+    "tabletLandscape": {"layout": "list plus conversation", "inspector": "drawer"},
+    "mobile": {"layout": "conversation list screen then detail screen", "tasksAndFiles": "bottom sheets"}
+  },
+  "calendar": {
+    "desktop": {"views": ["month", "week", "day", "agenda"], "filterRail": 240, "appointmentInspector": 360},
+    "tablet": {"primaryViews": ["week", "day", "agenda"], "month": "simplified"},
+    "mobile": {"defaultView": "agenda", "secondaryView": "day", "month": "navigation only"}
+  },
+  "responsivePriority": [
+    "hide low-priority metadata",
+    "move secondary actions to overflow",
+    "transform context rail into drawer or sheet",
+    "transform table into mobile list",
+    "split complex builder into sequential steps"
+  ],
+  "forbidden": [
+    "shrink typography below canonical mobile sizes",
+    "compress desktop table into mobile width",
+    "show hover-only actions without touch alternative",
+    "render full three-pane builder below usable width",
+    "create module-specific app shell",
+    "place primary action differently on equivalent screens without documented reason"
+  ],
+  "definitionOfDone": {
+    "requiredWidths": [390, 768, 1024, 1440, 1728],
+    "noUnexpectedHorizontalOverflow": true,
+    "touchTargetMinimum": 44,
+    "keyboardFocusRequired": true,
+    "safeAreasRequired": true,
+    "loadingEmptyErrorNoResultsRequired": true,
+    "screenshotsRequiredForUiReview": true
+  }
+}
