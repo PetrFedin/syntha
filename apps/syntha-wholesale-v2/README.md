@@ -10,8 +10,8 @@
 
 Только две пользовательские роли:
 
-- Brand
-- Shop
+- Brand;
+- Shop.
 
 Первая версия решает четыре главные задачи:
 
@@ -22,11 +22,12 @@
 
 Производство, PLM, BOM, QC и supply-chain не входят в базовое ядро. Они могут быть подключены позднее как расширения из текущей Syntha.
 
-## Структура проекта
+## Структура нового проекта
 
 ```text
 apps/syntha-wholesale-v2/
 ├── README.md
+├── STATUS.md
 ├── CURSOR_MASTER_RULES.md
 ├── docs/
 │   ├── 00_PRODUCT_CANON.md
@@ -35,43 +36,66 @@ apps/syntha-wholesale-v2/
 │   ├── 03_DOMAIN_MODEL.md
 │   ├── 04_UX_CONSTITUTION.md
 │   ├── 05_IMPLEMENTATION_ROADMAP.md
-│   └── 06_REUSE_FROM_SYNTHA.md
+│   ├── 06_REUSE_FROM_SYNTHA.md
+│   ├── 07_COMPETITIVE_MATRIX.md
+│   ├── 08_SCREEN_BIBLE_INDEX.md
+│   ├── 09_COMPONENT_LIBRARY.md
+│   ├── 10_API_BIBLE.md
+│   ├── 11_SECURITY_AND_DATA.md
+│   └── 12_CURSOR_TASK_TEMPLATE.md
+├── tasks/
+│   └── README.md
 └── src/
     └── README.md
 ```
+
+## Порядок чтения
+
+1. `00_PRODUCT_CANON.md` — что строим и что сознательно не строим.
+2. `01_INFORMATION_ARCHITECTURE.md` — разделы, навигация и шаблоны экранов.
+3. `02_FUNCTIONAL_MAP.md` — полный каталог функций P0/P1/P2.
+4. `03_DOMAIN_MODEL.md` — сущности, статусы, связи и инварианты.
+5. `04_UX_CONSTITUTION.md` — обязательные правила интерфейса.
+6. `08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
+7. `09_COMPONENT_LIBRARY.md` — единственные разрешённые UI-паттерны.
+8. `10_API_BIBLE.md` — API-контракты и endpoint map.
+9. `11_SECURITY_AND_DATA.md` — tenant isolation, permissions, audit и data policy.
+10. `05_IMPLEMENTATION_ROADMAP.md` — фазы реализации.
+11. `12_CURSOR_TASK_TEMPLATE.md` — формат атомарной задачи Cursor.
+12. `STATUS.md` — фактический статус и gates перед кодом.
 
 ## Канонические модули
 
 ### Brand
 
-- Dashboard
-- Sales Campaigns
-- Collections
-- Showrooms
-- Buyers
-- Appointments
-- Orders
-- DealSpace
-- Calendar
-- Communications
-- Documents
-- Analytics
-- Settings
+- Dashboard;
+- Sales Campaigns;
+- Collections;
+- Showrooms;
+- Buyers;
+- Appointments;
+- Orders;
+- DealSpace;
+- Calendar;
+- Communications;
+- Documents;
+- Analytics;
+- Settings.
 
 ### Shop
 
-- Dashboard
-- Brands
-- Campaigns
-- Collections
-- Buying Workspace
-- Orders
-- DealSpace
-- Calendar
-- Communications
-- Documents
-- Analytics
-- Settings
+- Dashboard;
+- Brands;
+- Campaigns;
+- Collections;
+- Buying Workspace;
+- Orders;
+- DealSpace;
+- Calendar;
+- Communications;
+- Documents;
+- Analytics;
+- Settings.
 
 ## Основной бизнес-поток
 
@@ -93,11 +117,26 @@ Campaign
 
 Новые функции нельзя добавлять напрямую в код до их появления в документации проекта.
 
-Cursor должен выполнять задачи только из `docs/05_IMPLEMENTATION_ROADMAP.md` и соблюдать `CURSOR_MASTER_RULES.md`.
+Cursor должен:
 
-## Статус
+- соблюдать `CURSOR_MASTER_RULES.md`;
+- брать задачи только из `tasks/`;
+- использовать шаблон `docs/12_CURSOR_TASK_TEMPLATE.md`;
+- не импортировать legacy UI напрямую;
+- не открывать legacy routes из V2;
+- не создавать локальные версии canonical components;
+- не скрывать незавершённые write-paths demo-заглушками.
 
-- Product scope: initiated
-- Architecture: to be defined
-- UI system: to be defined
-- Implementation: not started
+## Текущий статус
+
+- Product scope: draft complete;
+- Information architecture: draft complete;
+- Functional map: draft complete;
+- Domain model: draft complete;
+- UX constitution: draft complete;
+- Component/API/security foundations: draft complete;
+- Competitive matrix: framework ready, facts require verification;
+- Screen Bible: index ready, individual specs pending;
+- Implementation: not started.
+
+Точные gates и следующие шаги находятся в `STATUS.md`.
