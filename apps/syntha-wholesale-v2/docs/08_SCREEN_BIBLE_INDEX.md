@@ -36,24 +36,54 @@ Entity header + контекстные вкладки + один primary action 
 
 Полноэкранный сценарий без лишней навигации: live showroom, presentation, large matrix.
 
+## First vertical slice package
+
+Detailed screen specifications live in:
+
+```text
+docs/screens/vertical-slice-01/
+├── README.md
+├── BR-002_CAMPAIGN_REGISTRY.md
+├── BR-003_CAMPAIGN_OVERVIEW.md
+├── BR-009_COLLECTION_OVERVIEW.md
+├── BR-013_SHOWROOM_COMPOSER.md
+├── BR-014_BUYER_PREVIEW.md
+├── SH-006_COLLECTION_SHOWROOM.md
+├── SH-008_SELECTION.md
+└── SH-012_ORDER_BUILDER.md
+```
+
+These screens form the first implementation chain:
+
+```text
+Campaign Registry
+→ Campaign Overview
+→ Collection Overview
+→ Showroom Composer
+→ Buyer Preview
+→ Shop Collection Showroom
+→ Selection
+→ Order Builder
+```
+
 ## Brand screens
 
 | ID | Экран | Шаблон | Primary action | Приоритет | Статус |
 |---|---|---|---|---|---|
 | BR-001 | Brand Dashboard | W | Создать кампанию | P0 | SPEC |
-| BR-002 | Campaign Registry | W | Создать кампанию | P0 | SPEC |
-| BR-003 | Campaign Overview | E | Продолжить подготовку | P0 | SPEC |
+| BR-002 | Campaign Registry | W | Создать кампанию | P0 | DESIGNED |
+| BR-003 | Campaign Overview | E | Продолжить подготовку | P0 | DESIGNED |
 | BR-004 | Campaign Buyers | E | Пригласить покупателей | P0 | SPEC |
 | BR-005 | Campaign Appointments | E | Назначить встречу | P0 | SPEC |
 | BR-006 | Campaign Calendar | E | Создать событие | P0 | SPEC |
 | BR-007 | Campaign Analytics | E | Экспортировать отчёт | P1 | SPEC |
 | BR-008 | Collection Registry | W | Создать коллекцию | P0 | SPEC |
-| BR-009 | Collection Overview | E | Добавить товары | P0 | SPEC |
+| BR-009 | Collection Overview | E | Добавить товары | P0 | DESIGNED |
 | BR-010 | Collection Product Table | E | Добавить товары | P0 | SPEC |
 | BR-011 | Collection Looks | E | Создать look | P1 | SPEC |
 | BR-012 | Collection Chapters/Drops | E | Создать раздел | P1 | SPEC |
-| BR-013 | Collection Presentation Editor | B | Сохранить презентацию | P0 | SPEC |
-| BR-014 | Buyer Preview | F | Вернуться к редактору | P0 | SPEC |
+| BR-013 | Collection Presentation Editor | B | Сохранить презентацию | P0 | DESIGNED |
+| BR-014 | Buyer Preview | F | Вернуться к редактору | P0 | DESIGNED |
 | BR-015 | Collection Publish Review | E | Опубликовать | P0 | SPEC |
 | BR-016 | Collection Release History | E | Создать новую версию | P1 | SPEC |
 | BR-017 | Product Registry | W | Добавить товар | P0 | SPEC |
@@ -87,13 +117,13 @@ Entity header + контекстные вкладки + один primary action 
 | SH-003 | Brand Detail | E | Запросить доступ | P1 | SPEC |
 | SH-004 | Available Campaigns | W | Открыть кампанию | P0 | SPEC |
 | SH-005 | Campaign Detail | E | Открыть коллекцию | P0 | SPEC |
-| SH-006 | Collection Showroom | F | Открыть Buying Workspace | P0 | SPEC |
+| SH-006 | Collection Showroom | F | Открыть Buying Workspace | P0 | DESIGNED |
 | SH-007 | Product Quick View | E | Добавить в selection | P0 | SPEC |
-| SH-008 | Favorites / Selection | W | Создать заказ | P0 | SPEC |
+| SH-008 | Favorites / Selection | W | Создать заказ | P0 | DESIGNED |
 | SH-009 | Compare Products | B | Добавить выбранное | P1 | SPEC |
 | SH-010 | Buying Workspace | B | Перейти к Order Builder | P0 | SPEC |
 | SH-011 | Budget Planner | B | Применить бюджет | P1 | SPEC |
-| SH-012 | Order Builder | B | Проверить заказ | P0 | SPEC |
+| SH-012 | Order Builder | B | Проверить заказ | P0 | DESIGNED |
 | SH-013 | Order Validation | E | Отправить заказ | P0 | SPEC |
 | SH-014 | Shop Order Registry | W | Открыть заказ | P0 | SPEC |
 | SH-015 | Shop Order Detail | E | Принять revision | P0 | SPEC |
