@@ -2,107 +2,145 @@
 
 Last structured update: 2026-07-15
 
-## Current state
+## 1. Current state
 
 | Area | Status | Notes |
 |---|---|---|
-| Product scope | DEFINED | Brand + Shop; showroom, buying, order writing, DealSpace |
-| Product canon | DRAFT COMPLETE | Requires owner review and freeze |
-| Information architecture | DRAFT COMPLETE | Requires route and navigation sign-off |
-| Functional map | DRAFT COMPLETE | P0/P1/P2 priorities defined |
-| Domain model | DRAFT COMPLETE | Requires schema/ID/money decisions |
+| Product scope | DEFINED | Brand + Shop; Campaign, Showroom, Buying, Orders, DealSpace, Calendar |
+| Product canon | DRAFT COMPLETE | Requires owner freeze |
+| Information architecture | DRAFT COMPLETE | Navigation/routes require owner sign-off |
+| Functional map | DRAFT COMPLETE | P0/P1/P2 catalogue exists |
+| Master Capability Map | DRAFT COMPLETE | Capability IDs, owners, roles, entities, permissions, dependencies and references defined |
+| Domain model | DRAFT COMPLETE | Requires schema/ID/Money/runtime ADR decisions |
+| Entity/State map | DRAFT COMPLETE | Ownership, cardinality, lifecycle and lineage defined |
+| Role & Permission Matrix | DRAFT COMPLETE | Presets, scopes, state and field-level restrictions defined |
+| Workflow Catalog | DRAFT COMPLETE | WF-001–WF-022 defined |
+| Screen/Function/API Matrix | DRAFT COMPLETE | Key screens mapped to queries, commands, events and components |
+| Event/Notification Catalog | DRAFT COMPLETE | Domain/Audit/Analytics/Realtime separation and taxonomy defined |
+| Integration Blueprint | DRAFT COMPLETE | Source-of-truth, adapters, sync, conflicts and observability defined |
 | UX constitution | DRAFT COMPLETE | Core interaction rules defined |
-| Responsive visual system | DRAFT COMPLETE | Detailed iPhone, iPad, MacBook and fullscreen specification written |
-| Machine design tokens | DRAFT COMPLETE | `design-system/tokens.json` aligned with visual system |
-| Responsive contract | DRAFT COMPLETE | `design-system/responsive-contract.json` aligned with visual system |
-| Component library | DRAFT COMPLETE | Implementation not started |
-| API bible | DRAFT COMPLETE | Runtime/framework choice pending |
+| Responsive visual system | DRAFT COMPLETE | iPhone, iPad, MacBook and fullscreen rules written |
+| Machine design tokens | DRAFT COMPLETE | `design-system/tokens.json` aligned |
+| Responsive contract | DRAFT COMPLETE | `design-system/responsive-contract.json` aligned |
+| Component library | DRAFT COMPLETE | Runtime implementation not started |
+| API Bible | DRAFT COMPLETE | Requires consistency pass and runtime decision |
 | Security/data | DRAFT COMPLETE | Legal/retention decisions pending |
-| Competitive matrix | IN PROGRESS | Framework ready; WFX Virtual Showroom verified from official source |
-| WFX adaptation | VERIFIED DRAFT | Buyer showroom functions mapped; PLM/ERP/MES excluded from wholesale core |
-| Screen Bible index | UPDATED | First slice screens marked DESIGNED |
-| First vertical-slice specs | DESIGNED | Eight detailed screen files completed |
-| Implementation roadmap | DRAFT COMPLETE | Cursor tasks must be generated from designed screens |
-| Code | NOT STARTED | New V2 code must remain isolated |
+| Competitor reference cards | IN PROGRESS / VERIFIED BY SOURCE | JOOR, NuORDER, WFX, Brandboom, RepSpark, Faire; Le New Black detailed verification pending |
+| WFX adaptation | VERIFIED DRAFT | Showroom capabilities mapped; PLM/ERP/MES excluded from wholesale core |
+| First vertical-slice core screens | DESIGNED | 8 detailed screen files |
+| First vertical-slice companion screens | DESIGNED | 6 detailed dependency files |
+| Machine traceability | CREATED | 14 first-slice screens mapped in JSON |
+| Implementation roadmap | DRAFT COMPLETE | Must be normalized to capability/workflow task model |
+| Cursor task queue | INDEX ONLY | Atomic files not generated yet |
+| Runtime code | NOT STARTED | V2 remains documentation/design stage |
 
-## Product freeze gates
+## 2. Product freeze gates
 
-Implementation must not start before the relevant gates are accepted.
+Implementation starts only after relevant gates are accepted.
 
 ### Gate G0 — Scope freeze
 
-- [ ] Confirm only Brand and Shop are user roles.
-- [ ] Confirm production/PLM/QC are outside MVP.
+- [ ] Confirm only Brand and Shop are product sides.
+- [ ] Confirm Production/PLM/BOM/QC/MES/accounting are outside wholesale MVP.
 - [ ] Confirm core flow: Campaign → Collection → Showroom → Selection → Order → Confirmation.
-- [ ] Confirm Calendar and DealSpace are core, not optional add-ons.
-- [ ] Confirm WFX is a functional Virtual Showroom reference, not a reason to add PLM/ERP/MES into MVP.
+- [ ] Confirm Calendar, Appointments and DealSpace are core.
+- [ ] Confirm competitor features enter only through ADOPT/IMPROVE/LATER/EXCLUDE decision.
+- [ ] Confirm WFX is a Virtual Showroom reference, not a reason to add its full enterprise suite.
 
-### Gate G1 — Navigation freeze
+### Gate G1 — Navigation and route freeze
 
 - [ ] Approve Brand navigation.
 - [ ] Approve Shop navigation.
-- [ ] Approve Registry / Entity / Builder / Showroom / Split Communication templates.
+- [ ] Approve Registry / Entity / Builder / Showroom / Split / Focus templates.
+- [ ] Approve first-slice routes and transitions.
+- [ ] Approve contextual DealSpace instead of detached generic messenger.
 - [ ] Approve iPhone, iPad and MacBook support model.
-- [ ] Approve first vertical-slice routes and transitions.
 
-### Gate G2 — Domain freeze
+### Gate G2 — Domain and state freeze
 
 - [ ] Confirm entity IDs and naming.
-- [ ] Confirm order/version/revision lifecycle.
-- [ ] Confirm collection release immutability.
-- [ ] Confirm price and currency snapshot rules.
+- [ ] Confirm aggregate/read-model classification.
+- [ ] Confirm Campaign state machine.
+- [ ] Confirm CollectionVersion/ShowroomRelease immutability.
+- [ ] Confirm OrderVersion/revision/confirmation state machine.
+- [ ] Confirm Money/currency snapshot rules.
 - [ ] Confirm tenant and audience access model.
-- [ ] Confirm Buyer Preview and Shop Showroom use the same access/pricing resolver.
-- [ ] Confirm Selection → Order mapping preserves source references.
+- [ ] Confirm Buyer Preview and Shop Showroom use one resolver.
+- [ ] Confirm Showroom → Selection → Order source lineage.
+- [ ] Confirm archive/delete rules.
 
-### Gate G3 — UX foundation freeze
+### Gate G3 — Roles and security freeze
 
-- [ ] Approve warm neutral palette and restrained dark green accent.
-- [ ] Approve Inter as operational font.
-- [ ] Approve optional Source Serif 4 only for buyer-facing editorial hero.
-- [ ] Approve typography scales for MacBook, iPad and iPhone.
-- [ ] Approve AppShell dimensions.
-- [ ] Approve button/input/table dimensions.
-- [ ] Approve card radii and elevation limits.
-- [ ] Approve mandatory 390/768/1024/1440/1728 viewport review.
-- [ ] Approve mobile Order Builder as guided flow, not compressed matrix.
-- [ ] Approve `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` as canonical visual narrative.
-- [ ] Approve both machine-readable design-system contracts.
+- [ ] Approve Brand role presets.
+- [ ] Approve Shop role presets.
+- [ ] Approve assignment scopes: all/team/assigned/participant/relationship/self.
+- [ ] Approve field-level internal/shared visibility.
+- [ ] Approve server authorization algorithm.
+- [ ] Approve audit requirements.
+- [ ] Approve invitation/access grant security.
+- [ ] Approve private Shop notes never visible to Brand.
 
-### Gate G4 — Canonical component freeze
+### Gate G4 — UX and visual foundation freeze
 
-- [ ] Approve AppShell.
-- [ ] Approve WorkspaceHeader and EntityHeader.
-- [ ] Approve DataTable and mobile list transformation.
-- [ ] Approve ProductCard and product media ratios.
+- [ ] Approve warm neutral palette and dark green accent.
+- [ ] Approve Inter and optional Source Serif 4 hero use.
+- [ ] Approve typography and component dimensions.
+- [ ] Approve AppShell and responsive navigation.
+- [ ] Approve DataTable/mobile-list transformation.
+- [ ] Approve ProductCard/media ratios.
 - [ ] Approve BuilderShell and Order Matrix.
-- [ ] Approve Showroom shell and selection tray.
+- [ ] Approve Showroom shell and SelectionTray.
 - [ ] Approve DealSpace split layout.
 - [ ] Approve Calendar structure.
-- [ ] Approve Empty/Loading/No-results/Error/Conflict states.
+- [ ] Approve all universal states.
+- [ ] Approve mandatory 390/768/1024/1440/1728 review.
 
-### Gate G5 — First Screen Bible slice
+### Gate G5 — Implementation Blueprint freeze
 
-Completed specifications:
+- [ ] Review Master Capability Map.
+- [ ] Review Role & Permission Matrix.
+- [ ] Review Entity/State Map.
+- [ ] Review Workflow Catalog.
+- [ ] Review Screen/Function/API Matrix.
+- [ ] Review Event/Notification Catalog.
+- [ ] Review Integration Blueprint.
+- [ ] Review Competitor Reference Cards.
+- [ ] Approve Cursor Implementation Contract.
+- [ ] Confirm every P0 capability has owner, permission, entity, workflow and priority.
 
-- [x] BR-002 Campaign Registry;
-- [x] BR-003 Campaign Overview;
-- [x] BR-009 Collection Overview;
-- [x] BR-013 Showroom Composer;
-- [x] BR-014 Buyer Preview;
-- [x] SH-006 Collection Showroom;
-- [x] SH-008 Selection;
+### Gate G6 — First Screen Bible slice
+
+Core specifications completed:
+
+- [x] BR-002 Campaign Registry.
+- [x] BR-003 Campaign Overview.
+- [x] BR-009 Collection Overview.
+- [x] BR-013 Showroom Composer.
+- [x] BR-014 Buyer Preview.
+- [x] SH-006 Collection Showroom.
+- [x] SH-008 Selection.
 - [x] SH-012 Order Builder.
 
-Before implementation tasks are marked ready:
+Companion specifications completed:
 
-- [ ] owner review of all eight specs;
-- [ ] route/data contract consistency check against Domain Model and API Bible;
+- [x] BR-002A Campaign Create/Edit.
+- [x] BR-004 Campaign Buyers & Access Grants.
+- [x] BR-010 Collection Product Management & Import.
+- [x] BR-015 Publish Review.
+- [x] SY-003 Invitation Acceptance.
+- [x] SH-013 Order Validation & Submit.
+
+Before screen tasks become `READY`:
+
+- [ ] owner review of all 14 specs;
+- [ ] traceability consistency check;
+- [ ] route/data contract consistency against Domain/API Bible;
 - [ ] component dependency map;
-- [ ] task decomposition and estimates;
-- [ ] wireframe/screenshot reference for each canonical layout at 1440 and 390 widths.
+- [ ] runtime/persistence ADRs;
+- [ ] wireframe/reference screenshots at 1440 and 390;
+- [ ] atomic task files and estimates.
 
-## First vertical-slice package
+## 3. First vertical-slice package
 
 Location:
 
@@ -110,142 +148,180 @@ Location:
 docs/screens/vertical-slice-01/
 ```
 
-Flow:
+Full chain:
 
 ```text
 Campaign Registry
+→ Campaign Create/Edit
 → Campaign Overview
+→ Collection Product Management/Import
 → Collection Overview
 → Showroom Composer
+→ Campaign Buyers & Access
 → Buyer Preview
+→ Publish Review
+→ Invitation Acceptance
 → Shop Collection Showroom
 → Selection
 → Order Builder
+→ Order Validation & Submit
 ```
 
-Each screen specification includes:
-
-- user goal and route;
-- data/view model contract;
-- layout and controls;
-- state/permission rules;
-- keyboard and touch paths;
-- responsive adaptation;
-- analytics events;
-- acceptance criteria;
-- non-goals.
-
-## WFX decisions
-
-Verified source document:
+Machine mapping:
 
 ```text
-docs/15_WFX_REFERENCE_AND_ADAPTATION.md
+docs/implementation-blueprint/traceability-first-slice.json
 ```
 
-Included in product direction:
+Every screen specification includes:
 
-- private buyer showrooms;
-- buyer-specific assortment, content, pricing and promotions;
-- secure invitation links;
-- high-resolution media and HD video;
-- shoppable looks/lookbooks and digital linesheets;
-- contextual buyer feedback;
-- showroom analytics;
-- PLM/ERP integration ports.
+- Capability and Workflow IDs;
+- role/route/user goal;
+- view model and commands;
+- entities/states;
+- permissions/visibility;
+- layout/components;
+- responsive/keyboard/touch;
+- events/analytics/audit;
+- states/errors/conflicts;
+- acceptance criteria/non-goals.
 
-Excluded from wholesale MVP:
+## 4. Implementation Blueprint
 
-- PLM execution;
-- BOM/tech packs;
-- sourcing and costing;
-- ERP/accounting;
-- MES/factory management;
-- traceability execution.
-
-## Canonical visual decisions currently proposed
+Location:
 
 ```text
-Theme:                    light in MVP
-Canvas:                   warm neutral #F6F5F2
-Operational surface:     white #FFFFFF
-Text:                     restrained graphite #171716
-Accent:                   restrained dark green #263F3A
-Operational font:         Inter
-Editorial font:           Source Serif 4, hero only
-Minimum touch:            44 × 44 px
-Operational card radius:  6–12 px
-Editorial card radius:    16 px maximum
-Accessibility:            WCAG 2.2 AA
+docs/implementation-blueprint/
 ```
 
-Exact values are owned by `design-system/tokens.json`, not this status summary.
+Canonical chain:
 
-## Recommended next work
+```text
+Capability
+→ Role / Permission
+→ Entity / State
+→ Workflow
+→ Screen
+→ Query / Command / API
+→ Event / Notification
+→ Integration effect
+→ Cursor Task
+```
 
-1. Review and freeze G0–G3 decisions.
-2. Run a consistency pass across the eight screen data contracts, Domain Model and API Bible.
-3. Generate atomic Cursor tasks for the first slice from `docs/12_CURSOR_TASK_TEMPLATE.md`.
-4. Create component dependency order:
-   - design tokens;
-   - primitives;
-   - AppShell;
-   - Registry/Entity/Builder/Showroom layouts;
-   - DataTable/ProductCard/SelectionTray/MatrixEditor;
-   - screen routes.
-5. Write companion implementation specs that the slice depends on but which were not in the requested screen chain:
-   - campaign create/edit flow;
-   - collection product management/import;
-   - publish review/access grant;
-   - authentication/invitation acceptance;
-   - Order Validation.
-6. Decide runtime/framework, persistence and test infrastructure through ADRs.
-7. Only then start code.
+A function without Capability ID cannot be implemented.
 
-## First implementation milestone
+## 5. Competitor direction
 
-**Milestone M1 — Buyer-ready collection**
+### Included direction
 
-A Brand user can:
+- JOOR: network, linesheets, ordering, integration architecture.
+- NuORDER: account-specific selling, visual assortment and team buying.
+- WFX: personalised secure showroom, rich media, feedback and analytics.
+- Brandboom: fast linesheet creation, seller activity/action signals.
+- RepSpark: persistent ordering, custom assortment, size-run and retailer access.
+- Le New Black: restrained fashion-native presentation direction.
+- Faire: discovery and contextual retailer-brand communication; transaction operator functions excluded from P0.
 
-- create/open campaign;
-- create/open collection;
-- add valid commercial products through companion flows;
-- compose presentation;
-- preview exact buyer experience;
-- publish through companion Publish Review.
+### Explicit exclusions from initial core
 
-A Shop user can:
+- marketplace credit underwriting;
+- platform-owned fulfilment/returns/claims;
+- commissions and royalty management;
+- licensing workflows;
+- production PLM/MES;
+- accounting ledger;
+- deep 3D/VR before core order flow.
 
-- enter through valid access;
-- open the showroom;
-- browse story/grid/looks/linesheet;
-- create and review a Selection.
+## 6. Canonical technical/product decisions proposed
 
-## Second implementation milestone
+```text
+Sides:                     Brand + Shop
+Theme:                     light MVP
+Canvas:                    #F6F5F2
+Surface:                   #FFFFFF
+Text:                      #171716
+Accent:                    #263F3A
+Operational font:          Inter
+Editorial font:            Source Serif 4 hero only
+Minimum touch:             44 × 44 px
+Accessibility:             WCAG 2.2 AA
+Published release:         immutable
+Submitted order version:   immutable
+Confirmed order version:   immutable
+Buyer pricing/access:      server resolver
+UI data access:            application/API only
+External systems:          ports/adapters only
+```
 
-**Milestone M2 — Best-in-class Order Writing**
+Exact visual values are owned by design-system contracts.
 
-A Shop user can:
+## 7. Immediate next work
 
-- convert Selection to Order draft;
-- enter size/colour quantities;
-- use paste and size curves;
-- split by delivery;
-- see real-time totals and budget;
-- resolve MOQ/pack conflicts;
-- reach Order Validation.
+1. Run an automated/manual consistency pass across:
+   - Capability Map;
+   - traceability JSON;
+   - Screen Bible;
+   - Domain Model;
+   - API Bible;
+   - Security and Event Catalog.
+2. Create ADRs:
+   - runtime/framework;
+   - database/persistence;
+   - authentication/session;
+   - event/outbox/realtime;
+   - frontend data/query state;
+   - test infrastructure;
+   - file/media storage.
+3. Build component dependency graph.
+4. Create first atomic Cursor task files with full metadata.
+5. Create wireframe reference package for Registry, Entity, Builder, Showroom and Review layouts.
+6. Only then start code with Foundation and Design System tasks.
 
-## Blockers that must not be hidden
+## 8. Recommended task execution sequence
 
-- No runtime/framework ADR has been committed for V2.
-- No database schema or migration exists for V2.
-- JOOR/NuORDER/other competitor matrix is not fully verified yet.
-- The eight requested screen specs are complete, but companion create/import/publish/access/validation screens remain to be specified.
-- No approved wireframe/screenshot reference set is stored yet.
-- Design tokens are specified but not implemented in runtime code.
-- No Cursor implementation tasks have been generated from the new Screen Bible yet.
+```text
+Foundation / repository boundary
+→ Runtime and ADR decisions
+→ Design tokens
+→ UI primitives
+→ AppShell and layouts
+→ Authentication / organisation context
+→ Permissions foundation
+→ Campaign domain/create/registry/overview
+→ Product/import/collection domain
+→ Showroom composer/preview/publish
+→ Invitation/access resolver
+→ Shop showroom/selection
+→ Order domain/builder/validation/submit
+→ Brand order review/revision/confirm
+→ DealSpace
+→ Calendar/Appointments
+→ Analytics/Integrations
+```
 
-## Rule
+## 9. Blockers that must remain visible
 
-Status can move to `IMPLEMENTING` only when the relevant gate, screen specification, companion dependency and Cursor task are complete. Speed without frozen requirements recreates the fragmentation this V2 project is intended to eliminate.
+- Runtime/framework ADR not approved.
+- Database schema/migration not created.
+- Authentication provider/session model not approved.
+- Event/outbox/realtime architecture not approved.
+- First-slice contracts have not completed owner consistency review.
+- Atomic Cursor task files do not yet exist.
+- Wireframe/screenshot reference set is not stored.
+- Design tokens/components are specified but not implemented.
+- Le New Black detailed current capability verification remains incomplete.
+- Legal/retention/payment decisions remain open for later modules.
+
+## 10. Rule
+
+Status moves to `IMPLEMENTING` only when:
+
+```text
+relevant gate accepted
++ capability/workflow/screen traceability complete
++ screen status READY
++ ADR dependencies approved
++ atomic Cursor task READY
+```
+
+Speed without these conditions recreates the fragmentation V2 is intended to eliminate.
