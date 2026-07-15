@@ -2,126 +2,148 @@
 
 ## 1. Identity
 
-- **Role:** Brand
-- **Route:** `/wholesale-v2/brand/collections/:collectionId/publish`
-- **Template:** Entity Review / Focused Confirmation
-- **Priority:** P0
-- **Capabilities:** CAP-COL-011–015,018; CAP-SHO-008–011
-- **Primary action:** `Publish collection` or `Schedule publish`
+- **Role:** Brand.
+- **Route:** `/wholesale-v2/brand/collections/:collectionId/publish`.
+- **Template:** Entity Review / Focused Confirmation.
+- **Priority:** P0.
+- **Capabilities:** CAP-COL-011–015, CAP-COL-018, CAP-SHO-008–011.
+- **Workflow:** WF-008.
+- **Primary action:** `Publish collection` or `Schedule publish`.
 
 ## 2. User goal
 
-Confirm that the exact buyer-facing release is complete, commercially valid and assigned to the intended audience before creating an immutable published version.
+Confirm that the exact buyer-facing release is complete, commercially valid, correctly personalised and assigned to the intended Shops before creating an immutable published version.
 
 ## 3. Preconditions
 
 - draft CollectionVersion exists;
-- user has `collection.publish`;
-- readiness calculated for current version;
-- at least one valid buyer context or explicit publish-without-invite policy;
 - Showroom draft exists;
-- no unresolved blocking issue.
+- user has `collection.publish`;
+- readiness belongs to current version;
+- at least one valid buyer context or approved publish-without-invite policy;
+- no unresolved blocker.
 
-## 4. Page structure
+## 4. Entry and exit
+
+Entry:
+
+- Collection Overview primary CTA;
+- Buyer Preview `Continue to Publish Review`;
+- Showroom Composer readiness action.
+
+Exit:
+
+- deep link to fix blocker;
+- Buyer Preview;
+- successful release page/Collection Overview;
+- Campaign Buyers to fix audience;
+- return to Composer.
+
+## 5. Layout
 
 Desktop:
 
 ```text
-Back to Collection
-Publish Review title + draft version
+Back + title + draft version
 Readiness summary
 Release content summary
-Audience and access impact
-Commercial context checks
-Buyer preview samples
-Change/version summary
-Notification options
-Sticky Publish action panel
+Commercial coverage
+Audience/access impact
+Buyer preview contexts
+Version/change summary
+Timing and notification options
+Right sticky action rail 320–380 px
 ```
 
-Main column max 960 px; right action/summary rail 320–380 px.
+Main content max 960 px.
 
 Mobile:
 
 - sequential review sections;
-- blocking issue count persistent;
-- sticky primary action;
-- buyer preview opens full screen;
-- large audience lists open dedicated sheet.
+- persistent blocker count;
+- preview opens full screen;
+- audience details open sheet;
+- sticky publish action only when eligible.
 
-## 5. Review sections
+## 6. Review sections
 
-### 5.1 Readiness
+### 6.1 Readiness
 
 - blockers;
 - warnings;
-- last calculated time;
-- draft version/fingerprint;
-- deep links to fix.
+- last calculation;
+- version/fingerprint;
+- issue groups;
+- fix deep links.
 
-### 5.2 Release content
+### 6.2 Release content
 
-- collection identity/cover;
-- product/variant count;
+- Collection identity/cover;
+- product and variant count;
 - looks/story blocks;
-- available modes;
+- presentation modes;
 - media completeness;
 - languages/markets.
 
-### 5.3 Commercial terms
+### 6.3 Commercial coverage
 
-- campaign/default context;
-- price list coverage by Shop;
+- Campaign/Collection defaults;
+- price coverage for each distinct buyer context;
 - currency coverage;
 - order deadlines;
 - delivery windows;
-- MOQ/pack/order minimum;
+- MOQ, packs and order minimum;
 - payment/tax display.
 
-### 5.4 Audience
+### 6.4 Audience and access
 
 - Shops included;
-- invitation/access statuses;
-- explicit collection grants;
+- invitation/grant states;
+- visible Collections/products;
 - product visibility rules;
-- invalid/empty buyer assortments;
-- expired or conflicting grants.
+- invalid or empty buyer assortments;
+- expired/revoked grants;
+- access timing.
 
-### 5.5 Buyer Preview verification
+### 6.5 Buyer Preview contexts
 
-Show sample contexts:
+Show representative contexts for each unique combination:
 
-- default/representative Shop;
-- each distinct price-list/currency/visibility combination;
-- any context with warning.
+```text
+price list
+currency
+market/language
+visibility rule
+commercial override
+```
 
-User can open exact BR-014 Preview.
+Any warning context is listed separately. Preview uses BR-014 and the production resolver.
 
-### 5.6 Version/change summary
+### 6.6 Version/change summary
 
-- first release vs update;
-- previous live release;
-- changed content/terms/assortment;
-- material change classification;
-- release note required for updates;
-- previous release supersede behavior.
+- first release or update;
+- current live release;
+- content/price/terms/assortment differences;
+- material-change classification;
+- release note;
+- supersede behavior.
 
-### 5.7 Publish timing
+### 6.7 Timing
 
 - publish now;
-- schedule date/time/timezone P1;
+- scheduled date/time/timezone P1;
 - access start/end;
-- optional campaign status activation.
+- optional Campaign activation transition.
 
-### 5.8 Notifications
+### 6.8 Notifications
 
-- notify all affected Shops;
+- all affected Shops;
 - only new audience;
 - only material-change audience;
 - no notification with explicit reason/permission;
-- invitation template/reminder policy.
+- invitation/reminder template.
 
-## 6. Data contract
+## 7. Data contract
 
 ```ts
 type PublishReviewVM = {
@@ -139,24 +161,35 @@ type PublishReviewVM = {
 };
 ```
 
-## 7. Commands
+## 8. Queries and commands
+
+Queries:
+
+```text
+GetPublishReview
+GetCollectionReadiness
+GetAudienceImpact
+GetReleaseChangeSummary
+ResolveBuyerPreviewContext
+```
+
+Commands:
 
 ```text
 RecalculateCollectionReadiness
 PublishCollectionRelease
-ScheduleCollectionRelease
+ScheduleCollectionRelease P1
 CloseShowroomRelease
 NotifyReleaseAudience
 ```
 
-Publish command:
+Publish payload:
 
 ```ts
 type PublishCollectionCommand = {
   collectionId: string;
   expectedDraftVersion: string;
   readinessFingerprint: string;
-  audienceMode: 'existing_grants' | 'selected_grants';
   accessGrantIds: string[];
   effectiveAt?: string;
   accessEndsAt?: string;
@@ -167,107 +200,156 @@ type PublishCollectionCommand = {
 };
 ```
 
-## 8. Blocking issues
+## 9. Blocking issues
 
-- stale draft/readiness version;
-- no products/visible products;
-- missing active price for any included buyer context;
+- stale draft/readiness;
+- no product or no buyer-visible product;
+- missing buyer price;
 - invalid currency;
-- missing mandatory media/specification;
+- missing mandatory media/spec;
 - invalid size/colour matrix;
 - invalid delivery window;
-- audience grant revoked/expired;
-- no order deadline where required;
+- empty/expired/revoked audience;
+- required deadline/terms absent;
 - inaccessible StoryBlock reference;
-- user lacks publish scope;
-- current live release conflict.
+- publisher lacks scope;
+- conflicting live release/version.
 
-## 9. Warning acknowledgement
-
-Warnings require explicit checkbox/action and are stored by code, not only UI text.
+## 10. Warnings and acknowledgement
 
 Examples:
 
-- some Shops have not been invited;
-- buyer context has limited assortment;
-- video missing captions;
-- release changes terms after Shop opened prior release;
+- some Shops not invited;
+- limited assortment;
+- missing optional media/captions;
+- changed terms after prior open;
 - no notification selected;
-- campaign start/end mismatch.
+- Campaign date mismatch.
 
-## 10. Publish transaction
+Warnings that require acknowledgement are identified by stable code and stored in audit.
 
-Atomic outcome:
+## 11. Publish transaction
 
-1. validate expected draft version;
-2. validate readiness fingerprint;
-3. resolve audience and commercial contexts;
-4. create immutable CollectionVersion snapshot;
-5. create immutable ShowroomRelease snapshot;
-6. update Collection published references/state;
-7. supersede prior release when applicable;
-8. emit outbox/domain/audit events;
-9. enqueue notifications;
-10. return release ID/version.
+Atomic steps:
 
-If any transactional step fails, no partial live release exists.
+1. authorize user/scope;
+2. verify expected draft version;
+3. verify readiness fingerprint;
+4. resolve all audience contexts;
+5. create immutable CollectionVersion snapshot;
+6. create immutable ShowroomRelease snapshot;
+7. update Collection published reference/status;
+8. supersede prior release when applicable;
+9. create domain/audit/outbox events;
+10. enqueue notifications;
+11. return release identity.
 
-## 11. Success state
+No partial live release is allowed.
+
+## 12. Success state
 
 Show:
 
 - release number/status;
-- live/scheduled timestamp;
+- live/scheduled time;
 - audience count;
 - notification status;
-- copy/open buyer showroom link only according permission;
-- next actions: Invite missing Shops, View analytics, Return to Collection.
+- open preview/live link by permission;
+- next actions: Invite missing Shops, View Collection, View Campaign, later Analytics.
 
-## 12. Conflict state
+## 13. Conflict/error states
 
-When draft changes during review:
+### Draft changed
 
-- explain who/when if available;
 - disable publish;
-- actions: Refresh review, Compare changes, Return to editor;
-- preserve entered notification/release-note choices when safe.
+- show changed by/when if known;
+- Refresh, Compare or Return to editor;
+- preserve notification/release-note choices where safe.
 
-## 13. Permissions
+### Audience/pricing became invalid
 
-- read requires `collection.read`;
-- preview requires `collection.preview`;
-- publish/schedule/unpublish requires `collection.publish`;
-- notification requires `campaign.communicate`;
-- audience modification is not performed silently here; deep link to BR-004 unless limited selection is part of publish command.
+- list exact Shop contexts;
+- deep link to Campaign Buyers;
+- no publish.
 
-## 14. Events
+### Notification failure after commit
+
+Release remains published. Notification status is separately queued/failed with retry; commercial transaction is not falsely rolled back.
+
+## 14. Permissions
+
+- read: `collection.read`;
+- preview: `collection.preview`;
+- publish/schedule/close: `collection.publish`;
+- notifications: `campaign.communicate`;
+- audience editing remains in BR-004 unless explicit limited selection is part of publish command.
+
+## 15. Events and audit
 
 ```text
 collection.published
 collection.release_superseded
 showroom.release_created
-showroom.release_scheduled|live
+showroom.release_scheduled
+showroom.release_live
 campaign.audience_notified
 ```
 
-Audit includes version, audience IDs/count, warning acknowledgements, release note, timing and actor.
+Audit includes actor, release/version, audience, warnings acknowledged, release note, timing and notification policy.
 
-## 15. Acceptance criteria
+## 16. Analytics
+
+```text
+publish_review_opened
+publish_blocker_opened
+buyer_preview_context_opened
+collection_publish_attempted
+collection_published
+collection_publish_failed
+```
+
+No confidential price rows in general analytics payload.
+
+## 17. States
+
+- loading;
+- readiness calculating;
+- eligible;
+- blockers;
+- warnings requiring acknowledgement;
+- publishing;
+- success;
+- stale conflict;
+- forbidden;
+- audience resolver failure;
+- notification pending/partial failure.
+
+## 18. Accessibility
+
+- blockers grouped with headings;
+- fix links keyboard-accessible;
+- warnings announced;
+- confirmation not colour-only;
+- focus moves to first unresolved blocker;
+- success announcement uses aria-live.
+
+## 19. Acceptance criteria
 
 - [ ] Publish is impossible with blockers.
-- [ ] Buyer commercial coverage is checked per distinct context.
-- [ ] Preview deep links use same resolver as actual Showroom.
+- [ ] Commercial coverage is evaluated per buyer context.
+- [ ] Buyer Preview uses the same resolver as Shop Showroom.
 - [ ] Stale version/fingerprint blocks publish.
-- [ ] Successful publish creates immutable version and release atomically.
+- [ ] Release and CollectionVersion are created atomically and immutable.
 - [ ] Previous release remains historically readable.
-- [ ] Notifications are deduplicated and based on selected policy.
-- [ ] Warning acknowledgements are persisted in audit.
-- [ ] Success state exposes release identity and next actions.
-- [ ] Mobile review preserves complete decision flow.
+- [ ] Warning acknowledgements are persisted.
+- [ ] Notifications are deduplicated and follow policy.
+- [ ] Success displays release identity and next actions.
+- [ ] Mobile review supports the complete decision.
 
-## 16. Non-goals
+## 20. Non-goals
 
 - editing products/presentation inline;
-- buyer CRM editing beyond controlled access selection;
+- general CRM editing;
 - analytics dashboard;
-- payment/fulfilment configuration.
+- payment/fulfilment;
+- production release management.
