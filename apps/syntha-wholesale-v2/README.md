@@ -45,6 +45,9 @@ apps/syntha-wholesale-v2/
 │   ├── 12_CURSOR_TASK_TEMPLATE.md
 │   ├── 13_PRODUCT_PRINCIPLES.md
 │   └── 14_ADAPTIVE_UI_VISUAL_SYSTEM.md
+├── design-system/
+│   ├── tokens.json
+│   └── responsive-contract.json
 ├── tasks/
 │   └── README.md
 └── src/
@@ -59,14 +62,32 @@ apps/syntha-wholesale-v2/
 4. `02_FUNCTIONAL_MAP.md` — полный каталог функций P0/P1/P2.
 5. `03_DOMAIN_MODEL.md` — сущности, статусы, связи и инварианты.
 6. `04_UX_CONSTITUTION.md` — обязательные правила интерфейса.
-7. `14_ADAPTIVE_UI_VISUAL_SYSTEM.md` — точные visual tokens, layouts и responsive rules для iPhone, iPad, MacBook и fullscreen desktop.
-8. `08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
-9. `09_COMPONENT_LIBRARY.md` — единственные разрешённые UI-паттерны.
-10. `10_API_BIBLE.md` — API-контракты и endpoint map.
-11. `11_SECURITY_AND_DATA.md` — tenant isolation, permissions, audit и data policy.
-12. `05_IMPLEMENTATION_ROADMAP.md` — фазы реализации.
-13. `12_CURSOR_TASK_TEMPLATE.md` — формат атомарной задачи Cursor.
-14. `STATUS.md` — фактический статус и gates перед кодом.
+7. `14_ADAPTIVE_UI_VISUAL_SYSTEM.md` — каноническое визуальное оформление iPhone, iPad, MacBook и fullscreen desktop.
+8. `design-system/tokens.json` — машинно-читаемые цвета, typography, spacing, controls и dimensions.
+9. `design-system/responsive-contract.json` — машинно-читаемые breakpoints, grids и responsive behaviour.
+10. `08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
+11. `09_COMPONENT_LIBRARY.md` — единственные разрешённые UI-паттерны.
+12. `10_API_BIBLE.md` — API-контракты и endpoint map.
+13. `11_SECURITY_AND_DATA.md` — tenant isolation, permissions, audit и data policy.
+14. `05_IMPLEMENTATION_ROADMAP.md` — фазы реализации.
+15. `12_CURSOR_TASK_TEMPLATE.md` — формат атомарной задачи Cursor.
+16. `STATUS.md` — фактический статус и gates перед кодом.
+
+## Канонический визуальный язык
+
+В операционной части платформа использует:
+
+- тёплые нейтральные поверхности;
+- графитовый основной текст;
+- один сдержанный тёмно-зелёный accent;
+- Inter для рабочего интерфейса;
+- optional Source Serif 4 только для buyer-facing editorial hero;
+- минимальные тени;
+- радиусы 6–12 px для рабочего UI;
+- один App Shell и один набор компонентов для Brand и Shop;
+- адаптацию layout, а не уменьшенную desktop-копию на iPhone.
+
+Showroom может быть более editorial, но pricing, selection, order controls, statuses и системная навигация всегда остаются частью единой платформенной системы.
 
 ## Канонические модули
 
@@ -127,10 +148,14 @@ Cursor должен:
 - брать задачи только из `tasks/`;
 - использовать шаблон `docs/12_CURSOR_TASK_TEMPLATE.md`;
 - соблюдать `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` без локальных визуальных исключений;
+- генерировать runtime tokens только из `design-system/tokens.json`;
+- реализовывать responsive behaviour по `design-system/responsive-contract.json`;
 - не импортировать legacy UI напрямую;
 - не открывать legacy routes из V2;
 - не создавать локальные версии canonical components;
 - не скрывать незавершённые write-paths demo-заглушками.
+
+Если Markdown и machine-readable tokens расходятся, реализация останавливается до исправления спецификации. Cursor не выбирает вариант самостоятельно.
 
 ## Текущий статус
 
@@ -140,6 +165,8 @@ Cursor должен:
 - Domain model: draft complete;
 - UX constitution: draft complete;
 - Adaptive UI and visual system: draft complete;
+- Machine-readable visual tokens: draft complete;
+- Responsive implementation contract: draft complete;
 - Component/API/security foundations: draft complete;
 - Competitive matrix: framework ready, facts require verification;
 - Screen Bible: index ready, individual specs pending;
