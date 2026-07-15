@@ -22,6 +22,23 @@
 
 Производство, PLM, BOM, QC и supply-chain не входят в базовое ядро. Они могут быть подключены позднее как расширения из текущей Syntha.
 
+## Функциональные референсы
+
+Платформа использует сильные идеи JOOR, NuORDER, Le New Black, Brandboom, RepSpark, Faire и World Fashion Exchange, но не копирует их экраны.
+
+Из World Fashion Exchange в wholesale-контур включаются:
+
+- private buyer showrooms;
+- buyer-specific assortments, pricing and content;
+- secure invitation access;
+- high-resolution media and HD video;
+- shoppable lookbooks and digital linesheets;
+- buyer feedback and contextual collaboration;
+- showroom engagement analytics;
+- integration ports for PLM/ERP data.
+
+PLM, ERP, MES и factory execution WFX не входят в MVP. Подробное решение находится в `docs/15_WFX_REFERENCE_AND_ADAPTATION.md`.
+
 ## Структура нового проекта
 
 ```text
@@ -44,8 +61,21 @@ apps/syntha-wholesale-v2/
 │   ├── 11_SECURITY_AND_DATA.md
 │   ├── 12_CURSOR_TASK_TEMPLATE.md
 │   ├── 13_PRODUCT_PRINCIPLES.md
-│   └── 14_RESPONSIVE_VISUAL_SYSTEM.md
+│   ├── 14_ADAPTIVE_UI_VISUAL_SYSTEM.md
+│   ├── 15_WFX_REFERENCE_AND_ADAPTATION.md
+│   └── screens/
+│       └── vertical-slice-01/
+│           ├── README.md
+│           ├── BR-002_CAMPAIGN_REGISTRY.md
+│           ├── BR-003_CAMPAIGN_OVERVIEW.md
+│           ├── BR-009_COLLECTION_OVERVIEW.md
+│           ├── BR-013_SHOWROOM_COMPOSER.md
+│           ├── BR-014_BUYER_PREVIEW.md
+│           ├── SH-006_COLLECTION_SHOWROOM.md
+│           ├── SH-008_SELECTION.md
+│           └── SH-012_ORDER_BUILDER.md
 ├── design-system/
+│   ├── README.md
 │   ├── tokens.json
 │   └── responsive-contract.json
 ├── tasks/
@@ -56,22 +86,53 @@ apps/syntha-wholesale-v2/
 
 ## Порядок чтения
 
-1. `00_PRODUCT_CANON.md` — что строим и что сознательно не строим.
-2. `13_PRODUCT_PRINCIPLES.md` — принципы принятия продуктовых решений.
-3. `01_INFORMATION_ARCHITECTURE.md` — разделы, навигация и шаблоны экранов.
-4. `02_FUNCTIONAL_MAP.md` — полный каталог функций P0/P1/P2.
-5. `03_DOMAIN_MODEL.md` — сущности, статусы, связи и инварианты.
-6. `04_UX_CONSTITUTION.md` — обязательные правила интерфейса.
-7. `14_RESPONSIVE_VISUAL_SYSTEM.md` — каноническое визуальное оформление iPhone, iPad, MacBook и fullscreen desktop.
+1. `docs/00_PRODUCT_CANON.md` — что строим и что сознательно не строим.
+2. `docs/13_PRODUCT_PRINCIPLES.md` — принципы принятия продуктовых решений.
+3. `docs/01_INFORMATION_ARCHITECTURE.md` — разделы, навигация и шаблоны экранов.
+4. `docs/02_FUNCTIONAL_MAP.md` — полный каталог функций P0/P1/P2.
+5. `docs/03_DOMAIN_MODEL.md` — сущности, статусы, связи и инварианты.
+6. `docs/04_UX_CONSTITUTION.md` — обязательные правила интерфейса.
+7. `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` — визуальное оформление iPhone, iPad, MacBook и fullscreen desktop.
 8. `design-system/tokens.json` — машинно-читаемые цвета, typography, spacing, controls и dimensions.
-9. `design-system/responsive-contract.json` — машинно-читаемые breakpoints, grids и responsive behaviour.
-10. `08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
-11. `09_COMPONENT_LIBRARY.md` — единственные разрешённые UI-паттерны.
-12. `10_API_BIBLE.md` — API-контракты и endpoint map.
-13. `11_SECURITY_AND_DATA.md` — tenant isolation, permissions, audit и data policy.
-14. `05_IMPLEMENTATION_ROADMAP.md` — фазы реализации.
-15. `12_CURSOR_TASK_TEMPLATE.md` — формат атомарной задачи Cursor.
-16. `STATUS.md` — фактический статус и gates перед кодом.
+9. `design-system/responsive-contract.json` — breakpoints, grids и responsive behaviour.
+10. `docs/15_WFX_REFERENCE_AND_ADAPTATION.md` — какие функции WFX берём и какие исключаем.
+11. `docs/08_SCREEN_BIBLE_INDEX.md` — реестр экранов Brand/Shop.
+12. соответствующий файл в `docs/screens/` — обязательная screen-spec.
+13. `docs/09_COMPONENT_LIBRARY.md` — единственные разрешённые UI-паттерны.
+14. `docs/10_API_BIBLE.md` — API-контракты и endpoint map.
+15. `docs/11_SECURITY_AND_DATA.md` — tenant isolation, permissions, audit и data policy.
+16. `docs/05_IMPLEMENTATION_ROADMAP.md` — фазы реализации.
+17. `docs/12_CURSOR_TASK_TEMPLATE.md` — формат атомарной задачи Cursor.
+18. `STATUS.md` — фактический статус и gates перед кодом.
+
+## Первый детально описанный вертикальный срез
+
+```text
+Campaign Registry
+→ Campaign Overview
+→ Collection Overview
+→ Showroom Composer
+→ Buyer Preview
+→ Shop Collection Showroom
+→ Selection
+→ Order Builder
+```
+
+Все восемь экранов имеют отдельные спецификации с:
+
+- user goal;
+- route and entry/exit points;
+- data contract;
+- layout;
+- actions;
+- filters and tables/cards;
+- empty/loading/error/conflict states;
+- permissions;
+- keyboard/touch behaviour;
+- iPhone/iPad/MacBook adaptation;
+- analytics events;
+- acceptance criteria;
+- non-goals.
 
 ## Канонический визуальный язык
 
@@ -79,11 +140,11 @@ apps/syntha-wholesale-v2/
 
 - тёплые нейтральные поверхности;
 - графитовый основной текст;
-- один сдержанный глубокий navy accent;
-- Inter Variable для рабочего интерфейса;
+- один сдержанный тёмно-зелёный accent;
+- Inter для рабочего интерфейса;
 - optional Source Serif 4 только для buyer-facing editorial hero;
 - минимальные тени;
-- радиусы 4–14 px по канонической шкале;
+- радиусы 6–12 px для рабочего UI;
 - один App Shell и один набор компонентов для Brand и Shop;
 - адаптацию layout, а не уменьшенную desktop-копию на iPhone.
 
@@ -147,7 +208,8 @@ Cursor должен:
 - соблюдать `CURSOR_MASTER_RULES.md`;
 - брать задачи только из `tasks/`;
 - использовать шаблон `docs/12_CURSOR_TASK_TEMPLATE.md`;
-- соблюдать `docs/14_RESPONSIVE_VISUAL_SYSTEM.md` без локальных визуальных исключений;
+- прочитать соответствующую screen-spec до изменения UI;
+- соблюдать `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` без локальных визуальных исключений;
 - генерировать runtime tokens только из `design-system/tokens.json`;
 - реализовывать responsive behaviour по `design-system/responsive-contract.json`;
 - не импортировать legacy UI напрямую;
@@ -155,7 +217,7 @@ Cursor должен:
 - не создавать локальные версии canonical components;
 - не скрывать незавершённые write-paths demo-заглушками.
 
-Если Markdown и machine-readable tokens расходятся, реализация останавливается до исправления спецификации. Cursor не выбирает вариант самостоятельно.
+Если документы расходятся, реализация останавливается до исправления спецификации. Cursor не выбирает вариант самостоятельно.
 
 ## Текущий статус
 
@@ -167,9 +229,9 @@ Cursor должен:
 - Responsive UI and visual system: draft complete;
 - Machine-readable visual tokens: draft complete;
 - Responsive implementation contract: draft complete;
+- WFX adaptation map: verified draft complete;
+- First vertical-slice Screen Bible: designed;
 - Component/API/security foundations: draft complete;
-- Competitive matrix: framework ready, facts require verification;
-- Screen Bible: index ready, individual specs pending;
 - Implementation: not started.
 
 Точные gates и следующие шаги находятся в `STATUS.md`.
