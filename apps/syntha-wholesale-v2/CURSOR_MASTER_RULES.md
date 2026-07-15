@@ -31,7 +31,7 @@
 5. `docs/02_FUNCTIONAL_MAP.md`;
 6. `docs/03_DOMAIN_MODEL.md`;
 7. `docs/04_UX_CONSTITUTION.md`;
-8. `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md`;
+8. `docs/14_RESPONSIVE_VISUAL_SYSTEM.md`;
 9. `design-system/tokens.json`;
 10. `design-system/responsive-contract.json`;
 11. `docs/09_COMPONENT_LIBRARY.md`;
@@ -65,14 +65,15 @@
 - light theme в MVP;
 - warm neutral canvas;
 - white operational surfaces;
-- restrained dark green accent;
-- Inter для всего рабочего интерфейса;
+- restrained deep navy accent;
+- Inter Variable для всего рабочего интерфейса;
 - Source Serif 4 допускается только в buyer-facing editorial hero;
-- рабочие карточки: radius 12 px максимум;
-- editorial cards: radius 16 px максимум;
+- рабочие карточки: radius 10 px по умолчанию, максимум 14 px;
+- mobile bottom sheets: radius 16 px только на верхних углах;
 - минимум теней;
 - одна icon family — Lucide;
 - минимальный touch target 44 × 44 px;
+- основной mobile body не меньше 15 px;
 - input font на iPhone минимум 16 px;
 - WCAG 2.2 AA;
 - tabular numerals для цен, quantity, budgets и totals.
@@ -80,6 +81,7 @@
 Запрещено:
 
 - bright SaaS blue/purple как доминирующий стиль;
+- neon accents;
 - glassmorphism;
 - декоративные градиенты в операционном UI;
 - тяжёлые тени;
