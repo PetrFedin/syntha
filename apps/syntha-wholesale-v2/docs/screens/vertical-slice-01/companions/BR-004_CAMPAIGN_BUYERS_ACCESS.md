@@ -2,46 +2,54 @@
 
 ## 1. Identity
 
-- **Role:** Brand
-- **Route:** `/wholesale-v2/brand/campaigns/:campaignId/buyers`
-- **Template:** Entity Registry + Inspector
-- **Priority:** P0
-- **Capabilities:** CAP-CAM-008–012,019; CAP-REL-002,006,008
-- **Primary action:** `Invite Shops`
+- **Role:** Brand.
+- **Route:** `/wholesale-v2/brand/campaigns/:campaignId/buyers`.
+- **Template:** Entity Registry + Inspector.
+- **Priority:** P0.
+- **Capabilities:** CAP-CAM-008–012, CAP-CAM-019, CAP-REL-002, CAP-REL-006, CAP-REL-008.
+- **Workflow:** WF-002.
+- **Primary action:** `Invite Shops`.
 
 ## 2. User goal
 
-Define exactly which Shops can access the campaign, which collections/products they see, which prices/currency/terms apply, who owns the relationship and whether the invitation has been opened or acted upon.
+Define exactly which Shops can access the Campaign, which Collections/products they see, which price list, currency, terms and deadline apply, who owns the relationship and what stage the buyer has reached.
 
-## 3. Core concepts
+## 3. Domain object
 
-The screen manages `CampaignAccessGrant`, not a loose email list.
+The screen manages `CampaignAccessGrant`, not a loose mailing list.
 
-Each row resolves:
+Each grant resolves:
 
 ```text
 Shop identity
 relationship status
-access status
+access/invitation status
 visible collections/products
-price list
-currency
-terms/deadline
-time window
+price list and currency
+commercial terms and deadline
+access timing
 assigned sales manager
 invitation/open/activity/order state
 ```
 
-## 4. Entry points
+## 4. Entry and exit
+
+Entry:
 
 - Campaign Overview `Invite Shops`;
 - Campaign Buyers tab;
 - Buyer Detail `Add to campaign`;
-- duplicated campaign audience setup.
+- duplicated Campaign audience setup.
 
-## 5. Layout
+Exit:
 
-Desktop:
+- Buyer Preview for selected Shop;
+- Shop/Buyer Detail;
+- Campaign Overview;
+- send/review invitation result;
+- related Selection/Order if one exists.
+
+## 5. Desktop layout
 
 ```text
 EntityHeader + Campaign tabs
@@ -49,15 +57,15 @@ Summary strip: total / invited / opened / active / selection / order
 FilterBar
 CampaignBuyer DataTable
 Right AccessGrant Inspector 420–560 px
-Bulk action bar when rows selected
+BulkActionBar when selected
 ```
 
 Mobile/iPad portrait:
 
-- summary compact;
-- table becomes buyer list cards;
+- compact summary;
+- list cards instead of compressed table;
 - filters in sheet;
-- access grant editor full-screen sheet;
+- grant editor full-screen sheet;
 - bulk actions in bottom bar.
 
 ## 6. Table columns
@@ -67,93 +75,97 @@ Required:
 - Shop/logo/name;
 - country/market;
 - relationship status;
-- access/invitation status;
+- invitation/access status;
 - visible collection count;
 - price list/currency;
-- deadline;
+- order deadline;
 - assigned manager;
 - last activity;
 - selection/order state;
 - action menu.
 
-Optional P1:
+P1:
 
-- segment/tags;
+- segments/tags;
 - engagement score;
-- total submitted/confirmed value;
-- next recommended follow-up.
+- submitted/confirmed value;
+- recommended follow-up.
 
-## 7. Filters
+## 7. Filters and saved views
 
-- search Shop/contact;
+- Shop/contact search;
 - relationship status;
 - invitation/access status;
 - opened/not opened;
 - collection access;
-- price list;
-- currency;
+- price list/currency;
 - manager/team;
 - country/market;
 - deadline risk;
 - has selection/draft/submitted order;
-- no recent activity.
+- inactivity window.
+
+URL stores q, status, manager, collection, priceList, currency, activity, sort and view.
 
 ## 8. Invite Shops flow
 
-### Step 1 — Select audience
+### Step 1 — Audience
 
-- existing active relationships;
-- pending relationships;
-- buyer segments P1;
+- active relationships;
+- pending relationship contacts;
+- individual Shops;
+- segments P1;
 - CSV import;
-- create external invitation contact.
+- external invited contact.
 
 ### Step 2 — Access scope
 
-- all currently published campaign collections;
-- selected collections;
-- product visibility rules P0/P1;
-- auto-include future collections yes/no.
+- all current Campaign Collections;
+- selected Collections;
+- product visibility rules;
+- auto-include future Collections yes/no.
 
 ### Step 3 — Commercial context
 
 - price list;
 - currency;
-- order deadline;
+- deadline;
 - delivery/term overrides;
-- assigned sales manager;
+- assigned manager;
 - market/language.
 
-### Step 4 — Timing and message
+### Step 4 — Timing and communication
 
 - send now;
-- schedule;
+- schedule P1;
 - access starts/expires;
-- invitation subject/message template;
+- invitation subject/message;
 - reminder policy.
 
 ### Step 5 — Review
 
-- recipient count;
-- missing contact emails;
-- invalid price contexts;
-- empty assortment;
-- duplicates/existing grants;
-- impact summary.
+Show:
 
-## 9. Access inspector
+- recipient count;
+- missing email/contact;
+- duplicate/existing grants;
+- invalid prices;
+- empty buyer assortment;
+- impact on existing open access/order.
+
+## 9. Access Grant Inspector
 
 Sections:
 
-1. Shop and relationship.
-2. Contact recipients.
-3. Visible collections/products.
-4. Pricing/currency.
-5. Commercial terms/deadline.
+1. Shop and TradingRelationship.
+2. Recipient contacts.
+3. Visible Collections/products.
+4. Price list/currency.
+5. Terms/deadline/access timing.
 6. Assigned manager.
 7. Invitation timeline.
-8. Activity summary.
-9. Access controls: resend, revoke, expire, copy link where allowed.
+8. Activity/Selection/Order summary.
+9. Resend, revoke, expire and Preview actions.
 
 ## 10. Data contract
 
@@ -166,11 +178,12 @@ type CampaignBuyerAccessVM = {
   collections: CollectionAccessOption[];
   priceLists: PriceListOption[];
   managers: AssignableUser[];
-  permission: CampaignBuyerPermissions;
+  permissions: CampaignBuyerPermissions;
 };
 
 type CampaignBuyerRow = {
   accessGrantId: string;
+  version: string;
   shop: ShopSummary;
   relationshipStatus: 'pending' | 'active' | 'suspended' | 'ended';
   accessStatus: 'draft' | 'invited' | 'opened' | 'active' | 'revoked' | 'expired';
@@ -187,88 +200,95 @@ type CampaignBuyerRow = {
 };
 ```
 
-## 11. Commands
+## 11. Queries and commands
+
+Queries:
+
+```text
+ListCampaignBuyerAccess
+GetCampaignBuyerFacets
+GetCampaignAccessGrant
+ResolveBuyerPreviewContext
+```
+
+Commands:
 
 ```text
 CreateCampaignAccessGrant
 UpdateCampaignAccessGrant
 BulkCreateCampaignAccessGrants
 SendCampaignInvitation
-ScheduleCampaignInvitation
+ScheduleCampaignInvitation P1
 ResendCampaignInvitation
 RevokeCampaignAccessGrant
 ExpireCampaignAccessGrant
 AssignCampaignSalesManager
 ```
 
-All bulk commands return per-Shop result.
+Bulk result is per Shop: created, updated, skipped, failed, conflict.
 
 ## 12. Validation
 
 Blocking:
 
-- Shop missing valid relationship/invitation target;
-- no recipient contact for email send;
-- invalid/inactive price list;
-- price list currency mismatch;
-- zero visible collection/products;
-- grant expiry before start;
-- order deadline outside allowed campaign policy;
-- duplicate active grant for same Campaign+Shop;
-- manager not authorised/active.
+- missing relationship/invitation target;
+- recipient without valid email for send;
+- inactive price list;
+- currency mismatch;
+- no visible Collection/product;
+- expiry before start;
+- invalid deadline;
+- duplicate active grant;
+- inactive/unauthorised manager.
 
 Warnings:
 
-- Shop has not ordered in prior seasons;
 - relationship pending;
-- future collections not included;
+- Shop has not ordered previously;
+- future Collections excluded;
 - deadline unusually short;
-- access changes after buyer opened Showroom;
-- price context changed while draft order exists.
+- access changed after open;
+- price/assortment change while Selection or draft Order exists.
 
 ## 13. Material change policy
 
-Material changes:
+Material:
 
 - price list/currency;
 - visible assortment;
 - deadline;
-- commercial terms;
-- access expiry;
+- terms;
+- expiry;
 - revoke/reactivate.
 
-For opened access or existing selection/order:
+For opened access or existing Selection/Order:
 
 1. show impact confirmation;
-2. require reason for price/assortment revoke where configured;
-3. create audit event;
-4. notify affected Shop when necessary;
-5. preserve existing submitted order snapshot.
+2. require reason where configured;
+3. audit change;
+4. notify affected Shop when required;
+5. invalidate access cache/session if revoked;
+6. preserve submitted Order snapshots.
 
-## 14. Invitation states
+## 14. State model
 
 ```text
-draft
-→ invited
-→ opened
-→ active
-→ expired | revoked
+draft → invited → opened → active → expired | revoked
 ```
 
-`opened` means secure invitation was resolved, not necessarily relationship accepted where separate approval is required.
+`opened` means the invitation was securely resolved. `active` means the Shop can use the grant in authenticated context.
 
 ## 15. Permissions
 
 - read: `campaign.read` + buyer scope;
-- create/update grant: `buyer.manage`;
-- assign price: `pricing.assign`;
-- send communications: `campaign.communicate`;
-- assign manager: `buyer.assign` or `campaign.assign`;
-- revoke: explicit `buyer.manage` and campaign scope.
+- grant create/update/revoke: `buyer.manage`;
+- price assignment: `pricing.assign`;
+- send: `campaign.communicate`;
+- manager assignment: `buyer.assign` or `campaign.assign`.
 
-## 16. Events/notifications
+Brand user can only manage Shops within effective assignment scope.
 
-Events:
+## 16. Events and notifications
 
 ```text
 campaign.access_grant_created
@@ -278,36 +298,65 @@ campaign.invitation_sent
 campaign.invitation_opened
 campaign.invitation_accepted
 campaign.invitation_declined
+campaign.commercial_context_changed
 ```
 
-Notifications use dedupe and current audience validation.
+Notifications use event consumers and dedupe keys, not direct component calls.
 
-## 17. Empty/error states
+## 17. States
 
-- no buyers: explain access model + Invite Shops CTA;
-- no results: preserve filters + Clear filters;
-- partial bulk failure: result table with retry;
-- price resolver error: block send and deep link to fix;
-- permission denied;
-- stale grant version conflict;
-- external email provider failure: invitation remains queued/failed, not falsely sent.
+- initial loading;
+- no buyers;
+- no filter results;
+- inspector loading;
+- bulk executing;
+- partial bulk failure;
+- invitation provider queued/failed;
+- price resolver error;
+- forbidden;
+- stale grant conflict;
+- revoked/expired success state.
 
-## 18. Acceptance criteria
+No buyer empty state includes one action: `Invite Shops`.
 
-- [ ] Brand can create buyer-specific access with exact collection and price context.
-- [ ] Duplicate grants are prevented server-side.
-- [ ] Preview and Shop Showroom use same grant ID/resolver.
-- [ ] Bulk invitation reports each recipient result.
-- [ ] Revocation blocks access immediately.
-- [ ] Material changes create audit and required notifications.
-- [ ] Shop A cannot see Shop B pricing/access.
-- [ ] Existing submitted order snapshot is not changed by grant update.
-- [ ] Filters and row state are URL-stable.
-- [ ] Mobile supports full access editing without compressed table.
+## 18. Security and privacy
 
-## 19. Non-goals
+- Shop A never receives Shop B grant/price data;
+- grant IDs checked against Campaign and Brand tenant;
+- revocation removes realtime/read access immediately;
+- invitation link is signed, expiring and revocable;
+- raw token is not stored in analytics;
+- internal buyer strategy notes are not shared;
+- submitted Order snapshot is independent of later grant changes.
 
-- global CRM pipeline;
-- commission calculation;
-- marketing automation beyond campaign invitation/reminders;
-- public marketplace audience.
+## 19. Analytics
+
+```text
+campaign_buyers_opened
+campaign_access_created
+campaign_invitation_sent
+campaign_invitation_resend_requested
+campaign_access_revoked
+buyer_preview_opened
+```
+
+## 20. Acceptance criteria
+
+- [ ] Brand creates exact buyer access with Collection/product/pricing context.
+- [ ] Duplicate active grant is prevented server-side.
+- [ ] Bulk invite returns a result for every row.
+- [ ] Preview and Shop Showroom use the same grant/resolver.
+- [ ] Revocation blocks access and realtime subscriptions immediately.
+- [ ] Material changes create audit and appropriate notification.
+- [ ] Shop A cannot read Shop B context.
+- [ ] Submitted Order values are not rewritten by grant updates.
+- [ ] Filters and inspector state are stable.
+- [ ] Mobile supports complete grant editing.
+
+## 21. Non-goals
+
+- general-purpose CRM pipeline;
+- commission calculations;
+- public marketplace audience;
+- broad marketing automation;
+- production customer management.
