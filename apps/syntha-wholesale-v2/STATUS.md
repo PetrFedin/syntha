@@ -12,9 +12,9 @@ Last structured update: 2026-07-15
 | Functional map | DRAFT COMPLETE | P0/P1/P2 priorities defined |
 | Domain model | DRAFT COMPLETE | Requires schema/ID/money decisions |
 | UX constitution | DRAFT COMPLETE | Core interaction rules defined |
-| Adaptive UI visual bible | DRAFT COMPLETE | iPhone, iPad, MacBook and fullscreen specifications written |
-| Machine design tokens | DRAFT COMPLETE | `design-system/tokens.json` aligned with visual bible |
-| Responsive contract | DRAFT COMPLETE | `design-system/responsive-contract.json` aligned with visual bible |
+| Responsive visual system | DRAFT COMPLETE | Detailed iPhone, iPad, MacBook and fullscreen specification written in `docs/14_RESPONSIVE_VISUAL_SYSTEM.md` |
+| Machine design tokens | DRAFT COMPLETE | `design-system/tokens.json` aligned with visual system |
+| Responsive contract | DRAFT COMPLETE | `design-system/responsive-contract.json` aligned with visual system |
 | Component library | DRAFT COMPLETE | Implementation not started |
 | API bible | DRAFT COMPLETE | Runtime/framework choice pending |
 | Security/data | DRAFT COMPLETE | Legal/retention decisions pending |
@@ -51,8 +51,8 @@ Implementation must not start before these gates are accepted.
 
 ### Gate G3 — UX foundation freeze
 
-- [ ] Approve neutral warm-grey palette and dark-green accent.
-- [ ] Approve Inter as operational font.
+- [ ] Approve warm neutral palette and deep navy accent.
+- [ ] Approve Inter Variable as operational font.
 - [ ] Approve optional Source Serif 4 only for buyer-facing editorial hero.
 - [ ] Approve typography scales for MacBook, iPad and iPhone.
 - [ ] Approve AppShell dimensions.
@@ -60,8 +60,10 @@ Implementation must not start before these gates are accepted.
 - [ ] Approve card radii and elevation limits.
 - [ ] Approve mandatory 390/768/1024/1440/1728 viewport review.
 - [ ] Approve mobile Order Builder as guided flow, not compressed matrix.
+- [ ] Approve `docs/14_RESPONSIVE_VISUAL_SYSTEM.md` as canonical visual narrative.
 - [ ] Approve `design-system/tokens.json` as runtime token source.
 - [ ] Approve `design-system/responsive-contract.json` as responsive source.
+- [ ] Confirm Markdown and both JSON contracts contain no unresolved conflicts.
 
 ### Gate G4 — Canonical component freeze
 
@@ -78,27 +80,29 @@ Implementation must not start before these gates are accepted.
 ## Visual system decisions currently proposed
 
 ```text
-Theme:               light in MVP
-Canvas:              warm neutral
-Operational surface: white
-Text:                restrained graphite
-Accent:              dark muted green
-Operational font:    Inter
-Editorial font:      Source Serif 4, hero only
-Desktop sidebar:     240 px expanded / 72 px collapsed
-Desktop top bar:     56 px
-iPhone top bar:      52 px
-iPhone bottom nav:   56 px + safe area
-Minimum touch:       44 × 44 px
-Operational radius:  6–12 px
-Editorial radius:    up to 16 px
-Accessibility:       WCAG 2.2 AA
+Theme:                    light in MVP
+Canvas:                   warm neutral #F5F5F3
+Page:                     warm off-white #F8F8F7
+Operational surface:     white #FFFFFF
+Text:                     restrained graphite #1D1D1B
+Accent:                   deep navy #1F3A5F
+Operational font:         Inter Variable
+Editorial font:           Source Serif 4, hero only
+Desktop sidebar:          248 px expanded / 72 px collapsed
+Desktop top bar:          48 px
+iPad landscape top bar:   52 px
+iPhone top bar:           52 px
+iPhone bottom nav:        56–64 px + safe area
+Minimum touch:            44 × 44 px
+Operational card radius:  10 px default / 14 px maximum
+Mobile sheet radius:      16 px top corners
+Accessibility:            WCAG 2.2 AA
 ```
 
 ## Recommended next work
 
 1. Review and freeze `00_PRODUCT_CANON.md`.
-2. Review and freeze `14_ADAPTIVE_UI_VISUAL_SYSTEM.md`.
+2. Review and freeze `14_RESPONSIVE_VISUAL_SYSTEM.md`.
 3. Approve `design-system/tokens.json` and `design-system/responsive-contract.json`.
 4. Write individual screen specs for first vertical slice:
    - BR-002 Campaign Registry;
