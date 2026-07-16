@@ -4,7 +4,7 @@
 
 Этот документ — индекс канонического каталога функций Syntha Wholesale V2.
 
-Каждая возможность получает постоянный `Capability ID` и должна быть связана с:
+Каждая возможность получает постоянный `Capability ID` и связывается с:
 
 ```text
 Capability ID
@@ -18,14 +18,4 @@ Capability ID
 → Query / command
 → Domain event
 → Priority / release
-→ Competitor reference
-→ Acceptance evidence
-```
-
-Cursor не создаёт функцию без Capability ID. Новый ID сначала добавляется в этот каталог, затем в Screen Bible, API/event contracts и task manifest.
-
-## 2. Формат ID
-
-```text
-CAP-PLT-NNN  Platform foundation
-CAP-ORG-NNN  Organisations
+→
