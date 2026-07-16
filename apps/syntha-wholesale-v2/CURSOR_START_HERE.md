@@ -6,7 +6,7 @@
 
 Cursor не должен читать весь проект перед каждой задачей.
 
-Используется минимальный context capsule:
+Используется минимальная context capsule:
 
 ```text
 Task file
@@ -17,31 +17,79 @@ Task file
 → changed source files
 ```
 
-## 2. Обязательный порядок
+## 2. Обязательное чтение для любой задачи
 
-1. Открой задачу из `tasks/`.
-2. Проверь `capability_ids`, `workflow_ids`, `screen_ids` и зависимости.
-3. Прочитай только связанные compact docs.
-4. Прочитай `README.md` изменяемого модуля.
-5. Найди существующие public exports и тесты.
-6. Измени минимальный набор файлов.
-7. Запусти локальные проверки задачи.
-8. Обнови task/status/traceability.
+1. `AGENTS.md`.
+2. `CURSOR_MASTER_RULES.md`.
+3. конкретный файл задачи из `tasks/`.
+4. документы, прямо перечисленные в поле `source_documents` задачи.
+5. `README.md` изменяемого модуля.
 
-## 3. Когда читать большие документы
+Не открывай все Product Bible-файлы автоматически.
 
-Большие канонические документы читаются только когда задача меняет:
+## 3. Когда читать глобальные документы
 
-- границы продукта;
-- доменную модель;
-- security/tenant model;
-- визуальную систему;
-- общий API или integration policy.
+- Product scope или новая роль: `docs/00_PRODUCT_CANON.md`.
+- Новая сущность/статус: `docs/03_DOMAIN_MODEL.md`.
+- Новый экран: `docs/08_SCREEN_BIBLE_INDEX.md` и его screen-spec.
+- UI/layout: `docs/14_ADAPTIVE_UI_VISUAL_SYSTEM.md` и design tokens.
+- Permission/security: `docs/11_SECURITY_AND_DATA.md`.
+- API/event/integration: соответствующий Blueprint-файл.
 
-Обычная feature-задача не должна загружать весь Product Bible.
+## 4. Context budget
 
-## 4. Источники контекста по типу задачи
+Обычно в активном контексте должны находиться:
 
-| Задача | Читать |
-|---|---|
-| UI экрана | task + screen spec + design tokens + module
+- одна задача;
+- один screen-spec;
+- один capability-файл;
+- один workflow-файл;
+- один module README;
+- только изменяемые исходники и ближайшие тесты.
+
+Если требуется больше, сначала сузь задачу или создай ADR.
+
+## 5. Правила изменения кода
+
+- Не сканируй весь репозиторий без необходимости.
+- Не импортируй legacy UI.
+- Используй public API модуля, а не внутренние пути.
+- Не создавай второй источник правды.
+- Не добавляй capability без документации и task mapping.
+- Не расширяй scope задачи скрытыми улучшениями.
+
+## 6. Размеры файлов
+
+Целевые пределы:
+
+```text
+Markdown narrative: до 150 строк
+React component: до 200 строк
+TypeScript module: до 250 строк
+Machine-readable JSON: до 200 строк на логический файл
+```
+
+Превышение не является автоматической ошибкой, но требует явного обоснования или разделения по ответственности.
+
+## 7. Перед началом
+
+Cursor должен вывести кратко:
+
+```text
+Task
+Capabilities
+Workflow
+Screens
+Modules to change
+Permissions
+Commands/events
+Tests
+```
+
+Если связь отсутствует или документы противоречат друг другу — остановить реализацию.
+
+## 8. После завершения
+
+Обновить task status и приложить completion report по `docs/implementation-blueprint/09_CURSOR_IMPLEMENTATION_CONTRACT.md`.
+
+Никаких demo-only CTA, скрытых fallback в
