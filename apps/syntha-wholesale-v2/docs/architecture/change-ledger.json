@@ -20,7 +20,7 @@
       "tasks": ["TASK-0005"],
       "adrs": [],
       "files": ["docs/product/WHOLESALE_PLATFORM_BENCHMARK.md", "docs/product/wholesale-capability-benchmark.json", "tasks/TASK-0005-wholesale-capability-canon.md", "scripts/validate-wholesale-benchmark.mjs", "tasks/task-manifest.json"],
-      "verification": {"command": "npm run verify", "result": "NOT_RUN"},
+      "verification": {"command": "npm run verify", "result": "PASS", "workflow_run": 29595673201},
       "rollback": "Revert CHG-0002 files and remove TASK-0005 from the task manifest."
     }
   ]
