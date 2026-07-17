@@ -25,6 +25,23 @@ for (const path of files.filter((file) => extname(file) === '.json')) {
   catch (error) { fail(path, `invalid JSON: ${error.message}`); }
 }
 
+const requiredGovernance = [
+  'docs/architecture/README.md',
+  'docs/architecture/ADR_PROCESS.md',
+  'docs/architecture/ADR_REVIEW_CHECKLIST.md',
+  'docs/architecture/CHANGE_WORKFLOW.md',
+  'docs/architecture/CHANGE_RECORD_TEMPLATE.md',
+  'docs/architecture/COMPLETION_REPORT_TEMPLATE.md',
+  'docs/architecture/TESTING_STRATEGY.md',
+  'docs/architecture/context-map.json',
+  'tasks/task-manifest.json',
+  'STATUS.md'
+];
+for (const item of requiredGovernance) {
+  const path = join(root, item);
+  if (!existsSync(path)) fail(path, 'required governance file is missing');
+}
+
 const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
 for (const path of files.filter((file) => extname(file) === '.md')) {
   const content = readFileSync(path, 'utf8');
