@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "workspace": "apps/syntha-wholesale-v2",
+  "canonicalArchitecture": "vertical-business-modules",
+  "publicModuleApi": "src/modules/<module>/index.ts",
+  "taskIdPattern": "TASK-[0-9]{4}",
+  "readOrder": ["AGENTS.md", "tasks/TASK-*.md", "docs/architecture/context-map.json", "task.source_documents", "src/modules/<module>/README.md", "src/modules/<module>/index.ts", "changed files", "nearest tests"],
+  "architecture": {
+    "rootDirectories": ["app", "modules", "shared", "testkit", "generated"],
+    "moduleDirectories": ["domain", "application", "infrastructure", "ui", "tests"],
+    "forbiddenRootDirectories": ["features", "domain", "application", "infrastructure", "adapters", "components"],
+    "crossModuleImports": "root-index-only",
+    "deepImports": "forbidden",
+    "legacyUiImports": "forbidden"
+  },
+  "requiredTaskMetadata": ["task_id", "status", "capability_ids", "workflow_ids", "screen_ids", "permissions", "commands", "domain_events", "dependencies", "source_documents"],
+  "stopConditions": ["missing traceability", "conflicting specifications", "ambiguous ownership or permission", "missing screen readiness", "unapproved architecture boundary change"],
+  "requiredChecks": ["documentation integrity", "typecheck", "lint", "unit tests", "affected integration tests", "affected e2e tests", "import boundary guard", "accessibility", "responsive evidence"]
+}
