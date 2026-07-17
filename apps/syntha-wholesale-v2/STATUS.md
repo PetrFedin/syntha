@@ -23,6 +23,9 @@ Runtime business implementation has not started. No business task may move to `R
 - Architecture/JSON/link/task/import-boundary validator added.
 - Dedicated GitHub Actions architecture workflow added and passing.
 - Foundation tasks `TASK-0001` through `TASK-0004` created.
+- Isolated V2 package, lockfile, Node baseline and environment contract created.
+- Clean `npm ci` plus `npm run verify` confirmed in GitHub Actions.
+- Runtime commands explicitly block with actionable errors until runtime ADR acceptance.
 
 ## Foundation gates
 
@@ -32,16 +35,17 @@ Runtime business implementation has not started. No business task may move to `R
 | G1 | Canonical documentation and context map | PASS |
 | G2 | Initial ADR package accepted | IN REVIEW |
 | G3 | Documentation and import-boundary guard | PASS |
-| G4 | Runtime package/toolchain selected | NOT STARTED |
-| G5 | Test and CI foundation for runtime | NOT STARTED |
+| G4 | Runtime package boundary and command contract | IN REVIEW |
+| G5 | Runtime test, typecheck and lint toolchain | NOT STARTED |
 | G6 | First business task meets READY contract | BLOCKED |
 
 ## Immediate priority
 
 1. Review and accept ADR-0001 through ADR-0003.
-2. Complete `TASK-0001` repository/runtime boundary.
-3. Complete `TASK-0004` test and CI foundation.
-4. Only then prepare the first Design System task for `READY`.
+2. Review `TASK-0001` command and runtime-boundary contract.
+3. Decide framework/rendering/runtime ADRs.
+4. Complete `TASK-0004` test and CI foundation after toolchain selection.
+5. Only then prepare the first Design System task for `READY`.
 
 ## Stop conditions
 
