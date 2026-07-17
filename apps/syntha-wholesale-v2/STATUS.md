@@ -20,14 +20,15 @@ Runtime business implementation has not started. No business task may move to `R
 - Canonical vertical architecture: `src/modules/<module>`.
 - Module public API standardized on root `index.ts`.
 - Cursor context and change workflow documented.
-- Architecture, link, JSON, task and import-boundary validator added.
+- Architecture, link, JSON, ADR, task and import-boundary validation added.
+- Machine-readable `tasks/task-manifest.json` and dependency-cycle guard added.
 - Dedicated GitHub Actions architecture workflow added and passing.
 - Foundation tasks `TASK-0001` through `TASK-0004` created.
+- `TASK-0001` and `TASK-0003` moved to `QA` with recorded evidence.
 - Isolated V2 package, lockfile, Node baseline and environment contract created.
 - Clean `npm ci` plus `npm run verify` confirmed in GitHub Actions.
 - Runtime commands explicitly block until runtime ADR acceptance.
 - Complete proposed ADR package ADR-0001 through ADR-0009 created and indexed.
-- ADR index/file/status consistency added to automated validation.
 
 ## Foundation gates
 
@@ -36,8 +37,8 @@ Runtime business implementation has not started. No business task may move to `R
 | G0 | Clean branch based on current `main` | PASS |
 | G1 | Canonical documentation and context map | PASS |
 | G2 | ADR-0001 through ADR-0009 accepted | BLOCKED — REVIEWER REQUIRED |
-| G3 | Documentation, ADR and import-boundary guard | PASS |
-| G4 | Runtime package boundary and command contract | IN REVIEW |
+| G3 | Documentation, ADR, task and import-boundary guard | IN REVIEW — TASK-0003 QA |
+| G4 | Runtime package boundary and command contract | IN REVIEW — TASK-0001 QA |
 | G5 | Runtime test, typecheck and lint toolchain | BLOCKED BY ADR-0004/0009 |
 | G6 | First business task meets READY contract | BLOCKED |
 
@@ -45,7 +46,7 @@ Runtime business implementation has not started. No business task may move to `R
 
 1. Assign a reviewer for ADR-0001 through ADR-0009.
 2. Resolve amendments and accept the ADR package as one controlled change.
-3. Complete `TASK-0001` review and move it from `QA` to `DONE`.
+3. Review and close `TASK-0001` and `TASK-0003` from `QA` to `DONE`.
 4. Implement the accepted runtime and test toolchain through `TASK-0004`.
 5. Only then prepare the first Design System task for `READY`.
 
