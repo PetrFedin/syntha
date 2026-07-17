@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "entries": [
     {
       "id": "CHG-0001",
@@ -8,19 +8,20 @@
       "summary": "Establish architecture, task, ADR, review and completion evidence controls for Syntha Wholesale V2.",
       "tasks": ["TASK-0001", "TASK-0002", "TASK-0003"],
       "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004", "ADR-0005", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
-      "files": [
-        "docs/architecture/adr/README.md",
-        "tasks/task-manifest.json",
-        "scripts/validate-architecture.mjs",
-        "scripts/validate-task-manifest.mjs",
-        "STATUS.md"
-      ],
-      "verification": {
-        "command": "npm run verify",
-        "result": "PASS",
-        "workflow_run": 29592710950
-      },
+      "files": ["docs/architecture/adr/README.md", "tasks/task-manifest.json", "scripts/validate-architecture.mjs", "scripts/validate-task-manifest.mjs", "STATUS.md"],
+      "verification": {"command": "npm run verify", "result": "PASS", "workflow_run": 29592710950},
       "rollback": "Revert the governance commits and restore the previous task and ADR indexes."
+    },
+    {
+      "id": "CHG-0002",
+      "date": "2026-07-17",
+      "type": "docs",
+      "summary": "Audit JOOR, NuORDER and adjacent wholesale platform patterns and register missing Syntha capabilities as controlled product-canon work.",
+      "tasks": ["TASK-0005"],
+      "adrs": [],
+      "files": ["docs/product/WHOLESALE_PLATFORM_BENCHMARK.md", "docs/product/wholesale-capability-benchmark.json", "tasks/TASK-0005-wholesale-capability-canon.md", "scripts/validate-wholesale-benchmark.mjs", "tasks/task-manifest.json"],
+      "verification": {"command": "npm run verify", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0002 files and remove TASK-0005 from the task manifest."
     }
   ]
 }
