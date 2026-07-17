@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "tasks": [
+    {"id":"TASK-0001","file":"TASK-0001-project-boundary-and-commands.md","status":"QA","priority":"P0","dependencies":[]},
+    {"id":"TASK-0002","file":"TASK-0002-architecture-adr-package.md","status":"BLOCKED","priority":"P0","dependencies":["TASK-0001"]},
+    {"id":"TASK-0003","file":"TASK-0003-documentation-traceability-guard.md","status":"READY","priority":"P0","dependencies":[]},
+    {"id":"TASK-0004","file":"TASK-0004-test-and-ci-foundation.md","status":"DRAFT","priority":"P0","dependencies":["TASK-0001","TASK-0002","TASK-0003"]}
+  ]
+}
