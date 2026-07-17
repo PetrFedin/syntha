@@ -1,0 +1,13 @@
+{
+  "name": "@syntha/wholesale-v2",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:architecture": "node scripts/validate-architecture.mjs",
+    "verify": "npm run validate:architecture"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
