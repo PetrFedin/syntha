@@ -1,161 +1,112 @@
 # Syntha Wholesale V2 — Source Architecture
 
-Код нового продукта должен находиться только в этой директории.
+All new product code lives in this directory. Legacy Syntha is not an architecture template and may only be accessed through explicit adapters owned by a V2 module.
 
-## Planned structure
+## Canonical structure
 
 ```text
 src/
-  app/
-    routes/
-    layouts/
-    providers/
-  components/
-    primitives/
-    patterns/
-    data-display/
-    feedback/
-  features/
-    dashboard/
-    campaigns/
-    collections/
-    showroom/
-    buyers/
-    appointments/
-    buying/
-    orders/
-    dealspace/
-    calendar/
-    documents/
-    analytics/
-    settings/
-  domain/
-    identity/
-    relationships/
-    campaigns/
-    collections/
-    showroom/
-    buying/
-    orders/
-    appointments/
-    collaboration/
-    documents/
-    analytics/
-  application/
-    ports/
-    use-cases/
-    policies/
-  infrastructure/
-    persistence/
-    api/
-    storage/
-    email/
-    realtime/
-    integrations/
-  adapters/
-    legacy-syntha/
-  lib/
-  tests/
+  app/                 routes, layouts, providers, composition
+  modules/             vertical business modules
+  shared/              small technical and UI building blocks
+  testkit/             reusable test builders and harnesses
+  generated/           generated code; never edited manually
 ```
+
+A business module owns its complete vertical slice:
+
+```text
+modules/<module>/
+  README.md
+  index.ts             only supported cross-module import surface
+  domain/              entities, value objects, policies, events
+  application/         commands, queries, use cases and ports
+  infrastructure/      persistence, API and external adapters
+  ui/                  screens, components and presentation state
+  tests/               module-level integration and workflow tests
+```
+
+Expected modules include identity, organisations, campaigns, collections, showroom, buying, orders, dealspace, calendar, documents, analytics and integrations. Add a module only through an approved task and, when boundaries change, an ADR.
 
 ## Dependency direction
 
 ```text
-UI/features
-    ↓
-application/use-cases
-    ↓
-domain + ports
-    ↑
-infrastructure/adapters
+app → module index.ts
+module ui → module application → module domain
+module infrastructure → module application ports + domain
+module A → module B/index.ts, documented contract or event only
+shared → no business module
 ```
 
 Rules:
 
-- `domain` imports nothing from React/Next/infrastructure.
-- `application` depends on domain and port interfaces.
-- `infrastructure` implements ports.
-- `features` call use cases; they do not query persistence directly.
-- `adapters/legacy-syntha` is the only allowed boundary for controlled legacy reuse.
-- Shared UI is allowed only in `components`; features cannot create duplicate primitives.
+- Domain code imports no React, Next.js, database SDK or vendor integration.
+- UI never queries persistence or external systems directly.
+- All writes pass application commands/use cases.
+- Infrastructure implements ports owned by the application layer.
+- Cross-module deep imports are forbidden.
+- `shared` contains no business workflow or module-specific policy.
+- Routes compose modules and contain no business logic.
+- Published, submitted and confirmed snapshots are immutable.
+- Legacy reuse is isolated behind a module infrastructure adapter with tests.
 
-## Feature module template
+## Public API
 
-```text
-features/campaigns/
-  components/
-  screens/
-  hooks/
-  mappers/
-  tests/
-  index.ts
+Every module exposes only supported cross-module contracts from its root `index.ts`. Internal folders are private even when TypeScript can resolve them.
+
+Allowed:
+
+```ts
+import { createCampaign } from '@/modules/campaigns';
 ```
 
-Domain template:
+Forbidden:
 
-```text
-domain/campaigns/
-  campaign.entity.ts
-  campaign.types.ts
-  campaign.policy.ts
-  campaign.events.ts
-  campaign.errors.ts
-  campaign.test.ts
-```
-
-Application template:
-
-```text
-application/use-cases/campaigns/
-  create-campaign.ts
-  publish-campaign.ts
-  invite-shop.ts
+```ts
+import { createCampaign } from '@/modules/campaigns/application/create-campaign';
 ```
 
 ## Naming
 
-- Components: PascalCase.
+- Components and types: PascalCase.
 - Files: kebab-case except framework-required names.
-- Use cases: verb-noun.
+- Commands/use cases: verb-noun.
 - Domain entities: singular.
 - Ports: `*.port.ts`.
 - Adapters: `*.adapter.ts`.
-- Policies: `can-*.policy.ts` or explicit business name.
-- Tests colocated or under feature `tests`, consistently chosen in foundation phase.
-
-## Public imports
-
-Every feature/domain package exposes an `index.ts`. Deep imports across feature boundaries are forbidden.
+- Policies: explicit business name or `can-*.policy.ts`.
+- Tasks: `TASK-####-short-name.md` only.
 
 ## State ownership
 
-- Server state: query/data layer selected in ADR.
-- Draft builder state: feature-local state machine/store with server version.
-- UI ephemeral state: local component state.
-- Global UI state: shell-only concerns.
-- Domain state is never stored only in presentation components.
+- Server state belongs to query/read-model infrastructure selected by ADR.
+- Draft builder state belongs to the owning module and includes server version.
+- Ephemeral UI state remains local.
+- Global UI state is limited to shell concerns.
+- Business state never exists only in presentation components.
 
 ## Required checks before merge
 
-- typecheck;
-- lint;
-- unit tests;
-- component tests for changed complex UI;
-- integration tests for write path;
-- affected e2e flow;
+- documentation integrity and JSON validation;
+- typecheck and lint;
+- unit tests for changed policies/calculations;
+- affected integration and write-path tests;
+- affected end-to-end workflow;
 - import-boundary guard;
-- accessibility check;
-- responsive screenshots for major screens.
+- accessibility and keyboard/touch checks;
+- responsive evidence at required viewports.
 
-## First implementation target
+See `docs/architecture/TESTING_STRATEGY.md` for the exact test contract.
 
-Start only with roadmap tasks:
+## Implementation gate
 
-1. `V2-0001`
-2. `V2-0002`
-3. `V2-0003`
-4. `V2-0101`
-5. `V2-0102`
-6. `V2-0103`
+Start with the approved roadmap sequence in `tasks/README.md`:
 
-Do not implement business modules before foundation gate.
+```text
+TASK-0001 project boundary and commands
+TASK-0002 architecture ADR package
+TASK-0003 documentation/traceability guard
+TASK-0004 test and CI foundation
+```
+
+Do not implement business modules before the foundation gate is satisfied and their tasks are `READY`.
