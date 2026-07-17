@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0001
-status: READY
+status: QA
 priority: P0
 product_area: foundation
 capability_ids: []
@@ -15,32 +15,43 @@ source_documents:
   - CURSOR_START_HERE.md
   - docs/architecture/context-map.json
   - docs/architecture/CODE_STRUCTURE.md
+  - docs/architecture/RUNTIME_BOUNDARY.md
 ---
 
 # Project boundary and commands
 
 ## Outcome
 
-Create an isolated executable workspace for Syntha Wholesale V2 without importing legacy runtime code.
+Create an isolated executable foundation workspace for Syntha Wholesale V2 without importing legacy runtime code or pretending that the business runtime already exists.
 
-## Scope
+## Delivered
 
-- establish the V2 package/runtime boundary;
-- define install, dev, typecheck, lint, test and verify commands;
-- define environment variable validation without committing secrets;
-- keep the existing Platform Core runtime unaffected.
+- isolated package root at `apps/syntha-wholesale-v2`;
+- dedicated `package.json` and `package-lock.json`;
+- Node 24 baseline in `.nvmrc` and package engines;
+- `preflight`, `verify`, architecture validation and explicit runtime-blocked commands;
+- environment contract in `.env.example`;
+- dedicated GitHub Actions installation and verification flow;
+- documented V2/legacy runtime boundary.
 
-## Acceptance criteria
+## Acceptance evidence
 
-- `apps/syntha-wholesale-v2/package.json` owns V2 commands;
-- a clean install can run the documented verification command;
-- V2 does not import legacy UI or use legacy routes as fallback;
-- commands fail with actionable errors;
-- README and status documents match the actual commands.
+- `npm ci --ignore-scripts` runs in the dedicated GitHub Actions job;
+- `npm run verify` passes on Node 24;
+- V2 foundation commands do not invoke or mutate Platform Core runtime;
+- `dev`, `typecheck`, `lint` and `test` fail with actionable messages until their ADR/toolchain is accepted;
+- no runtime dependencies or business modules were introduced.
+
+## Remaining QA
+
+- review the command contract and Node baseline;
+- confirm that explicit command blocking is preferred until runtime ADR acceptance;
+- accept or request changes to the runtime boundary document.
 
 ## Non-goals
 
 - business modules;
 - production deployment;
 - database schema;
-- visual implementation.
+- visual implementation;
+- selection of framework, persistence or test libraries.
