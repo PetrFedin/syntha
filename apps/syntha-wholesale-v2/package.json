@@ -6,7 +6,8 @@
   "scripts": {
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "validate:tasks": "node scripts/validate-task-manifest.mjs",
-    "preflight": "node scripts/preflight.mjs && npm run validate:architecture && npm run validate:tasks",
+    "validate:changes": "node scripts/validate-change-ledger.mjs",
+    "preflight": "node scripts/preflight.mjs && npm run validate:architecture && npm run validate:tasks && npm run validate:changes",
     "verify": "npm run preflight",
     "dev": "node scripts/runtime-blocked.mjs dev",
     "typecheck": "node scripts/runtime-blocked.mjs typecheck",
