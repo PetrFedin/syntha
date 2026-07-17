@@ -68,7 +68,12 @@ for (const path of canonical) {
   if (/\bV2-\d{4}\b/.test(content)) fail(path, 'legacy V2-* task ID is forbidden; use TASK-*');
 }
 
-const tasks = walk(join(root, 'tasks')).filter((file) => extname(file) === '.md' && !file.endsWith('README.md'));
+const tasksRoot = join(root, 'tasks');
+const tasks = existsSync(tasksRoot)
+  ? readdirSync(tasksRoot)
+      .map((name) => join(tasksRoot, name))
+      .filter((path) => statSync(path).isFile() && extname(path) === '.md' && !path.endsWith('README.md'))
+  : [];
 for (const path of tasks) {
   const fileName = rel(path).split('/').at(-1);
   const content = readFileSync(path, 'utf8');
