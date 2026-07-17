@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0003
-status: READY
+status: QA
 priority: P0
 product_area: foundation
 capability_ids: []
@@ -23,24 +23,27 @@ source_documents:
 
 Prevent architecture, task and documentation drift before runtime implementation begins.
 
-## Scope
+## Implemented scope
 
-- validate JSON documents;
-- validate local Markdown links;
-- enforce `TASK-0000` identifiers and filename consistency;
-- reject `public.ts`, old `V2-*` IDs and old horizontal source architecture in canonical documents;
-- require module `README.md` and root `index.ts` once modules exist;
-- reject deep imports across module boundaries;
-- run automatically in GitHub Actions for V2 changes.
+- JSON and local Markdown-link validation;
+- `TASK-0000` filename, metadata and status validation;
+- machine-readable task manifest and dependency graph validation;
+- ADR index, file and status consistency validation;
+- rejection of `public.ts`, old `V2-*` IDs and horizontal root architecture;
+- module `README.md` and root `index.ts` requirements;
+- cross-module deep-import rejection;
+- path-scoped GitHub Actions execution for V2 changes.
 
-## Acceptance criteria
+## Acceptance evidence
 
-- `npm run verify` runs without external dependencies;
-- the V2 architecture workflow is path-scoped;
-- a deliberate broken link or invalid JSON makes CI fail;
-- a cross-module deep import makes CI fail;
-- successful validation is visible on the pull request.
+- `npm ci --ignore-scripts` and `npm run verify` run in the V2 workflow;
+- architecture and task-manifest validators are dependency-free Node scripts;
+- failed validator runs were observed and corrected before this task entered QA;
+- workflow run 40 completed successfully with both validators enabled;
+- no runtime or business implementation was introduced.
 
-## Evidence
+## QA checks
 
-Record the workflow run and any known validation exclusions in the completion report.
+- review failure messages for actionability;
+- confirm task and ADR status changes fail when their machine-readable indexes are not updated;
+- confirm module checks activate when `src/modules` is introduced.
