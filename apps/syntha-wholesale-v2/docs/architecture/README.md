@@ -8,9 +8,9 @@ This folder is the canonical architecture entry point for `apps/syntha-wholesale
 |---|---|
 | Any code task | `CODE_STRUCTURE.md`, `DEPENDENCY_RULES.md`, `context-map.json` |
 | Cursor task preparation | `CURSOR_CONTEXT_STRATEGY.md` |
-| Feature or architecture change | `CHANGE_WORKFLOW.md` |
-| Tests or QA | `TESTING_STRATEGY.md` |
-| Architecture decision | `ADR_PROCESS.md`, `adr/README.md` |
+| Feature or architecture change | `CHANGE_WORKFLOW.md`, `CHANGE_RECORD_TEMPLATE.md` |
+| Tests or QA | `TESTING_STRATEGY.md`, `COMPLETION_REPORT_TEMPLATE.md` |
+| Architecture decision | `ADR_PROCESS.md`, `ADR_REVIEW_CHECKLIST.md`, `adr/README.md` |
 | Current project state | `../../STATUS.md` |
 
 ## Canonical decisions
@@ -63,10 +63,19 @@ A lower-level source must not silently override a higher-level source. Conflicts
 ## Governance
 
 - ADR index: [`adr/README.md`](adr/README.md)
+- ADR review checklist: [`ADR_REVIEW_CHECKLIST.md`](ADR_REVIEW_CHECKLIST.md)
 - Change process: [`CHANGE_WORKFLOW.md`](CHANGE_WORKFLOW.md)
+- Change record template: [`CHANGE_RECORD_TEMPLATE.md`](CHANGE_RECORD_TEMPLATE.md)
+- Completion report template: [`COMPLETION_REPORT_TEMPLATE.md`](COMPLETION_REPORT_TEMPLATE.md)
 - Testing strategy: [`TESTING_STRATEGY.md`](TESTING_STRATEGY.md)
 - Cursor context strategy: [`CURSOR_CONTEXT_STRATEGY.md`](CURSOR_CONTEXT_STRATEGY.md)
 - Machine-readable context map: [`context-map.json`](context-map.json)
+
+## Status transition evidence
+
+A task may move to `QA` only when changed files and checks actually run are recorded. A task may move to `DONE` only when a completion report contains acceptance evidence, reviewer identity, review date and known limitations.
+
+An ADR may move to `ACCEPTED` only when the named reviewer and acceptance date are written into the ADR and the ADR index, dependent tasks, task manifest and `STATUS.md` are updated in the same change.
 
 ## Runtime gate
 
