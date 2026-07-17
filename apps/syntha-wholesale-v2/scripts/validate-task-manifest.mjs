@@ -27,6 +27,33 @@ function parseTask(path) {
   return { id, status, dependencies };
 }
 
+function validateCompletion(entry) {
+  const requiresReport = entry.status === 'QA' || entry.status === 'DONE';
+  if (!requiresReport && !entry.completion_report) return;
+  if (!entry.completion_report) {
+    fail(`${entry.id} status ${entry.status} requires completion_report`);
+    return;
+  }
+  const path = resolve(taskRoot, entry.completion_report);
+  if (!path.startsWith(taskRoot) || !existsSync(path)) {
+    fail(`${entry.id} points to missing completion report ${entry.completion_report}`);
+    return;
+  }
+  const content = read(path);
+  const reportTask = content.match(/^Task:\s*`(TASK-\d{4})`\s*$/m)?.[1];
+  const reportStatus = content.match(/^Current status:\s*`(DRAFT|BLOCKED|READY|IN_PROGRESS|QA|DONE)`\s*$/m)?.[1];
+  if (reportTask !== entry.id) fail(`${entry.id} completion report identifies ${reportTask ?? 'no task'}`);
+  if (reportStatus !== entry.status) fail(`${entry.id} completion report status ${reportStatus ?? 'missing'} does not match ${entry.status}`);
+  for (const heading of ['## Delivered', '## Acceptance criteria evidence', '## Commands verified', '## Known limitations', '## Review record']) {
+    if (!content.includes(heading)) fail(`${entry.id} completion report is missing ${heading}`);
+  }
+  if (entry.status === 'DONE') {
+    if (/^Reviewer:\s*pending\s*$/m.test(content)) fail(`${entry.id} cannot be DONE with pending reviewer`);
+    if (/^Reviewed on:\s*pending\s*$/m.test(content)) fail(`${entry.id} cannot be DONE with pending review date`);
+    if (/^Decision:\s*pending\s*$/m.test(content)) fail(`${entry.id} cannot be DONE with pending decision`);
+  }
+}
+
 if (!existsSync(manifestPath)) fail('tasks/task-manifest.json is required');
 let manifest = null;
 try { manifest = JSON.parse(read(manifestPath)); } catch (error) { fail(`invalid manifest JSON: ${error.message}`); }
@@ -45,6 +72,7 @@ if (manifest) {
     if (task.status !== entry.status) fail(`${entry.id} status ${entry.status} does not match Markdown ${task.status}`);
     const manifestDeps = Array.isArray(entry.dependencies) ? [...entry.dependencies].sort() : [];
     if (JSON.stringify(manifestDeps) !== JSON.stringify([...task.dependencies].sort())) fail(`${entry.id} dependencies do not match Markdown`);
+    validateCompletion(entry);
   }
   for (const entry of entries) {
     for (const dependency of entry.dependencies ?? []) {
