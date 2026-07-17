@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "validate:architecture": "node scripts/validate-architecture.mjs",
-    "preflight": "node scripts/preflight.mjs && npm run validate:architecture",
+    "validate:tasks": "node scripts/validate-task-manifest.mjs",
+    "preflight": "node scripts/preflight.mjs && npm run validate:architecture && npm run validate:tasks",
     "verify": "npm run preflight",
     "dev": "node scripts/runtime-blocked.mjs dev",
     "typecheck": "node scripts/runtime-blocked.mjs typecheck",
