@@ -1,19 +1,13 @@
 # AGENTS.md — Syntha Wholesale V2
 
-## Scope
+Scope: `apps/syntha-wholesale-v2`.
 
-These instructions apply only inside `apps/syntha-wholesale-v2`.
+Read `CURSOR_START_HERE.md` first.
 
-Open this folder as the Cursor workspace root. Do not treat the legacy Syntha application as the architecture template.
+Core lifecycle: Campaign → Collection → Showroom → Selection → Order Builder → Order → confirmation → DealSpace.
 
-## Product boundary
+Brand and Shop are organisation types. Roles belong to organisations.
 
-Syntha Wholesale V2 serves two organisation types:
+Calendar and DealSpace are core. PLM, production, BOM, QC and supply chain are outside MVP.
 
-- Brand;
-- Shop.
-
-Core flow:
-
-```text
-Campaign → Collection → Showroom → Selection →
+Cross-module imports go only through `public.ts`. Boundary changes require an ADR.
