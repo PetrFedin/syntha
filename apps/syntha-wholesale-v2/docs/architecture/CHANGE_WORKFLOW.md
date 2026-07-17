@@ -8,4 +8,5 @@
 6. Implement one vertical business outcome without unrelated refactors or speculative framework code.
 7. Run the checks required by the task and `TESTING_STRATEGY.md`.
 8. Update task status, completion evidence, module README, traceability and ADRs.
-9. Merge only when documentation and code agree, required checks pass, and no deep import, legacy fallback, demo-only success or hidden scope expansion remains.
+9. Add or update one `CHG-*` entry in `change-ledger.json` with affected tasks, ADRs, files, verification result and rollback.
+10. Merge only when documentation, ledger and code agree, required checks pass, and no deep import, legacy fallback, demo-only success or hidden scope expansion remains.
