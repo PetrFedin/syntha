@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "validate:architecture": "node scripts/validate-architecture.mjs",
-    "verify": "npm run validate:architecture"
+    "preflight": "node scripts/preflight.mjs && npm run validate:architecture",
+    "verify": "npm run preflight",
+    "dev": "node scripts/runtime-blocked.mjs dev",
+    "typecheck": "node scripts/runtime-blocked.mjs typecheck",
+    "lint": "node scripts/runtime-blocked.mjs lint",
+    "test": "node scripts/runtime-blocked.mjs test"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
