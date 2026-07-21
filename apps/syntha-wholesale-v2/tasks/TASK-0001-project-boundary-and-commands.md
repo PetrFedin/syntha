@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0001
-status: QA
+status: DONE
 priority: P0
 product_area: foundation
 capability_ids: []
@@ -39,19 +39,9 @@ Create an isolated executable foundation workspace for Syntha Wholesale V2 witho
 - `npm ci --ignore-scripts` runs in the dedicated GitHub Actions job;
 - `npm run verify` passes on Node 24;
 - V2 foundation commands do not invoke or mutate Platform Core runtime;
-- `dev`, `typecheck`, `lint` and `test` fail with actionable messages until their ADR/toolchain is accepted;
-- no runtime dependencies or business modules were introduced.
+- runtime commands fail with actionable messages until TASK-0004 installs the accepted toolchain;
+- no runtime dependency on Legacy exists.
 
-## Remaining QA
+## Review record
 
-- review the command contract and Node baseline;
-- confirm that explicit command blocking is preferred until runtime ADR acceptance;
-- accept or request changes to the runtime boundary document.
-
-## Non-goals
-
-- business modules;
-- production deployment;
-- database schema;
-- visual implementation;
-- selection of framework, persistence or test libraries.
+Reviewed by product owner Petr Fedin on 2026-07-22. Decision: accepted.

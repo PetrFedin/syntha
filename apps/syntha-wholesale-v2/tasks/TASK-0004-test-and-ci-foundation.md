@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0004
-status: DRAFT
+status: READY
 priority: P0
 product_area: foundation
 capability_ids: []
@@ -16,6 +16,8 @@ dependencies:
 source_documents:
   - docs/architecture/TESTING_STRATEGY.md
   - docs/architecture/CHANGE_WORKFLOW.md
+  - docs/architecture/adr/ADR-0004-runtime-framework.md
+  - docs/architecture/adr/ADR-0009-test-stack-and-ci.md
   - CURSOR_MASTER_RULES.md
 ---
 
@@ -23,11 +25,12 @@ source_documents:
 
 ## Outcome
 
-Establish the executable test pyramid and protected CI gates required before business modules are implemented.
+Establish the executable Next.js/TypeScript runtime, test pyramid and protected CI gates required before business modules are implemented.
 
 ## Scope
 
-- select and configure unit, component, integration and e2e test tools through accepted ADRs;
+- install the independent Next.js App Router runtime inside the V2 package;
+- configure TypeScript, ESLint, Vitest, Testing Library and Playwright;
 - define deterministic test environment and fixtures;
 - add typecheck, lint, unit and architecture checks;
 - define changed-scope integration and e2e execution;
@@ -39,9 +42,10 @@ Establish the executable test pyramid and protected CI gates required before bus
 - CI uses supported runtime versions and pinned major actions;
 - failed checks block merge;
 - tests do not depend on production credentials or mutable external services;
-- tenant isolation and authorization test helpers are available before identity work;
-- required checks and local commands are documented.
+- tenant isolation and authorization test helpers exist before identity work;
+- required checks and local commands are documented;
+- no runtime dependency or import from Legacy is introduced.
 
-## Ready condition
+## Ready record
 
-Move to `READY` after TASK-0001 commands and TASK-0002 test-stack ADRs are accepted.
+Dependencies are complete and ADR-0004/ADR-0009 are accepted. This task is ready for implementation.

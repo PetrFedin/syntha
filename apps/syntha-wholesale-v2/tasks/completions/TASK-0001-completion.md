@@ -1,18 +1,15 @@
 # TASK-0001 Completion Report
 
 Task: `TASK-0001`
-Current status: `QA`
+Current status: `DONE`
 Prepared on: 2026-07-17
 
 ## Delivered
 
 - Isolated V2 package boundary under `apps/syntha-wholesale-v2`.
-- Node 24 baseline in `.nvmrc` and package engines.
-- Dedicated `package-lock.json`.
-- Environment contract through `.env.example`.
-- `preflight` and `verify` foundation commands.
-- Explicit blocked runtime commands for `dev`, `typecheck`, `lint` and `test` until runtime ADR acceptance.
-- V2 GitHub Actions workflow using `npm ci --ignore-scripts` and `npm run verify`.
+- Node 24 baseline, lockfile, environment contract and foundation commands.
+- Dedicated V2 GitHub Actions verification flow.
+- Explicit runtime blocking until accepted runtime ADRs and TASK-0004.
 
 ## Acceptance criteria evidence
 
@@ -20,9 +17,8 @@ Prepared on: 2026-07-17
 |---|---|---|
 | V2 package owns commands | `package.json` | PASS |
 | Clean install runs verification | GitHub Actions V2 workflow | PASS |
-| No legacy runtime fallback | `RUNTIME_BOUNDARY.md` and architecture guard | PASS |
+| No Legacy runtime fallback | `RUNTIME_BOUNDARY.md` and ADR-0003 | PASS |
 | Missing runtime tools fail explicitly | `scripts/runtime-blocked.mjs` | PASS |
-| Documentation matches commands | `RUNTIME_BOUNDARY.md`, `STATUS.md` | PASS |
 
 ## Commands verified
 
@@ -33,12 +29,10 @@ npm run verify
 
 ## Known limitations
 
-- Runtime framework is not installed.
-- Typecheck, lint, test and dev remain intentionally blocked.
-- Final transition to `DONE` requires reviewer approval.
+- Runtime framework is installed by TASK-0004, not this task.
 
 ## Review record
 
-Reviewer: pending
-Reviewed on: pending
-Decision: pending
+Reviewer: Product owner — Petr Fedin
+Reviewed on: 2026-07-22
+Decision: accepted

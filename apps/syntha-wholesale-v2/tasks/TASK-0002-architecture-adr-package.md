@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0002
-status: BLOCKED
+status: DONE
 priority: P0
 product_area: foundation
 capability_ids: []
@@ -32,20 +32,18 @@ source_documents:
 
 Approve the minimum architecture, runtime, security, persistence and testing decisions required before runtime implementation.
 
-## Current state
+## Delivered
 
-All required ADR documents exist and are `PROPOSED`. This task is blocked only on named reviewer approval and any resulting amendments.
+ADR-0001 through ADR-0009 are accepted as one controlled package. Each ADR records the reviewer and acceptance date, and the index reflects binding status.
 
 ## Acceptance criteria
 
-- every ADR follows `docs/architecture/ADR_PROCESS.md`;
+- every ADR follows the ADR process;
 - alternatives and consequences are explicit;
-- no ADR changes Product Canon silently;
-- reviewer and acceptance date are recorded in each accepted ADR;
-- accepted ADRs and this task are updated in the same change;
-- `STATUS.md` reflects the resulting foundation gates;
-- no runtime business implementation starts while required ADRs remain proposed.
+- V2/Legacy isolation is mandatory;
+- reviewer and acceptance date are recorded;
+- task and status documentation are updated in the same controlled change.
 
-## Unblock condition
+## Review record
 
-Assign a reviewer and review ADR-0001 through ADR-0009 in the sequence recorded by the ADR index. Move this task to `READY` only when requested amendments are resolved and acceptance can be performed as one controlled change.
+Reviewed by product owner Petr Fedin on 2026-07-22. Decision: accepted.

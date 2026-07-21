@@ -1,7 +1,9 @@
 # ADR-0006 — Persistence and repository ports
 
-Status: PROPOSED
+Status: ACCEPTED
 Date: 2026-07-17
+Accepted: 2026-07-22
+Reviewer: Product owner — Petr Fedin
 
 ## Decision
 

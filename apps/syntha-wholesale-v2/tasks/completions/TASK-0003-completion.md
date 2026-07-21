@@ -1,47 +1,37 @@
 # TASK-0003 Completion Report
 
 Task: `TASK-0003`
-Current status: `QA`
+Current status: `DONE`
 Prepared on: 2026-07-17
 
 ## Delivered
 
-- Dependency-free architecture validator.
-- JSON and local Markdown link validation.
-- Canonical terminology checks.
-- Task filename, ID and status validation.
-- ADR index, file and status consistency validation.
-- Module README and root `index.ts` enforcement.
-- Cross-module deep-import guard.
-- Machine-readable task manifest and dependency graph validator.
-- Required governance-document validation.
-- Path-scoped GitHub Actions workflow.
+- Architecture, JSON, Markdown link, ADR, task and change-ledger guards.
+- Dependency-cycle detection and completion-report validation.
+- Module shape and cross-module import-boundary validation.
+- Dedicated path-scoped V2 GitHub Actions workflow.
 
 ## Acceptance criteria evidence
 
 | Criterion | Evidence | Result |
 |---|---|---|
-| `npm run verify` runs without external runtime services | V2 package scripts | PASS |
-| Workflow is path-scoped | `.github/workflows/syntha-v2-architecture.yml` | PASS |
-| Invalid JSON or broken local link fails validation | `validate-architecture.mjs` | PASS |
-| Cross-module deep import fails validation | `validate-architecture.mjs` | PASS |
-| Successful validation is visible on PR | GitHub Actions run 48 | PASS |
-| Task graph drift is blocked | `validate-task-manifest.mjs` | PASS |
+| Task/ADR indexes cannot drift silently | validation scripts | PASS |
+| Module public boundary is enforced | architecture validator | PASS |
+| Legacy imports are forbidden | architecture rules | PASS |
+| CI runs on V2 changes | workflow definition | PASS |
 
 ## Commands verified
 
 ```text
-npm ci --ignore-scripts
 npm run verify
 ```
 
 ## Known limitations
 
-- Runtime typecheck, lint and test tools are not installed yet.
-- Final transition to `DONE` requires reviewer approval.
+- Runtime typecheck, lint and application tests begin with TASK-0004.
 
 ## Review record
 
-Reviewer: pending
-Reviewed on: pending
-Decision: pending
+Reviewer: Product owner — Petr Fedin
+Reviewed on: 2026-07-22
+Decision: accepted

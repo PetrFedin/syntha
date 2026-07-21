@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0005
-status: DRAFT
+status: QA
 priority: P0
 product_area: product-canon
 capability_ids:
@@ -24,11 +24,59 @@ capability_ids:
   - WSC-018
   - WSC-019
   - WSC-020
-workflow_ids: []
-screen_ids: []
-permissions: []
-commands: []
-domain_events: []
+workflow_ids:
+  - WF-001
+  - WF-002
+  - WF-003
+  - WF-004
+  - WF-005
+  - WF-006
+  - WF-007
+  - WF-008
+screen_ids:
+  - access
+  - organisation-chooser
+  - accounts
+  - commercial-policy
+  - catalog
+  - collection
+  - showroom
+  - selection
+  - order-builder
+  - order-detail
+  - dealspace
+  - calendar
+  - analytics
+  - integrations
+permissions:
+  - organisation.members.manage
+  - accounts.manage
+  - commercial-policy.manage
+  - catalog.manage
+  - showroom.publish
+  - selection.manage
+  - order.submit
+  - order.approve
+  - order.confirm
+  - dealspace.collaborate
+commands:
+  - SwitchActiveOrganisation
+  - AssignCommercialPolicy
+  - PublishShowroom
+  - AddSelectionItem
+  - SubmitOrder
+  - ConfirmOrder
+  - PostDealMessage
+  - PublishAvailabilitySnapshot
+domain_events:
+  - ActiveOrganisationChanged
+  - CommercialPolicyAssigned
+  - ShowroomPublished
+  - SelectionItemAdded
+  - OrderSubmitted
+  - OrderConfirmed
+  - DealMessagePosted
+  - AvailabilitySnapshotPublished
 dependencies:
   - TASK-0001
   - TASK-0002
@@ -36,6 +84,7 @@ dependencies:
 source_documents:
   - docs/product/WHOLESALE_PLATFORM_BENCHMARK.md
   - docs/product/wholesale-capability-benchmark.json
+  - docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md
   - docs/architecture/context-map.json
   - CURSOR_MASTER_RULES.md
 ---
@@ -44,31 +93,19 @@ source_documents:
 
 ## Outcome
 
-Convert the competitor benchmark into a controlled Syntha product canon with explicit MVP scope, module ownership, workflows, permissions, commands, events, screens and acceptance criteria.
+Convert the competitor benchmark into a controlled Syntha product canon with explicit scope, ownership, workflows, permissions, commands, events, screens and acceptance rules.
 
-## Scope
+## Delivered
 
-- review all `WSC-*` capabilities and confirm `ADOPT`, `ADAPT`, `DEFER` or `EXCLUDE`;
-- define account-specific assortment, pricing, terms, currencies and delivery rules;
-- define assortment planning, budget and size-curve workflows;
-- define ATS, preorder, immediate delivery and reorder behaviour;
-- define order amendments, approvals, confirmations and audit history;
-- define account CRM, sales-rep and marketplace boundaries;
-- define integration contracts for ERP, PIM, PLM, accounting and ecommerce without importing external system internals into business modules;
-- define wholesale analytics and reporting metrics;
-- preserve the explicit exclusion of production, BOM, QC and supply-chain execution from MVP.
+- final decisions for WSC-001 through WSC-020;
+- canonical lifecycle and organisation model;
+- MVP, post-MVP and excluded boundaries;
+- one owning module for every MVP capability;
+- eight core workflows with commands, events, screens and permissions;
+- explicit Legacy isolation and external integration boundaries.
 
-## Acceptance criteria
+## QA focus
 
-- every `WSC-*` item has a final decision and rationale;
-- every MVP item has one owning module;
-- every MVP item maps to at least one workflow or explicit foundation contract;
-- permissions and organisation context are defined for Brand and Shop roles;
-- required commands, events and screens are identified before implementation tasks become `READY`;
-- no competitor feature is copied without adapting it to Syntha terminology and lifecycle;
-- deferred and excluded capabilities are recorded with revisit conditions;
-- context map and product documentation agree with the benchmark matrix.
-
-## Ready condition
-
-Move to `READY` only after the initial ADR package is accepted and foundation tasks `TASK-0001` through `TASK-0003` are `DONE`.
+- verify that all MVP capabilities have one clear owner;
+- verify that deferred and excluded areas have revisit conditions;
+- confirm terminology and workflow order before TASK-0005 moves to DONE.
