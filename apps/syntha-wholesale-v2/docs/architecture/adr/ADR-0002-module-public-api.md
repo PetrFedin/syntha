@@ -1,7 +1,9 @@
 # ADR-0002 — Module Public API
 
-Status: PROPOSED
+Status: ACCEPTED
 Date: 2026-07-17
+Accepted: 2026-07-22
+Reviewer: Product owner — Petr Fedin
 Owners: Architecture
 
 ## Context
