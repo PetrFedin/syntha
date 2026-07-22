@@ -26,8 +26,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Install V2 package
-        run: npm install --package-lock=false --ignore-scripts --no-audit --no-fund
+      - name: Generate deterministic V2 dependency lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Upload generated dependency lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-package-lock
+          path: apps/syntha-wholesale-v2/package-lock.json
+          if-no-files-found: error
+          retention-days: 3
+      - name: Install V2 package from lock
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Validate V2 governance and architecture
         run: npm run preflight
       - name: Typecheck V2
