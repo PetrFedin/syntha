@@ -1,5 +1,6 @@
 import type { OrganisationId, OrganisationRepository } from '../../organisations';
 import {
+  MembershipAccessDenied,
   createMembership,
   membershipId,
   type Membership,
@@ -9,7 +10,6 @@ import {
 import { assertPermission, type Permission } from '../domain/permissions';
 import {
   MembershipAlreadyExists,
-  MembershipAccessDenied,
   OrganisationUnavailable,
 } from './errors';
 import type { MembershipRepository } from './membership-repository';
