@@ -17,21 +17,28 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: apps/syntha-wholesale-v2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - name: Install V2 package
-        working-directory: apps/syntha-wholesale-v2
         run: npm install --package-lock=false --ignore-scripts --no-audit --no-fund
-      - name: Verify V2 runtime and foundation
-        working-directory: apps/syntha-wholesale-v2
-        run: npm run verify
+      - name: Validate V2 governance and architecture
+        run: npm run preflight
+      - name: Typecheck V2
+        run: npm run typecheck
+      - name: Lint V2
+        run: npm run lint
+      - name: Run V2 unit tests
+        run: npm run test
+      - name: Build V2 production runtime
+        run: npm run build
       - name: Install Playwright Chromium
-        working-directory: apps/syntha-wholesale-v2
         run: npx playwright install --with-deps chromium
       - name: Run V2 browser smoke test
-        working-directory: apps/syntha-wholesale-v2
         run: npm run test:e2e
