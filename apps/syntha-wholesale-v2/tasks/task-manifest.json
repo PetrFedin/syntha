@@ -1,11 +1,12 @@
 {
-  "version": 6,
+  "version": 7,
   "tasks": [
     {"id":"TASK-0001","file":"TASK-0001-project-boundary-and-commands.md","status":"DONE","priority":"P0","dependencies":[],"completion_report":"completions/TASK-0001-completion.md"},
     {"id":"TASK-0002","file":"TASK-0002-architecture-adr-package.md","status":"DONE","priority":"P0","dependencies":["TASK-0001"],"completion_report":"completions/TASK-0002-completion.md"},
     {"id":"TASK-0003","file":"TASK-0003-documentation-traceability-guard.md","status":"DONE","priority":"P0","dependencies":[],"completion_report":"completions/TASK-0003-completion.md"},
     {"id":"TASK-0004","file":"TASK-0004-test-and-ci-foundation.md","status":"DONE","priority":"P0","dependencies":["TASK-0001","TASK-0002","TASK-0003"],"completion_report":"completions/TASK-0004-completion.md"},
     {"id":"TASK-0005","file":"TASK-0005-wholesale-capability-canon.md","status":"DONE","priority":"P0","dependencies":["TASK-0001","TASK-0002","TASK-0003"],"completion_report":"completions/TASK-0005-completion.md"},
-    {"id":"TASK-0006","file":"TASK-0006-identity-and-organisation-foundation.md","status":"IN_PROGRESS","priority":"P0","dependencies":["TASK-0004","TASK-0005"]}
+    {"id":"TASK-0006","file":"TASK-0006-identity-and-organisation-foundation.md","status":"DONE","priority":"P0","dependencies":["TASK-0004","TASK-0005"],"completion_report":"completions/TASK-0006-completion.md"},
+    {"id":"TASK-0007","file":"TASK-0007-adaptive-workspace-foundation.md","status":"IN_PROGRESS","priority":"P0","dependencies":["TASK-0004","TASK-0005","TASK-0006"]}
   ]
 }
