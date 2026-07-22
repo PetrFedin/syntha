@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0005
-status: QA
+status: DONE
 priority: P0
 product_area: product-canon
 capability_ids:
@@ -104,8 +104,6 @@ Convert the competitor benchmark into a controlled Syntha product canon with exp
 - eight core workflows with commands, events, screens and permissions;
 - explicit Legacy isolation and external integration boundaries.
 
-## QA focus
+## Review outcome
 
-- verify that all MVP capabilities have one clear owner;
-- verify that deferred and excluded areas have revisit conditions;
-- confirm terminology and workflow order before TASK-0005 moves to DONE.
+Terminology, module ownership, workflow order, deferred scope and exclusion boundaries were accepted by the product owner on 2026-07-22. Business implementation may proceed against this canon.

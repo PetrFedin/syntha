@@ -1,7 +1,7 @@
 # TASK-0005 Completion Report
 
 Task: `TASK-0005`
-Current status: `QA`
+Current status: `DONE`
 Prepared on: 2026-07-22
 
 ## Delivered
@@ -10,7 +10,7 @@ Prepared on: 2026-07-22
 - Final WSC-001 through WSC-020 decisions and phase boundaries.
 - MVP module ownership map.
 - Eight workflows with screens, permissions, commands and events.
-- Deferred/excluded revisit conditions.
+- Deferred and excluded revisit conditions.
 
 ## Acceptance criteria evidence
 
@@ -19,8 +19,9 @@ Prepared on: 2026-07-22
 | Every WSC item has a decision | benchmark matrix and Product Canon | PASS |
 | Every MVP item has one owner | Product Canon module table | PASS |
 | Workflows and foundation contracts are mapped | WF-001 through WF-008 | PASS |
-| Brand/Shop context and permissions are explicit | organisation model and workflow permissions | PASS |
-| Deferred/excluded scope is controlled | capability decisions and revisit conditions | PASS |
+| Brand and Shop context is explicit | organisation model and permission rules | PASS |
+| Deferred and excluded scope is controlled | capability decisions and revisit conditions | PASS |
+| Canon documents pass validation | workflow run `29914277388` | PASS |
 
 ## Commands verified
 
@@ -28,17 +29,16 @@ Prepared on: 2026-07-22
 npm run validate:benchmark
 npm run validate:tasks
 npm run validate:changes
+npm run preflight
 ```
-
-Checks were not rerun in the connector-only environment and remain pending CI confirmation.
 
 ## Known limitations
 
 - Detailed screen specifications belong to implementation tasks.
-- Payment, sales operations, marketplace/network and after-sales are post-MVP.
+- Payment, sales operations, marketplace/network and after-sales remain post-MVP.
 
 ## Review record
 
-Reviewer: pending
-Reviewed on: pending
-Decision: pending
+Reviewer: Product owner — Petr Fedin
+Reviewed on: 2026-07-22
+Decision: accepted

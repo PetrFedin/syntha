@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "entries": [
     {
       "id": "CHG-0001",
@@ -31,7 +31,7 @@
       "tasks": ["TASK-0001", "TASK-0002", "TASK-0003", "TASK-0004", "TASK-0005"],
       "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004", "ADR-0005", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
       "files": ["docs/architecture/adr/README.md", "docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md", "docs/architecture/context-map.json", "tasks/task-manifest.json", "STATUS.md"],
-      "verification": {"command": "npm run verify", "result": "NOT_RUN"},
+      "verification": {"command": "npm run verify", "result": "PASS", "workflow_run": 29914277388},
       "rollback": "Revert CHG-0003 and restore ADR, task, context map, Product Canon and status files to the previous review state."
     },
     {
@@ -54,20 +54,32 @@
       "tasks": ["TASK-0004"],
       "adrs": ["ADR-0003", "ADR-0005", "ADR-0009"],
       "files": ["scripts/validate-architecture.mjs", "src/testkit/organisation-scope.ts", "src/testkit/authorization.ts", "src/testkit/foundation-security.test.ts", "src/testkit/README.md", "tasks/TASK-0004-test-and-ci-foundation.md", "STATUS.md"],
-      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "PASS", "workflow_run": 29914277388},
       "rollback": "Revert CHG-0005 to restore the previous validator and remove the foundation security fixtures."
     },
     {
       "id": "CHG-0006",
       "date": "2026-07-22",
       "type": "fix",
-      "summary": "Separate V2-owned and repository-level file evidence in the change ledger and expose each foundation CI gate as an independent workflow step.",
+      "summary": "Separate V2-owned and repository-level file evidence in the change ledger, expose each foundation gate independently and commit the deterministic lockfile.",
       "tasks": ["TASK-0004"],
       "adrs": ["ADR-0009"],
-      "files": ["scripts/validate-change-ledger.mjs", "docs/architecture/change-ledger.json", "tasks/TASK-0004-test-and-ci-foundation.md", "STATUS.md"],
+      "files": ["scripts/validate-change-ledger.mjs", "docs/architecture/change-ledger.json", "tasks/TASK-0004-test-and-ci-foundation.md", "tasks/completions/TASK-0004-completion.md", "package-lock.json", "STATUS.md"],
       "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
-      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e", "result": "NOT_RUN"},
-      "rollback": "Revert CHG-0006 to restore the previous ledger schema and single-step foundation workflow."
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 29914277388},
+      "rollback": "Revert CHG-0006 to restore the previous ledger schema, bootstrap lock and workflow."
+    },
+    {
+      "id": "CHG-0007",
+      "date": "2026-07-22",
+      "type": "feature",
+      "summary": "Close the accepted foundation and Product Canon tasks, then introduce the first production organisation and identity-access domain modules with authorization tests.",
+      "tasks": ["TASK-0004", "TASK-0005", "TASK-0006"],
+      "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["tasks/TASK-0004-test-and-ci-foundation.md", "tasks/TASK-0005-wholesale-capability-canon.md", "tasks/TASK-0006-identity-and-organisation-foundation.md", "tasks/completions/TASK-0004-completion.md", "tasks/completions/TASK-0005-completion.md", "tasks/task-manifest.json", "src/README.md", "src/modules/organisations/README.md", "src/modules/organisations/index.ts", "src/modules/organisations/domain/organisation.ts", "src/modules/organisations/tests/organisation.test.ts", "src/modules/identity-access/README.md", "src/modules/identity-access/index.ts", "src/modules/identity-access/domain/permissions.ts", "src/modules/identity-access/domain/membership.ts", "src/modules/identity-access/application/switch-active-organisation.ts", "src/modules/identity-access/tests/identity-access.test.ts", "STATUS.md"],
+      "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0007 to remove the first business modules and restore TASK-0004 and TASK-0005 to their prior review states."
     }
   ]
 }
