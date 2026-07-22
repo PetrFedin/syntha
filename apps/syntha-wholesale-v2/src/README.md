@@ -1,19 +1,19 @@
 # Syntha Wholesale V2 — Source Architecture
 
-All new product code lives in this directory. Legacy Syntha is not an architecture template and may only be accessed through explicit adapters owned by a V2 module.
+All new product code lives in this directory. Legacy Syntha is not an implementation source. No Legacy UI, route, service or runtime-state import is permitted.
 
 ## Canonical structure
 
 ```text
 src/
   app/                 routes, layouts, providers and composition
-  modules/             vertical business modules
-  shared/              small technical and UI building blocks
-  testkit/             reusable test builders and harnesses
+  modules/             vertical business modules created only by READY tasks
+  shared/              small business-neutral technical and UI building blocks
+  testkit/             reusable deterministic test builders and harnesses
   generated/           generated code; never edited manually
 ```
 
-Each business module owns its complete vertical slice:
+Each future business module owns its complete vertical slice:
 
 ```text
 modules/<module>/
@@ -44,14 +44,14 @@ shared → no business module
 - `shared` contains no business workflow or module policy.
 - Routes compose modules and contain no business logic.
 - Published, submitted and confirmed snapshots are immutable.
-- Legacy reuse is isolated behind a tested module adapter.
+- No Legacy adapter exists in the current runtime.
 
-## Naming
+## Runtime foundation
 
-Use PascalCase for components/types, kebab-case for files except framework-required names, verb-noun for commands/use cases, singular entity names, `*.port.ts` for ports, `*.adapter.ts` for adapters and `TASK-####-short-name.md` for tasks.
+The package now owns an independent Next.js App Router runtime, strict TypeScript configuration, ESLint, Vitest, Testing Library, Playwright configuration, a health endpoint and the foundation landing screen.
 
 ## Required checks
 
-Documentation integrity, typecheck, lint, unit tests, affected integration and end-to-end tests, import-boundary guard, accessibility, keyboard/touch and required responsive evidence.
+Run `npm run verify` for documentation validation, typecheck, lint, unit tests and production build. Run `npm run test:e2e` after Playwright Chromium is installed.
 
-Start with `TASK-0001` through `TASK-0004` in `tasks/README.md`. Do not implement business modules before the foundation gate is satisfied and their tasks are `READY`.
+Business modules remain blocked until TASK-0004 and TASK-0005 are complete.

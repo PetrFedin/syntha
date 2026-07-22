@@ -1,4 +1,4 @@
-name: Syntha V2 Architecture
+name: Syntha V2 Foundation
 
 on:
   pull_request:
@@ -15,19 +15,23 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: apps/syntha-wholesale-v2/package-lock.json
       - name: Install V2 package
         working-directory: apps/syntha-wholesale-v2
-        run: npm ci --ignore-scripts
-      - name: Verify V2 foundation
+        run: npm install --package-lock=false --ignore-scripts --no-audit --no-fund
+      - name: Verify V2 runtime and foundation
         working-directory: apps/syntha-wholesale-v2
         run: npm run verify
+      - name: Install Playwright Chromium
+        working-directory: apps/syntha-wholesale-v2
+        run: npx playwright install --with-deps chromium
+      - name: Run V2 browser smoke test
+        working-directory: apps/syntha-wholesale-v2
+        run: npm run test:e2e

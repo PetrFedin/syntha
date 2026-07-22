@@ -1,11 +1,13 @@
 ---
 task_id: TASK-0004
-status: READY
+status: IN_PROGRESS
 priority: P0
 product_area: foundation
 capability_ids: []
 workflow_ids: []
-screen_ids: []
+screen_ids:
+  - foundation-home
+  - runtime-health
 permissions: []
 commands: []
 domain_events: []
@@ -27,25 +29,33 @@ source_documents:
 
 Establish the executable Next.js/TypeScript runtime, test pyramid and protected CI gates required before business modules are implemented.
 
-## Scope
+## Implemented in this increment
 
-- install the independent Next.js App Router runtime inside the V2 package;
-- configure TypeScript, ESLint, Vitest, Testing Library and Playwright;
-- define deterministic test environment and fixtures;
-- add typecheck, lint, unit and architecture checks;
-- define changed-scope integration and e2e execution;
-- publish actionable failure output and retained evidence where applicable.
+- independent Next.js 16 App Router runtime;
+- strict TypeScript configuration and path alias;
+- ESLint flat configuration with Next.js Core Web Vitals and TypeScript rules;
+- Vitest, Testing Library and deterministic setup;
+- Playwright configuration and foundation smoke flow;
+- production build, health endpoint and responsive foundation screen;
+- CI sequence for install, verification, browser installation and e2e execution;
+- no Legacy import, fallback or runtime dependency.
 
-## Acceptance criteria
+## Local verification
 
-- one verification command runs all mandatory foundation checks;
-- CI uses supported runtime versions and pinned major actions;
-- failed checks block merge;
-- tests do not depend on production credentials or mutable external services;
-- tenant isolation and authorization test helpers exist before identity work;
-- required checks and local commands are documented;
-- no runtime dependency or import from Legacy is introduced.
+The following checks passed in an isolated local assembly:
 
-## Ready record
+```text
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+```
 
-Dependencies are complete and ADR-0004/ADR-0009 are accepted. This task is ready for implementation.
+Playwright Chromium download could not run in the execution environment because `cdn.playwright.dev` DNS resolution failed. Browser installation and e2e execution remain assigned to GitHub Actions.
+
+## Remaining work before QA
+
+- confirm the GitHub Actions run passes with Chromium installation;
+- replace the bootstrap-only lock metadata with the complete generated dependency lock;
+- add reusable tenant-isolation and authorization test builders;
+- record CI evidence in the completion report.

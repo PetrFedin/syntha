@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "entries": [
     {
       "id": "CHG-0001",
@@ -33,6 +33,17 @@
       "files": ["docs/architecture/adr/README.md", "docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md", "docs/architecture/context-map.json", "tasks/task-manifest.json", "STATUS.md"],
       "verification": {"command": "npm run verify", "result": "NOT_RUN"},
       "rollback": "Revert CHG-0003 and restore ADR, task, context map, Product Canon and status files to the previous review state."
+    },
+    {
+      "id": "CHG-0004",
+      "date": "2026-07-22",
+      "type": "runtime",
+      "summary": "Introduce the independent Next.js runtime, strict TypeScript and lint configuration, unit and browser test foundations, health endpoint and first V2 foundation screen.",
+      "tasks": ["TASK-0004"],
+      "adrs": ["ADR-0003", "ADR-0004", "ADR-0005", "ADR-0009"],
+      "files": ["package.json", "tsconfig.json", "next.config.ts", "eslint.config.mjs", "vitest.config.ts", "playwright.config.ts", "src/app/page.tsx", "src/app/api/health/route.ts", ".github/workflows/syntha-v2-architecture.yml"],
+      "verification": {"command": "npm run typecheck && npm run lint && npm run test && npm run build", "result": "PASS"},
+      "rollback": "Revert CHG-0004 and restore the runtime-blocked command contract while preserving accepted architecture and Product Canon documents."
     }
   ]
 }
