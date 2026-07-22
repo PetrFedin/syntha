@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "entries": [
     {
       "id": "CHG-0001",
@@ -41,7 +41,8 @@
       "summary": "Introduce the independent Next.js runtime, strict TypeScript and lint configuration, unit and browser test foundations, health endpoint and first V2 foundation screen.",
       "tasks": ["TASK-0004"],
       "adrs": ["ADR-0003", "ADR-0004", "ADR-0005", "ADR-0009"],
-      "files": ["package.json", "tsconfig.json", "next.config.ts", "eslint.config.mjs", "vitest.config.ts", "playwright.config.ts", "src/app/page.tsx", "src/app/api/health/route.ts", ".github/workflows/syntha-v2-architecture.yml"],
+      "files": ["package.json", "tsconfig.json", "next.config.ts", "eslint.config.mjs", "vitest.config.ts", "playwright.config.ts", "src/app/page.tsx", "src/app/api/health/route.ts"],
+      "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
       "verification": {"command": "npm run typecheck && npm run lint && npm run test && npm run build", "result": "PASS"},
       "rollback": "Revert CHG-0004 and restore the runtime-blocked command contract while preserving accepted architecture and Product Canon documents."
     },
@@ -55,6 +56,18 @@
       "files": ["scripts/validate-architecture.mjs", "src/testkit/organisation-scope.ts", "src/testkit/authorization.ts", "src/testkit/foundation-security.test.ts", "src/testkit/README.md", "tasks/TASK-0004-test-and-ci-foundation.md", "STATUS.md"],
       "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
       "rollback": "Revert CHG-0005 to restore the previous validator and remove the foundation security fixtures."
+    },
+    {
+      "id": "CHG-0006",
+      "date": "2026-07-22",
+      "type": "fix",
+      "summary": "Separate V2-owned and repository-level file evidence in the change ledger and expose each foundation CI gate as an independent workflow step.",
+      "tasks": ["TASK-0004"],
+      "adrs": ["ADR-0009"],
+      "files": ["scripts/validate-change-ledger.mjs", "docs/architecture/change-ledger.json", "tasks/TASK-0004-test-and-ci-foundation.md", "STATUS.md"],
+      "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0006 to restore the previous ledger schema and single-step foundation workflow."
     }
   ]
 }

@@ -37,9 +37,10 @@ Establish the executable Next.js/TypeScript runtime, test pyramid and protected 
 - Vitest, Testing Library and deterministic setup;
 - Playwright configuration and foundation smoke flow;
 - production build, health endpoint and responsive foundation screen;
-- CI sequence for install, verification, browser installation and e2e execution;
+- CI sequence for install, governance validation, typecheck, lint, unit tests, build, browser installation and e2e execution;
 - organisation-isolation and permission-denial testkit fixtures;
 - architecture validation excludes dependencies and generated runtime output;
+- change ledger distinguishes V2-owned files from repository-level workflow files;
 - no Legacy import, fallback or runtime dependency.
 
 ## Verification history
@@ -53,10 +54,11 @@ npm run test
 npm run build
 ```
 
-The first GitHub Actions run exposed that the architecture validator traversed `node_modules` after dependency installation. This was a validator-boundary defect, not a product-code failure. The validator now excludes vendor, build, coverage and browser-report directories.
+The first GitHub Actions run exposed that the architecture validator traversed `node_modules` after dependency installation. The second run exposed that repository-level workflow evidence had been recorded as though it lived inside the V2 package. Both defects were in governance boundaries rather than product runtime code and are now fixed explicitly.
 
 ## Remaining work before QA
 
-- confirm the corrected GitHub Actions run passes;
+- confirm the corrected GitHub Actions governance step passes;
+- confirm typecheck, lint, unit, build and Playwright steps pass independently;
 - replace bootstrap lock metadata with a complete generated dependency lock;
-- record successful browser-test evidence in the completion report.
+- record successful CI evidence in the completion report.
