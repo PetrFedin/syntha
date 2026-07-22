@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "entries": [
     {
       "id": "CHG-0001",
@@ -44,6 +44,17 @@
       "files": ["package.json", "tsconfig.json", "next.config.ts", "eslint.config.mjs", "vitest.config.ts", "playwright.config.ts", "src/app/page.tsx", "src/app/api/health/route.ts", ".github/workflows/syntha-v2-architecture.yml"],
       "verification": {"command": "npm run typecheck && npm run lint && npm run test && npm run build", "result": "PASS"},
       "rollback": "Revert CHG-0004 and restore the runtime-blocked command contract while preserving accepted architecture and Product Canon documents."
+    },
+    {
+      "id": "CHG-0005",
+      "date": "2026-07-22",
+      "type": "fix",
+      "summary": "Restrict architecture validation to owned V2 source and governance files, and add deterministic organisation-isolation and authorization-denial test fixtures.",
+      "tasks": ["TASK-0004"],
+      "adrs": ["ADR-0003", "ADR-0005", "ADR-0009"],
+      "files": ["scripts/validate-architecture.mjs", "src/testkit/organisation-scope.ts", "src/testkit/authorization.ts", "src/testkit/foundation-security.test.ts", "src/testkit/README.md", "tasks/TASK-0004-test-and-ci-foundation.md", "STATUS.md"],
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0005 to restore the previous validator and remove the foundation security fixtures."
     }
   ]
 }

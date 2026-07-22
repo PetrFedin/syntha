@@ -29,7 +29,7 @@ source_documents:
 
 Establish the executable Next.js/TypeScript runtime, test pyramid and protected CI gates required before business modules are implemented.
 
-## Implemented in this increment
+## Implemented
 
 - independent Next.js 16 App Router runtime;
 - strict TypeScript configuration and path alias;
@@ -38,11 +38,13 @@ Establish the executable Next.js/TypeScript runtime, test pyramid and protected 
 - Playwright configuration and foundation smoke flow;
 - production build, health endpoint and responsive foundation screen;
 - CI sequence for install, verification, browser installation and e2e execution;
+- organisation-isolation and permission-denial testkit fixtures;
+- architecture validation excludes dependencies and generated runtime output;
 - no Legacy import, fallback or runtime dependency.
 
-## Local verification
+## Verification history
 
-The following checks passed in an isolated local assembly:
+The isolated local assembly passed:
 
 ```text
 npm run typecheck
@@ -51,11 +53,10 @@ npm run test
 npm run build
 ```
 
-Playwright Chromium download could not run in the execution environment because `cdn.playwright.dev` DNS resolution failed. Browser installation and e2e execution remain assigned to GitHub Actions.
+The first GitHub Actions run exposed that the architecture validator traversed `node_modules` after dependency installation. This was a validator-boundary defect, not a product-code failure. The validator now excludes vendor, build, coverage and browser-report directories.
 
 ## Remaining work before QA
 
-- confirm the GitHub Actions run passes with Chromium installation;
-- replace the bootstrap-only lock metadata with the complete generated dependency lock;
-- add reusable tenant-isolation and authorization test builders;
-- record CI evidence in the completion report.
+- confirm the corrected GitHub Actions run passes;
+- replace bootstrap lock metadata with a complete generated dependency lock;
+- record successful browser-test evidence in the completion report.

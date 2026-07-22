@@ -6,7 +6,16 @@ import process from 'node:process';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 const warnings = [];
+const ignoredDirectories = new Set([
+  '.git',
+  '.next',
+  'node_modules',
+  'coverage',
+  'playwright-report',
+  'test-results',
+]);
 const walk = (dir) => existsSync(dir) ? readdirSync(dir).flatMap((name) => {
+  if (ignoredDirectories.has(name)) return [];
   const path = join(dir, name);
   return statSync(path).isDirectory() ? walk(path) : [path];
 }) : [];

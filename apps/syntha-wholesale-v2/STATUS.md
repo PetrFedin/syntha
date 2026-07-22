@@ -4,7 +4,7 @@ Updated: 2026-07-22
 
 ## Current phase
 
-Executable runtime and test foundation implementation, with Product Canon in QA.
+Executable runtime and test-foundation hardening, with Product Canon in QA.
 
 The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
 
@@ -25,6 +25,7 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 - Product Canon with twenty WSC decisions, module ownership and eight core workflows.
 - Independent Next.js App Router foundation screen and health endpoint.
 - Strict TypeScript, ESLint, Vitest, Testing Library and Playwright configuration.
+- Organisation-isolation and permission-denial testkit fixtures.
 - Local typecheck, lint, unit test and production build passed.
 
 ## Foundation gates
@@ -36,15 +37,15 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 | G2 | ADR-0001 through ADR-0009 accepted | PASS |
 | G3 | Documentation, ADR, task, ledger and import-boundary guard | PASS |
 | G4 | Runtime package boundary and command contract | PASS |
-| G5 | Runtime test, typecheck and lint toolchain | IN PROGRESS — TASK-0004 |
+| G5 | Runtime test, typecheck and lint toolchain | IN PROGRESS — CI validator fix awaiting run |
 | G6 | Wholesale benchmark converted into accepted Product Canon | IN REVIEW — TASK-0005 QA |
 | G7 | First business implementation task meets READY contract | BLOCKED BY G5/G6 |
 
 ## Immediate priority
 
-1. Run the updated GitHub Actions workflow and verify the Playwright Chromium flow.
-2. Complete dependency-lock generation and tenant-isolation testkit helpers.
-3. Move TASK-0004 to QA only with CI evidence.
+1. Confirm the corrected GitHub Actions workflow excludes `node_modules` and passes verification.
+2. Generate and commit the complete dependency lock.
+3. Move TASK-0004 to QA only with CI and Playwright evidence.
 4. Review TASK-0005 and move it from QA to DONE after terminology and scope confirmation.
 5. Prepare the first identity/organisation implementation task only after G5 and G6 pass.
 
