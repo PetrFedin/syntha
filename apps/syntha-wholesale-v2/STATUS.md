@@ -4,7 +4,7 @@ Updated: 2026-07-22
 
 ## Current phase
 
-First production business foundations: organisation identity, membership, active organisation context and RBAC.
+First production vertical slice: organisation identity, membership lifecycle, active organisation context, RBAC and persistence boundaries.
 
 The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
 
@@ -26,6 +26,7 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 - Independent Next.js App Router runtime, health endpoint and foundation screen.
 - Complete dependency lock with deterministic `npm ci`.
 - TypeScript, ESLint, Vitest, Testing Library and Playwright gates.
+- First organisation and identity-access domain contracts.
 
 ## Foundation gates
 
@@ -38,22 +39,23 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 | G4 | Runtime package boundary and command contract | PASS |
 | G5 | Runtime test, typecheck, lint, build and Playwright toolchain | PASS |
 | G6 | Wholesale benchmark converted into accepted Product Canon | PASS |
-| G7 | First business implementation task meets traced contract | IN PROGRESS — TASK-0006 |
+| G7 | First business implementation task meets traced contract | IN PROGRESS — TASK-0006 CI checkpoint |
 
 ## Active implementation
 
-TASK-0006 introduces the first two business modules:
+TASK-0006 now connects both first business modules end to end:
 
-- `organisations`: Brand and Shop identity and lifecycle state;
-- `identity-access`: membership, roles, explicit grants, active organisation switching and server-side authorization.
+- `organisations`: validated identity, lifecycle, duplicate-safe registration and repository port;
+- `identity-access`: membership lifecycle, roles, de-duplicated grants, active organisation validation, invitation, permission change and repository port;
+- deterministic in-memory adapters support unit and application integration tests without coupling domain code to a provider.
 
 ## Immediate priority
 
-1. Confirm TASK-0006 with governance, typecheck, lint and unit tests in CI.
-2. Add repository ports and persistence adapters only after domain contracts are stable.
-3. Add access and organisation chooser routes after application contracts pass review.
+1. Confirm this TASK-0006 checkpoint through the complete V2 CI workflow.
+2. Close TASK-0006 only after all acceptance criteria pass.
+3. Add access and organisation chooser routes against the approved application contracts.
 4. Prepare Commercial Policy and Catalog tasks after Identity/Organisation reaches DONE.
 
 ## Stop conditions
 
-Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs or server-side authorization.
+Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, active organisation validation or server-side authorization.

@@ -3,7 +3,7 @@ import type { Permission } from './permissions';
 
 export type MembershipId = string & { readonly __brand: 'MembershipId' };
 export type MembershipRole = 'OWNER' | 'ADMIN' | 'MEMBER';
-export type MembershipStatus = 'ACTIVE' | 'SUSPENDED';
+export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED';
 
 export interface Membership {
   readonly id: MembershipId;
@@ -44,6 +44,10 @@ function requiredText(value: string, label: string): string {
   return normalized;
 }
 
+function uniquePermissions(permissions: readonly Permission[]): readonly Permission[] {
+  return Object.freeze([...new Set(permissions)]);
+}
+
 export function membershipId(value: string): MembershipId {
   return requiredText(value, 'Membership id') as MembershipId;
 }
@@ -62,7 +66,17 @@ export function createMembership(input: {
     organisationId: input.organisationId,
     role: input.role,
     status: input.status ?? 'ACTIVE',
-    explicitPermissions: Object.freeze([...(input.explicitPermissions ?? [])]),
+    explicitPermissions: uniquePermissions(input.explicitPermissions ?? []),
+  });
+}
+
+export function withExplicitPermissions(
+  membership: Membership,
+  explicitPermissions: readonly Permission[],
+): Membership {
+  return Object.freeze({
+    ...membership,
+    explicitPermissions: uniquePermissions(explicitPermissions),
   });
 }
 

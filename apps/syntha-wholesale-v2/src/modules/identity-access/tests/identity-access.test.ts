@@ -9,7 +9,7 @@ import {
   switchActiveOrganisation,
 } from '../index';
 
-describe('identity access', () => {
+describe('identity access domain contracts', () => {
   it('switches active organisation for an active owner membership', () => {
     const targetOrganisationId = organisationId('brand-acme');
     const membership = createMembership({
@@ -24,7 +24,7 @@ describe('identity access', () => {
       targetOrganisationId,
       previousOrganisationId: organisationId('shop-old'),
       occurredAt: new Date('2026-07-22T11:00:00.000Z'),
-    }, [membership]);
+    }, membership);
 
     expect(result.context.organisationId).toBe(targetOrganisationId);
     expect(result.context.permissions.has('organisation.members.manage')).toBe(true);
@@ -35,28 +35,31 @@ describe('identity access', () => {
     });
   });
 
-  it('denies an organisation without a matching membership', () => {
+  it('denies a missing membership', () => {
     expect(() => switchActiveOrganisation({
       userId: 'user-1',
       targetOrganisationId: organisationId('shop-missing'),
-    }, [])).toThrow(MembershipAccessDenied);
+    }, null)).toThrow(MembershipAccessDenied);
   });
 
-  it('denies a suspended membership', () => {
-    const targetOrganisationId = organisationId('shop-suspended');
-    const membership = createMembership({
-      id: 'membership-suspended',
-      userId: 'user-1',
-      organisationId: targetOrganisationId,
-      role: 'ADMIN',
-      status: 'SUSPENDED',
-    });
+  it.each(['PENDING', 'SUSPENDED'] as const)(
+    'denies a %s membership',
+    (status) => {
+      const targetOrganisationId = organisationId(`shop-${status.toLowerCase()}`);
+      const membership = createMembership({
+        id: `membership-${status.toLowerCase()}`,
+        userId: 'user-1',
+        organisationId: targetOrganisationId,
+        role: 'ADMIN',
+        status,
+      });
 
-    expect(() => switchActiveOrganisation({
-      userId: 'user-1',
-      targetOrganisationId,
-    }, [membership])).toThrow('Suspended membership cannot activate an organisation');
-  });
+      expect(() => switchActiveOrganisation({
+        userId: 'user-1',
+        targetOrganisationId,
+      }, membership)).toThrow(`Membership status ${status} cannot activate an organisation`);
+    },
+  );
 
   it('denies a member permission that was not granted', () => {
     const membership = createMembership({
@@ -68,11 +71,26 @@ describe('identity access', () => {
     const result = switchActiveOrganisation({
       userId: 'user-2',
       targetOrganisationId: membership.organisationId,
-    }, [membership]);
+    }, membership);
 
     expect(() => assertPermission(
       result.context.permissions,
       'organisation.members.manage',
     )).toThrow(PermissionDenied);
+  });
+
+  it('removes repeated explicit permission grants', () => {
+    const membership = createMembership({
+      id: 'membership-deduplicated',
+      userId: 'user-3',
+      organisationId: organisationId('brand-two'),
+      role: 'MEMBER',
+      explicitPermissions: [
+        'organisation.members.manage',
+        'organisation.members.manage',
+      ],
+    });
+
+    expect(membership.explicitPermissions).toEqual(['organisation.members.manage']);
   });
 });

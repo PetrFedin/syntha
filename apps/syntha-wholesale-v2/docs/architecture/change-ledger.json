@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "entries": [
     {
       "id": "CHG-0001",
@@ -78,8 +78,19 @@
       "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0007", "ADR-0008", "ADR-0009"],
       "files": ["tasks/TASK-0004-test-and-ci-foundation.md", "tasks/TASK-0005-wholesale-capability-canon.md", "tasks/TASK-0006-identity-and-organisation-foundation.md", "tasks/completions/TASK-0004-completion.md", "tasks/completions/TASK-0005-completion.md", "tasks/task-manifest.json", "src/README.md", "src/modules/organisations/README.md", "src/modules/organisations/index.ts", "src/modules/organisations/domain/organisation.ts", "src/modules/organisations/tests/organisation.test.ts", "src/modules/identity-access/README.md", "src/modules/identity-access/index.ts", "src/modules/identity-access/domain/permissions.ts", "src/modules/identity-access/domain/membership.ts", "src/modules/identity-access/application/switch-active-organisation.ts", "src/modules/identity-access/tests/identity-access.test.ts", "STATUS.md"],
       "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
-      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "PASS", "workflow_run": 29921539327},
       "rollback": "Revert CHG-0007 to remove the first business modules and restore TASK-0004 and TASK-0005 to their prior review states."
+    },
+    {
+      "id": "CHG-0008",
+      "date": "2026-07-22",
+      "type": "feature",
+      "summary": "Connect organisation and identity-access records through repository ports, validate organisation state during activation, implement missing membership commands and events, and eliminate repeated permission grants and duplicate identities.",
+      "tasks": ["TASK-0006"],
+      "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/organisations/application/organisation-repository.ts", "src/modules/organisations/application/register-organisation.ts", "src/modules/organisations/infrastructure/in-memory-organisation-repository.ts", "src/modules/organisations/index.ts", "src/modules/organisations/README.md", "src/modules/organisations/tests/organisation-repository.test.ts", "src/modules/identity-access/domain/membership.ts", "src/modules/identity-access/application/errors.ts", "src/modules/identity-access/application/membership-repository.ts", "src/modules/identity-access/application/switch-active-organisation.ts", "src/modules/identity-access/application/activate-organisation.ts", "src/modules/identity-access/application/invite-member.ts", "src/modules/identity-access/application/change-membership-permissions.ts", "src/modules/identity-access/infrastructure/in-memory-membership-repository.ts", "src/modules/identity-access/index.ts", "src/modules/identity-access/README.md", "src/modules/identity-access/tests/identity-access.test.ts", "src/modules/identity-access/tests/identity-workflows.test.ts", "tasks/TASK-0006-identity-and-organisation-foundation.md", "STATUS.md"],
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0008 to restore the domain-only checkpoint and remove repository-backed membership workflows."
     }
   ]
 }

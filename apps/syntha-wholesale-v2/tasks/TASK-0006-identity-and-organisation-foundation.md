@@ -44,8 +44,11 @@ Create the first production business modules for organisation identity, membersh
 
 - Brand and Shop organisation identities;
 - active and suspended organisation states;
-- membership roles and explicit permission grants;
+- pending, active and suspended membership lifecycle;
+- membership roles and duplicate-free explicit permission grants;
 - active organisation switching through an application command;
+- member invitation and permission-change commands;
+- repository ports with deterministic in-memory adapters;
 - positive and negative authorization tests;
 - public module APIs through root `index.ts` files only.
 
@@ -53,8 +56,16 @@ Create the first production business modules for organisation identity, membersh
 
 - no Legacy imports or adapters;
 - organisation names and identifiers are validated at the domain boundary;
-- inactive organisations and suspended memberships cannot be used;
+- duplicate organisation and user/organisation membership identities are rejected;
+- inactive organisations and non-active memberships cannot be used;
 - active organisation switching requires an active membership and `identity.session.use`;
-- permissions are resolved server-side from role plus explicit grants;
+- invitations require `organisation.members.manage` and create PENDING memberships;
+- permission changes require `organisation.members.manage` and cannot cross organisation scope;
+- permissions are resolved server-side from role plus de-duplicated explicit grants;
 - cross-module imports use only the target module root API;
-- unit tests cover success, missing membership, suspended membership and permission denial.
+- repository contracts are owned by application layers, not domain layers;
+- unit tests cover success, missing membership, pending/suspended membership, inactive organisation, duplicate identities, permission denial and cross-record persistence.
+
+## Implementation checkpoint
+
+The domain, application ports, in-memory adapters, all three commands and all three events are implemented. TASK-0006 remains IN_PROGRESS until the full CI workflow confirms governance, strict typecheck, lint, unit tests, production build and browser smoke tests for this checkpoint.

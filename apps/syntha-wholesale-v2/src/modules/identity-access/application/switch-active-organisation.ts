@@ -37,18 +37,21 @@ export interface SwitchActiveOrganisationResult {
 
 export function switchActiveOrganisation(
   command: SwitchActiveOrganisationCommand,
-  memberships: readonly Membership[],
+  membership: Membership | null,
 ): SwitchActiveOrganisationResult {
-  const membership = memberships.find((candidate) =>
-    candidate.userId === command.userId
-    && candidate.organisationId === command.targetOrganisationId,
-  );
-
-  if (!membership) {
-    throw new MembershipAccessDenied('Active membership for the requested organisation was not found');
+  if (
+    !membership
+    || membership.userId !== command.userId
+    || membership.organisationId !== command.targetOrganisationId
+  ) {
+    throw new MembershipAccessDenied(
+      'Membership for the requested user and organisation was not found',
+    );
   }
   if (membership.status !== 'ACTIVE') {
-    throw new MembershipAccessDenied('Suspended membership cannot activate an organisation');
+    throw new MembershipAccessDenied(
+      `Membership status ${membership.status} cannot activate an organisation`,
+    );
   }
 
   const permissions = permissionsForMembership(membership);

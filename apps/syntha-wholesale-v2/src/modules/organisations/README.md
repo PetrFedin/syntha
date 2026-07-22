@@ -8,11 +8,15 @@ Owns Brand and Shop organisation identity and lifecycle state.
 - Brand and Shop type classification;
 - legal and display names;
 - ACTIVE and SUSPENDED lifecycle state;
+- duplicate-safe registration use case;
+- repository port and deterministic in-memory adapter;
 - registration domain event.
 
 ## Public API
 
 Cross-module consumers import only from `src/modules/organisations/index.ts`.
+
+The application layer depends on `OrganisationRepository`; infrastructure adapters implement that port. Domain code remains free of persistence and framework dependencies.
 
 ## Exclusions
 
