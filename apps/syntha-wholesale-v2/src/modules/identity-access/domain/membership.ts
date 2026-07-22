@@ -14,22 +14,22 @@ export interface Membership {
   readonly explicitPermissions: readonly Permission[];
 }
 
-const ROLE_PERMISSIONS: Readonly<Record<MembershipRole, readonly Permission[]>> = Object.freeze({
-  OWNER: Object.freeze([
+const ROLE_PERMISSIONS = {
+  OWNER: [
     'identity.session.use',
     'organisation.members.read',
     'organisation.members.manage',
-  ]),
-  ADMIN: Object.freeze([
+  ],
+  ADMIN: [
     'identity.session.use',
     'organisation.members.read',
     'organisation.members.manage',
-  ]),
-  MEMBER: Object.freeze([
+  ],
+  MEMBER: [
     'identity.session.use',
     'organisation.members.read',
-  ]),
-});
+  ],
+} as const satisfies Readonly<Record<MembershipRole, readonly Permission[]>>;
 
 export class MembershipAccessDenied extends Error {
   constructor(message: string) {
