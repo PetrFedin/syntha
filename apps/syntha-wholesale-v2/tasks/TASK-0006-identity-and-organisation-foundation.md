@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0006
-status: IN_PROGRESS
+status: DONE
 priority: P0
 product_area: identity-and-organisations
 capability_ids:
@@ -66,6 +66,6 @@ Create the first production business modules for organisation identity, membersh
 - repository contracts are owned by application layers, not domain layers;
 - unit tests cover success, missing membership, pending/suspended membership, inactive organisation, duplicate identities, permission denial and cross-record persistence.
 
-## Implementation checkpoint
+## Completion evidence
 
-The domain, application ports, in-memory adapters, all three commands and all three events are implemented. TASK-0006 remains IN_PROGRESS until the full CI workflow confirms governance, strict typecheck, lint, unit tests, production build and browser smoke tests for this checkpoint.
+The domain contracts, application commands, repository ports, deterministic in-memory adapters and authorization tests are implemented. GitHub Actions workflow run `29939296977` passed governance validation, strict typecheck, lint, unit tests, production build and browser smoke tests on 2026-07-22.
