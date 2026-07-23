@@ -1,10 +1,13 @@
 import type { IconName } from '@/shared/ui';
 
 export type WorkspaceSectionId =
+  | 'campaigns'
   | 'collections'
   | 'showroom'
   | 'selections'
+  | 'order-builder'
   | 'orders'
+  | 'confirmation'
   | 'dealspace'
   | 'messages'
   | 'calendar'
@@ -39,6 +42,19 @@ export interface WorkspaceNavigationItem {
 
 export const workspaceSections: readonly WorkspaceSection[] = [
   {
+    id: 'campaigns',
+    slug: 'campaigns',
+    href: '/campaigns',
+    label: 'Кампании',
+    title: 'Коммерческие кампании',
+    description: 'Сезонный контекст, цели, рынки, партнёры, окна продаж и правила, из которых начинается единый коммерческий процесс.',
+    icon: 'calendar',
+    primary: false,
+    mobile: false,
+    lifecycleStage: 'Campaign',
+    next: 'collections',
+  },
+  {
     id: 'collections',
     slug: 'collections',
     href: '/collections',
@@ -49,6 +65,7 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     primary: true,
     mobile: true,
     lifecycleStage: 'Collection',
+    previous: 'campaigns',
     next: 'showroom',
   },
   {
@@ -77,6 +94,20 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     mobile: false,
     lifecycleStage: 'Selection',
     previous: 'showroom',
+    next: 'order-builder',
+  },
+  {
+    id: 'order-builder',
+    slug: 'order-builder',
+    href: '/order-builder',
+    label: 'Сборка заказа',
+    title: 'Order Builder',
+    description: 'Преобразование согласованного выбора в размерные сетки, количества, поставки, валюты и коммерческие условия.',
+    icon: 'orders',
+    primary: false,
+    mobile: false,
+    lifecycleStage: 'Order Builder',
+    previous: 'selections',
     next: 'orders',
   },
   {
@@ -85,12 +116,26 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     href: '/orders',
     label: 'Заказы',
     title: 'Заказы',
-    description: 'Размерные сетки, количества, коммерческие условия, версии и подтверждение обязательств сторон.',
+    description: 'Формализованные заказы, версии, коммерческие условия и единая история обязательств сторон.',
     icon: 'orders',
     primary: true,
     mobile: true,
-    lifecycleStage: 'Order Builder → Order → Confirmation',
-    previous: 'selections',
+    lifecycleStage: 'Order',
+    previous: 'order-builder',
+    next: 'confirmation',
+  },
+  {
+    id: 'confirmation',
+    slug: 'confirmation',
+    href: '/confirmation',
+    label: 'Подтверждение',
+    title: 'Подтверждение заказа',
+    description: 'Проверка расхождений, согласование финальной версии и фиксация подтверждённых обязательств без потери истории.',
+    icon: 'check',
+    primary: false,
+    mobile: false,
+    lifecycleStage: 'Confirmation',
+    previous: 'orders',
     next: 'dealspace',
   },
   {
@@ -104,7 +149,7 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     primary: false,
     mobile: false,
     lifecycleStage: 'DealSpace',
-    previous: 'orders',
+    previous: 'confirmation',
   },
   {
     id: 'messages',
@@ -127,8 +172,6 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'calendar',
     primary: true,
     mobile: false,
-    lifecycleStage: 'Campaign',
-    next: 'collections',
   },
   {
     id: 'analytics',
@@ -205,16 +248,26 @@ export const workspaceNavigation: readonly WorkspaceNavigationItem[] = [
 export const mobileWorkspaceNavigation = workspaceNavigation.filter((item) => item.mobile);
 
 export const commercialLifecycle = [
-  ['01', 'Campaign', 'Календарь сезона и коммерческий контекст'],
-  ['02', 'Collection', 'Ассортимент, цены и материалы'],
-  ['03', 'Showroom', 'Публикация и презентация байерам'],
-  ['04', 'Selection', 'Рабочий выбор магазина'],
-  ['05', 'Order Builder', 'Размерные сетки, количества и условия'],
-  ['06', 'Order', 'Формализованный заказ и версии'],
-  ['07', 'Confirmation', 'Согласование и фиксация обязательств'],
-  ['08', 'DealSpace', 'Документы, сообщения и исполнение сделки'],
+  ['01', 'Campaign', 'Календарь сезона и коммерческий контекст', '/campaigns'],
+  ['02', 'Collection', 'Ассортимент, цены и материалы', '/collections'],
+  ['03', 'Showroom', 'Публикация и презентация байерам', '/showroom'],
+  ['04', 'Selection', 'Рабочий выбор магазина', '/selections'],
+  ['05', 'Order Builder', 'Размерные сетки, количества и условия', '/order-builder'],
+  ['06', 'Order', 'Формализованный заказ и версии', '/orders'],
+  ['07', 'Confirmation', 'Согласование и фиксация обязательств', '/confirmation'],
+  ['08', 'DealSpace', 'Документы, сообщения и исполнение сделки', '/dealspace'],
 ] as const;
 
 export function getWorkspaceSection(slug: string): WorkspaceSection | undefined {
   return workspaceSections.find((section) => section.slug === slug);
+}
+
+export function getWorkspaceSectionById(id: WorkspaceSectionId): WorkspaceSection {
+  const section = workspaceSections.find((item) => item.id === id);
+
+  if (!section) {
+    throw new Error(`Unknown workspace section: ${id}`);
+  }
+
+  return section;
 }
