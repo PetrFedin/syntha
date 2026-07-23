@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 export type IconName =
@@ -101,10 +102,10 @@ interface ButtonLinkProps {
 
 export function ButtonLink({ href, children, variant = 'primary', icon, className = '' }: ButtonLinkProps) {
   return (
-    <a className={`button button--${variant} ${className}`.trim()} href={href}>
+    <Link className={`button button--${variant} ${className}`.trim()} href={href}>
       <span>{children}</span>
       {icon ? <Icon name={icon} size={18} /> : null}
-    </a>
+    </Link>
   );
 }
 
@@ -118,10 +119,10 @@ interface IconButtonProps {
 
 export function IconButton({ href, icon, label, badge, className = '' }: IconButtonProps) {
   return (
-    <a className={`iconButton ${className}`.trim()} href={href} aria-label={label} title={label}>
+    <Link className={`iconButton ${className}`.trim()} href={href} aria-label={label} title={label}>
       <Icon name={icon} />
       {badge ? <span className="iconButton__badge">{badge}</span> : null}
-    </a>
+    </Link>
   );
 }
 
