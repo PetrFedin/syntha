@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "entries": [
     {
       "id": "CHG-0001",
@@ -91,6 +91,17 @@
       "files": ["src/modules/organisations/application/organisation-repository.ts", "src/modules/organisations/application/register-organisation.ts", "src/modules/organisations/infrastructure/in-memory-organisation-repository.ts", "src/modules/organisations/index.ts", "src/modules/organisations/README.md", "src/modules/organisations/tests/organisation-repository.test.ts", "src/modules/identity-access/domain/membership.ts", "src/modules/identity-access/application/errors.ts", "src/modules/identity-access/application/membership-repository.ts", "src/modules/identity-access/application/switch-active-organisation.ts", "src/modules/identity-access/application/activate-organisation.ts", "src/modules/identity-access/application/invite-member.ts", "src/modules/identity-access/application/change-membership-permissions.ts", "src/modules/identity-access/infrastructure/in-memory-membership-repository.ts", "src/modules/identity-access/index.ts", "src/modules/identity-access/README.md", "src/modules/identity-access/tests/identity-access.test.ts", "src/modules/identity-access/tests/identity-workflows.test.ts", "tasks/TASK-0006-identity-and-organisation-foundation.md", "STATUS.md"],
       "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
       "rollback": "Revert CHG-0008 to restore the domain-only checkpoint and remove repository-backed membership workflows."
+    },
+    {
+      "id": "CHG-0009",
+      "date": "2026-07-23",
+      "type": "architecture",
+      "summary": "Normalize the adaptive workspace around one route registry, typed commercial context, context-preserving deep links, shared page states and responsive lifecycle coverage.",
+      "tasks": ["TASK-0007"],
+      "adrs": ["ADR-0003", "ADR-0004", "ADR-0005", "ADR-0009"],
+      "files": ["src/app/layout.tsx", "src/app/page.tsx", "src/app/[section]/page.tsx", "src/app/[section]/loading.tsx", "src/app/[section]/error.tsx", "src/app/globals.css", "src/app/workspace-pages.css", "src/shared/navigation/index.ts", "src/shared/commercial-context/index.ts", "src/shared/workspace/workspace-context.tsx", "src/shared/workspace/workspace-links.ts", "src/shared/workspace/workspace-shell.tsx", "src/shared/workspace/contextual-links.tsx", "src/shared/workspace/components/index.tsx", "src/shared/connected-services/index.ts", "src/shared/connected-services/fixtures.ts", "src/shared/ui/index.tsx", "src/app/page.test.tsx", "src/shared/navigation/index.test.ts", "src/shared/commercial-context/index.test.ts", "src/shared/workspace/workspace-context.test.tsx", "src/shared/workspace/workspace-links.test.ts", "playwright.config.ts", "e2e/workspace.spec.ts", "vitest.config.ts", "tasks/TASK-0007-adaptive-workspace-foundation.md", "STATUS.md"],
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "PASS"},
+      "rollback": "Revert CHG-0009 to restore the previous shell-only workspace checkpoint and single-project foundation browser test."
     }
   ]
 }
