@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import type { WorkspaceHref } from '@/shared/workspace/workspace-links';
 
 export type IconName =
   | 'home'
@@ -93,7 +94,7 @@ export function Icon({ name, size = 20, title }: IconProps) {
 }
 
 interface ButtonLinkProps {
-  readonly href: string;
+  readonly href: WorkspaceHref;
   readonly children: ReactNode;
   readonly variant?: 'primary' | 'secondary' | 'ghost';
   readonly icon?: IconName;
@@ -110,7 +111,7 @@ export function ButtonLink({ href, children, variant = 'primary', icon, classNam
 }
 
 interface IconButtonProps {
-  readonly href: string;
+  readonly href: WorkspaceHref;
   readonly icon: IconName;
   readonly label: string;
   readonly badge?: string;

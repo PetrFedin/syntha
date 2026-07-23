@@ -1,13 +1,18 @@
-import Link from 'next/link';
 import { commercialLifecycle } from '@/shared/navigation';
 import type { IconName } from '@/shared/ui';
-import { Badge, ButtonLink, Icon, MetricCard } from '@/shared/ui';
+import { Badge, Icon, MetricCard } from '@/shared/ui';
+import {
+  ContextualButtonLink as ButtonLink,
+  ContextualLink as Link,
+} from '@/shared/workspace/contextual-links';
+import { WorkspaceLoadingState } from '@/shared/workspace/components';
+import type { WorkspaceHref } from '@/shared/workspace/workspace-links';
 
 const workspaceEntrypoints: ReadonlyArray<{
   title: string;
   meta: string;
   description: string;
-  href: string;
+  href: WorkspaceHref;
   icon: IconName;
 }> = [
   {
@@ -36,7 +41,7 @@ const workspaceEntrypoints: ReadonlyArray<{
 const connectedCapabilities: ReadonlyArray<{
   title: string;
   description: string;
-  href: string;
+  href: WorkspaceHref;
   icon: IconName;
 }> = [
   {
@@ -61,7 +66,8 @@ const connectedCapabilities: ReadonlyArray<{
 
 export default function HomePage() {
   return (
-    <main className="workspaceMain" id="overview">
+    <Suspense fallback={<WorkspaceLoadingState />}>
+      <main className="workspaceMain" id="overview">
       <section className="welcomePanel" aria-labelledby="workspace-title">
         <div>
           <div className="sectionKicker">
@@ -173,12 +179,12 @@ export default function HomePage() {
           <span className="panelMeta">Campaign → DealSpace</span>
         </div>
         <ol className="lifecycleFlow">
-          {commercialLifecycle.map(([number, title, description, href], index) => (
-            <li key={href}>
-              <span className="lifecycleNumber">{number}</span>
+          {commercialLifecycle.map((section, index) => (
+            <li key={section.id}>
+              <span className="lifecycleNumber">{String(index + 1).padStart(2, '0')}</span>
               <div>
-                <strong><Link href={href}>{title}</Link></strong>
-                <p>{description}</p>
+                <strong><Link href={section.href}>{section.lifecycleStage}</Link></strong>
+                <p>{section.description}</p>
               </div>
               {index < commercialLifecycle.length - 1 ? (
                 <Icon name="arrow-right" size={16} />
@@ -231,6 +237,8 @@ export default function HomePage() {
           <ButtonLink href="/settings" variant="secondary">Настроить workspace</ButtonLink>
         </article>
       </section>
-    </main>
+      </main>
+    </Suspense>
   );
 }
+import { Suspense } from 'react';

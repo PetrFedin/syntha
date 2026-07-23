@@ -27,6 +27,9 @@ export interface WorkspaceSection {
   readonly icon: IconName;
   readonly primary: boolean;
   readonly mobile: boolean;
+  readonly systemRole: string;
+  readonly capabilities: readonly string[];
+  readonly primaryActionLabel: string;
   readonly lifecycleStage?: string;
   readonly previous?: WorkspaceSectionId;
   readonly next?: WorkspaceSectionId;
@@ -51,6 +54,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'calendar',
     primary: false,
     mobile: false,
+    systemRole: 'Определяет сезонные границы и коммерческие правила для всех нижестоящих сущностей.',
+    capabilities: ['Сезонный контекст', 'Коммерческие сроки', 'Рынки и партнёры'],
+    primaryActionLabel: 'Перейти к коллекциям',
     lifecycleStage: 'Campaign',
     next: 'collections',
   },
@@ -64,6 +70,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'collections',
     primary: true,
     mobile: true,
+    systemRole: 'Группирует готовый к продаже ассортимент внутри выбранной кампании.',
+    capabilities: ['Ассортимент', 'Коммерческие атрибуты', 'Готовность к публикации'],
+    primaryActionLabel: 'Перейти в showroom',
     lifecycleStage: 'Collection',
     previous: 'campaigns',
     next: 'showroom',
@@ -78,6 +87,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'showroom',
     primary: true,
     mobile: true,
+    systemRole: 'Публикует согласованную коллекцию для управляемого доступа партнёров.',
+    capabilities: ['Публикация', 'Доступ партнёров', 'Коммерческая презентация'],
+    primaryActionLabel: 'Начать выбор',
     lifecycleStage: 'Showroom',
     previous: 'collections',
     next: 'selections',
@@ -92,6 +104,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'selection',
     primary: true,
     mobile: false,
+    systemRole: 'Фиксирует решение байера до появления обязательств по заказу.',
+    capabilities: ['Shortlist', 'Бюджет', 'Размерный intent'],
+    primaryActionLabel: 'Открыть Order Builder',
     lifecycleStage: 'Selection',
     previous: 'showroom',
     next: 'order-builder',
@@ -106,6 +121,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'orders',
     primary: false,
     mobile: false,
+    systemRole: 'Преобразует выбор в валидируемый черновик заказа без смешения сущностей.',
+    capabilities: ['Размерные сетки', 'Количество', 'Проверка условий'],
+    primaryActionLabel: 'Перейти к заказам',
     lifecycleStage: 'Order Builder',
     previous: 'selections',
     next: 'orders',
@@ -120,6 +138,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'orders',
     primary: true,
     mobile: true,
+    systemRole: 'Хранит версионированные коммерческие обязательства сторон.',
+    capabilities: ['Версии заказа', 'Согласование', 'История изменений'],
+    primaryActionLabel: 'Перейти к подтверждению',
     lifecycleStage: 'Order',
     previous: 'order-builder',
     next: 'confirmation',
@@ -134,6 +155,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'check',
     primary: false,
     mobile: false,
+    systemRole: 'Фиксирует согласованную версию заказа перед совместным исполнением.',
+    capabilities: ['Проверка расхождений', 'Финальное согласование', 'Неизменяемый снимок'],
+    primaryActionLabel: 'Открыть DealSpace',
     lifecycleStage: 'Confirmation',
     previous: 'orders',
     next: 'dealspace',
@@ -148,6 +172,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'messages',
     primary: false,
     mobile: false,
+    systemRole: 'Собирает решения, сообщения, файлы и сроки вокруг подтверждённой сделки.',
+    capabilities: ['Контекстные сообщения', 'Документы', 'Решения и действия'],
+    primaryActionLabel: 'Вернуться на dashboard',
     lifecycleStage: 'DealSpace',
     previous: 'confirmation',
   },
@@ -161,6 +188,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'messages',
     primary: true,
     mobile: true,
+    systemRole: 'Обеспечивает коммуникацию только в контексте исходной коммерческой сущности.',
+    capabilities: ['Entity threads', 'Обратная ссылка', 'История обсуждения'],
+    primaryActionLabel: 'Вернуться к исходной сущности',
   },
   {
     id: 'calendar',
@@ -172,6 +202,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'calendar',
     primary: true,
     mobile: false,
+    systemRole: 'Координирует сроки процесса и возвращает пользователя к исходной сущности события.',
+    capabilities: ['События процесса', 'Сроки', 'Entity deep links'],
+    primaryActionLabel: 'Открыть ближайшую стадию',
   },
   {
     id: 'analytics',
@@ -183,6 +216,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'analytics',
     primary: true,
     mobile: false,
+    systemRole: 'Показывает измерения единого коммерческого процесса без создания параллельных фактов.',
+    capabilities: ['Sell-in', 'Конверсия lifecycle', 'Результативность партнёрств'],
+    primaryActionLabel: 'Вернуться на dashboard',
   },
   {
     id: 'settings',
@@ -194,6 +230,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'settings',
     primary: false,
     mobile: false,
+    systemRole: 'Управляет workspace и организационными предпочтениями, не дублируя authorization.',
+    capabilities: ['Организация', 'Участники', 'Параметры workspace'],
+    primaryActionLabel: 'Вернуться на dashboard',
   },
   {
     id: 'help',
@@ -205,6 +244,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'help',
     primary: false,
     mobile: false,
+    systemRole: 'Объясняет текущую стадию, данные и безопасные следующие действия.',
+    capabilities: ['Контекстная помощь', 'Правила данных', 'Навигация процесса'],
+    primaryActionLabel: 'Вернуться на dashboard',
   },
   {
     id: 'notifications',
@@ -216,6 +258,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'bell',
     primary: false,
     mobile: false,
+    systemRole: 'Доставляет события только с валидной точкой назначения в коммерческом контуре.',
+    capabilities: ['Приоритет', 'Read state', 'Source entity links'],
+    primaryActionLabel: 'Открыть исходную сущность',
   },
   {
     id: 'search',
@@ -227,6 +272,9 @@ export const workspaceSections: readonly WorkspaceSection[] = [
     icon: 'search',
     primary: false,
     mobile: false,
+    systemRole: 'Находит коммерческие сущности и всегда возвращает маршрут к результату.',
+    capabilities: ['Единая модель результата', 'Тип сущности', 'Контекстный маршрут'],
+    primaryActionLabel: 'Вернуться на dashboard',
   },
 ] as const;
 
@@ -247,17 +295,6 @@ export const workspaceNavigation: readonly WorkspaceNavigationItem[] = [
 
 export const mobileWorkspaceNavigation = workspaceNavigation.filter((item) => item.mobile);
 
-export const commercialLifecycle = [
-  ['01', 'Campaign', 'Календарь сезона и коммерческий контекст', '/campaigns'],
-  ['02', 'Collection', 'Ассортимент, цены и материалы', '/collections'],
-  ['03', 'Showroom', 'Публикация и презентация байерам', '/showroom'],
-  ['04', 'Selection', 'Рабочий выбор магазина', '/selections'],
-  ['05', 'Order Builder', 'Размерные сетки, количества и условия', '/order-builder'],
-  ['06', 'Order', 'Формализованный заказ и версии', '/orders'],
-  ['07', 'Confirmation', 'Согласование и фиксация обязательств', '/confirmation'],
-  ['08', 'DealSpace', 'Документы, сообщения и исполнение сделки', '/dealspace'],
-] as const;
-
 export function getWorkspaceSection(slug: string): WorkspaceSection | undefined {
   return workspaceSections.find((section) => section.slug === slug);
 }
@@ -271,3 +308,68 @@ export function getWorkspaceSectionById(id: WorkspaceSectionId): WorkspaceSectio
 
   return section;
 }
+
+export function isLifecycleSection(
+  section: WorkspaceSection,
+): section is WorkspaceSection & { readonly lifecycleStage: string } {
+  return typeof section.lifecycleStage === 'string';
+}
+
+export function getPreviousWorkspaceSection(
+  section: WorkspaceSection,
+): WorkspaceSection | undefined {
+  return section.previous ? getWorkspaceSectionById(section.previous) : undefined;
+}
+
+export function getNextWorkspaceSection(
+  section: WorkspaceSection,
+): WorkspaceSection | undefined {
+  return section.next ? getWorkspaceSectionById(section.next) : undefined;
+}
+
+export const commercialLifecycle = workspaceSections.filter(isLifecycleSection);
+
+function assertUnique(values: readonly string[], field: string): void {
+  if (new Set(values).size !== values.length) {
+    throw new Error(`Workspace registry contains duplicate ${field}`);
+  }
+}
+
+function validateWorkspaceRegistry(): void {
+  assertUnique(workspaceSections.map(({ id }) => id), 'id');
+  assertUnique(workspaceSections.map(({ slug }) => slug), 'slug');
+  assertUnique(workspaceSections.map(({ href }) => href), 'href');
+
+  if (commercialLifecycle.length !== 8) {
+    throw new Error('Workspace lifecycle must contain exactly 8 stages');
+  }
+
+  for (const section of workspaceSections) {
+    const previous = getPreviousWorkspaceSection(section);
+    const next = getNextWorkspaceSection(section);
+
+    if (previous && previous.next !== section.id) {
+      throw new Error(`Workspace registry previous/next mismatch for ${section.id}`);
+    }
+    if (next && next.previous !== section.id) {
+      throw new Error(`Workspace registry next/previous mismatch for ${section.id}`);
+    }
+  }
+
+  const visited = new Set<WorkspaceSectionId>();
+  let current: WorkspaceSection | undefined = commercialLifecycle[0];
+
+  while (current) {
+    if (visited.has(current.id)) {
+      throw new Error(`Workspace lifecycle contains a cycle at ${current.id}`);
+    }
+    visited.add(current.id);
+    current = getNextWorkspaceSection(current);
+  }
+
+  if (visited.size !== commercialLifecycle.length) {
+    throw new Error('Workspace lifecycle contains disconnected stages');
+  }
+}
+
+validateWorkspaceRegistry();

@@ -197,6 +197,91 @@
   gap: 10px;
 }
 
+.lifecycleNavigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.lifecycleNavigation .workflowLink:first-child .icon {
+  transform: rotate(180deg);
+}
+
+.workflowLink span {
+  display: grid;
+  gap: 5px;
+}
+
+.workspaceState {
+  padding: clamp(24px, 3vw, 40px);
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.workspaceState > .icon {
+  color: var(--accent);
+}
+
+.workspaceState h1,
+.workspaceState h2,
+.workspaceState p {
+  margin: 0;
+}
+
+.workspaceState p {
+  max-width: 720px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.workspaceStateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.workspaceSkeleton {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--surface-soft), var(--surface-strong), var(--surface-soft));
+  background-size: 220% 100%;
+  animation: workspaceSkeleton 1.4s ease-in-out infinite;
+}
+
+.workspaceSkeleton--hero { min-height: 250px; }
+.workspaceSkeleton--context { min-height: 126px; }
+.workspaceSkeleton--content { min-height: 320px; }
+
+.workspaceEntityLink {
+  min-height: 64px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 14px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+}
+
+.workspaceEntityLink small {
+  color: var(--muted);
+}
+
+.workspaceEntityLink .icon {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+@keyframes workspaceSkeleton {
+  to { background-position: -220% 0; }
+}
+
 @media (min-width: 768px) and (max-width: 1199px) {
   .workspaceContextGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -244,6 +329,15 @@
 
   .workspacePageFooter > div,
   .workspacePageFooter .button {
+    width: 100%;
+  }
+
+  .lifecycleNavigation {
+    grid-template-columns: 1fr;
+  }
+
+  .workspaceStateActions,
+  .workspaceStateActions .button {
     width: 100%;
   }
 }
