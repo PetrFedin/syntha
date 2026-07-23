@@ -69,6 +69,14 @@ TASK-0007 now connects the workspace foundation end to end:
 3. Add persisted entity ownership, authorization and audit at each server-backed transition.
 4. Continue Showroom → Selection only after Campaign and Collection have one authoritative read/write path.
 
+## Known tooling diagnostics
+
+- Next.js 16.2.11 canonically generates `next-env.d.ts` with
+  `import "./.next/types/routes.d.ts";` when typed routes are enabled.
+- A production request for an unknown static section returns the expected 404 page and the server
+  remains healthy, but Next.js 16.2.11 emits an internal `NoFallbackError` diagnostic for that
+  expected `dynamicParams = false` miss. No runtime workaround is applied.
+
 ## Stop conditions
 
 Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, active organisation validation or server-side authorization.

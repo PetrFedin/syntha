@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Suspense } from 'react';
 import { WorkspaceShell } from '@/shared/workspace/workspace-shell';
 import { WorkspaceContextProvider } from '@/shared/workspace/workspace-context';
 import './globals.css';
@@ -28,9 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="ru">
       <body>
         <WorkspaceContextProvider>
-          <Suspense fallback={children}>
-            <WorkspaceShell>{children}</WorkspaceShell>
-          </Suspense>
+          <WorkspaceShell>{children}</WorkspaceShell>
         </WorkspaceContextProvider>
       </body>
     </html>

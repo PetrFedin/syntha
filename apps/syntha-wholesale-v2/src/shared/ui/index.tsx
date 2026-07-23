@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import type { WorkspaceHref } from '@/shared/workspace/workspace-links';
+import type { WorkspaceHref } from '@/shared/routing';
 
 export type IconName =
   | 'home'

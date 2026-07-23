@@ -11,8 +11,7 @@ export const workspaceServiceFixtures = {
   messages: [
     {
       id: 'fixture-thread-1',
-      entityType: 'collection',
-      entityId: 'fixture-collection-1',
+      sourceEntity: { type: 'collection', id: 'fixture-collection-1' },
       threadId: 'fixture-thread-1',
       title: 'Обсуждение коллекции',
       targetHref: buildWorkspaceHref('collections', {
@@ -29,6 +28,7 @@ export const workspaceServiceFixtures = {
       description: 'Структурный пример уведомления с обязательной точкой назначения.',
       sourceEntity: { type: 'selection', id: 'fixture-selection-1' },
       targetHref: buildWorkspaceHref('selections', {
+        campaignId: 'fixture-campaign-1',
         collectionId: 'fixture-collection-1',
         showroomId: 'fixture-showroom-1',
         selectionId: 'fixture-selection-1',
@@ -41,13 +41,17 @@ export const workspaceServiceFixtures = {
   calendar: [
     {
       id: 'fixture-event-1',
-      entityType: 'confirmation',
-      entityId: 'fixture-confirmation-1',
+      sourceEntity: { type: 'confirmation', id: 'fixture-confirmation-1' },
       eventType: 'deadline',
       startsAt: '2026-01-15T09:00:00.000Z',
       endsAt: '2026-01-15T10:00:00.000Z',
       title: 'Срок подтверждения заказа',
       targetHref: buildWorkspaceHref('confirmation', {
+        campaignId: 'fixture-campaign-1',
+        collectionId: 'fixture-collection-1',
+        showroomId: 'fixture-showroom-1',
+        selectionId: 'fixture-selection-1',
+        orderDraftId: 'fixture-order-draft-1',
         orderId: 'fixture-order-1',
         confirmationId: 'fixture-confirmation-1',
       }),
@@ -56,11 +60,18 @@ export const workspaceServiceFixtures = {
   search: [
     {
       id: 'fixture-result-1',
-      entityType: 'order',
+      sourceEntity: { type: 'order', id: 'fixture-order-1' },
       title: 'Заказ',
       subtitle: 'Структурный пример результата поиска',
       metadata: { status: 'fixture', source: 'workspace-service-fixtures' },
-      href: buildWorkspaceHref('orders', { orderId: 'fixture-order-1' }),
+      href: buildWorkspaceHref('orders', {
+        campaignId: 'fixture-campaign-1',
+        collectionId: 'fixture-collection-1',
+        showroomId: 'fixture-showroom-1',
+        selectionId: 'fixture-selection-1',
+        orderDraftId: 'fixture-order-draft-1',
+        orderId: 'fixture-order-1',
+      }),
     },
   ] satisfies readonly WorkspaceSearchResult[],
 } as const;

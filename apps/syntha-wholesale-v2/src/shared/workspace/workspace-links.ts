@@ -1,9 +1,9 @@
-import type { Route } from 'next';
 import type { CommercialContext } from '@/shared/commercial-context';
 import {
   getWorkspaceSectionById,
   type WorkspaceSectionId,
 } from '@/shared/navigation';
+import type { WorkspaceHref } from '@/shared/routing';
 
 export interface WorkspaceUrlContext extends CommercialContext {
   readonly partnerId?: string;
@@ -16,7 +16,6 @@ export interface WorkspaceUrlContext extends CommercialContext {
 }
 
 export type WorkspaceSearchParamKey = keyof WorkspaceUrlContext;
-export type WorkspaceHref = Route<`/${string}`>;
 
 const workspaceSearchParamKeys = [
   'organisationId',
@@ -51,6 +50,19 @@ const dependentKeys = [
   'dealId',
 ] as const satisfies readonly WorkspaceSearchParamKey[];
 
+const requiredUrlParent: Partial<
+  Record<(typeof dependentKeys)[number], (typeof dependentKeys)[number]>
+> = {
+  seasonId: 'organisationId',
+  collectionId: 'campaignId',
+  showroomId: 'collectionId',
+  selectionId: 'showroomId',
+  orderDraftId: 'selectionId',
+  orderId: 'orderDraftId',
+  confirmationId: 'orderId',
+  dealId: 'confirmationId',
+};
+
 type SearchParamsInput =
   | URLSearchParams
   | Readonly<Record<string, string | readonly string[] | undefined>>;
@@ -76,7 +88,7 @@ export function parseWorkspaceSearchParams(input: SearchParamsInput): WorkspaceU
     if (value) result[key] = value;
   }
 
-  return normalizeWorkspaceUrlContext(result);
+  return sanitizeWorkspaceUrlContext(result);
 }
 
 export function normalizeWorkspaceUrlContext(
@@ -92,8 +104,31 @@ export function normalizeWorkspaceUrlContext(
   return normalized;
 }
 
+export function sanitizeWorkspaceUrlContext(
+  context: WorkspaceUrlContext,
+): WorkspaceUrlContext {
+  const sanitized = { ...normalizeWorkspaceUrlContext(context) };
+
+  for (const key of dependentKeys) {
+    const requiredParent = requiredUrlParent[key];
+    if (sanitized[key] && requiredParent && !sanitized[requiredParent]) {
+      delete sanitized[key];
+    }
+  }
+
+  if (
+    (sanitized.entityType && !sanitized.entityId)
+    || (!sanitized.entityType && sanitized.entityId)
+  ) {
+    delete sanitized.entityType;
+    delete sanitized.entityId;
+  }
+
+  return sanitized;
+}
+
 function appendContext(url: URL, context: WorkspaceUrlContext): void {
-  const normalized = normalizeWorkspaceUrlContext(context);
+  const normalized = sanitizeWorkspaceUrlContext(context);
   for (const key of workspaceSearchParamKeys) {
     const value = normalized[key];
     if (value) url.searchParams.set(key, value);
@@ -117,6 +152,7 @@ export function mergeWorkspaceContextIntoHref(
 ): WorkspaceHref {
   const url = new URL(href, 'https://workspace.local');
   const existing = parseWorkspaceSearchParams(url.searchParams);
+  const normalizedPatch = normalizeWorkspaceUrlContext(context);
   const merged: Partial<Record<WorkspaceSearchParamKey, string>> = {
     ...existing,
   };
@@ -130,8 +166,16 @@ export function mergeWorkspaceContextIntoHref(
     }
   }
 
-  Object.assign(merged, context);
+  for (const key of workspaceSearchParamKeys) {
+    if (!Object.prototype.hasOwnProperty.call(context, key)) continue;
+    const value = normalizedPatch[key];
+    if (value) {
+      merged[key] = value;
+    } else {
+      delete merged[key];
+    }
+  }
   url.search = '';
-  appendContext(url, merged);
+  appendContext(url, sanitizeWorkspaceUrlContext(merged));
   return `${url.pathname}${url.search}${url.hash}` as WorkspaceHref;
 }

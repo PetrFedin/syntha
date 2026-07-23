@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import { commercialLifecycle } from '@/shared/navigation';
+import type { WorkspaceHref } from '@/shared/routing';
 import type { IconName } from '@/shared/ui';
 import { Badge, Icon, MetricCard } from '@/shared/ui';
 import {
@@ -6,7 +8,6 @@ import {
   ContextualLink as Link,
 } from '@/shared/workspace/contextual-links';
 import { WorkspaceLoadingState } from '@/shared/workspace/components';
-import type { WorkspaceHref } from '@/shared/workspace/workspace-links';
 
 const workspaceEntrypoints: ReadonlyArray<{
   title: string;
@@ -241,4 +242,3 @@ export default function HomePage() {
     </Suspense>
   );
 }
-import { Suspense } from 'react';

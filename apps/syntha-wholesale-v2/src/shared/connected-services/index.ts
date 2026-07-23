@@ -1,10 +1,9 @@
 import type { CommercialEntityReference } from '@/shared/commercial-context';
-import type { WorkspaceHref } from '@/shared/workspace/workspace-links';
+import type { WorkspaceHref } from '@/shared/routing';
 
 export interface EntityMessageThread {
   readonly id: string;
-  readonly entityType: CommercialEntityReference['type'];
-  readonly entityId: string;
+  readonly sourceEntity: CommercialEntityReference;
   readonly threadId: string;
   readonly title: string;
   readonly targetHref: WorkspaceHref;
@@ -24,8 +23,7 @@ export interface WorkspaceNotification {
 
 export interface WorkspaceCalendarEvent {
   readonly id: string;
-  readonly entityType: CommercialEntityReference['type'];
-  readonly entityId: string;
+  readonly sourceEntity: CommercialEntityReference;
   readonly eventType: 'opens' | 'deadline' | 'review';
   readonly startsAt: string;
   readonly endsAt: string;
@@ -35,7 +33,7 @@ export interface WorkspaceCalendarEvent {
 
 export interface WorkspaceSearchResult {
   readonly id: string;
-  readonly entityType: CommercialEntityReference['type'];
+  readonly sourceEntity: CommercialEntityReference;
   readonly title: string;
   readonly subtitle: string;
   readonly metadata: Readonly<Record<string, string>>;

@@ -18,7 +18,7 @@ export function ConnectedServicePanel({ section }: { readonly section: Workspace
     messages: workspaceServiceFixtures.messages.map((item) => ({
       id: item.id,
       title: item.title,
-      entity: { type: item.entityType, id: item.entityId },
+      entity: item.sourceEntity,
       href: mergeWorkspaceContextIntoHref(item.targetHref, { threadId: item.threadId }),
     })),
     notifications: workspaceServiceFixtures.notifications.map((item) => ({
@@ -30,13 +30,13 @@ export function ConnectedServicePanel({ section }: { readonly section: Workspace
     calendar: workspaceServiceFixtures.calendar.map((item) => ({
       id: item.id,
       title: item.title,
-      entity: { type: item.entityType, id: item.entityId },
+      entity: item.sourceEntity,
       href: item.targetHref,
     })),
     search: workspaceServiceFixtures.search.map((item) => ({
       id: item.id,
       title: item.title,
-      entity: { type: item.entityType, id: item.id },
+      entity: item.sourceEntity,
       href: item.href,
     })),
   }[section];

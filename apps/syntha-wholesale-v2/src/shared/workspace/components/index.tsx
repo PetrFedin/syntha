@@ -7,6 +7,7 @@ import type {
   CommercialEntityReference,
   CommercialEntityType,
 } from '@/shared/commercial-context';
+import type { WorkspaceHref } from '@/shared/routing';
 import type { WorkspaceSection } from '@/shared/navigation';
 import {
   getNextWorkspaceSection,
@@ -18,7 +19,6 @@ import { useWorkspaceContext } from '@/shared/workspace/workspace-context';
 import {
   mergeWorkspaceContextIntoHref,
   parseWorkspaceSearchParams,
-  type WorkspaceHref,
   type WorkspaceUrlContext,
 } from '@/shared/workspace/workspace-links';
 

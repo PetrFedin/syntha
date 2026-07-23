@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
+import type { WorkspaceHref } from '@/shared/routing';
 import { ButtonLink, type IconName } from '@/shared/ui';
 import {
   mergeWorkspaceContextIntoHref,
   parseWorkspaceSearchParams,
-  type WorkspaceHref,
 } from '@/shared/workspace/workspace-links';
 
 interface ContextualLinkProps {
