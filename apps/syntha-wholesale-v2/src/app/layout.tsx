@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import { WorkspaceShell } from '@/shared/workspace/workspace-shell';
 import './globals.css';
+import './workspace-pages.css';
 
 export const metadata: Metadata = {
   title: {
@@ -22,7 +24,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <WorkspaceShell>{children}</WorkspaceShell>
+      </body>
     </html>
   );
 }
