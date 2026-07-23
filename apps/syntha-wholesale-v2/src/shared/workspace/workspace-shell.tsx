@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import {
@@ -26,17 +27,17 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
   return (
     <div className="workspaceShell">
       <aside className="sidebar" data-testid="desktop-navigation" aria-label="Основная навигация">
-        <a className="brandLockup" href="/" aria-label="Syntha — главная">
+        <Link className="brandLockup" href="/" aria-label="Syntha — главная">
           <span className="brandWordmark">SYNTHA</span>
           <span className="brandTagline">ИНТЕЛЛЕКТ СТИЛЯ</span>
-        </a>
+        </Link>
 
         <nav className="sidebarNav">
           {workspaceNavigation.map((item) => {
             const active = isActiveRoute(pathname, item.href);
 
             return (
-              <a
+              <Link
                 className={active ? 'navItem navItem--active' : 'navItem'}
                 href={item.href}
                 key={item.id}
@@ -44,37 +45,37 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
               >
                 <Icon name={item.icon} size={19} />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             );
           })}
         </nav>
 
         <div className="sidebarFooter">
-          <a
+          <Link
             className={isActiveRoute(pathname, '/settings') ? 'navItem navItem--active' : 'navItem'}
             href="/settings"
             aria-current={isActiveRoute(pathname, '/settings') ? 'page' : undefined}
           >
             <Icon name="settings" size={19} />
             <span>Настройки</span>
-          </a>
-          <a className="organisationCard" href="/settings" aria-label="Активная организация FLASHIN">
+          </Link>
+          <Link className="organisationCard" href="/settings" aria-label="Активная организация FLASHIN">
             <span className="organisationAvatar">FL</span>
             <span className="organisationCopy">
               <strong>FLASHIN</strong>
               <small>Brand workspace</small>
             </span>
             <Icon name="chevron-down" size={16} />
-          </a>
+          </Link>
         </div>
       </aside>
 
       <div className="workspace">
         <header className="workspaceTopbar">
-          <a className="mobileBrand" href="/" aria-label="Syntha — главная">
+          <Link className="mobileBrand" href="/" aria-label="Syntha — главная">
             <strong>SYNTHA</strong>
             <span>WHOLESALE</span>
-          </a>
+          </Link>
 
           <form className="globalSearch" action="/search" method="get" role="search">
             <Icon name="search" size={18} />
@@ -92,9 +93,9 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
           <div className="topbarActions">
             <IconButton href="/help" icon="help" label="Помощь" />
             <IconButton href="/notifications" icon="bell" label="Уведомления" badge="3" />
-            <a className="profileButton" href="/settings" aria-label="Профиль Петра Фёдина">
+            <Link className="profileButton" href="/settings" aria-label="Профиль Петра Фёдина">
               ПФ
-            </a>
+            </Link>
           </div>
         </header>
 
@@ -106,7 +107,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
           const active = isActiveRoute(pathname, item.href);
 
           return (
-            <a
+            <Link
               className={active ? 'mobileNavItem mobileNavItem--active' : 'mobileNavItem'}
               href={item.href}
               key={item.id}
@@ -114,7 +115,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
             >
               <Icon name={item.icon} size={20} />
               <span>{item.label}</span>
-            </a>
+            </Link>
           );
         })}
       </nav>
