@@ -1,0 +1,43 @@
+{
+  "name": "@syntha/wholesale-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "validate:architecture": "node scripts/validate-architecture.mjs",
+    "validate:tasks": "node scripts/validate-task-manifest.mjs",
+    "validate:changes": "node scripts/validate-change-ledger.mjs",
+    "validate:benchmark": "node scripts/validate-wholesale-benchmark.mjs",
+    "preflight": "node scripts/preflight.mjs && npm run validate:architecture && npm run validate:tasks && npm run validate:changes && npm run validate:benchmark",
+    "verify": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "next": "16.2.11",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@testing-library/jest-dom": "7.0.0",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "24.10.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.35.0",
+    "eslint-config-next": "16.2.11",
+    "jsdom": "29.1.1",
+    "typescript": "5.8.3",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

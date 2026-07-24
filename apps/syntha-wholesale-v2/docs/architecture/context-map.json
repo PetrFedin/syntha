@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "workspace": "apps/syntha-wholesale-v2",
+  "canonicalArchitecture": "vertical-business-modules",
+  "productCanon": "docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md",
+  "canonicalLifecycle": ["campaign", "collection", "showroom", "selection", "order-builder", "orders", "dealspace"],
+  "publicModuleApi": "src/modules/<module>/index.ts",
+  "taskIdPattern": "TASK-[0-9]{4}",
+  "readOrder": ["AGENTS.md", "tasks/TASK-*.md", "docs/architecture/context-map.json", "task.source_documents", "docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md", "src/modules/<module>/README.md", "src/modules/<module>/index.ts", "changed files", "nearest tests"],
+  "architecture": {
+    "rootDirectories": ["app", "modules", "shared", "testkit", "generated"],
+    "moduleDirectories": ["domain", "application", "infrastructure", "ui", "tests"],
+    "forbiddenRootDirectories": ["features", "domain", "application", "infrastructure", "adapters", "components"],
+    "crossModuleImports": "root-index-only",
+    "deepImports": "forbidden",
+    "legacyUiImports": "forbidden",
+    "legacyRuntimeUse": "forbidden"
+  },
+  "mvpModules": ["identity-access", "organisations", "accounts", "commercial-policy", "catalog", "campaigns", "collections", "showroom", "selection", "availability", "order-builder", "orders", "reorder", "dealspace", "calendar", "analytics", "integrations", "notifications"],
+  "postMvpModules": ["payments", "sales-operations", "network", "after-sales"],
+  "excludedScope": ["production execution", "BOM", "quality control", "supply-chain execution"],
+  "requiredTaskMetadata": ["task_id", "status", "capability_ids", "workflow_ids", "screen_ids", "permissions", "commands", "domain_events", "dependencies", "source_documents"],
+  "stopConditions": ["missing traceability", "conflicting specifications", "ambiguous ownership or permission", "missing screen readiness", "unapproved architecture boundary change"],
+  "requiredChecks": ["documentation integrity", "typecheck", "lint", "unit tests", "affected integration tests", "affected e2e tests", "import boundary guard", "accessibility", "responsive evidence"]
+}
