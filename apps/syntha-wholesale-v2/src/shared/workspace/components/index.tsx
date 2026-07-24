@@ -18,10 +18,7 @@ import {
   parseWorkspaceSearchParams,
   type WorkspaceUrlContext,
 } from '@/shared/workspace/workspace-links';
-import {
-  getEntitySectionHref,
-  resolveWorkspacePrimaryDestination,
-} from '@/shared/workspace/workspace-destinations';
+import { resolveWorkspacePrimaryDestination } from '@/shared/workspace/workspace-destinations';
 
 export { getEntitySectionHref } from '@/shared/workspace/workspace-destinations';
 
