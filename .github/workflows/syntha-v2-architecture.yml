@@ -47,7 +47,19 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Lint V2
-        run: npm run lint
+        id: lint
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee lint.log
+      - name: Upload lint diagnostics
+        if: failure() && steps.lint.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-lint
+          path: apps/syntha-wholesale-v2/lint.log
+          if-no-files-found: error
+          retention-days: 7
       - name: Run V2 unit tests
         run: npm run test
       - name: Build V2 production runtime
