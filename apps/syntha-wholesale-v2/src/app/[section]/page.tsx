@@ -12,7 +12,6 @@ import {
   WorkspaceContextBar,
   WorkspaceEmptyState,
   WorkspacePageHeader,
-  WorkspaceSectionFooter,
 } from '@/shared/workspace/components';
 import { ConnectedServicePanel } from '@/shared/workspace/components/connected-service-panel';
 
@@ -84,7 +83,6 @@ export default async function WorkspaceSectionPage({
       <ConnectedServicePanel section={section.id} />
       <WorkspaceEmptyState section={section} />
       <LifecycleNavigation section={section} />
-      <WorkspaceSectionFooter section={section} />
     </main>
   );
 }
