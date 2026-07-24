@@ -3,10 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
-import type {
-  CommercialEntityReference,
-  CommercialEntityType,
-} from '@/shared/commercial-context';
+import type { CommercialEntityReference } from '@/shared/commercial-context';
 import type { WorkspaceHref } from '@/shared/routing';
 import type { WorkspaceSection } from '@/shared/navigation';
 import {
@@ -21,6 +18,12 @@ import {
   parseWorkspaceSearchParams,
   type WorkspaceUrlContext,
 } from '@/shared/workspace/workspace-links';
+import {
+  getEntitySectionHref,
+  resolveWorkspacePrimaryDestination,
+} from '@/shared/workspace/workspace-destinations';
+
+export { getEntitySectionHref } from '@/shared/workspace/workspace-destinations';
 
 export function WorkspacePageHeader({ section }: { readonly section: WorkspaceSection }) {
   return (
@@ -110,9 +113,7 @@ export function WorkspaceEmptyState({
 }) {
   const searchParams = useSearchParams();
   const resolvedContext = context ?? parseWorkspaceSearchParams(searchParams);
-  const previous = getPreviousWorkspaceSection(section);
-  const next = getNextWorkspaceSection(section);
-  const destination = next ?? previous;
+  const destination = resolveWorkspacePrimaryDestination(section, resolvedContext);
 
   return (
     <section className="workspaceState" aria-labelledby="workspace-empty-title">
@@ -123,14 +124,12 @@ export function WorkspaceEmptyState({
         контекст или продолжите канонический lifecycle.
       </p>
       <div className="workspaceStateActions">
-        {destination ? (
-          <ButtonLink
-            href={mergeWorkspaceContextIntoHref(destination.href, resolvedContext)}
-            icon="arrow-right"
-          >
-            {destination.label}
-          </ButtonLink>
-        ) : null}
+        <ButtonLink
+          href={mergeWorkspaceContextIntoHref(destination.href, resolvedContext)}
+          icon="arrow-right"
+        >
+          {destination.label}
+        </ButtonLink>
         <ButtonLink href={mergeWorkspaceContextIntoHref('/', resolvedContext)} variant="secondary">
           На dashboard
         </ButtonLink>
@@ -142,7 +141,7 @@ export function WorkspaceEmptyState({
 export function WorkspaceSectionFooter({ section }: { readonly section: WorkspaceSection }) {
   const searchParams = useSearchParams();
   const context = parseWorkspaceSearchParams(searchParams);
-  const next = getNextWorkspaceSection(section);
+  const destination = resolveWorkspacePrimaryDestination(section, context);
 
   return (
     <footer className="workspacePageFooter">
@@ -150,10 +149,10 @@ export function WorkspaceSectionFooter({ section }: { readonly section: Workspac
         На dashboard
       </ButtonLink>
       <ButtonLink
-        href={mergeWorkspaceContextIntoHref(next?.href ?? '/', context)}
+        href={mergeWorkspaceContextIntoHref(destination.href, context)}
         icon="arrow-right"
       >
-        {next ? section.primaryActionLabel : 'Вернуться на dashboard'}
+        {destination.label}
       </ButtonLink>
     </footer>
   );
@@ -218,20 +217,4 @@ export function WorkspaceEntityLink({
       <Icon name="arrow-right" size={16} />
     </Link>
   );
-}
-
-export function getEntitySectionHref(type: CommercialEntityType): WorkspaceHref {
-  const sectionByEntity: Record<CommercialEntityType, WorkspaceHref> = {
-    organisation: '/settings',
-    season: '/campaigns',
-    campaign: '/campaigns',
-    collection: '/collections',
-    showroom: '/showroom',
-    selection: '/selections',
-    'order-draft': '/order-builder',
-    order: '/orders',
-    confirmation: '/confirmation',
-    deal: '/dealspace',
-  };
-  return sectionByEntity[type];
 }
