@@ -30,6 +30,11 @@ const lifecycle = [
   '/dealspace',
 ] as const;
 
+const isDeadHref = (href: string | null): boolean => {
+  const normalized = href?.trim().toLowerCase();
+  return !normalized || normalized === '#' || normalized.startsWith('javascript:');
+};
+
 test('health endpoint reports an independent runtime', async ({ request }) => {
   const response = await request.get('/api/health');
   expect(response.ok()).toBeTruthy();
@@ -46,12 +51,15 @@ for (const route of routes) {
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('main')).toBeVisible();
 
-    const internalHrefs = await page.locator('a[href]').evaluateAll((links) =>
-      links.map((link) => link.getAttribute('href')).filter(
-        (href): href is string => Boolean(href?.startsWith('/')),
-      ),
+    const hrefs = await page.locator('a').evaluateAll((links) =>
+      links.map((link) => link.getAttribute('href')),
     );
-    expect(internalHrefs.some((href) => href.startsWith('#'))).toBe(false);
+    const deadHrefs = hrefs.filter(isDeadHref);
+    expect(deadHrefs, `dead or unsafe links found on ${route}`).toEqual([]);
+
+    const internalHrefs = hrefs.filter(
+      (href): href is string => Boolean(href?.startsWith('/')),
+    );
     for (const href of new Set(internalHrefs)) {
       const target = await request.get(href);
       expect(target.status(), `broken internal link ${href} from ${route}`).toBeLessThan(400);
