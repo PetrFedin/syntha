@@ -21,16 +21,20 @@ const entitySectionHref: Record<CommercialEntityType, WorkspaceHref> = {
   deal: '/dealspace',
 };
 
-const serviceFallbacks: Partial<Record<WorkspaceSectionId, WorkspaceHref>> = {
-  messages: '/dealspace',
-  calendar: '/campaigns',
-  notifications: '/campaigns',
-  search: '/collections',
+const serviceFallbacks: Partial<Record<WorkspaceSectionId, WorkspaceDestination>> = {
+  messages: { href: '/dealspace', label: 'Открыть DealSpace' },
+  calendar: { href: '/campaigns', label: 'Открыть кампании' },
+  notifications: { href: '/campaigns', label: 'Открыть кампании' },
+  search: { href: '/collections', label: 'Открыть коллекции' },
 };
 
 export interface WorkspaceDestination {
   readonly href: WorkspaceHref;
   readonly label: string;
+}
+
+export function isCommercialEntityType(value: string | undefined): value is CommercialEntityType {
+  return Boolean(value && Object.prototype.hasOwnProperty.call(entitySectionHref, value));
 }
 
 export function getEntitySectionHref(type: CommercialEntityType): WorkspaceHref {
@@ -44,7 +48,7 @@ export function resolveWorkspacePrimaryDestination(
   const next = getNextWorkspaceSection(section);
   if (next) return { href: next.href, label: section.primaryActionLabel };
 
-  if (context.entityType && context.entityId) {
+  if (isCommercialEntityType(context.entityType) && context.entityId) {
     return {
       href: getEntitySectionHref(context.entityType),
       label: section.primaryActionLabel,
@@ -57,18 +61,7 @@ export function resolveWorkspacePrimaryDestination(
   }
 
   const fallback = serviceFallbacks[section.id];
-  if (fallback) {
-    return {
-      href: fallback,
-      label: section.id === 'calendar'
-        ? 'Открыть кампании'
-        : section.id === 'search'
-          ? 'Открыть коллекции'
-          : section.id === 'messages'
-            ? 'Открыть DealSpace'
-            : 'Открыть кампании',
-    };
-  }
+  if (fallback) return fallback;
 
   return { href: '/', label: 'Вернуться на dashboard' };
 }
