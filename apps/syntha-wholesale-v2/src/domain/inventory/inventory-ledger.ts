@@ -33,6 +33,7 @@ export interface InventoryPosition {
   readonly onHand: number;
   readonly reserved: number;
   readonly allocated: number;
+  readonly committed: number;
   readonly available: number;
 }
 
@@ -54,8 +55,8 @@ const RESERVED_EFFECT: Record<InventoryMovementType, number> = {
   receipt: 0,
   reservation: 1,
   release: -1,
-  allocation: -1,
-  deallocation: 1,
+  allocation: 0,
+  deallocation: 0,
   shipment: 0,
   return: 0,
   transfer_in: 0,
@@ -84,6 +85,12 @@ export function assertInventoryQuantity(quantity: number): void {
   }
 }
 
+function assertIsoDate(value: string, field: string): void {
+  if (!value.trim() || Number.isNaN(Date.parse(value))) {
+    throw new Error(`${field} must be a valid ISO date string.`);
+  }
+}
+
 export function createInventoryMovement(
   movement: InventoryMovement,
 ): InventoryMovement {
@@ -104,6 +111,9 @@ export function createInventoryMovement(
   if (!movement.skuId.trim()) {
     throw new Error('SKU id is required.');
   }
+
+  assertIsoDate(movement.occurredAt, 'Occurred at');
+  assertIsoDate(movement.recordedAt, 'Recorded at');
 
   return Object.freeze({ ...movement });
 }
@@ -138,11 +148,14 @@ export function calculateInventoryPosition(
     }
   }
 
+  const committed = reserved + allocated;
+
   return Object.freeze({
     onHand,
     reserved,
     allocated,
-    available: onHand - reserved - allocated,
+    committed,
+    available: onHand - committed,
   });
 }
 
