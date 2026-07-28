@@ -3,6 +3,7 @@ export type DecisionSeverity = "info" | "low" | "medium" | "high" | "critical";
 export type DecisionActionType =
   | "none"
   | "review"
+  | "repair_data"
   | "stop_replenishment"
   | "create_replenishment"
   | "create_purchase_order"
