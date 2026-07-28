@@ -17,6 +17,15 @@ import {
 } from "@/domain/execution/execution-journal";
 import { createStableFingerprint } from "@/domain/execution/stable-fingerprint";
 import {
+  createDecisionProvenanceEvent,
+  createDecisionProvenanceManifest,
+  type DecisionEngineReference,
+  type DecisionPolicyReference,
+  type DecisionProvenanceManifest,
+  type DecisionSourceDataReference,
+} from "@/domain/decision/decision-provenance";
+import type { CommercialDecisionEvent } from "@/domain/events/commercial-decision-events";
+import {
   createTransactionalOutbox,
   enqueueOutboxEvents,
   type TransactionalOutbox,
@@ -27,12 +36,26 @@ import {
   type AutomatedReplenishmentResult,
 } from "./automated-replenishment-engine";
 
+export const DEFAULT_REPLENISHMENT_ENGINE_REFERENCES: readonly DecisionEngineReference[] =
+  Object.freeze([
+    { name: "commercial-data-quality-engine", version: "1" },
+    { name: "demand-forecast-engine", version: "1" },
+    { name: "inventory-health-engine", version: "1" },
+    { name: "supply-planning-engine", version: "1" },
+    { name: "purchase-recommendation-engine", version: "1" },
+    { name: "unified-decision-engine", version: "1" },
+    { name: "decision-execution-gate", version: "1" },
+  ]);
+
 export interface DurableReplenishmentInput extends AutomatedReplenishmentInput {
   readonly idempotencyKey: string;
   readonly requestFingerprint?: string;
   readonly idempotencyRegistry: IdempotencyRegistry;
   readonly existingOutbox?: TransactionalOutbox;
   readonly approvalPolicy?: ApprovalWorkflowPolicy;
+  readonly policyReferences?: readonly DecisionPolicyReference[];
+  readonly engineReferences?: readonly DecisionEngineReference[];
+  readonly sourceDataReferences?: readonly DecisionSourceDataReference[];
   readonly idempotencyTtlSeconds?: number;
 }
 
@@ -40,9 +63,12 @@ export interface DurableReplenishmentAccepted {
   readonly status: "accepted";
   readonly beginOutcome: "started" | "retry_started";
   readonly requestFingerprint: string;
+  readonly inputSnapshotFingerprint: string;
   readonly result: AutomatedReplenishmentResult;
   readonly approvals: ApprovalWorkflow;
   readonly journal: ExecutionJournal;
+  readonly provenance: DecisionProvenanceManifest;
+  readonly events: readonly CommercialDecisionEvent[];
   readonly outbox: TransactionalOutbox;
   readonly idempotencyRegistry: IdempotencyRegistry;
 }
@@ -87,6 +113,10 @@ export function createDurableReplenishmentFingerprint(
     minimumDataQualityScore: input.minimumDataQualityScore ?? null,
     executionPolicy: input.executionPolicy ?? null,
     approvalPolicy: input.approvalPolicy ?? null,
+    policyReferences: input.policyReferences ?? [],
+    engineReferences:
+      input.engineReferences ?? DEFAULT_REPLENISHMENT_ENGINE_REFERENCES,
+    sourceDataReferences: input.sourceDataReferences ?? [],
   });
 }
 
@@ -94,8 +124,8 @@ export function runDurableReplenishment(
   input: DurableReplenishmentInput,
 ): DurableReplenishmentResult {
   const generatedAt = input.analysisAt ?? new Date().toISOString();
-  const requestFingerprint =
-    input.requestFingerprint ?? createDurableReplenishmentFingerprint(input);
+  const inputSnapshotFingerprint = createDurableReplenishmentFingerprint(input);
+  const requestFingerprint = input.requestFingerprint ?? inputSnapshotFingerprint;
   const begin = beginIdempotentOperation({
     registry: input.idempotencyRegistry,
     key: input.idempotencyKey,
@@ -130,9 +160,33 @@ export function runDurableReplenishment(
       executionPlan: result.executionPlan,
       createdAt: generatedAt,
     });
+    const provenance = createDecisionProvenanceManifest({
+      contextId: result.id,
+      aggregateId:
+        result.analysis.decisionResolution.resolutionDecision.entityId,
+      requestFingerprint,
+      inputSnapshotFingerprint,
+      policyReferences: input.policyReferences,
+      engineReferences:
+        input.engineReferences ?? DEFAULT_REPLENISHMENT_ENGINE_REFERENCES,
+      sourceDataReferences: input.sourceDataReferences,
+      decisionIds: [
+        ...result.analysis.decisionResolution.orderedDecisions.map(
+          (decision) => decision.id,
+        ),
+        result.executionPlan.decision.id,
+      ],
+      generatedAt,
+    });
+    const provenanceEvent = createDecisionProvenanceEvent({
+      manifest: provenance,
+      causationId: result.executionPlan.decision.id,
+      sequence: result.events.length + 1,
+    });
+    const events = Object.freeze([...result.events, provenanceEvent]);
     const outbox = enqueueOutboxEvents({
       outbox: input.existingOutbox ?? createTransactionalOutbox(),
-      events: result.events,
+      events,
       createdAt: generatedAt,
     });
     const idempotencyRegistry = completeIdempotentOperation({
@@ -147,9 +201,12 @@ export function runDurableReplenishment(
       status: "accepted",
       beginOutcome: begin.outcome,
       requestFingerprint,
+      inputSnapshotFingerprint,
       result,
       approvals,
       journal,
+      provenance,
+      events,
       outbox,
       idempotencyRegistry,
     });

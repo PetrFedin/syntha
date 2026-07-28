@@ -3,6 +3,7 @@ import type { UnifiedDecisionResult } from "@/domain/decision/unified-decision-e
 
 export type CommercialDecisionEventType =
   | "commercial.decision.resolved"
+  | "commercial.decision.provenance_recorded"
   | "commercial.action.informational"
   | "commercial.action.auto_approved"
   | "commercial.action.approval_required"

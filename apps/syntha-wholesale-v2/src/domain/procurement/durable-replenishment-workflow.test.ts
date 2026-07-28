@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { verifyDecisionProvenanceManifest } from "@/domain/decision/decision-provenance";
 import { createIdempotencyRegistry } from "@/domain/execution/idempotency-engine";
 import type { AtpProjection } from "@/domain/inventory/available-to-promise";
 
@@ -102,9 +103,20 @@ const baseInput = {
 } as const;
 
 describe("durable replenishment workflow", () => {
-  it("creates durable workflow state and prevents duplicate execution", () => {
+  it("creates durable, auditable state and prevents duplicate execution", () => {
     const accepted = runDurableReplenishment({
       ...baseInput,
+      policyReferences: [
+        {
+          kind: "execution",
+          policyId: "execution:v1",
+          version: 1,
+          configFingerprint: "policy-hash",
+        },
+      ],
+      sourceDataReferences: [
+        { sourceType: "sales", sourceId: "sales-history-1", version: "1" },
+      ],
       idempotencyRegistry: createIdempotencyRegistry(),
     });
     expect(accepted.status).toBe("accepted");
@@ -112,16 +124,42 @@ describe("durable replenishment workflow", () => {
 
     const replay = runDurableReplenishment({
       ...baseInput,
+      policyReferences: [
+        {
+          kind: "execution",
+          policyId: "execution:v1",
+          version: 1,
+          configFingerprint: "policy-hash",
+        },
+      ],
+      sourceDataReferences: [
+        { sourceType: "sales", sourceId: "sales-history-1", version: "1" },
+      ],
       idempotencyRegistry: accepted.idempotencyRegistry,
     });
 
     expect(accepted.requestFingerprint).toBe(
       createDurableReplenishmentFingerprint({
         ...baseInput,
+        policyReferences: [
+          {
+            kind: "execution",
+            policyId: "execution:v1",
+            version: 1,
+            configFingerprint: "policy-hash",
+          },
+        ],
+        sourceDataReferences: [
+          { sourceType: "sales", sourceId: "sales-history-1", version: "1" },
+        ],
         idempotencyRegistry: createIdempotencyRegistry(),
       }),
     );
-    expect(accepted.outbox.records.length).toBeGreaterThan(0);
+    expect(verifyDecisionProvenanceManifest(accepted.provenance).valid).toBe(true);
+    expect(accepted.events.at(-1)?.eventType).toBe(
+      "commercial.decision.provenance_recorded",
+    );
+    expect(accepted.outbox.records.length).toBe(accepted.events.length);
     expect(accepted.journal.entries.length).toBeGreaterThan(0);
     expect(replay.status).toBe("replay");
   });
