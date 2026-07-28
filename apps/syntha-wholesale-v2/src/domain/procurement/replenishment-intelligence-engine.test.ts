@@ -134,8 +134,8 @@ describe("analyzeReplenishment", () => {
     expect(result.decisionResolution.status).toBe("requires_review");
     expect(result.decisionResolution.conflicts).toHaveLength(1);
     expect(result.decisionResolution.actions.map((action) => action.type)).toEqual([
-      "transfer_stock",
       "review",
+      "transfer_stock",
     ]);
   });
 
