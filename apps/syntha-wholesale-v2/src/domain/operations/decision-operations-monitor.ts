@@ -344,6 +344,12 @@ export function assessDecisionOperations(input: {
     const key = `${alert.action.type}:${alert.ownerRole}`;
     if (!uniqueActions.has(key)) uniqueActions.set(key, alert.action);
   }
+  const healthyAction: RecommendedAction = {
+    type: "none",
+    priority: "info",
+    title: "Operations healthy",
+    description: "No operational intervention is required.",
+  };
   const decision: CommercialDecision = Object.freeze({
     id: `decision-operations:${input.monitorId}:${now.toISOString()}`,
     entityType: "system",
@@ -366,7 +372,7 @@ export function assessDecisionOperations(input: {
       { metric: "alertCount", value: alerts.length, unit: "alerts", direction: "decrease" as const },
     ],
     actions: alerts.length === 0
-      ? [{ type: "none", priority: "info", title: "Operations healthy", description: "No operational intervention is required." }]
+      ? [healthyAction]
       : [...uniqueActions.values()],
     createdAt: now.toISOString(),
     source: "decision-operations-monitor",
