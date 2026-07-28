@@ -10,6 +10,7 @@ export type DecisionActionType =
   | "split_order"
   | "select_supplier"
   | "supplier_review"
+  | "allocate_budget"
   | "budget_review"
   | "transfer_stock"
   | "markdown_review"
@@ -44,7 +45,13 @@ export interface RecommendedAction {
 
 export interface CommercialDecision {
   id: string;
-  entityType: "sku" | "product" | "warehouse" | "supplier" | "order";
+  entityType:
+    | "sku"
+    | "product"
+    | "warehouse"
+    | "supplier"
+    | "order"
+    | "budget";
   entityId: string;
   decisionType: string;
   severity: DecisionSeverity;
