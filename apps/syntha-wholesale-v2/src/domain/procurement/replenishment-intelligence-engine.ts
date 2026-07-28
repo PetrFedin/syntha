@@ -1,5 +1,9 @@
 import type { AbcXyzClassification } from "@/domain/assortment/abc-xyz-classifier";
 import type { CommercialDecision } from "@/domain/decision/decision";
+import {
+  resolveCommercialDecisions,
+  type UnifiedDecisionResult,
+} from "@/domain/decision/unified-decision-engine";
 import type { AtpProjection } from "@/domain/inventory/available-to-promise";
 import {
   analyzeInventoryPosition,
@@ -54,6 +58,7 @@ export interface ReplenishmentIntelligenceResult {
   readonly supplyPlan: SupplyPlanRecommendation;
   readonly purchase: PurchaseRecommendation;
   readonly decisions: readonly CommercialDecision[];
+  readonly decisionResolution: UnifiedDecisionResult;
 }
 
 function assertMatchingAtpScope(
@@ -129,6 +134,16 @@ export function analyzeReplenishment(
     createdAt: analysisAt,
   });
 
+  const decisions = Object.freeze([
+    inventory.health.decision,
+    purchase.decision,
+  ]);
+  const decisionResolution = resolveCommercialDecisions({
+    contextId: input.id,
+    decisions,
+    generatedAt: analysisAt,
+  });
+
   return Object.freeze({
     id: input.id,
     organizationId: input.organizationId,
@@ -138,9 +153,7 @@ export function analyzeReplenishment(
     inventory,
     supplyPlan,
     purchase,
-    decisions: Object.freeze([
-      inventory.health.decision,
-      purchase.decision,
-    ]),
+    decisions,
+    decisionResolution,
   });
 }
