@@ -350,6 +350,79 @@ export function allocateOtbBudget(
     totalScore === 0
       ? 0
       : clampConfidence(weightedConfidenceNumerator / totalScore);
+  const decision: CommercialDecision = {
+    id: `otb-allocation:${input.id}`,
+    entityType: "budget",
+    entityId: input.budgetId,
+    decisionType: "otb_budget_allocation",
+    severity:
+      criticalUnfunded.length > 0
+        ? "critical"
+        : totalUnfundedSpend > 0
+          ? "high"
+          : "medium",
+    confidence,
+    reasons,
+    impacts: [
+      {
+        metric: "allocatedBudget",
+        value: round(allocatedBudget, 2),
+        unit: input.currency,
+        direction: allocatedBudget > 0 ? "increase" : "neutral",
+      },
+      {
+        metric: "remainingBudget",
+        value: round(remainingBudget, 2),
+        unit: input.currency,
+        direction: "neutral",
+      },
+      {
+        metric: "unfundedSpend",
+        value: round(totalUnfundedSpend, 2),
+        unit: input.currency,
+        direction: totalUnfundedSpend > 0 ? "decrease" : "neutral",
+      },
+    ],
+    actions: [
+      {
+        type: "allocate_budget",
+        priority: criticalUnfunded.length > 0 ? "critical" : "high",
+        title: "Apply OTB budget allocation",
+        description:
+          "Fund purchase requirements in portfolio priority order and preserve the remaining budget for the next planning cycle.",
+        metadata: {
+          allocatedBudget: round(allocatedBudget, 2),
+          remainingBudget: round(remainingBudget, 2),
+          currency: input.currency,
+          fundedSkuCount: lines.filter((line) => line.allocatedUnits > 0).length,
+        },
+      },
+      ...(totalUnfundedSpend > 0
+        ? [
+            {
+              type: "budget_review" as const,
+              priority:
+                criticalUnfunded.length > 0
+                  ? ("critical" as const)
+                  : ("high" as const),
+              title: "Review unfunded purchase requirements",
+              description:
+                "Increase OTB, reduce quantities, defer lower-priority purchases, or renegotiate supplier terms.",
+              metadata: {
+                unfundedSpend: round(totalUnfundedSpend, 2),
+                currency: input.currency,
+                unfundedSkuCount: lines.filter(
+                  (line) => line.unfundedUnits > 0,
+                ).length,
+              },
+            },
+          ]
+        : []),
+    ],
+    createdAt: generatedAt,
+    source: "otb-budget-allocation-engine",
+    version: 1,
+  };
 
   return Object.freeze({
     id: input.id,
@@ -361,73 +434,6 @@ export function allocateOtbBudget(
     totalRequestedSpend: round(totalRequestedSpend, 2),
     totalUnfundedSpend: round(totalUnfundedSpend, 2),
     lines: Object.freeze(lines),
-    decision: {
-      id: `otb-allocation:${input.id}`,
-      entityType: "budget",
-      entityId: input.budgetId,
-      decisionType: "otb_budget_allocation",
-      severity:
-        criticalUnfunded.length > 0
-          ? "critical"
-          : totalUnfundedSpend > 0
-            ? "high"
-            : "medium",
-      confidence,
-      reasons,
-      impacts: [
-        {
-          metric: "allocatedBudget",
-          value: round(allocatedBudget, 2),
-          unit: input.currency,
-          direction: allocatedBudget > 0 ? "increase" : "neutral",
-        },
-        {
-          metric: "remainingBudget",
-          value: round(remainingBudget, 2),
-          unit: input.currency,
-          direction: "neutral",
-        },
-        {
-          metric: "unfundedSpend",
-          value: round(totalUnfundedSpend, 2),
-          unit: input.currency,
-          direction: totalUnfundedSpend > 0 ? "decrease" : "neutral",
-        },
-      ],
-      actions: [
-        {
-          type: "allocate_budget",
-          priority: criticalUnfunded.length > 0 ? "critical" : "high",
-          title: "Apply OTB budget allocation",
-          description:
-            "Fund purchase requirements in portfolio priority order and preserve the remaining budget for the next planning cycle.",
-          metadata: {
-            allocatedBudget: round(allocatedBudget, 2),
-            remainingBudget: round(remainingBudget, 2),
-            currency: input.currency,
-            fundedSkuCount: lines.filter((line) => line.allocatedUnits > 0).length,
-          },
-        },
-        ...(totalUnfundedSpend > 0
-          ? [
-              {
-                type: "budget_review" as const,
-                priority: criticalUnfunded.length > 0 ? "critical" as const : "high" as const,
-                title: "Review unfunded purchase requirements",
-                description:
-                  "Increase OTB, reduce quantities, defer lower-priority purchases, or renegotiate supplier terms.",
-                metadata: {
-                  unfundedSpend: round(totalUnfundedSpend, 2),
-                  currency: input.currency,
-                  unfundedSkuCount: lines.filter((line) => line.unfundedUnits > 0).length,
-                },
-              },
-            ]
-          : []),
-      ],
-      createdAt: generatedAt,
-      source: "otb-budget-allocation-engine",
-      version: 1,
-    },
+    decision,
   });
 }
