@@ -16,7 +16,10 @@ export type DecisionActionType =
   | "transfer_stock"
   | "markdown_review"
   | "promote"
-  | "liquidate";
+  | "liquidate"
+  | "escalate_approval"
+  | "retry_execution"
+  | "retry_delivery";
 
 export interface DecisionReason {
   code: string;
@@ -52,7 +55,8 @@ export interface CommercialDecision {
     | "warehouse"
     | "supplier"
     | "order"
-    | "budget";
+    | "budget"
+    | "system";
   entityId: string;
   decisionType: string;
   severity: DecisionSeverity;
