@@ -99,7 +99,9 @@ describe("selectSupplier", () => {
     });
 
     expect(result.selected?.supplierId).toBe("VALID");
-    expect(result.rankedCandidates.filter((candidate) => candidate.eligible)).toHaveLength(1);
+    expect(
+      result.rankedCandidates.filter((candidate) => candidate.eligible),
+    ).toHaveLength(1);
   });
 
   it("returns a partial selection when capacity cannot cover demand", () => {
@@ -149,5 +151,18 @@ describe("selectSupplier", () => {
     expect(result.status).toBe("blocked");
     expect(result.selected).toBeUndefined();
     expect(result.decision.actions[0]?.type).toBe("supplier_review");
+  });
+
+  it("does not select a supplier when the net requirement is zero", () => {
+    const result = selectSupplier({
+      ...baseInput,
+      requestedUnits: 0,
+      candidates: [],
+    });
+
+    expect(result.status).toBe("not_required");
+    expect(result.rankedCandidates).toHaveLength(0);
+    expect(result.selected).toBeUndefined();
+    expect(result.decision.actions[0]?.type).toBe("none");
   });
 });
