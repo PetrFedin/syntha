@@ -123,4 +123,17 @@ describe("createSourcedPurchase", () => {
     expect(result.purchase?.requestedUnits).toBe(60);
     expect(result.purchase?.recommendedUnits).toBe(60);
   });
+
+  it("skips supplier selection when open orders fully cover demand", () => {
+    const result = createSourcedPurchase({
+      ...baseInput,
+      openPurchaseOrderUnits: 100,
+      supplierCandidates: [],
+    });
+
+    expect(result.supplierSelection.status).toBe("not_required");
+    expect(result.supplierSelection.selected).toBeUndefined();
+    expect(result.purchase).toBeUndefined();
+    expect(result.supplierSelection.decision.actions[0]?.type).toBe("none");
+  });
 });
