@@ -355,7 +355,6 @@ export function createPurchaseRecommendation(
     const expectedSpend = recommendedUnits * input.supplier.unitCost;
     if (
       status !== "blocked" &&
-      status !== "no_order" &&
       input.supplier.minimumOrderValue !== undefined &&
       expectedSpend < input.supplier.minimumOrderValue
     ) {
@@ -420,6 +419,38 @@ export function createPurchaseRecommendation(
       segmentConfidence(input.classification.segment) *
       (status === "ready" || status === "no_order" ? 1 : 0.8),
   );
+  const decision: CommercialDecision = {
+    id: `purchase:${input.id}`,
+    entityType: "sku",
+    entityId: input.skuId,
+    decisionType: "purchase_recommendation",
+    severity:
+      status === "blocked"
+        ? "critical"
+        : status === "partial" || status === "manual_review"
+          ? maxSeverity(baseSeverity, "high")
+          : baseSeverity,
+    confidence: decisionConfidence,
+    reasons,
+    impacts: [
+      {
+        metric: "expectedSpend",
+        value: expectedSpend,
+        unit: input.supplier.currency,
+        direction: expectedSpend > 0 ? "increase" : "neutral",
+      },
+      {
+        metric: "unfundedUnits",
+        value: unfundedUnits,
+        unit: "units",
+        direction: unfundedUnits > 0 ? "decrease" : "neutral",
+      },
+    ],
+    actions,
+    createdAt,
+    source: "purchase-recommendation-engine",
+    version: 1,
+  };
 
   return Object.freeze({
     id: input.id,
@@ -437,37 +468,6 @@ export function createPurchaseRecommendation(
     orderByDate: input.supplyPlan.orderByDate,
     expectedReceiptDate:
       recommendedUnits > 0 ? input.supplyPlan.expectedReceiptDate : undefined,
-    decision: {
-      id: `purchase:${input.id}`,
-      entityType: "sku",
-      entityId: input.skuId,
-      decisionType: "purchase_recommendation",
-      severity:
-        status === "blocked"
-          ? "critical"
-          : status === "partial" || status === "manual_review"
-            ? maxSeverity(baseSeverity, "high")
-            : baseSeverity,
-      confidence: decisionConfidence,
-      reasons,
-      impacts: [
-        {
-          metric: "expectedSpend",
-          value: expectedSpend,
-          unit: input.supplier.currency,
-          direction: expectedSpend > 0 ? "increase" : "neutral",
-        },
-        {
-          metric: "unfundedUnits",
-          value: unfundedUnits,
-          unit: "units",
-          direction: unfundedUnits > 0 ? "decrease" : "neutral",
-        },
-      ],
-      actions,
-      createdAt,
-      source: "purchase-recommendation-engine",
-      version: 1,
-    },
+    decision,
   });
 }
