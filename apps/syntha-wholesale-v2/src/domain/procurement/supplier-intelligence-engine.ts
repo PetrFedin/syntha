@@ -79,6 +79,17 @@ export interface SupplierSelectionResult {
   readonly decision: CommercialDecision;
 }
 
+interface RawCandidateAssessment {
+  readonly candidate: SupplierCandidateInput;
+  readonly blockers: string[];
+  readonly landedUnitCost: number;
+  readonly executableUnits: number;
+  readonly coverageRatio: number;
+  readonly expectedSpend: number;
+  readonly expectedReceiptDate: string;
+  readonly lateByDays: number;
+}
+
 const round = (value: number, digits = 4): number => {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
@@ -147,7 +158,6 @@ function normalizedWeights(
       paymentTerms: 0,
     };
   }
-
   return {
     cost: raw.cost / total,
     reliability: raw.reliability / total,
@@ -156,17 +166,6 @@ function normalizedWeights(
     capacity: raw.capacity / total,
     paymentTerms: raw.paymentTerms / total,
   };
-}
-
-interface RawCandidateAssessment {
-  candidate: SupplierCandidateInput;
-  blockers: string[];
-  landedUnitCost: number;
-  executableUnits: number;
-  coverageRatio: number;
-  expectedSpend: number;
-  expectedReceiptDate: string;
-  lateByDays: number;
 }
 
 function assessRawCandidate(
@@ -189,13 +188,6 @@ function assessRawCandidate(
     throw new Error("Supplier lead time days must be a non-negative integer.");
   }
 
-  const blockers: string[] = [];
-  if (!candidate.active) blockers.push("supplier_inactive");
-  if (!candidate.approved) blockers.push("supplier_not_approved");
-  if (candidate.currency !== input.budget.currency) {
-    blockers.push("currency_mismatch");
-  }
-
   const minimumOrderQuantity = Math.max(
     1,
     Math.floor(candidate.minimumOrderQuantity ?? 1),
@@ -205,28 +197,37 @@ function assessRawCandidate(
     0,
     Math.floor(candidate.maximumOrderQuantity ?? Number.MAX_SAFE_INTEGER),
   );
+  const blockers: string[] = [];
+  if (!candidate.active) blockers.push("supplier_inactive");
+  if (!candidate.approved) blockers.push("supplier_not_approved");
+  if (candidate.currency !== input.budget.currency) {
+    blockers.push("currency_mismatch");
+  }
+
   const landedUnitCost =
     candidate.unitCost +
     (candidate.freightPerUnit ?? 0) +
     candidate.unitCost * (candidate.dutyRate ?? 0);
-
-  let targetUnits = roundUpToMultiple(
-    Math.max(input.requestedUnits, minimumOrderQuantity),
-    orderMultiple,
+  const targetUnits = Math.min(
+    roundUpToMultiple(
+      Math.max(input.requestedUnits, minimumOrderQuantity),
+      orderMultiple,
+    ),
+    maximumOrderQuantity,
   );
-  targetUnits = Math.min(targetUnits, maximumOrderQuantity);
-
   const affordableUnits =
     landedUnitCost === 0
       ? targetUnits
       : Math.floor(input.budget.availableAmount / landedUnitCost);
-  const hardCap = Math.min(
-    targetUnits,
-    Math.floor(candidate.availableCapacityUnits),
-    maximumOrderQuantity,
-    affordableUnits,
+  const executableUnits = roundDownToMultiple(
+    Math.min(
+      targetUnits,
+      Math.floor(candidate.availableCapacityUnits),
+      maximumOrderQuantity,
+      affordableUnits,
+    ),
+    orderMultiple,
   );
-  const executableUnits = roundDownToMultiple(hardCap, orderMultiple);
 
   if (executableUnits < minimumOrderQuantity) {
     blockers.push("minimum_order_quantity_not_met");
@@ -250,6 +251,49 @@ function assessRawCandidate(
   };
 }
 
+function buildNotRequiredResult(
+  input: SupplierSelectionInput,
+  generatedAt: string,
+): SupplierSelectionResult {
+  const decision: CommercialDecision = {
+    id: `supplier-selection:${input.id}`,
+    entityType: "sku",
+    entityId: input.skuId,
+    decisionType: "supplier_selection",
+    severity: "info",
+    confidence: 1,
+    reasons: [
+      {
+        code: "supplier.not_required",
+        message:
+          "Supplier selection is not required because the net purchase requirement is zero.",
+      },
+    ],
+    impacts: [],
+    actions: [
+      {
+        type: "none",
+        priority: "info",
+        title: "No supplier selection required",
+        description:
+          "Existing supply or open purchase orders already cover the requirement.",
+      },
+    ],
+    createdAt: generatedAt,
+    source: "supplier-intelligence-engine",
+    version: 1,
+  };
+
+  return Object.freeze({
+    id: input.id,
+    skuId: input.skuId,
+    requestedUnits: 0,
+    status: "not_required",
+    rankedCandidates: Object.freeze([] as SupplierCandidateAssessment[]),
+    decision,
+  });
+}
+
 export function selectSupplier(
   input: SupplierSelectionInput,
 ): SupplierSelectionResult {
@@ -260,43 +304,8 @@ export function selectSupplier(
 
   const generatedAt = input.generatedAt ?? new Date().toISOString();
   if (input.requestedUnits === 0) {
-    return Object.freeze({
-      id: input.id,
-      skuId: input.skuId,
-      requestedUnits: 0,
-      status: "not_required",
-      rankedCandidates: Object.freeze([]),
-      decision: {
-        id: `supplier-selection:${input.id}`,
-        entityType: "sku",
-        entityId: input.skuId,
-        decisionType: "supplier_selection",
-        severity: "info",
-        confidence: 1,
-        reasons: [
-          {
-            code: "supplier.not_required",
-            message:
-              "Supplier selection is not required because the net purchase requirement is zero.",
-          },
-        ],
-        impacts: [],
-        actions: [
-          {
-            type: "none",
-            priority: "info",
-            title: "No supplier selection required",
-            description:
-              "Existing supply or open purchase orders already cover the requirement.",
-          },
-        ],
-        createdAt: generatedAt,
-        source: "supplier-intelligence-engine",
-        version: 1,
-      },
-    });
+    return buildNotRequiredResult(input, generatedAt);
   }
-
   if (input.candidates.length === 0) {
     throw new Error("Supplier selection requires at least one candidate.");
   }
@@ -397,7 +406,7 @@ export function selectSupplier(
         (candidate) => candidate.supplierId === selected.supplierId,
       )
     : undefined;
-  const status = !selected
+  const status: SupplierSelectionResult["status"] = !selected
     ? "blocked"
     : selected.coverageRatio < 1
       ? "partial"
@@ -451,6 +460,72 @@ export function selectSupplier(
         }
       : undefined;
 
+  const decision: CommercialDecision = {
+    id: `supplier-selection:${input.id}`,
+    entityType: selected ? "supplier" : "sku",
+    entityId: selected?.supplierId ?? input.skuId,
+    decisionType: "supplier_selection",
+    severity:
+      status === "blocked"
+        ? "critical"
+        : status === "partial"
+          ? "high"
+          : "medium",
+    confidence: selected
+      ? clampConfidence(
+          selected.totalScore * (status === "partial" ? 0.8 : 1),
+        )
+      : 0,
+    reasons,
+    impacts: selected
+      ? [
+          {
+            metric: "expectedSpend",
+            value: selected.expectedSpend,
+            unit: input.budget.currency,
+            direction: "increase",
+          },
+          {
+            metric: "supplierRisk",
+            value: selected.riskScore,
+            unit: "score",
+            direction: "decrease",
+          },
+        ]
+      : [],
+    actions: selected
+      ? [
+          {
+            type: "select_supplier",
+            priority: status === "partial" ? "high" : "medium",
+            title: `Select supplier ${selected.supplierId}`,
+            description:
+              status === "partial"
+                ? "Use the selected supplier for the executable quantity and source the remaining requirement separately."
+                : "Use the highest-ranked feasible supplier for the purchase recommendation.",
+            quantity: selected.executableUnits,
+            metadata: {
+              supplierId: selected.supplierId,
+              totalScore: selected.totalScore,
+              landedUnitCost: selected.landedUnitCost,
+              expectedReceiptDate: selected.expectedReceiptDate,
+            },
+          },
+        ]
+      : [
+          {
+            type: "supplier_review",
+            priority: "critical",
+            title: "Resolve supplier constraints",
+            description:
+              "Approve a supplier, align currency, increase budget or capacity, or renegotiate MOQ.",
+          },
+        ],
+    createdAt: generatedAt,
+    source: "supplier-intelligence-engine",
+    version: 1,
+  };
+
   return Object.freeze({
     id: input.id,
     skuId: input.skuId,
@@ -459,70 +534,6 @@ export function selectSupplier(
     rankedCandidates: Object.freeze(rankedCandidates),
     selected,
     selectedTerms,
-    decision: {
-      id: `supplier-selection:${input.id}`,
-      entityType: selected ? "supplier" : "sku",
-      entityId: selected?.supplierId ?? input.skuId,
-      decisionType: "supplier_selection",
-      severity:
-        status === "blocked"
-          ? "critical"
-          : status === "partial"
-            ? "high"
-            : "medium",
-      confidence: selected
-        ? clampConfidence(
-            selected.totalScore * (status === "partial" ? 0.8 : 1),
-          )
-        : 0,
-      reasons,
-      impacts: selected
-        ? [
-            {
-              metric: "expectedSpend",
-              value: selected.expectedSpend,
-              unit: input.budget.currency,
-              direction: "increase",
-            },
-            {
-              metric: "supplierRisk",
-              value: selected.riskScore,
-              unit: "score",
-              direction: "decrease",
-            },
-          ]
-        : [],
-      actions: selected
-        ? [
-            {
-              type: "select_supplier",
-              priority: status === "partial" ? "high" : "medium",
-              title: `Select supplier ${selected.supplierId}`,
-              description:
-                status === "partial"
-                  ? "Use the selected supplier for the executable quantity and source the remaining requirement separately."
-                  : "Use the highest-ranked feasible supplier for the purchase recommendation.",
-              quantity: selected.executableUnits,
-              metadata: {
-                supplierId: selected.supplierId,
-                totalScore: selected.totalScore,
-                landedUnitCost: selected.landedUnitCost,
-                expectedReceiptDate: selected.expectedReceiptDate,
-              },
-            },
-          ]
-        : [
-            {
-              type: "supplier_review",
-              priority: "critical",
-              title: "Resolve supplier constraints",
-              description:
-                "Approve a supplier, align currency, increase budget or capacity, or renegotiate MOQ.",
-            },
-          ],
-      createdAt: generatedAt,
-      source: "supplier-intelligence-engine",
-      version: 1,
-    },
+    decision,
   });
 }
