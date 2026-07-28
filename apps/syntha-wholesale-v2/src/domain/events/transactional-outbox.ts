@@ -56,20 +56,25 @@ export function enqueueOutboxEvents(input: {
     input.createdAt ?? new Date().toISOString(),
     "Outbox creation time",
   ).toISOString();
-  const existingIds = new Set(input.outbox.records.map((record) => record.id));
-  const additions = input.events
-    .filter((event) => !existingIds.has(event.eventId))
-    .map<OutboxRecord>((event) =>
+  const knownIds = new Set(input.outbox.records.map((record) => record.id));
+  const additions: OutboxRecord[] = [];
+
+  for (const event of input.events) {
+    if (knownIds.has(event.eventId)) continue;
+    knownIds.add(event.eventId);
+    additions.push(
       Object.freeze({
         id: event.eventId,
         event,
-        status: "pending",
+        status: "pending" as const,
         attempts: 0,
         createdAt,
         updatedAt: createdAt,
         nextAttemptAt: createdAt,
       }),
     );
+  }
+
   return Object.freeze({
     records: Object.freeze([...input.outbox.records, ...additions]),
   });
