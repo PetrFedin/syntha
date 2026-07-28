@@ -8,6 +8,7 @@ export type DecisionActionType =
   | "create_purchase_order"
   | "defer_purchase"
   | "split_order"
+  | "select_supplier"
   | "supplier_review"
   | "budget_review"
   | "transfer_stock"
