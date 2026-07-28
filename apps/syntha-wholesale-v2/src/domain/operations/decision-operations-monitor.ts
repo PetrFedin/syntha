@@ -362,8 +362,8 @@ export function assessDecisionOperations(input: {
           unit: "minutes",
         })),
     impacts: [
-      { metric: "criticalAlertCount", value: criticalAlertCount, unit: "alerts", direction: "decrease" },
-      { metric: "alertCount", value: alerts.length, unit: "alerts", direction: "decrease" },
+      { metric: "criticalAlertCount", value: criticalAlertCount, unit: "alerts", direction: "decrease" as const },
+      { metric: "alertCount", value: alerts.length, unit: "alerts", direction: "decrease" as const },
     ],
     actions: alerts.length === 0
       ? [{ type: "none", priority: "info", title: "Operations healthy", description: "No operational intervention is required." }]
