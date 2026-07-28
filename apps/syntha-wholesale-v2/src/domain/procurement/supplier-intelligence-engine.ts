@@ -72,7 +72,7 @@ export interface SupplierSelectionResult {
   readonly id: string;
   readonly skuId: string;
   readonly requestedUnits: number;
-  readonly status: "selected" | "partial" | "blocked";
+  readonly status: "not_required" | "selected" | "partial" | "blocked";
   readonly rankedCandidates: readonly SupplierCandidateAssessment[];
   readonly selected?: SupplierCandidateAssessment;
   readonly selectedTerms?: SupplierPurchaseTerms;
@@ -243,10 +243,7 @@ function assessRawCandidate(
     blockers,
     landedUnitCost,
     executableUnits,
-    coverageRatio:
-      input.requestedUnits === 0
-        ? 1
-        : Math.min(1, executableUnits / input.requestedUnits),
+    coverageRatio: Math.min(1, executableUnits / input.requestedUnits),
     expectedSpend: executableUnits * landedUnitCost,
     expectedReceiptDate: isoDate(expectedReceipt),
     lateByDays,
@@ -260,6 +257,46 @@ export function selectSupplier(
   if (!input.skuId.trim()) throw new Error("Supplier selection SKU is required.");
   assertFiniteNonNegative(input.requestedUnits, "Requested units");
   assertFiniteNonNegative(input.budget.availableAmount, "Available budget");
+
+  const generatedAt = input.generatedAt ?? new Date().toISOString();
+  if (input.requestedUnits === 0) {
+    return Object.freeze({
+      id: input.id,
+      skuId: input.skuId,
+      requestedUnits: 0,
+      status: "not_required",
+      rankedCandidates: Object.freeze([]),
+      decision: {
+        id: `supplier-selection:${input.id}`,
+        entityType: "sku",
+        entityId: input.skuId,
+        decisionType: "supplier_selection",
+        severity: "info",
+        confidence: 1,
+        reasons: [
+          {
+            code: "supplier.not_required",
+            message:
+              "Supplier selection is not required because the net purchase requirement is zero.",
+          },
+        ],
+        impacts: [],
+        actions: [
+          {
+            type: "none",
+            priority: "info",
+            title: "No supplier selection required",
+            description:
+              "Existing supply or open purchase orders already cover the requirement.",
+          },
+        ],
+        createdAt: generatedAt,
+        source: "supplier-intelligence-engine",
+        version: 1,
+      },
+    });
+  }
+
   if (input.candidates.length === 0) {
     throw new Error("Supplier selection requires at least one candidate.");
   }
@@ -285,7 +322,9 @@ export function selectSupplier(
       const candidate = assessment.candidate;
       const eligible = assessment.blockers.length === 0;
       const costScore =
-        !eligible || assessment.landedUnitCost <= 0 || !Number.isFinite(minimumCost)
+        !eligible ||
+        assessment.landedUnitCost <= 0 ||
+        !Number.isFinite(minimumCost)
           ? eligible && assessment.landedUnitCost === 0
             ? 1
             : 0
@@ -299,22 +338,29 @@ export function selectSupplier(
           ? 0
           : candidate.leadTimeDays === 0
             ? 1
-            : Math.min(1, Math.max(0.1, minimumLeadTime / candidate.leadTimeDays));
+            : Math.min(
+                1,
+                Math.max(0.1, minimumLeadTime / candidate.leadTimeDays),
+              );
       const capacityScore = clamp01(assessment.coverageRatio);
-      const paymentTermsScore = clamp01((candidate.paymentTermsDays ?? 0) / 90);
+      const paymentTermsScore = clamp01(
+        (candidate.paymentTermsDays ?? 0) / 90,
+      );
       const latenessPenalty = assessment.lateByDays > 0 ? 0.7 : 1;
       const totalScore = eligible
-        ? (
-            costScore * weights.cost +
+        ? (costScore * weights.cost +
             reliabilityScore * weights.reliability +
             qualityScore * weights.quality +
             leadTimeScore * weights.leadTime +
             capacityScore * weights.capacity +
-            paymentTermsScore * weights.paymentTerms
-          ) * latenessPenalty
+            paymentTermsScore * weights.paymentTerms) *
+          latenessPenalty
         : 0;
-      const riskScore = 1 -
-        (reliabilityScore + qualityScore + clamp01(candidate.onTimeDeliveryScore)) /
+      const riskScore =
+        1 -
+        (reliabilityScore +
+          qualityScore +
+          clamp01(candidate.onTimeDeliveryScore)) /
           3;
 
       return {
@@ -351,7 +397,6 @@ export function selectSupplier(
         (candidate) => candidate.supplierId === selected.supplierId,
       )
     : undefined;
-  const generatedAt = input.generatedAt ?? new Date().toISOString();
   const status = !selected
     ? "blocked"
     : selected.coverageRatio < 1
@@ -419,9 +464,16 @@ export function selectSupplier(
       entityType: selected ? "supplier" : "sku",
       entityId: selected?.supplierId ?? input.skuId,
       decisionType: "supplier_selection",
-      severity: status === "blocked" ? "critical" : status === "partial" ? "high" : "medium",
+      severity:
+        status === "blocked"
+          ? "critical"
+          : status === "partial"
+            ? "high"
+            : "medium",
       confidence: selected
-        ? clampConfidence(selected.totalScore * (status === "partial" ? 0.8 : 1))
+        ? clampConfidence(
+            selected.totalScore * (status === "partial" ? 0.8 : 1),
+          )
         : 0,
       reasons,
       impacts: selected
