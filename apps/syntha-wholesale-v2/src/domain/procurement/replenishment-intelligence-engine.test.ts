@@ -88,7 +88,7 @@ const baseInput = {
 } as const;
 
 describe("analyzeReplenishment", () => {
-  it("runs the connected replenishment decision flow", () => {
+  it("runs and resolves the connected replenishment decision flow", () => {
     const result = analyzeReplenishment(baseInput);
 
     expect(result.inventory.forecast.averageDailyDemand).toBe(5);
@@ -99,9 +99,13 @@ describe("analyzeReplenishment", () => {
     expect(result.decisions[1]?.decisionType).toBe(
       "purchase_recommendation",
     );
+    expect(result.decisionResolution.status).toBe("clear");
+    expect(result.decisionResolution.resolutionDecision.decisionType).toBe(
+      "unified_commercial_decision",
+    );
   });
 
-  it("propagates supplier blocking into the connected result", () => {
+  it("propagates supplier blocking into the unified resolution", () => {
     const result = analyzeReplenishment({
       ...baseInput,
       supplier: { ...baseInput.supplier, active: false },
@@ -109,6 +113,30 @@ describe("analyzeReplenishment", () => {
 
     expect(result.purchase.status).toBe("blocked");
     expect(result.purchase.decision.actions[0]?.type).toBe("supplier_review");
+    expect(result.decisionResolution.status).toBe("blocked");
+  });
+
+  it("suppresses automation when inventory and ATP sources conflict", () => {
+    const result = analyzeReplenishment({
+      ...baseInput,
+      inventory: {
+        ...baseInput.inventory,
+        availableUnits: 1000,
+      },
+    });
+
+    expect(result.inventory.health.decision.actions.map((action) => action.type)).toContain(
+      "stop_replenishment",
+    );
+    expect(result.purchase.decision.actions.map((action) => action.type)).toContain(
+      "create_purchase_order",
+    );
+    expect(result.decisionResolution.status).toBe("requires_review");
+    expect(result.decisionResolution.conflicts).toHaveLength(1);
+    expect(result.decisionResolution.actions.map((action) => action.type)).toEqual([
+      "transfer_stock",
+      "review",
+    ]);
   });
 
   it("rejects an ATP projection from another warehouse", () => {
