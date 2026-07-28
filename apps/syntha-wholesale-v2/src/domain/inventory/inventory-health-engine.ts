@@ -75,6 +75,29 @@ function statusFromScore(score: number): InventoryHealthStatus {
   return "critical";
 }
 
+function statusWithRiskGuardrails(input: {
+  score: number;
+  stockoutRisk: number;
+  overstockRisk: number;
+  velocity: InventoryVelocity;
+}): InventoryHealthStatus {
+  if (
+    input.stockoutRisk >= 0.85 ||
+    input.overstockRisk >= 0.85 ||
+    input.velocity === "dead"
+  ) {
+    return "critical";
+  }
+  if (
+    input.stockoutRisk >= 0.65 ||
+    input.overstockRisk >= 0.65 ||
+    input.velocity === "slow"
+  ) {
+    return "risk";
+  }
+  return statusFromScore(input.score);
+}
+
 function severityFromStatus(
   status: InventoryHealthStatus,
 ): CommercialDecision["severity"] {
@@ -188,16 +211,33 @@ export function assessInventoryHealth(
     4,
   );
   const overstockRisk = round(
-    targetUnits > 0 ? clamp(excessUnits / targetUnits, 0, 1) : excessUnits > 0 ? 1 : 0,
+    targetUnits > 0
+      ? clamp(excessUnits / targetUnits, 0, 1)
+      : excessUnits > 0
+        ? 1
+        : 0,
     4,
   );
 
   const velocity = velocityFromDays(Math.max(0, input.daysSinceLastSale));
   const velocityPenalty =
-    velocity === "dead" ? 45 : velocity === "slow" ? 25 : velocity === "normal" ? 8 : 0;
+    velocity === "dead"
+      ? 45
+      : velocity === "slow"
+        ? 25
+        : velocity === "normal"
+          ? 8
+          : 0;
   const riskPenalty = stockoutRisk * 45 + overstockRisk * 35;
-  const healthScore = round(clamp(100 - riskPenalty - velocityPenalty, 0, 100));
-  const status = statusFromScore(healthScore);
+  const healthScore = round(
+    clamp(100 - riskPenalty - velocityPenalty, 0, 100),
+  );
+  const status = statusWithRiskGuardrails({
+    score: healthScore,
+    stockoutRisk,
+    overstockRisk,
+    velocity,
+  });
   const capitalAtRisk = round(excessUnits * Math.max(0, input.unitCost));
 
   const reasons: DecisionReason[] = [];
