@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 import { createIdempotencyRegistry } from "@/domain/execution/idempotency-engine";
 import type { AtpProjection } from "@/domain/inventory/available-to-promise";
 
-import { runDurableReplenishment } from "./durable-replenishment-workflow";
+import {
+  createDurableReplenishmentFingerprint,
+  runDurableReplenishment,
+} from "./durable-replenishment-workflow";
 
 const observations = Array.from({ length: 28 }, (_, index) => ({
   date: `2026-07-${String(index + 1).padStart(2, "0")}`,
@@ -96,7 +99,6 @@ const baseInput = {
   },
   analysisAt: "2026-07-29T00:00:00.000Z",
   idempotencyKey: "REQ-1",
-  requestFingerprint: "hash-a",
 } as const;
 
 describe("durable replenishment workflow", () => {
@@ -113,12 +115,18 @@ describe("durable replenishment workflow", () => {
       idempotencyRegistry: accepted.idempotencyRegistry,
     });
 
+    expect(accepted.requestFingerprint).toBe(
+      createDurableReplenishmentFingerprint({
+        ...baseInput,
+        idempotencyRegistry: createIdempotencyRegistry(),
+      }),
+    );
     expect(accepted.outbox.records.length).toBeGreaterThan(0);
     expect(accepted.journal.entries.length).toBeGreaterThan(0);
     expect(replay.status).toBe("replay");
   });
 
-  it("blocks reuse of the same key for another request", () => {
+  it("detects a changed commercial payload under the same key", () => {
     const accepted = runDurableReplenishment({
       ...baseInput,
       idempotencyRegistry: createIdempotencyRegistry(),
@@ -128,10 +136,24 @@ describe("durable replenishment workflow", () => {
 
     const conflict = runDurableReplenishment({
       ...baseInput,
-      requestFingerprint: "hash-b",
+      budget: {
+        ...baseInput.budget,
+        availableAmount: baseInput.budget.availableAmount - 1,
+      },
       idempotencyRegistry: accepted.idempotencyRegistry,
     });
 
     expect(conflict.status).toBe("conflict");
+    expect(conflict.requestFingerprint).not.toBe(accepted.requestFingerprint);
+  });
+
+  it("accepts an explicit upstream fingerprint for compatibility", () => {
+    const accepted = runDurableReplenishment({
+      ...baseInput,
+      requestFingerprint: "upstream-hash",
+      idempotencyRegistry: createIdempotencyRegistry(),
+    });
+
+    expect(accepted.requestFingerprint).toBe("upstream-hash");
   });
 });

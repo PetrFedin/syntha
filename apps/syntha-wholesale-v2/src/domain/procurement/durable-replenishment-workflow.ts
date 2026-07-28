@@ -15,6 +15,7 @@ import {
   createExecutionJournal,
   type ExecutionJournal,
 } from "@/domain/execution/execution-journal";
+import { createStableFingerprint } from "@/domain/execution/stable-fingerprint";
 import {
   createTransactionalOutbox,
   enqueueOutboxEvents,
@@ -28,7 +29,7 @@ import {
 
 export interface DurableReplenishmentInput extends AutomatedReplenishmentInput {
   readonly idempotencyKey: string;
-  readonly requestFingerprint: string;
+  readonly requestFingerprint?: string;
   readonly idempotencyRegistry: IdempotencyRegistry;
   readonly existingOutbox?: TransactionalOutbox;
   readonly approvalPolicy?: ApprovalWorkflowPolicy;
@@ -38,6 +39,7 @@ export interface DurableReplenishmentInput extends AutomatedReplenishmentInput {
 export interface DurableReplenishmentAccepted {
   readonly status: "accepted";
   readonly beginOutcome: "started" | "retry_started";
+  readonly requestFingerprint: string;
   readonly result: AutomatedReplenishmentResult;
   readonly approvals: ApprovalWorkflow;
   readonly journal: ExecutionJournal;
@@ -48,12 +50,14 @@ export interface DurableReplenishmentAccepted {
 export interface DurableReplenishmentDeferred {
   readonly status: "replay" | "in_progress" | "conflict";
   readonly beginOutcome: IdempotencyBeginOutcome;
+  readonly requestFingerprint: string;
   readonly record: IdempotencyRecord;
   readonly idempotencyRegistry: IdempotencyRegistry;
 }
 
 export interface DurableReplenishmentFailed {
   readonly status: "failed";
+  readonly requestFingerprint: string;
   readonly error: string;
   readonly idempotencyRegistry: IdempotencyRegistry;
 }
@@ -63,23 +67,53 @@ export type DurableReplenishmentResult =
   | DurableReplenishmentDeferred
   | DurableReplenishmentFailed;
 
+export function createDurableReplenishmentFingerprint(
+  input: DurableReplenishmentInput,
+): string {
+  return createStableFingerprint({
+    id: input.id,
+    organizationId: input.organizationId,
+    warehouseId: input.warehouseId,
+    skuId: input.skuId,
+    planningDate: input.planningDate,
+    inventory: input.inventory,
+    forecast: input.forecast,
+    atp: input.atp,
+    supplyPolicy: input.supplyPolicy,
+    classification: input.classification,
+    supplier: input.supplier,
+    budget: input.budget,
+    openPurchaseOrderUnits: input.openPurchaseOrderUnits ?? 0,
+    minimumDataQualityScore: input.minimumDataQualityScore ?? null,
+    executionPolicy: input.executionPolicy ?? null,
+    approvalPolicy: input.approvalPolicy ?? null,
+  });
+}
+
 export function runDurableReplenishment(
   input: DurableReplenishmentInput,
 ): DurableReplenishmentResult {
   const generatedAt = input.analysisAt ?? new Date().toISOString();
+  const requestFingerprint =
+    input.requestFingerprint ?? createDurableReplenishmentFingerprint(input);
   const begin = beginIdempotentOperation({
     registry: input.idempotencyRegistry,
     key: input.idempotencyKey,
     scope: "automated_replenishment",
-    fingerprint: input.requestFingerprint,
+    fingerprint: requestFingerprint,
     now: generatedAt,
     ttlSeconds: input.idempotencyTtlSeconds,
   });
 
-  if (begin.outcome === "replay" || begin.outcome === "in_progress" || begin.outcome === "conflict") {
+  if (
+    begin.outcome === "replay" ||
+    begin.outcome === "in_progress" ||
+    begin.outcome === "conflict"
+  ) {
     return Object.freeze({
       status: begin.outcome,
       beginOutcome: begin.outcome,
+      requestFingerprint,
       record: begin.record,
       idempotencyRegistry: begin.registry,
     });
@@ -112,6 +146,7 @@ export function runDurableReplenishment(
     return Object.freeze({
       status: "accepted",
       beginOutcome: begin.outcome,
+      requestFingerprint,
       result,
       approvals,
       journal,
@@ -119,9 +154,11 @@ export function runDurableReplenishment(
       idempotencyRegistry,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown replenishment failure";
+    const message =
+      error instanceof Error ? error.message : "Unknown replenishment failure";
     return Object.freeze({
       status: "failed",
+      requestFingerprint,
       error: message,
       idempotencyRegistry: failIdempotentOperation({
         registry: begin.registry,
