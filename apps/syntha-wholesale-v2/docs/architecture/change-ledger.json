@@ -29,7 +29,7 @@
       "type": "architecture",
       "summary": "Accept the complete V2 ADR package, close foundation review tasks and convert the wholesale benchmark into the first Syntha Product Canon.",
       "tasks": ["TASK-0001", "TASK-0002", "TASK-0003", "TASK-0004", "TASK-0005"],
-      "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "adrs": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004", "ADR-0005", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
       "files": ["docs/architecture/adr/README.md", "docs/product/SYNTHA_WHOLESALE_PRODUCT_CANON.md", "docs/architecture/context-map.json", "tasks/task-manifest.json", "STATUS.md"],
       "verification": {"command": "npm run verify", "result": "PASS", "workflow_run": 29914277388},
       "rollback": "Revert CHG-0003 and restore ADR, task, context map, Product Canon and status files to the previous review state."
