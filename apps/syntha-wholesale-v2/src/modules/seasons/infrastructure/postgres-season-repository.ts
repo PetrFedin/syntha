@@ -1,4 +1,14 @@
-import type { TransactionalSqlClient, TransactionalSqlPool } from '@/modules/commercial-execution';
+import type {
+  SqlExecutor,
+  TransactionalSqlClient,
+  TransactionalSqlPool,
+} from '@/modules/commercial-execution';
+import {
+  executeLifecycleCreate,
+  findLifecycleCreateReplay,
+  type LifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import { organisationId, type OrganisationId } from '@/modules/organisations';
 
 import type {
@@ -56,6 +66,18 @@ function freezeSeason(row: SeasonRow): Season {
   });
 }
 
+async function loadSeason(
+  executor: SqlExecutor,
+  organisationIdValue: OrganisationId,
+  id: string,
+): Promise<Season | null> {
+  const result = await executor.query<SeasonRow>(
+    `${selection} WHERE organisation_id = $1 AND id = $2`,
+    [organisationIdValue, id],
+  );
+  return result.rows[0] ? freezeSeason(result.rows[0]) : null;
+}
+
 async function appendAudit(
   client: TransactionalSqlClient,
   audit: SeasonAuditRecord,
@@ -85,11 +107,7 @@ export class PostgresSeasonRepository implements SeasonRepository {
     organisationIdValue: OrganisationId,
     id: SeasonId,
   ): Promise<Season | null> {
-    const result = await this.pool.query<SeasonRow>(
-      `${selection} WHERE organisation_id = $1 AND id = $2`,
-      [organisationIdValue, id],
-    );
-    return result.rows[0] ? freezeSeason(result.rows[0]) : null;
+    return loadSeason(this.pool, organisationIdValue, id);
   }
 
   async findByOrganisation(
@@ -115,32 +133,58 @@ export class PostgresSeasonRepository implements SeasonRepository {
     return result.rows[0] ? freezeSeason(result.rows[0]) : null;
   }
 
-  async create(season: Season, audit: SeasonAuditRecord): Promise<void> {
+  async findCreateReplay(command: LifecycleCreateCommand): Promise<Season | null> {
+    return findLifecycleCreateReplay({
+      executor: this.pool,
+      command,
+      expectedEntityType: 'SEASON',
+      loadEntity: (executor, id) =>
+        loadSeason(executor, command.organisationId, id),
+    });
+  }
+
+  async create(
+    season: Season,
+    audit: SeasonAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Season>> {
     const client = await this.pool.connect();
     await client.query('BEGIN');
     try {
-      await client.query(
-        `INSERT INTO syntha_season
-           (organisation_id, id, code, name, starts_at, ends_at, status,
-            owner_credential_id, created_at, updated_at, version)
-         VALUES ($1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7,
-                 $8, $9::timestamptz, $10::timestamptz, $11)`,
-        [
-          season.organisationId,
-          season.id,
-          season.code,
-          season.name,
-          season.startsAt,
-          season.endsAt,
-          season.status,
-          season.ownerCredentialId,
-          season.createdAt,
-          season.updatedAt,
-          season.version,
-        ],
-      );
-      await appendAudit(client, audit);
+      const result = await executeLifecycleCreate({
+        client,
+        command,
+        resultEntityType: 'SEASON',
+        resultEntityId: season.id,
+        loadEntity: (executor, id) =>
+          loadSeason(executor, command.organisationId, id),
+        createEntity: async () => {
+          await client.query(
+            `INSERT INTO syntha_season
+               (organisation_id, id, code, name, starts_at, ends_at, status,
+                owner_credential_id, created_at, updated_at, version)
+             VALUES ($1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7,
+                     $8, $9::timestamptz, $10::timestamptz, $11)`,
+            [
+              season.organisationId,
+              season.id,
+              season.code,
+              season.name,
+              season.startsAt,
+              season.endsAt,
+              season.status,
+              season.ownerCredentialId,
+              season.createdAt,
+              season.updatedAt,
+              season.version,
+            ],
+          );
+          await appendAudit(client, audit);
+          return season;
+        },
+      });
       await client.query('COMMIT');
+      return result;
     } catch (error) {
       try {
         await client.query('ROLLBACK');
