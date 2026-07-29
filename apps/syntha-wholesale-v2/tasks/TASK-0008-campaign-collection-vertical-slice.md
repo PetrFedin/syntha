@@ -48,10 +48,11 @@ Create the first server-backed wholesale lifecycle path so Season, Campaign and 
 - PostgreSQL repositories and checksum-protected schema migrations;
 - composite tenant foreign keys from Campaign to Season and Collection to Campaign;
 - organisation-scoped create, list, read and update API routes;
+- replay-safe create commands with canonical payload fingerprints and exact actor scope;
 - exact authenticated credential identity on every lifecycle audit record;
-- transactional entity write and audit append;
+- transactional entity write, audit append and idempotency completion;
 - duplicate-code, parent-state and stale-version protection;
-- unit coverage for tenant isolation, lifecycle rules, audit attribution and concurrency conflicts.
+- unit and real-PostgreSQL coverage for tenant isolation, rollback, constraints and concurrency.
 
 ## Acceptance criteria
 
@@ -65,11 +66,16 @@ Create the first server-backed wholesale lifecycle path so Season, Campaign and 
 - Season and Campaign codes are unique per organisation and Collection code is unique per Campaign;
 - database foreign keys include `organisation_id` and prevent cross-tenant parent references;
 - every update requires an expected version and returns a conflict on stale state;
-- entity changes and immutable audit evidence commit in the same database transaction;
+- every create API requires a bounded `Idempotency-Key`;
+- the same key, organisation, actor and payload replay the original entity without a second audit record;
+- reuse of a key with a different payload or actor returns a deterministic conflict;
+- entity changes, immutable audit evidence and idempotency completion commit in one transaction;
+- rollback removes an incomplete entity, audit append and command reservation together;
 - audit evidence records the exact scoped credential, expected version and resulting version;
 - API reads require `read`, writes require `operate`, and all responses disable caching;
 - all cross-module imports use module-root `index.ts` APIs;
-- preflight, typecheck, lint, unit tests, production build and affected browser tests pass before completion.
+- CI provisions PostgreSQL and exercises uniqueness, tenant foreign keys, rollback and concurrent optimistic updates;
+- preflight, typecheck, lint, unit tests, PostgreSQL integration tests, production build and affected browser tests pass before completion.
 
 ## Implementation checkpoint
 
@@ -78,17 +84,21 @@ Implemented in `agent/v2-commercial-core`:
 - authoritative Season, Campaign and Collection domain aggregates and public module APIs;
 - application use cases for create, list, read and optimistic lifecycle updates;
 - PostgreSQL repositories with organisation predicates on every query;
-- independent checksum-protected Season and Campaign lifecycle migration ledgers;
+- independent checksum-protected Season, Campaign and idempotency migration ledgers;
 - composite `(organisation_id, season_id)` and `(organisation_id, campaign_id)` foreign keys;
-- transactional audit append for create and update operations;
+- canonical SHA-256 command fingerprints and replay-safe `Idempotency-Key` handling;
+- transactional entity, audit and idempotency writes for all three create commands;
 - scoped bearer authorization and exact credential identification;
 - App Router APIs for Season, Campaign and nested Collection operations;
-- regression tests for organisation isolation, audit actor, parent state and stale writes.
+- regression tests for organisation isolation, audit actor, parent state, replay conflicts and stale writes;
+- real PostgreSQL 16 tests for replay, rollback, unique constraints, tenant foreign keys and concurrent optimistic updates;
+- an exact `pg` runtime dependency and a mandatory PostgreSQL service gate in GitHub Actions;
+- native Node module loading and multi-statement `pg` result normalization.
+
+Code head `e8a2f666eaf51aa6f1c945df4bd0961b4334f68d` passed the complete `Syntha V2 Foundation` workflow, run `30472074274`, including PostgreSQL integration and Playwright.
 
 ## Remaining before QA
 
-- add replay-safe idempotency for create commands;
-- add PostgreSQL integration tests for unique constraints, rollback and concurrent optimistic updates;
 - replace Season, Campaign and Collection workspace fixtures with server-backed projections and mutation surfaces;
 - define and publish domain events only after their consumers and transactional outbox contract are explicit;
-- pass the complete repository workflow on the final task head.
+- pass the complete repository workflow on the final task head after the workspace integration.
