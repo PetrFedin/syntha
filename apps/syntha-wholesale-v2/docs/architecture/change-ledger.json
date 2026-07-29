@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "entries": [
     {
       "id": "CHG-0001",
@@ -113,6 +113,17 @@
       "files": ["src/modules/campaigns/README.md", "src/modules/campaigns/index.ts", "src/modules/campaigns/domain/campaign.ts", "src/modules/campaigns/infrastructure/campaign-lifecycle-migrations.ts", "src/modules/campaigns/tests/campaign-workflows.test.ts", "src/modules/collections/README.md", "src/modules/collections/index.ts", "src/modules/collections/domain/collection.ts", "src/modules/collections/tests/collection-workflows.test.ts", "src/shared/server/commercial-api.ts", "src/app/api/campaigns/route.ts", "src/app/api/campaigns/[campaignId]/route.ts", "src/app/api/campaigns/[campaignId]/collections/route.ts", "src/app/api/collections/[collectionId]/route.ts", "tasks/TASK-0008-campaign-collection-vertical-slice.md", "tasks/task-manifest.json", "STATUS.md"],
       "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
       "rollback": "Revert CHG-0010 to remove Campaign and Collection persistence, APIs, audit tables, scoped credential attribution and TASK-0008 while preserving the earlier commercial execution foundation."
+    },
+    {
+      "id": "CHG-0011",
+      "date": "2026-07-29",
+      "type": "feature",
+      "summary": "Make Season an authoritative organisation-scoped persisted aggregate and require every Campaign to reference a valid Season through application validation and a composite tenant foreign key.",
+      "tasks": ["TASK-0008"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/seasons/README.md", "src/modules/seasons/index.ts", "src/modules/seasons/domain/season.ts", "src/modules/seasons/application/season-repository.ts", "src/modules/seasons/application/season-workflows.ts", "src/modules/seasons/infrastructure/in-memory-season-repository.ts", "src/modules/seasons/infrastructure/postgres-season-repository.ts", "src/modules/seasons/infrastructure/season-migrations.ts", "src/modules/seasons/infrastructure/season-runtime.ts", "src/modules/seasons/tests/season.test.ts", "src/app/api/seasons/route.ts", "src/app/api/seasons/[seasonId]/route.ts", "src/modules/campaigns/application/campaign-workflows.ts", "src/modules/campaigns/infrastructure/campaign-runtime.ts", "src/modules/campaigns/infrastructure/campaign-lifecycle-migrations.ts", "src/modules/campaigns/tests/campaign-workflows.test.ts", "src/app/api/campaigns/route.ts", "tasks/TASK-0008-campaign-collection-vertical-slice.md", "STATUS.md"],
+      "verification": {"command": "npm run verify && npm run test:e2e", "result": "NOT_RUN"},
+      "rollback": "Revert CHG-0011 to remove persisted Season APIs and restore Campaign season references to non-authoritative identifiers while preserving CHG-0010."
     }
   ]
 }
