@@ -113,7 +113,7 @@ describe('Order Builder workflows', () => {
     const context = harness();
     const created = await createDraft(context);
     const line = created.entity.lines[0]!;
-    const priced = await setOrderLineCommercialTermsUseCase({
+    await setOrderLineCommercialTermsUseCase({
       ...context,
       buyerOrganisationId,
       orderId: created.entity.id,
