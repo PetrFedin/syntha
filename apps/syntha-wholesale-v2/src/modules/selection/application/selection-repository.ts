@@ -72,7 +72,12 @@ export interface SelectionRepository {
     buyerOrganisationId: OrganisationId,
     grantId: ShowroomAccessGrantId,
   ): Promise<ShowroomAccessGrant | null>;
-  listGrantsForBuyer(buyerOrganisationId: OrganisationId): Promise<readonly ShowroomAccessGrant[]>;
+  listGrantsForSeller(
+    sellerOrganisationId: OrganisationId,
+  ): Promise<readonly ShowroomAccessGrant[]>;
+  listGrantsForBuyer(
+    buyerOrganisationId: OrganisationId,
+  ): Promise<readonly ShowroomAccessGrant[]>;
   findGrantReplay(command: LifecycleCreateCommand): Promise<ShowroomAccessGrant | null>;
   createGrant(
     grant: ShowroomAccessGrant,
