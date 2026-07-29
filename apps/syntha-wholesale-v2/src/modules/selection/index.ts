@@ -53,3 +53,9 @@ export {
   type SelectionIdGenerator,
 } from './application/selection-workflows';
 export { InMemorySelectionRepository } from './infrastructure/in-memory-selection-repository';
+export { PostgresSelectionRepository } from './infrastructure/postgres-selection-repository';
+export { runSelectionMigrations, selectionMigrations } from './infrastructure/selection-migrations';
+export {
+  getSelectionRepository,
+  resetSelectionRuntime,
+} from './infrastructure/selection-runtime';
