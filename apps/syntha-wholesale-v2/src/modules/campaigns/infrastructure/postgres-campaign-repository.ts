@@ -1,4 +1,14 @@
-import type { TransactionalSqlClient, TransactionalSqlPool } from '@/modules/commercial-execution';
+import type {
+  SqlExecutor,
+  TransactionalSqlClient,
+  TransactionalSqlPool,
+} from '@/modules/commercial-execution';
+import {
+  executeLifecycleCreate,
+  findLifecycleCreateReplay,
+  type LifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import { organisationId, type OrganisationId } from '@/modules/organisations';
 
 import type {
@@ -59,6 +69,18 @@ function freezeCampaign(row: CampaignRow): Campaign {
   });
 }
 
+async function loadCampaign(
+  executor: SqlExecutor,
+  organisationIdValue: OrganisationId,
+  id: string,
+): Promise<Campaign | null> {
+  const result = await executor.query<CampaignRow>(
+    `${selection} WHERE organisation_id = $1 AND id = $2`,
+    [organisationIdValue, id],
+  );
+  return result.rows[0] ? freezeCampaign(result.rows[0]) : null;
+}
+
 async function appendAudit(
   client: TransactionalSqlClient,
   audit: LifecycleAuditRecord,
@@ -89,11 +111,7 @@ export class PostgresCampaignRepository implements CampaignRepository {
     organisationIdValue: OrganisationId,
     id: CampaignId,
   ): Promise<Campaign | null> {
-    const result = await this.pool.query<CampaignRow>(
-      `${selection} WHERE organisation_id = $1 AND id = $2`,
-      [organisationIdValue, id],
-    );
-    return result.rows[0] ? freezeCampaign(result.rows[0]) : null;
+    return loadCampaign(this.pool, organisationIdValue, id);
   }
 
   async findByCode(
@@ -117,33 +135,59 @@ export class PostgresCampaignRepository implements CampaignRepository {
     return Object.freeze(result.rows.map(freezeCampaign));
   }
 
-  async create(campaign: Campaign, audit: LifecycleAuditRecord): Promise<void> {
+  async findCreateReplay(command: LifecycleCreateCommand): Promise<Campaign | null> {
+    return findLifecycleCreateReplay({
+      executor: this.pool,
+      command,
+      expectedEntityType: 'CAMPAIGN',
+      loadEntity: (executor, id) =>
+        loadCampaign(executor, command.organisationId, id),
+    });
+  }
+
+  async create(
+    campaign: Campaign,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Campaign>> {
     const client = await this.pool.connect();
     await client.query('BEGIN');
     try {
-      await client.query(
-        `INSERT INTO syntha_campaign
-           (organisation_id, id, season_id, code, name, starts_at, ends_at, status,
-            owner_credential_id, created_at, updated_at, version)
-         VALUES ($1, $2, $3, $4, $5, $6::timestamptz, $7::timestamptz, $8,
-                 $9, $10::timestamptz, $11::timestamptz, $12)`,
-        [
-          campaign.organisationId,
-          campaign.id,
-          campaign.seasonId,
-          campaign.code,
-          campaign.name,
-          campaign.startsAt,
-          campaign.endsAt,
-          campaign.status,
-          campaign.ownerCredentialId,
-          campaign.createdAt,
-          campaign.updatedAt,
-          campaign.version,
-        ],
-      );
-      await appendAudit(client, audit);
+      const result = await executeLifecycleCreate({
+        client,
+        command,
+        resultEntityType: 'CAMPAIGN',
+        resultEntityId: campaign.id,
+        loadEntity: (executor, id) =>
+          loadCampaign(executor, command.organisationId, id),
+        createEntity: async () => {
+          await client.query(
+            `INSERT INTO syntha_campaign
+               (organisation_id, id, season_id, code, name, starts_at, ends_at, status,
+                owner_credential_id, created_at, updated_at, version)
+             VALUES ($1, $2, $3, $4, $5, $6::timestamptz, $7::timestamptz, $8,
+                     $9, $10::timestamptz, $11::timestamptz, $12)`,
+            [
+              campaign.organisationId,
+              campaign.id,
+              campaign.seasonId,
+              campaign.code,
+              campaign.name,
+              campaign.startsAt,
+              campaign.endsAt,
+              campaign.status,
+              campaign.ownerCredentialId,
+              campaign.createdAt,
+              campaign.updatedAt,
+              campaign.version,
+            ],
+          );
+          await appendAudit(client, audit);
+          return campaign;
+        },
+      });
       await client.query('COMMIT');
+      return result;
     } catch (error) {
       try {
         await client.query('ROLLBACK');
