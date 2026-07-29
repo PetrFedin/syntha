@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0007
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: adaptive-workspace
 capability_ids:
@@ -72,18 +72,20 @@ Replace the isolated foundation landing page with the first coherent Syntha work
 
 ## Implementation checkpoint
 
-The adaptive workspace architecture is implemented and locally verified:
+The adaptive workspace is implemented and ready for review:
 
 - `WorkspaceShell` is owned only by the root layout;
 - 15 section routes and the eight-stage lifecycle derive from one validated registry;
-- unknown sections return 404 and known sections are statically generated;
+- unknown one-segment routes are rejected at the network boundary with HTTP 404;
 - Workspace Context and Commercial Context use explicit identifiers and dependency clearing;
 - URL helpers preserve compatible context across dashboard, shell and lifecycle transitions;
-- shared page states replace route-specific placeholder markup;
-- messages, notifications, calendar and search expose typed source-entity link contracts;
-- structural demo records are isolated in `src/shared/connected-services/fixtures.ts`;
-- 36 unit tests and 80 Playwright scenarios pass; four device-inapplicable checks skip by design.
+- shared loading, error and honest empty states replace route-specific placeholder markup;
+- loading UI preserves a single page `main` landmark;
+- Campaign and Collection pages render authoritative Season, Campaign and Collection projections;
+- scoped server actions provide create and lifecycle status mutations;
+- controlled access states hide business records and mutation forms when access is unavailable;
+- responsive lifecycle cards and forms preserve 44px interaction targets;
+- authenticated Playwright creates and advances the complete Season → Campaign → Collection path and verifies API state;
+- all gates passed on workflow run `30474774287`.
 
-The first server-backed Campaign and Collection domain/API slice is now tracked separately as `TASK-0008` so workspace delivery and lifecycle persistence have explicit ownership.
-
-TASK-0007 remains `IN_PROGRESS` until Campaign and Collection pages consume authoritative server projections and mutation surfaces instead of structural fixture content. The remaining sections continue to expose honest empty states rather than fabricated production data.
+TASK-0007 is in `QA`; acceptance requires review of `tasks/completions/TASK-0007-completion.md` before transition to `DONE`.
