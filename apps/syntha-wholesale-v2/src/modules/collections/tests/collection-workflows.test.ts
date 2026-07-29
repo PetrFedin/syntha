@@ -8,6 +8,11 @@ import {
   type CampaignRepository,
   type LifecycleAuditRecord,
 } from '@/modules/campaigns';
+import {
+  InMemoryLifecycleIdempotencyRegistry,
+  LifecycleIdempotencyConflict,
+  type LifecycleCreateCommand,
+} from '@/modules/lifecycle-idempotency';
 import { organisationId } from '@/modules/organisations';
 
 import type { CollectionRepository } from '../application/collection-repository';
@@ -39,7 +44,11 @@ class MemoryCampaignRepository implements CampaignRepository {
     return this.campaign.organisationId === organisation ? [this.campaign] : [];
   }
 
-  async create() {
+  async findCreateReplay() {
+    return null;
+  }
+
+  async create(): Promise<never> {
     throw new Error('not used');
   }
 
@@ -51,9 +60,14 @@ class MemoryCampaignRepository implements CampaignRepository {
 class MemoryCollectionRepository implements CollectionRepository {
   readonly collections = new Map<string, Collection>();
   readonly audits: LifecycleAuditRecord[] = [];
+  private readonly idempotency = new InMemoryLifecycleIdempotencyRegistry();
 
   private key(organisation: string, id: string): string {
     return `${organisation}:${id}`;
+  }
+
+  private loadForCommand(command: LifecycleCreateCommand, id: string): Collection | null {
+    return this.collections.get(this.key(command.organisationId, id)) ?? null;
   }
 
   async findById(organisation: Collection['organisationId'], id: CollectionId) {
@@ -85,9 +99,31 @@ class MemoryCollectionRepository implements CollectionRepository {
     );
   }
 
-  async create(collection: Collection, audit: LifecycleAuditRecord) {
+  async findCreateReplay(command: LifecycleCreateCommand) {
+    return this.idempotency.findReplay({
+      command,
+      expectedEntityType: 'COLLECTION',
+      loadEntity: (id) => this.loadForCommand(command, id),
+    });
+  }
+
+  async create(
+    collection: Collection,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ) {
+    const replay = await this.findCreateReplay(command);
+    if (replay) return Object.freeze({ entity: replay, replayed: true });
+
     this.collections.set(this.key(collection.organisationId, collection.id), collection);
     this.audits.push(audit);
+    return this.idempotency.complete({
+      command,
+      resultEntityType: 'COLLECTION',
+      resultEntityId: collection.id,
+      entity: collection,
+      loadEntity: (id) => this.loadForCommand(command, id),
+    });
   }
 
   async update(
@@ -147,20 +183,38 @@ function fixture(status: Campaign['status'] = 'DRAFT') {
   };
 }
 
+function createInput(
+  context: ReturnType<typeof fixture>,
+  overrides: Partial<{
+    code: string;
+    name: string;
+    currency: string;
+    actorCredentialId: string;
+    idempotencyKey: string;
+  }> = {},
+) {
+  return {
+    ...context,
+    organisationId: context.organisation,
+    campaignId: context.campaign.id,
+    code: overrides.code ?? 'MAIN-LINE',
+    name: overrides.name ?? 'Main Line',
+    currency: overrides.currency ?? 'EUR',
+    actorCredentialId: overrides.actorCredentialId ?? 'collection-manager',
+    idempotencyKey: overrides.idempotencyKey ?? 'collection-create-001',
+  };
+}
+
 describe('collection workflows', () => {
   it('creates a collection under an authoritative campaign and audits the actor', async () => {
     const context = fixture();
 
-    const collection = await createCollectionUseCase({
-      ...context,
-      organisationId: context.organisation,
-      campaignId: context.campaign.id,
-      code: ' main-line ',
-      name: 'Main Line',
-      currency: 'eur',
-      actorCredentialId: 'collection-manager',
-    });
+    const result = await createCollectionUseCase(
+      createInput(context, { code: ' main-line ', currency: 'eur' }),
+    );
+    const collection = result.entity;
 
+    expect(result.replayed).toBe(false);
     expect(collection.code).toBe('MAIN-LINE');
     expect(collection.currency).toBe('EUR');
     expect(context.collectionRepository.audits).toEqual([
@@ -173,33 +227,61 @@ describe('collection workflows', () => {
     ]);
   });
 
+  it('replays the original collection without a duplicate entity or audit', async () => {
+    const context = fixture();
+    const input = createInput(context, { idempotencyKey: 'collection-create-replay' });
+
+    const first = await createCollectionUseCase(input);
+    const replay = await createCollectionUseCase(input);
+
+    expect(first.replayed).toBe(false);
+    expect(replay.replayed).toBe(true);
+    expect(replay.entity.id).toBe(first.entity.id);
+    expect(context.collectionRepository.collections.size).toBe(1);
+    expect(context.collectionRepository.audits).toHaveLength(1);
+  });
+
+  it('rejects reuse of a collection idempotency key with another payload', async () => {
+    const context = fixture();
+    const input = createInput(context, { idempotencyKey: 'collection-create-conflict' });
+
+    await createCollectionUseCase(input);
+    await expect(
+      createCollectionUseCase({ ...input, currency: 'USD' }),
+    ).rejects.toBeInstanceOf(LifecycleIdempotencyConflict);
+    expect(context.collectionRepository.collections.size).toBe(1);
+    expect(context.collectionRepository.audits).toHaveLength(1);
+  });
+
   it('blocks collection creation after campaign closure', async () => {
     const context = fixture('CLOSED');
 
     await expect(
-      createCollectionUseCase({
-        ...context,
-        organisationId: context.organisation,
-        campaignId: context.campaign.id,
-        code: 'CLOSED-LINE',
-        name: 'Closed Line',
-        currency: 'USD',
-        actorCredentialId: 'operator',
-      }),
+      createCollectionUseCase(
+        createInput(context, {
+          code: 'CLOSED-LINE',
+          name: 'Closed Line',
+          currency: 'USD',
+          actorCredentialId: 'operator',
+          idempotencyKey: 'collection-closed-campaign',
+        }),
+      ),
     ).rejects.toBeInstanceOf(CampaignDoesNotAcceptCollections);
   });
 
   it('isolates reads and rejects stale collection updates', async () => {
     const context = fixture();
-    const collection = await createCollectionUseCase({
-      ...context,
-      organisationId: context.organisation,
-      campaignId: context.campaign.id,
-      code: 'CAPSULE',
-      name: 'Capsule',
-      currency: 'GBP',
-      actorCredentialId: 'creator',
-    });
+    const collection = (
+      await createCollectionUseCase(
+        createInput(context, {
+          code: 'CAPSULE',
+          name: 'Capsule',
+          currency: 'GBP',
+          actorCredentialId: 'creator',
+          idempotencyKey: 'collection-stale-update',
+        }),
+      )
+    ).entity;
 
     await expect(
       getCollection({
