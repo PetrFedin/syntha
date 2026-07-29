@@ -5,10 +5,15 @@ import { NextResponse } from 'next/server';
 import {
   CampaignAlreadyExists,
   CampaignDomainError,
+  SeasonDoesNotAcceptCampaigns,
   createCampaignUseCase,
   getCampaignRepository,
   listCampaigns,
 } from '@/modules/campaigns';
+import {
+  SeasonNotFound,
+  getSeasonRepository,
+} from '@/modules/seasons';
 import {
   CommercialApiError,
   requireCommercialApiAccess,
@@ -33,6 +38,15 @@ function failure(error: unknown): NextResponse {
     return NextResponse.json(
       { error: error.code, message: error.message },
       { status: error.status },
+    );
+  }
+  if (error instanceof SeasonNotFound) {
+    return NextResponse.json({ error: 'season_not_found' }, { status: 404 });
+  }
+  if (error instanceof SeasonDoesNotAcceptCampaigns) {
+    return NextResponse.json(
+      { error: 'season_does_not_accept_campaigns' },
+      { status: 409 },
     );
   }
   if (error instanceof CampaignAlreadyExists || postgresCode(error) === '23505') {
@@ -65,9 +79,13 @@ export async function POST(request: Request) {
   try {
     const access = await requireCommercialApiAccess(request, 'operate');
     const body = await requireJsonObject(request);
-    const repository = await getCampaignRepository();
+    const [repository, seasonRepository] = await Promise.all([
+      getCampaignRepository(),
+      getSeasonRepository(),
+    ]);
     const campaign = await createCampaignUseCase({
       repository,
+      seasonRepository,
       clock,
       ids,
       organisationId: access.organisationId,
