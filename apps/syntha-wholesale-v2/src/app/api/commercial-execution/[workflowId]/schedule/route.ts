@@ -24,12 +24,24 @@ function integrations(value: unknown): readonly string[] {
   });
 }
 
-async function runtimeFor(request: Request) {
+async function runtimeFor(request: Request, organizationId: string) {
   const commercialRuntime = await getCommercialExecutionRuntime();
   if (!(await commercialRuntime.operationsAuthorizer.authorize(request))) {
     throw new Error("unauthorized");
   }
+  if (
+    !(await commercialRuntime.operationsAuthorizer.authorizeAccess(request, {
+      permission: "schedule",
+      organizationId,
+    }))
+  ) {
+    throw new Error("forbidden");
+  }
   return commercialRuntime;
+}
+
+function errorStatus(message: string): number {
+  return message === "unauthorized" ? 401 : message === "forbidden" ? 403 : 400;
 }
 
 export async function GET(
@@ -37,10 +49,10 @@ export async function GET(
   context: { readonly params: Promise<{ readonly workflowId: string }> },
 ) {
   try {
-    const commercialRuntime = await runtimeFor(request);
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    const commercialRuntime = await runtimeFor(request, organizationId);
     const { workflowId } = await context.params;
     const schedule = await commercialRuntime.schedules.findById(
       organizationId,
@@ -51,10 +63,7 @@ export async function GET(
       : NextResponse.json({ error: "schedule_not_found" }, { status: 404 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";
-    return NextResponse.json(
-      { error: message },
-      { status: message === "unauthorized" ? 401 : 400 },
-    );
+    return NextResponse.json({ error: message }, { status: errorStatus(message) });
   }
 }
 
@@ -63,10 +72,10 @@ export async function PUT(
   context: { readonly params: Promise<{ readonly workflowId: string }> },
 ) {
   try {
-    const commercialRuntime = await runtimeFor(request);
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    const commercialRuntime = await runtimeFor(request, organizationId);
     const value: unknown = await request.json();
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       throw new Error("Schedule body must be a JSON object.");
@@ -89,10 +98,7 @@ export async function PUT(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_schedule";
-    return NextResponse.json(
-      { error: message },
-      { status: message === "unauthorized" ? 401 : 400 },
-    );
+    return NextResponse.json({ error: message }, { status: errorStatus(message) });
   }
 }
 
@@ -101,10 +107,10 @@ export async function DELETE(
   context: { readonly params: Promise<{ readonly workflowId: string }> },
 ) {
   try {
-    const commercialRuntime = await runtimeFor(request);
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    const commercialRuntime = await runtimeFor(request, organizationId);
     const { workflowId } = await context.params;
     const current = await commercialRuntime.schedules.findById(
       organizationId,
@@ -126,9 +132,6 @@ export async function DELETE(
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_schedule";
-    return NextResponse.json(
-      { error: message },
-      { status: message === "unauthorized" ? 401 : 400 },
-    );
+    return NextResponse.json({ error: message }, { status: errorStatus(message) });
   }
 }

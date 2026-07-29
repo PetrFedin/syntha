@@ -51,7 +51,10 @@ export async function POST(
     ) {
       throw new Error("Callback organization id does not match the header.");
     }
-    const keys = await commercialRuntime.signingKeys.load(integrationId);
+    const keys = await commercialRuntime.signingKeys.load(
+      integrationId,
+      parsed.organizationId,
+    );
     const verifier = new HmacIntegrationCallbackVerifier(keys);
     const result = await commercialRuntime.unitOfWork.execute((repository) =>
       verifyAndReconcileIntegrationCallback({

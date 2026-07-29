@@ -20,6 +20,13 @@ export async function POST(request: Request) {
   if (!(await commercialRuntime.operationsAuthorizer.authorize(request))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  if (
+    !(await commercialRuntime.operationsAuthorizer.authorizeAccess(request, {
+      permission: "scheduler",
+    }))
+  ) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
   try {
     const value: unknown = await request.json().catch(() => ({}));
     if (!value || typeof value !== "object" || Array.isArray(value)) {

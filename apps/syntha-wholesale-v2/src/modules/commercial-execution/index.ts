@@ -11,7 +11,11 @@ export type {
 } from "./application/commercial-execution-health-check";
 export type { CommercialExecutionScheduleRepository } from "./application/commercial-execution-schedule-repository";
 export type { CommercialExecutionUnitOfWork } from "./application/commercial-execution-unit-of-work";
-export type { CommercialOperationsAuthorizer } from "./application/commercial-operations-authorizer";
+export type {
+  CommercialOperationsAccessRequest,
+  CommercialOperationsAuthorizer,
+  CommercialOperationsPermission,
+} from "./application/commercial-operations-authorizer";
 export {
   getCommercialOperationsReadModel,
   type CommercialOperationsMetrics,

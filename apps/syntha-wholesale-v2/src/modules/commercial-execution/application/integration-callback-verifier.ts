@@ -1,4 +1,5 @@
 export interface IntegrationCallbackVerificationRequest {
+  readonly organizationId: string;
   readonly integrationId: string;
   readonly timestamp: string;
   readonly signature: string;

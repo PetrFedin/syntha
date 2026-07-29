@@ -31,6 +31,7 @@ describe("PostgresCommercialExecutionHealthCheck", () => {
           return [
             {
               keyId: "current",
+              organizationId: "ORG-A",
               integrationId: "erp",
               secret: "1234567890abcdef",
             },

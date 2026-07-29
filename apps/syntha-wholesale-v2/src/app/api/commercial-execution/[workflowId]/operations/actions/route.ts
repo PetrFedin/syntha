@@ -38,6 +38,14 @@ export async function POST(
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    if (
+      !(await commercialRuntime.operationsAuthorizer.authorizeAccess(request, {
+        permission: "operate",
+        organizationId,
+      }))
+    ) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
     const value: unknown = await request.json();
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       throw new Error("Operations action body must be a JSON object.");

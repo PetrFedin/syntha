@@ -29,6 +29,14 @@ export async function GET(
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    if (
+      !(await commercialRuntime.operationsAuthorizer.authorizeAccess(request, {
+        permission: "read",
+        organizationId,
+      }))
+    ) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
     const { workflowId } = await context.params;
     const readModel = await getCommercialOperationsReadModel({
       repository: scopeCommercialWorkflowRepository(

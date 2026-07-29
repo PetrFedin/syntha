@@ -5,9 +5,11 @@ import type {
   IntegrationCallbackVerificationResult,
   IntegrationCallbackVerifier,
 } from "../application/integration-callback-verifier";
+import { normalizeCommercialOrganizationId } from "../application/organization-scoped-commercial-workflow-repository";
 
 export interface IntegrationSigningKey {
   readonly keyId: string;
+  readonly organizationId: string;
   readonly integrationId: string;
   readonly secret: string;
   readonly activeFrom?: string;
@@ -72,6 +74,15 @@ export class HmacIntegrationCallbackVerifier
         reason: "Integration id is required for callback verification.",
       });
     }
+    let organizationId: string;
+    try {
+      organizationId = normalizeCommercialOrganizationId(request.organizationId);
+    } catch {
+      return Object.freeze({
+        verified: false,
+        reason: "Organization id is invalid for callback verification.",
+      });
+    }
     const requestTime = parsedDate(request.timestamp, "Callback signature timestamp");
     const currentTime = parsedDate(now, "Callback verification time");
     const ageSeconds = Math.abs(
@@ -86,6 +97,7 @@ export class HmacIntegrationCallbackVerifier
 
     const candidates = this.keys.filter(
       (key) =>
+        key.organizationId === organizationId &&
         key.integrationId === request.integrationId &&
         (!request.keyId || key.keyId === request.keyId) &&
         activeAt(key, requestTime),
@@ -93,7 +105,7 @@ export class HmacIntegrationCallbackVerifier
     if (candidates.length === 0) {
       return Object.freeze({
         verified: false,
-        reason: "No active signing key matches the callback.",
+        reason: "No active tenant signing key matches the callback.",
       });
     }
 
@@ -128,7 +140,7 @@ export class HmacIntegrationCallbackVerifier
 
     return Object.freeze({
       verified: false,
-      reason: "Callback signature does not match any active signing key.",
+      reason: "Callback signature does not match any active tenant signing key.",
     });
   }
 }

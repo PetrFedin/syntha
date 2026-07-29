@@ -101,6 +101,7 @@ export function parseIntegrationCallbackRequest(input: {
       payload: payload(body.payload),
     }),
     verificationRequest: Object.freeze({
+      organizationId,
       integrationId,
       signature,
       timestamp,

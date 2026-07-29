@@ -29,6 +29,14 @@ export async function POST(
     const organizationId = requireCommercialOrganizationId(
       request.headers.get("x-syntha-organization-id"),
     );
+    if (
+      !(await commercialRuntime.operationsAuthorizer.authorizeAccess(request, {
+        permission: "operate",
+        organizationId,
+      }))
+    ) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
     const actorId = request.headers.get("x-syntha-actor-id")?.trim();
     if (!actorId) throw new Error("Operations actor id is required.");
     const value: unknown = await request.json();

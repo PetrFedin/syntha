@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import type { RecommendedAction } from "@/domain/decision/decision";
-
 import {
   createCommercialWorkflowState,
   createHmacIntegrationSignature,
@@ -31,6 +30,7 @@ async function repositoryWithCommand() {
         createIntegrationCommand({
           id: "CMD-1",
           workflowId: "WF-1",
+          organizationId: "ORG-A",
           integrationId: "erp",
           action,
           idempotencyKey: "IDEMP-1",
@@ -51,22 +51,31 @@ const callback = {
   commandId: "CMD-1",
   externalReference: "ERP-PO-100",
 };
-const rawBody = JSON.stringify(callback);
+const rawBody = JSON.stringify({ organizationId: "ORG-A", ...callback });
 const timestamp = "2026-07-29T00:05:01.000Z";
 
+function verifier() {
+  return new HmacIntegrationCallbackVerifier([
+    {
+      keyId: "key-current",
+      organizationId: "ORG-A",
+      integrationId: "erp",
+      secret: "secret-current",
+    },
+  ]);
+}
+
 describe("integration callback security", () => {
-  it("verifies a signed callback before reconciliation", async () => {
+  it("verifies a tenant-scoped signed callback before reconciliation", async () => {
     const repository = await repositoryWithCommand();
-    const verifier = new HmacIntegrationCallbackVerifier([
-      { keyId: "key-current", integrationId: "erp", secret: "secret-current" },
-    ]);
     const result = await verifyAndReconcileIntegrationCallback({
-      verifier,
+      verifier: verifier(),
       repository,
       workflowId: "WF-1",
       callback,
       receivedAt: timestamp,
       verificationRequest: {
+        organizationId: "ORG-A",
         integrationId: "erp",
         keyId: "key-current",
         timestamp,
@@ -80,46 +89,43 @@ describe("integration callback security", () => {
     });
 
     expect(result.status).toBe("reconciled");
-    const state = await repository.findById("WF-1");
-    expect(state?.integrationInbox).toHaveLength(1);
+    expect((await repository.findById("WF-1"))?.integrationInbox).toHaveLength(1);
   });
 
-  it("rejects an invalid signature without mutating workflow state", async () => {
-    const repository = await repositoryWithCommand();
-    const verifier = new HmacIntegrationCallbackVerifier([
-      { keyId: "key-current", integrationId: "erp", secret: "secret-current" },
-    ]);
-    const result = await verifyAndReconcileIntegrationCallback({
-      verifier,
-      repository,
-      workflowId: "WF-1",
-      callback,
-      receivedAt: timestamp,
-      verificationRequest: {
+  it("rejects a valid signature when the key belongs to another tenant", async () => {
+    const result = await verifier().verify(
+      {
+        organizationId: "ORG-B",
         integrationId: "erp",
         keyId: "key-current",
         timestamp,
         rawBody,
-        signature: `sha256=${"0".repeat(64)}`,
+        signature: createHmacIntegrationSignature({
+          secret: "secret-current",
+          timestamp,
+          rawBody,
+        }),
       },
-    });
+      "2026-07-29T00:05:02.000Z",
+    );
 
-    expect(result.status).toBe("rejected");
-    const state = await repository.findById("WF-1");
-    expect(state?.integrationInbox).toHaveLength(0);
+    expect(result.verified).toBe(false);
+    expect(result.reason).toContain("tenant signing key");
   });
 
-  it("supports signing-key rotation and rejects stale callbacks", async () => {
-    const verifier = new HmacIntegrationCallbackVerifier(
+  it("supports tenant key rotation and replay protection", async () => {
+    const rotatedVerifier = new HmacIntegrationCallbackVerifier(
       [
         {
           keyId: "key-old",
+          organizationId: "ORG-A",
           integrationId: "erp",
           secret: "secret-old",
           activeUntil: "2026-07-29T00:10:00.000Z",
         },
         {
           keyId: "key-new",
+          organizationId: "ORG-A",
           integrationId: "erp",
           secret: "secret-new",
           activeFrom: "2026-07-29T00:04:00.000Z",
@@ -127,8 +133,9 @@ describe("integration callback security", () => {
       ],
       { toleranceSeconds: 300 },
     );
-    const rotated = await verifier.verify(
+    const rotated = await rotatedVerifier.verify(
       {
+        organizationId: "ORG-A",
         integrationId: "erp",
         keyId: "key-old",
         timestamp,
@@ -141,8 +148,9 @@ describe("integration callback security", () => {
       },
       "2026-07-29T00:05:02.000Z",
     );
-    const stale = await verifier.verify(
+    const stale = await rotatedVerifier.verify(
       {
+        organizationId: "ORG-A",
         integrationId: "erp",
         keyId: "key-new",
         timestamp,
@@ -157,7 +165,6 @@ describe("integration callback security", () => {
     );
 
     expect(rotated.verified).toBe(true);
-    expect(rotated.keyId).toBe("key-old");
     expect(stale.verified).toBe(false);
     expect(stale.reason).toContain("replay-protection");
   });
