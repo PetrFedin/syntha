@@ -15,11 +15,14 @@ type AuditRecord =
   | CommercialOperationsAuditRecord
   | IntegrationReconciliationAuditRecord;
 
-type SealedAuditRecord = AuditRecord & {
-  readonly sequence: number;
-  readonly previousHash: string;
-  readonly recordHash: string;
-};
+export type SealedCommercialAuditRecord<RecordType extends AuditRecord> =
+  RecordType & {
+    readonly sequence: number;
+    readonly previousHash: string;
+    readonly recordHash: string;
+  };
+
+type SealedAuditRecord = SealedCommercialAuditRecord<AuditRecord>;
 
 interface StreamRecord {
   readonly stream: CommercialAuditStream;
@@ -149,7 +152,7 @@ export function sealCommercialAuditRecord<RecordType extends AuditRecord>(input:
   readonly record: RecordType;
   readonly operationsAudit: readonly CommercialOperationsAuditRecord[];
   readonly reconciliationAudit: readonly IntegrationReconciliationAuditRecord[];
-}): RecordType & Required<Pick<RecordType, "sequence" | "previousHash" | "recordHash">> {
+}): SealedCommercialAuditRecord<RecordType> {
   const integrity = verifyCommercialAuditChain({
     operationsAudit: input.operationsAudit,
     reconciliationAudit: input.reconciliationAudit,
@@ -172,6 +175,5 @@ export function sealCommercialAuditRecord<RecordType extends AuditRecord>(input:
     sequence,
     previousHash,
     recordHash,
-  }) as RecordType &
-    Required<Pick<RecordType, "sequence" | "previousHash" | "recordHash">>;
+  }) as unknown as SealedCommercialAuditRecord<RecordType>;
 }
