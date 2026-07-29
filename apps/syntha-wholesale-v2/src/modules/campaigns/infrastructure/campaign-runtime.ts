@@ -1,7 +1,5 @@
-import {
-  createNodePostgresPoolFromEnvironment,
-  type TransactionalSqlPool,
-} from '@/modules/commercial-execution';
+import type { TransactionalSqlPool } from '@/modules/commercial-execution';
+import { getSeasonLifecyclePool } from '@/modules/seasons';
 
 import type { CampaignRepository } from '../application/campaign-repository';
 import { runCampaignLifecycleMigrations } from './campaign-lifecycle-migrations';
@@ -13,7 +11,7 @@ let repositoryPromise: Promise<CampaignRepository> | null = null;
 export async function getCampaignLifecyclePool(): Promise<TransactionalSqlPool> {
   if (!poolPromise) {
     poolPromise = (async () => {
-      const pool = await createNodePostgresPoolFromEnvironment();
+      const pool = await getSeasonLifecyclePool();
       await runCampaignLifecycleMigrations({ pool });
       return pool;
     })().catch((error) => {
