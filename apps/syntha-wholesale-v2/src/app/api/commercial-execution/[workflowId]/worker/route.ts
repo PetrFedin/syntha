@@ -1,7 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 
 import {
   getCommercialExecutionRuntime,
+  runIntegrationReconciliationJob,
   runIntegrationWorkerCycle,
 } from "@/modules/commercial-execution";
 
@@ -37,7 +39,6 @@ export async function POST(
   if (!(await commercialRuntime.operationsAuthorizer.authorize(request))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-
   let body: Record<string, unknown>;
   try {
     const value: unknown = await request.json();
@@ -51,7 +52,6 @@ export async function POST(
       { status: 400 },
     );
   }
-
   try {
     const settings = await commercialRuntime.workerSettings.load();
     const requestedMaximum =
@@ -62,7 +62,7 @@ export async function POST(
       throw new Error("maximumCommands must be a positive integer.");
     }
     const { workflowId } = await context.params;
-    const result = await runIntegrationWorkerCycle({
+    const worker = await runIntegrationWorkerCycle({
       repository: commercialRuntime.repository,
       transports: commercialRuntime.transports,
       workflowId,
@@ -70,9 +70,19 @@ export async function POST(
       workerId: settings.workerId,
       maximumCommands: Math.min(requestedMaximum, settings.maximumCommands),
     });
-    return NextResponse.json(result, {
-      headers: { "cache-control": "no-store" },
-    });
+    const reconciliation = await commercialRuntime.unitOfWork.execute((repository) =>
+      runIntegrationReconciliationJob({
+        repository,
+        workflowId,
+        jobId: request.headers.get("x-syntha-job-id")?.trim() || randomUUID(),
+        actorId: settings.workerId,
+        maximumRecords: 100,
+      }),
+    );
+    return NextResponse.json(
+      { worker, reconciliation },
+      { headers: { "cache-control": "no-store" } },
+    );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "worker_failed" },

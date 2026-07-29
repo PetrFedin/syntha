@@ -9,6 +9,7 @@ import type { IntegrationCircuit } from "@/domain/execution/integration-resilien
 import type { CommercialOperationsAuditRecord } from "../domain/commercial-operations-audit";
 import type { IntegrationCommand } from "../domain/integration-command";
 import type { IntegrationInboxRecord } from "../domain/integration-inbox";
+import type { IntegrationReconciliationAuditRecord } from "../domain/integration-reconciliation-audit";
 
 export interface CommercialWorkflowState {
   readonly id: string;
@@ -21,6 +22,7 @@ export interface CommercialWorkflowState {
   readonly integrationCommands: readonly IntegrationCommand[];
   readonly integrationInbox: readonly IntegrationInboxRecord[];
   readonly operationsAudit: readonly CommercialOperationsAuditRecord[];
+  readonly integrationReconciliationAudit: readonly IntegrationReconciliationAuditRecord[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -65,6 +67,7 @@ export function createCommercialWorkflowState(input: {
     integrationCommands: Object.freeze([]),
     integrationInbox: Object.freeze([]),
     operationsAudit: Object.freeze([]),
+    integrationReconciliationAudit: Object.freeze([]),
     createdAt,
     updatedAt: createdAt,
   });

@@ -46,6 +46,10 @@ export {
   type IntegrationCallbackResult,
 } from "./application/reconcile-integration-callback";
 export {
+  runIntegrationReconciliationJob,
+  type IntegrationReconciliationJobResult,
+} from "./application/run-integration-reconciliation-job";
+export {
   runIntegrationWorkerCycle,
   type IntegrationTransportRegistry,
   type IntegrationWorkerCycleResult,
@@ -69,6 +73,15 @@ export type {
   IntegrationInboxRecord,
   IntegrationInboxStatus,
 } from "./domain/integration-inbox";
+export type {
+  IntegrationReconciliationAuditRecord,
+  IntegrationReconciliationJobStatus,
+} from "./domain/integration-reconciliation-audit";
+export {
+  bootstrapCommercialExecutionRuntimeFromEnvironment,
+  resetCommercialExecutionBootstrap,
+  type BootstrappedCommercialExecutionRuntime,
+} from "./infrastructure/bootstrap-commercial-execution-runtime";
 export {
   createPostgresCommercialExecutionRuntime,
   getCommercialExecutionRuntime,
@@ -77,6 +90,7 @@ export {
   type CommercialExecutionRuntime,
 } from "./infrastructure/commercial-execution-runtime";
 export { EnvironmentCommercialOperationsAuthorizer } from "./infrastructure/environment-commercial-operations-authorizer";
+export { EnvironmentHttpIntegrationTransportRegistry } from "./infrastructure/environment-http-integration-transport-registry";
 export { EnvironmentIntegrationSigningKeyProvider } from "./infrastructure/environment-integration-signing-key-provider";
 export { EnvironmentIntegrationWorkerSettingsProvider } from "./infrastructure/environment-integration-worker-settings-provider";
 export {
@@ -84,7 +98,20 @@ export {
   HmacIntegrationCallbackVerifier,
   type IntegrationSigningKey,
 } from "./infrastructure/hmac-integration-callback-verifier";
+export {
+  HttpIntegrationCommandTransport,
+  IntegrationTransportError,
+  isRetryableIntegrationTransportError,
+  type HttpIntegrationTransportConfiguration,
+} from "./infrastructure/http-integration-command-transport";
 export { InMemoryCommercialWorkflowRepository } from "./infrastructure/in-memory-commercial-workflow-repository";
+export {
+  createNodePostgresPoolFromEnvironment,
+  NodePostgresPoolAdapter,
+  type NodePostgresModule,
+  type NodePostgresModuleLoader,
+  type NodePostgresPoolLike,
+} from "./infrastructure/node-postgres-pool-adapter";
 export {
   PostgresCommercialExecutionUnitOfWork,
   type TransactionalSqlClient,

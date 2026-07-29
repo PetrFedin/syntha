@@ -21,4 +21,5 @@ export interface IntegrationInboxRecord {
   readonly externalReference?: string;
   readonly error?: string;
   readonly conflictReason?: string;
+  readonly reconciledAt?: string;
 }
