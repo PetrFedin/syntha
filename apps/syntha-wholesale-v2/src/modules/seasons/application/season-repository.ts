@@ -1,3 +1,7 @@
+import type {
+  LifecycleCreateCommand,
+  LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import type { Season, SeasonId } from '../domain/season';
@@ -19,7 +23,12 @@ export interface SeasonRepository {
   findById(organisationId: OrganisationId, id: SeasonId): Promise<Season | null>;
   findByOrganisation(organisationId: OrganisationId): Promise<readonly Season[]>;
   findByCode(organisationId: OrganisationId, code: string): Promise<Season | null>;
-  create(season: Season, audit: SeasonAuditRecord): Promise<void>;
+  findCreateReplay(command: LifecycleCreateCommand): Promise<Season | null>;
+  create(
+    season: Season,
+    audit: SeasonAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Season>>;
   update(
     season: Season,
     expectedVersion: number,
