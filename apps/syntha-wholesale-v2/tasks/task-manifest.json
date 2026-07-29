@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "tasks": [
     {"id":"TASK-0001","file":"TASK-0001-project-boundary-and-commands.md","status":"DONE","priority":"P0","dependencies":[],"completion_report":"completions/TASK-0001-completion.md"},
     {"id":"TASK-0002","file":"TASK-0002-architecture-adr-package.md","status":"DONE","priority":"P0","dependencies":["TASK-0001"],"completion_report":"completions/TASK-0002-completion.md"},
@@ -9,7 +9,7 @@
     {"id":"TASK-0006","file":"TASK-0006-identity-and-organisation-foundation.md","status":"DONE","priority":"P0","dependencies":["TASK-0004","TASK-0005"],"completion_report":"completions/TASK-0006-completion.md"},
     {"id":"TASK-0007","file":"TASK-0007-adaptive-workspace-foundation.md","status":"QA","priority":"P0","dependencies":["TASK-0004","TASK-0005","TASK-0006"],"completion_report":"completions/TASK-0007-completion.md"},
     {"id":"TASK-0008","file":"TASK-0008-campaign-collection-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0006"],"completion_report":"completions/TASK-0008-completion.md"},
-    {"id":"TASK-0009","file":"TASK-0009-showroom-publication-vertical-slice.md","status":"IN_PROGRESS","priority":"P0","dependencies":["TASK-0008"]},
-    {"id":"TASK-0010","file":"TASK-0010-buyer-access-selection-vertical-slice.md","status":"IN_PROGRESS","priority":"P0","dependencies":["TASK-0009"]}
+    {"id":"TASK-0009","file":"TASK-0009-showroom-publication-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0008"],"completion_report":"completions/TASK-0009-completion.md"},
+    {"id":"TASK-0010","file":"TASK-0010-buyer-access-selection-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0009"],"completion_report":"completions/TASK-0010-completion.md"}
   ]
 }
