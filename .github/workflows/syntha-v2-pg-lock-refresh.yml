@@ -1,0 +1,35 @@
+name: Syntha V2 pg lock refresh
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/syntha-v2-pg-lock-refresh.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/syntha-wholesale-v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/syntha-wholesale-v2/package-lock.json
+      - name: Generate exact pg dependency lock
+        run: npm install --package-lock-only --save-exact --ignore-scripts --no-audit --no-fund pg@8.22.0
+      - name: Upload generated package files
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-pg-lock
+          path: |
+            apps/syntha-wholesale-v2/package.json
+            apps/syntha-wholesale-v2/package-lock.json
+          if-no-files-found: error
+          retention-days: 1
