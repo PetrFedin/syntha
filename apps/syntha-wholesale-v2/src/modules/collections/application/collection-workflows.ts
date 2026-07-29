@@ -6,6 +6,10 @@ import {
   type LifecycleAuditAction,
   type LifecycleAuditRecord,
 } from '@/modules/campaigns';
+import {
+  lifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import {
@@ -77,7 +81,28 @@ export async function createCollectionUseCase(input: {
   readonly name: string;
   readonly currency: string;
   readonly actorCredentialId: string;
-}): Promise<Collection> {
+  readonly idempotencyKey: string;
+}): Promise<LifecycleCreateResult<Collection>> {
+  const now = input.clock.now();
+  const code = input.code.trim().toUpperCase();
+  const currency = input.currency.trim().toUpperCase();
+  const idempotency = lifecycleCreateCommand({
+    organisationId: input.organisationId,
+    commandName: 'CREATE_COLLECTION',
+    idempotencyKey: input.idempotencyKey,
+    payload: {
+      campaignId: input.campaignId.trim(),
+      code,
+      name: input.name.trim(),
+      currency,
+    },
+    actorCredentialId: input.actorCredentialId,
+    requestedAt: now,
+  });
+
+  const replay = await input.collectionRepository.findCreateReplay(idempotency);
+  if (replay) return Object.freeze({ entity: replay, replayed: true });
+
   const campaign = await getCampaign({
     repository: input.campaignRepository,
     organisationId: input.organisationId,
@@ -86,7 +111,6 @@ export async function createCollectionUseCase(input: {
   if (campaign.status === 'CLOSED' || campaign.status === 'ARCHIVED') {
     throw new CampaignDoesNotAcceptCollections(campaign.id);
   }
-  const code = input.code.trim().toUpperCase();
   if (
     await input.collectionRepository.findByCode(
       input.organisationId,
@@ -96,18 +120,18 @@ export async function createCollectionUseCase(input: {
   ) {
     throw new CollectionAlreadyExists(code);
   }
-  const now = input.clock.now();
+
   const collection = createCollection({
     id: input.ids.next('collection'),
     organisationId: input.organisationId,
     campaignId: campaign.id,
     code,
     name: input.name,
-    currency: input.currency,
+    currency,
     ownerCredentialId: input.actorCredentialId,
     now,
   });
-  await input.collectionRepository.create(
+  return input.collectionRepository.create(
     collection,
     audit({
       ids: input.ids,
@@ -118,8 +142,8 @@ export async function createCollectionUseCase(input: {
       expectedVersion: null,
       occurredAt: now,
     }),
+    idempotency,
   );
-  return collection;
 }
 
 export async function listCampaignCollections(input: {
