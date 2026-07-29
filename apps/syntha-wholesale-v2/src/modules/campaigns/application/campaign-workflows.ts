@@ -1,4 +1,8 @@
 import type { OrganisationId } from '@/modules/organisations';
+import {
+  getSeason,
+  type SeasonRepository,
+} from '@/modules/seasons';
 
 import {
   createCampaign,
@@ -41,6 +45,13 @@ export class CampaignVersionConflict extends Error {
   }
 }
 
+export class SeasonDoesNotAcceptCampaigns extends Error {
+  constructor(id: string) {
+    super(`Season ${id} does not accept new campaigns in its current status`);
+    this.name = 'SeasonDoesNotAcceptCampaigns';
+  }
+}
+
 function audit(input: {
   readonly ids: CampaignIdGenerator;
   readonly organisationId: OrganisationId;
@@ -65,6 +76,7 @@ function audit(input: {
 
 export async function createCampaignUseCase(input: {
   readonly repository: CampaignRepository;
+  readonly seasonRepository: SeasonRepository;
   readonly clock: CampaignClock;
   readonly ids: CampaignIdGenerator;
   readonly organisationId: OrganisationId;
@@ -75,6 +87,15 @@ export async function createCampaignUseCase(input: {
   readonly endsAt: Date;
   readonly actorCredentialId: string;
 }): Promise<Campaign> {
+  const season = await getSeason(
+    input.seasonRepository,
+    input.organisationId,
+    input.seasonId,
+  );
+  if (season.status === 'CLOSED' || season.status === 'ARCHIVED') {
+    throw new SeasonDoesNotAcceptCampaigns(season.id);
+  }
+
   const code = input.code.trim().toUpperCase();
   if (await input.repository.findByCode(input.organisationId, code)) {
     throw new CampaignAlreadyExists(code);
@@ -83,7 +104,7 @@ export async function createCampaignUseCase(input: {
   const campaign = createCampaign({
     id: input.ids.next('campaign'),
     organisationId: input.organisationId,
-    seasonId: input.seasonId,
+    seasonId: season.id,
     code,
     name: input.name,
     startsAt: input.startsAt,
