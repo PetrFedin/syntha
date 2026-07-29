@@ -7,10 +7,7 @@ import {
   type CollectionId,
   type CollectionRepository,
 } from '@/modules/collections';
-import type {
-  LifecycleCreateCommand,
-  LifecycleCreateResult,
-} from '@/modules/lifecycle-idempotency';
+import type { LifecycleCreateResult } from '@/modules/lifecycle-idempotency';
 import { organisationId } from '@/modules/organisations';
 
 import {
@@ -43,11 +40,7 @@ class MemoryCollectionRepository implements CollectionRepository {
     return null;
   }
 
-  async create(
-    collection: Collection,
-    _audit: never,
-    _command: LifecycleCreateCommand,
-  ): Promise<LifecycleCreateResult<Collection>> {
+  async create(collection: Collection): Promise<LifecycleCreateResult<Collection>> {
     return Object.freeze({ entity: collection, replayed: false });
   }
 
