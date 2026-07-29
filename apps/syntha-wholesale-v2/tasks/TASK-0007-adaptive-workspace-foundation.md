@@ -84,6 +84,6 @@ The adaptive workspace architecture is implemented and locally verified:
 - structural demo records are isolated in `src/shared/connected-services/fixtures.ts`;
 - 36 unit tests and 80 Playwright scenarios pass; four device-inapplicable checks skip by design.
 
-TASK-0007 remains `IN_PROGRESS` because commercial modules still need server-backed read/write slices.
-The current section pages intentionally expose architectural context and honest empty states rather
-than fabricated production data.
+The first server-backed Campaign and Collection domain/API slice is now tracked separately as `TASK-0008` so workspace delivery and lifecycle persistence have explicit ownership.
+
+TASK-0007 remains `IN_PROGRESS` until Campaign and Collection pages consume authoritative server projections and mutation surfaces instead of structural fixture content. The remaining sections continue to expose honest empty states rather than fabricated production data.
