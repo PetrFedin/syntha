@@ -5,6 +5,7 @@ import {
   getNextWorkspaceSection,
   getPreviousWorkspaceSection,
   getWorkspaceSection,
+  workspaceSections,
 } from '@/shared/navigation';
 import { Badge, Icon } from '@/shared/ui';
 import {
@@ -19,6 +20,12 @@ import { LifecycleWorkspacePanel } from '@/shared/workspace/components/lifecycle
 interface WorkspaceSectionPageProps {
   readonly params: Promise<{ readonly section: string }>;
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return workspaceSections.map((section) => ({ section: section.id }));
 }
 
 export async function generateMetadata({
