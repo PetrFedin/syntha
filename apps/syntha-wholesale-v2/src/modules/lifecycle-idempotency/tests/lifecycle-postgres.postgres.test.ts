@@ -11,10 +11,7 @@ import {
   PostgresCollectionRepository,
   createCollectionUseCase,
 } from '@/modules/collections';
-import {
-  createNodePostgresPoolFromEnvironment,
-  type TransactionalSqlPool,
-} from '@/modules/commercial-execution';
+import { createNodePostgresPoolFromEnvironment } from '@/modules/commercial-execution';
 import {
   lifecycleCreateCommand,
   runLifecycleIdempotencyMigrations,
@@ -45,7 +42,7 @@ function errorCode(error: unknown): string | null {
 }
 
 describe('authoritative lifecycle PostgreSQL integration', () => {
-  let pool: TransactionalSqlPool;
+  let pool: Awaited<ReturnType<typeof createNodePostgresPoolFromEnvironment>>;
   let seasons: PostgresSeasonRepository;
   let campaigns: PostgresCampaignRepository;
   let collections: PostgresCollectionRepository;
@@ -226,17 +223,38 @@ describe('authoritative lifecycle PostgreSQL integration', () => {
       idempotencyKey: 'season-unique-command-a',
     });
 
+    const duplicate = createSeason({
+      id: 'season-unique-duplicate',
+      organisationId: organisation,
+      code: 'UNIQUE27',
+      name: 'Duplicate Season',
+      startsAt: new Date('2027-01-01T00:00:00.000Z'),
+      endsAt: new Date('2027-08-01T00:00:00.000Z'),
+      ownerCredentialId: 'unique-operator',
+      now,
+    });
+    const duplicateCommand = lifecycleCreateCommand({
+      organisationId: organisation,
+      commandName: 'CREATE_SEASON',
+      idempotencyKey: 'season-unique-command-b',
+      payload: { code: duplicate.code, name: duplicate.name },
+      actorCredentialId: 'unique-operator',
+      requestedAt: now,
+    });
+    const duplicateAudit: SeasonAuditRecord = Object.freeze({
+      id: 'audit-season-unique-duplicate',
+      organisationId: organisation,
+      seasonId: duplicate.id,
+      action: 'CREATED',
+      actorCredentialId: 'unique-operator',
+      expectedVersion: null,
+      resultingVersion: 1,
+      occurredAt: now.toISOString(),
+    });
+
     let duplicateError: unknown;
     try {
-      await createSeasonUseCase(seasons, clock, ids('unique-b'), {
-        organisationId: organisation,
-        code: 'UNIQUE27',
-        name: 'Duplicate Season',
-        startsAt: new Date('2027-01-01T00:00:00.000Z'),
-        endsAt: new Date('2027-08-01T00:00:00.000Z'),
-        actorCredentialId: 'unique-operator',
-        idempotencyKey: 'season-unique-command-b',
-      });
+      await seasons.create(duplicate, duplicateAudit, duplicateCommand);
     } catch (error) {
       duplicateError = error;
     }
@@ -285,9 +303,12 @@ describe('authoritative lifecycle PostgreSQL integration', () => {
     const result = await pool.query<{
       readonly commands: string;
       readonly crossTenantCampaigns: string;
-    }>(`SELECT
-      (SELECT count(*)::text FROM syntha_lifecycle_idempotency) AS commands,
-      (SELECT count(*)::text FROM syntha_campaign WHERE organisation_id = $1) AS "crossTenantCampaigns"`, [otherOrganisation]);
+    }>(
+      `SELECT
+        (SELECT count(*)::text FROM syntha_lifecycle_idempotency) AS commands,
+        (SELECT count(*)::text FROM syntha_campaign WHERE organisation_id = $1) AS "crossTenantCampaigns"`,
+      [otherOrganisation],
+    );
     expect(result.rows[0]).toEqual({ commands: '1', crossTenantCampaigns: '0' });
   });
 
