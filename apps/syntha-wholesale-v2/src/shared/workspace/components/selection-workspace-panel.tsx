@@ -3,10 +3,8 @@ import { randomUUID } from 'node:crypto';
 import Link from 'next/link';
 
 import { getCampaignRepository, listCampaigns } from '@/modules/campaigns';
-import {
-  getCollectionRepository,
-  listCampaignCollections,
-} from '@/modules/collections';
+import { getCollectionRepository, listCampaignCollections } from '@/modules/collections';
+import type { OrganisationId } from '@/modules/organisations';
 import {
   getSelectionRepository,
   type Selection,
@@ -19,6 +17,7 @@ import {
 } from '@/modules/showroom';
 import { CommercialApiError } from '@/shared/server/commercial-api';
 import { requireWorkspaceAccess } from '@/shared/server/workspace-access';
+import { Badge, Icon } from '@/shared/ui';
 import {
   addSelectionItemAction,
   archiveSelectionAction,
@@ -29,7 +28,6 @@ import {
   setSelectionBudgetAction,
   setSelectionSizeCurveAction,
 } from '@/shared/workspace/selection-actions';
-import { Badge, Icon } from '@/shared/ui';
 
 interface SelectionSearchParams {
   readonly notice?: string;
@@ -37,7 +35,7 @@ interface SelectionSearchParams {
 }
 
 interface SelectionWorkspaceData {
-  readonly organisationId: string;
+  readonly organisationId: OrganisationId;
   readonly publishedShowrooms: readonly Showroom[];
   readonly sellerGrants: readonly ShowroomAccessGrant[];
   readonly buyerGrants: readonly ShowroomAccessGrant[];
@@ -68,7 +66,7 @@ const notices: Readonly<Record<string, string>> = Object.freeze({
   selection_exists: 'Для этого доступа уже существует Selection.',
   selection_not_found: 'Selection не найден в текущем buyer scope.',
   selection_version_conflict: 'Selection уже изменён другой операцией. Обновите страницу.',
-  selection_access_revoked: 'Доступ отозван; изменения Selection заблокированы.',
+  selection_mutation_blocked_revoked: 'Доступ отозван; изменения Selection заблокированы.',
   invalid_selection_input: 'Проверьте организацию, бюджет, товар и размерную кривую.',
   selection_service_unavailable: 'Selection service временно недоступен; данные не изменены.',
 });
@@ -83,7 +81,7 @@ const errorNotices = new Set([
   'selection_exists',
   'selection_not_found',
   'selection_version_conflict',
-  'selection_access_revoked',
+  'selection_mutation_blocked_revoked',
   'invalid_selection_input',
   'selection_service_unavailable',
 ]);
@@ -149,32 +147,36 @@ function AccessState({ error }: { readonly error: unknown }) {
   );
 }
 
-async function loadPublishedShowrooms(organisationId: Selection['buyerOrganisationId']) {
+async function loadPublishedShowrooms(organisationId: OrganisationId) {
   const [campaignRepository, collectionRepository, showroomRepository] = await Promise.all([
     getCampaignRepository(),
     getCollectionRepository(),
     getShowroomRepository(),
   ]);
   const campaigns = await listCampaigns(campaignRepository, organisationId);
-  const collectionGroups = await Promise.all(
-    campaigns.map((campaign) =>
-      listCampaignCollections({
-        repository: collectionRepository,
-        organisationId,
-        campaignId: campaign.id,
-      }),
-    ),
-  );
-  const showroomGroups = await Promise.all(
-    collectionGroups.flat().map((collection) =>
-      listCollectionShowrooms({
-        repository: showroomRepository,
-        organisationId,
-        collectionId: collection.id,
-      }),
-    ),
-  );
-  return showroomGroups.flat().filter((showroom) => showroom.status === 'PUBLISHED');
+  const collections = (
+    await Promise.all(
+      campaigns.map((campaign) =>
+        listCampaignCollections({
+          repository: collectionRepository,
+          organisationId,
+          campaignId: campaign.id,
+        }),
+      ),
+    )
+  ).flat();
+  const showrooms = (
+    await Promise.all(
+      collections.map((collection) =>
+        listCollectionShowrooms({
+          repository: showroomRepository,
+          organisationId,
+          collectionId: collection.id,
+        }),
+      ),
+    )
+  ).flat();
+  return Object.freeze(showrooms.filter((showroom) => showroom.status === 'PUBLISHED'));
 }
 
 async function loadSelectionWorkspaceData(): Promise<SelectionWorkspaceLoadResult> {
@@ -215,11 +217,7 @@ function SellerShowroomCard({ showroom }: { readonly showroom: Showroom }) {
       </dl>
       <form action={grantShowroomAccessAction} className="lifecycleForm">
         <input name="showroomId" type="hidden" value={showroom.id} />
-        <input
-          name="idempotencyKey"
-          type="hidden"
-          value={`showroom-access-ui-${randomUUID()}`}
-        />
+        <input name="idempotencyKey" type="hidden" value={`showroom-access-ui-${randomUUID()}`} />
         <label>
           <span>Buyer organisation ID</span>
           <input name="buyerOrganisationId" placeholder="SHOP-ORGANISATION-ID" required />
@@ -272,17 +270,13 @@ function BuyerGrantCard({
         <div><dt>Immutable snapshot</dt><dd>{grant.showroomSnapshotId}</dd></div>
       </dl>
       {selection ? (
-        <Link className="button button--ghost" href={`/selection?selectionId=${selection.id}`}>
+        <Link className="button button--ghost" href={`/selections?selectionId=${selection.id}`}>
           Открыть {selection.title}
         </Link>
       ) : grant.status === 'ACTIVE' ? (
         <form action={createSelectionAction} className="lifecycleForm">
           <input name="grantId" type="hidden" value={grant.id} />
-          <input
-            name="idempotencyKey"
-            type="hidden"
-            value={`selection-create-ui-${randomUUID()}`}
-          />
+          <input name="idempotencyKey" type="hidden" value={`selection-create-ui-${randomUUID()}`} />
           <label><span>Название Selection</span><input name="title" defaultValue="Main Buy" required /></label>
           <div className="lifecycleFormRow">
             <label><span>Валюта</span><input name="currency" defaultValue="EUR" maxLength={3} required /></label>
@@ -386,7 +380,7 @@ function SelectionCard({
       ) : null}
 
       <div className="lifecycleCardActions">
-        <Link className="button button--ghost" href={`/selection?selectionId=${selection.id}`}>
+        <Link className="button button--ghost" href={`/selections?selectionId=${selection.id}`}>
           Открыть Selection
         </Link>
         {editable && selection.items.length > 0 ? (
