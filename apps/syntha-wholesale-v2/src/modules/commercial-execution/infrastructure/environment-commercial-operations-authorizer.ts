@@ -141,6 +141,10 @@ export class EnvironmentCommercialOperationsAuthorizer
     return this.matching(request).length > 0;
   }
 
+  async identifyCredential(request: Request): Promise<string | null> {
+    return this.matching(request)[0]?.credentialId ?? null;
+  }
+
   async authorizeAccess(
     request: Request,
     access: CommercialOperationsAccessRequest,
