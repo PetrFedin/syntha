@@ -17,6 +17,7 @@ export {
   CampaignAlreadyExists,
   CampaignNotFound,
   CampaignVersionConflict,
+  SeasonDoesNotAcceptCampaigns,
   createCampaignUseCase,
   getCampaign,
   listCampaigns,
