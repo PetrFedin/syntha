@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { lifecycleE2eCredentialsJson } from './e2e/lifecycle-auth';
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -34,5 +36,10 @@ export default defineConfig({
     url: 'http://127.0.0.1:3100/api/health',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      ...process.env,
+      SYNTHA_OPERATIONS_CREDENTIALS_JSON:
+        process.env.SYNTHA_OPERATIONS_CREDENTIALS_JSON ?? lifecycleE2eCredentialsJson,
+    },
   },
 });
