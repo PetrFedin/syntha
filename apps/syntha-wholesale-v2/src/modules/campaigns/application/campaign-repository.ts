@@ -1,3 +1,7 @@
+import type {
+  LifecycleCreateCommand,
+  LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import type { Campaign, CampaignId } from '../domain/campaign';
@@ -21,7 +25,12 @@ export interface CampaignRepository {
   findById(organisationId: OrganisationId, id: CampaignId): Promise<Campaign | null>;
   findByCode(organisationId: OrganisationId, code: string): Promise<Campaign | null>;
   list(organisationId: OrganisationId): Promise<readonly Campaign[]>;
-  create(campaign: Campaign, audit: LifecycleAuditRecord): Promise<void>;
+  findCreateReplay(command: LifecycleCreateCommand): Promise<Campaign | null>;
+  create(
+    campaign: Campaign,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Campaign>>;
   update(
     campaign: Campaign,
     expectedVersion: number,
