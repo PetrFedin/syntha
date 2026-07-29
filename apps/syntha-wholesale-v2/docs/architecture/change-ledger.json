@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 13,
   "entries": [
     {
       "id": "CHG-0001",
@@ -124,6 +124,29 @@
       "files": ["src/modules/seasons/README.md", "src/modules/seasons/index.ts", "src/modules/seasons/domain/season.ts", "src/modules/seasons/application/season-repository.ts", "src/modules/seasons/application/season-workflows.ts", "src/modules/seasons/infrastructure/in-memory-season-repository.ts", "src/modules/seasons/infrastructure/postgres-season-repository.ts", "src/modules/seasons/infrastructure/season-migrations.ts", "src/modules/seasons/infrastructure/season-runtime.ts", "src/modules/seasons/tests/season.test.ts", "src/app/api/seasons/route.ts", "src/app/api/seasons/[seasonId]/route.ts", "src/modules/campaigns/application/campaign-workflows.ts", "src/modules/campaigns/infrastructure/campaign-runtime.ts", "src/modules/campaigns/infrastructure/campaign-lifecycle-migrations.ts", "src/modules/campaigns/tests/campaign-workflows.test.ts", "src/app/api/campaigns/route.ts", "tasks/TASK-0008-campaign-collection-vertical-slice.md", "STATUS.md"],
       "verification": {"command": "npm run verify && npm run test:e2e", "result": "PASS", "workflow_run": 30460658036},
       "rollback": "Revert CHG-0011 to remove persisted Season APIs and restore Campaign season references to non-authoritative identifiers while preserving CHG-0010."
+    },
+    {
+      "id": "CHG-0012",
+      "date": "2026-07-29",
+      "type": "feature",
+      "summary": "Add replay-safe organisation- and actor-scoped idempotency for Season, Campaign and Collection create commands with canonical payload fingerprints and atomic audit persistence.",
+      "tasks": ["TASK-0008"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/lifecycle-idempotency/index.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/modules/lifecycle-idempotency/infrastructure/in-memory-lifecycle-idempotency.ts", "src/modules/lifecycle-idempotency/infrastructure/lifecycle-idempotency-migrations.ts", "src/modules/lifecycle-idempotency/infrastructure/postgres-lifecycle-idempotency.ts", "src/modules/seasons/application/season-repository.ts", "src/modules/seasons/application/season-workflows.ts", "src/modules/seasons/infrastructure/in-memory-season-repository.ts", "src/modules/seasons/infrastructure/postgres-season-repository.ts", "src/modules/campaigns/application/campaign-repository.ts", "src/modules/campaigns/application/campaign-workflows.ts", "src/modules/campaigns/infrastructure/postgres-campaign-repository.ts", "src/modules/collections/application/collection-repository.ts", "src/modules/collections/application/collection-workflows.ts", "src/modules/collections/infrastructure/postgres-collection-repository.ts", "src/shared/server/commercial-api.ts", "src/app/api/seasons/route.ts", "src/app/api/campaigns/route.ts", "src/app/api/campaigns/[campaignId]/collections/route.ts", "src/modules/seasons/tests/season.test.ts", "src/modules/campaigns/tests/campaign-workflows.test.ts", "src/modules/collections/tests/collection-workflows.test.ts"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30470949577},
+      "rollback": "Revert CHG-0012 to restore uniqueness-only create behavior and remove lifecycle idempotency records, replay responses and conflict semantics."
+    },
+    {
+      "id": "CHG-0013",
+      "date": "2026-07-29",
+      "type": "quality",
+      "summary": "Promote lifecycle persistence to a real-PostgreSQL CI gate and fix runtime module loading and multi-statement result normalization discovered by the database suite.",
+      "tasks": ["TASK-0008"],
+      "adrs": ["ADR-0006", "ADR-0009"],
+      "files": ["package.json", "package-lock.json", "vitest.config.ts", "vitest.postgres.config.ts", "src/modules/lifecycle-idempotency/tests/lifecycle-postgres.postgres.test.ts", "src/modules/commercial-execution/infrastructure/node-postgres-pool-adapter.ts", "src/modules/commercial-execution/tests/node-postgres-pool-adapter.test.ts", "tasks/TASK-0008-campaign-collection-vertical-slice.md", "STATUS.md"],
+      "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30472074274},
+      "rollback": "Revert CHG-0013 to remove the PostgreSQL service gate and exact pg dependency, then restore the prior adapter behavior and mock-only persistence coverage."
     }
   ]
 }
