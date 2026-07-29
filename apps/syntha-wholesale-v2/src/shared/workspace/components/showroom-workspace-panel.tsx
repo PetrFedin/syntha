@@ -33,6 +33,18 @@ interface ShowroomSearchParams {
   readonly showroomId?: string;
 }
 
+interface ShowroomWorkspaceData {
+  readonly organisationId: Collection['organisationId'];
+  readonly collections: readonly Collection[];
+  readonly selectedCollection?: Collection;
+  readonly showrooms: readonly Showroom[];
+  readonly snapshots: readonly (ShowroomPublicationSnapshot | null)[];
+}
+
+type ShowroomWorkspaceLoadResult =
+  | Readonly<{ readonly ok: true; readonly data: ShowroomWorkspaceData }>
+  | Readonly<{ readonly ok: false; readonly error: unknown }>;
+
 const notices: Readonly<Record<string, string>> = Object.freeze({
   showroom_created: 'Showroom создан как авторитетный draft.',
   showroom_replayed: 'Повторная команда распознана: возвращён исходный Showroom.',
@@ -260,12 +272,9 @@ async function loadCollections(organisationId: Collection['organisationId']) {
   return groups.flat().filter((collection) => collection.status !== 'ARCHIVED');
 }
 
-export async function ShowroomWorkspacePanel({
-  searchParams,
-}: {
-  readonly searchParams: Record<string, string | string[] | undefined>;
-}) {
-  const search = normalizeSearch(searchParams);
+async function loadShowroomWorkspaceData(
+  search: ShowroomSearchParams,
+): Promise<ShowroomWorkspaceLoadResult> {
   try {
     const access = await requireWorkspaceAccess('read');
     const collections = await loadCollections(access.organisationId);
@@ -285,58 +294,90 @@ export async function ShowroomWorkspacePanel({
       ),
     );
 
-    return (
-      <section className="lifecycleWorkspace" data-testid="authoritative-showroom-workspace">
-        <Notice notice={search.notice} />
-        <div className="lifecycleSummary">
-          <div><span>Организация</span><strong>{access.organisationId}</strong></div>
-          <div><span>Collections</span><strong>{collections.length}</strong></div>
-          <div><span>Showrooms</span><strong>{showrooms.length}</strong></div>
-          <Badge tone="success">Snapshot source</Badge>
-        </div>
-        <div className="lifecycleCampaignSelector" aria-label="Выбор Collection">
-          {collections.map((collection) => (
-            <Link
-              className={`button ${collection.id === selectedCollection?.id ? 'button--primary' : 'button--ghost'}`}
-              href={`/showroom?collectionId=${encodeURIComponent(collection.id)}`}
-              key={collection.id}
-            >
-              {collection.code}
-            </Link>
-          ))}
-        </div>
-        <div className="lifecycleWorkspaceGrid">
-          <div className="lifecycleColumn">
-            <div className="sectionHeader">
-              <div><p className="sectionEyebrow">Авторитетные презентации</p><h2>Showrooms</h2></div>
-            </div>
-            {!selectedCollection ? (
-              <p className="lifecycleEmpty">Сначала создайте Collection в предыдущей стадии.</p>
-            ) : null}
-            {selectedCollection && showrooms.length === 0 ? (
-              <p className="lifecycleEmpty">В Collection {selectedCollection.code} пока нет Showrooms.</p>
-            ) : null}
-            <div className="lifecycleEntityList">
-              {showrooms.map((showroom, index) => (
-                <ShowroomCard
-                  key={showroom.id}
-                  showroom={showroom}
-                  snapshot={snapshots[index] ?? null}
-                  selected={showroom.id === search.showroomId}
-                  parentCollection={selectedCollection as Collection}
-                />
-              ))}
-            </div>
-          </div>
-          {selectedCollection ? (
-            <CreateShowroomForm collection={selectedCollection} />
-          ) : (
-            <aside className="modulePanel"><p>Форма Showroom появится после создания Collection.</p></aside>
-          )}
-        </div>
-      </section>
-    );
+    return Object.freeze({
+      ok: true,
+      data: Object.freeze({
+        organisationId: access.organisationId,
+        collections,
+        selectedCollection,
+        showrooms,
+        snapshots,
+      }),
+    });
   } catch (error) {
-    return <AccessState error={error} />;
+    return Object.freeze({ ok: false, error });
   }
+}
+
+export async function ShowroomWorkspacePanel({
+  searchParams,
+}: {
+  readonly searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const search = normalizeSearch(searchParams);
+  const result = await loadShowroomWorkspaceData(search);
+
+  if (!result.ok) {
+    return <AccessState error={result.error} />;
+  }
+
+  const {
+    organisationId,
+    collections,
+    selectedCollection,
+    showrooms,
+    snapshots,
+  } = result.data;
+
+  return (
+    <section className="lifecycleWorkspace" data-testid="authoritative-showroom-workspace">
+      <Notice notice={search.notice} />
+      <div className="lifecycleSummary">
+        <div><span>Организация</span><strong>{organisationId}</strong></div>
+        <div><span>Collections</span><strong>{collections.length}</strong></div>
+        <div><span>Showrooms</span><strong>{showrooms.length}</strong></div>
+        <Badge tone="success">Snapshot source</Badge>
+      </div>
+      <div className="lifecycleCampaignSelector" aria-label="Выбор Collection">
+        {collections.map((collection) => (
+          <Link
+            className={`button ${collection.id === selectedCollection?.id ? 'button--primary' : 'button--ghost'}`}
+            href={`/showroom?collectionId=${encodeURIComponent(collection.id)}`}
+            key={collection.id}
+          >
+            {collection.code}
+          </Link>
+        ))}
+      </div>
+      <div className="lifecycleWorkspaceGrid">
+        <div className="lifecycleColumn">
+          <div className="sectionHeader">
+            <div><p className="sectionEyebrow">Авторитетные презентации</p><h2>Showrooms</h2></div>
+          </div>
+          {!selectedCollection ? (
+            <p className="lifecycleEmpty">Сначала создайте Collection в предыдущей стадии.</p>
+          ) : null}
+          {selectedCollection && showrooms.length === 0 ? (
+            <p className="lifecycleEmpty">В Collection {selectedCollection.code} пока нет Showrooms.</p>
+          ) : null}
+          <div className="lifecycleEntityList">
+            {showrooms.map((showroom, index) => (
+              <ShowroomCard
+                key={showroom.id}
+                showroom={showroom}
+                snapshot={snapshots[index] ?? null}
+                selected={showroom.id === search.showroomId}
+                parentCollection={selectedCollection as Collection}
+              />
+            ))}
+          </div>
+        </div>
+        {selectedCollection ? (
+          <CreateShowroomForm collection={selectedCollection} />
+        ) : (
+          <aside className="modulePanel"><p>Форма Showroom появится после создания Collection.</p></aside>
+        )}
+      </div>
+    </section>
+  );
 }
