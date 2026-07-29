@@ -9,7 +9,7 @@ import {
   OrderSelectionNotReady,
   OrderVersionConflict,
   SubmittedOrderSnapshotNotFound,
-} from '@/modules/orders/index-next';
+} from '@/modules/orders';
 import { SelectionNotFound } from '@/modules/selection';
 import { CommercialApiError } from '@/shared/server/commercial-api';
 
