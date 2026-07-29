@@ -4,7 +4,7 @@ import {
   getOrderRepository,
   type CommercialOrder,
   type SubmittedOrderSnapshot,
-} from '@/modules/orders/index-next';
+} from '@/modules/orders';
 import {
   getSelectionRepository,
   type Selection,
