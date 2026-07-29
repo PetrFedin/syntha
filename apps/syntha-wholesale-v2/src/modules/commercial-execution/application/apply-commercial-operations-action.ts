@@ -6,6 +6,7 @@ import type {
   CommercialOperationsAuditRecord,
 } from "../domain/commercial-operations-audit";
 import type { IntegrationCommand } from "../domain/integration-command";
+import { sealCommercialAuditRecord } from "./commercial-audit-integrity";
 import type {
   CommercialWorkflowRepository,
   CommercialWorkflowState,
@@ -149,17 +150,22 @@ function applyToState(input: {
     }
   }
 
-  const audit: CommercialOperationsAuditRecord = Object.freeze({
-    actionId: action.actionId,
-    actionType: action.actionType,
-    targetId: action.targetId,
-    actorId: action.actorId,
-    reason: action.reason,
-    outcome,
-    occurredAt,
-    beforeStatus,
-    afterStatus,
-    metadata,
+  const audit = sealCommercialAuditRecord({
+    stream: "operations",
+    record: Object.freeze({
+      actionId: action.actionId,
+      actionType: action.actionType,
+      targetId: action.targetId,
+      actorId: action.actorId,
+      reason: action.reason,
+      outcome,
+      occurredAt,
+      beforeStatus,
+      afterStatus,
+      metadata,
+    }) satisfies CommercialOperationsAuditRecord,
+    operationsAudit: state.operationsAudit,
+    reconciliationAudit: state.integrationReconciliationAudit,
   });
   return Object.freeze({
     audit,

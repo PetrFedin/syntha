@@ -1,3 +1,5 @@
+import type { CommercialAuditChainFields } from "./commercial-audit-chain";
+
 export type CommercialOperationsActionType =
   | "retry_command"
   | "cancel_command"
@@ -8,7 +10,8 @@ export type CommercialOperationsActionOutcome =
   | "not_found"
   | "invalid_state";
 
-export interface CommercialOperationsAuditRecord {
+export interface CommercialOperationsAuditRecord
+  extends CommercialAuditChainFields {
   readonly actionId: string;
   readonly actionType: CommercialOperationsActionType;
   readonly targetId: string;

@@ -1,6 +1,7 @@
 import type { IntegrationCommand } from "../domain/integration-command";
 import type { IntegrationInboxRecord } from "../domain/integration-inbox";
 import type { IntegrationReconciliationAuditRecord } from "../domain/integration-reconciliation-audit";
+import { sealCommercialAuditRecord } from "./commercial-audit-integrity";
 import type {
   CommercialWorkflowRepository,
   CommercialWorkflowState,
@@ -162,15 +163,20 @@ export async function runIntegrationReconciliationJob(input: {
         reconciledAt: occurredAt,
       });
     });
-    const audit: IntegrationReconciliationAuditRecord = Object.freeze({
-      jobId: input.jobId,
-      actorId: input.actorId,
-      workflowId: input.workflowId,
-      status: unresolvedRecords > 0 ? "completed_with_unresolved" : "completed",
-      scannedRecords: selected.length,
-      appliedRecords,
-      unresolvedRecords,
-      occurredAt,
+    const audit = sealCommercialAuditRecord({
+      stream: "reconciliation",
+      record: Object.freeze({
+        jobId: input.jobId,
+        actorId: input.actorId,
+        workflowId: input.workflowId,
+        status: unresolvedRecords > 0 ? "completed_with_unresolved" : "completed",
+        scannedRecords: selected.length,
+        appliedRecords,
+        unresolvedRecords,
+        occurredAt,
+      }) satisfies IntegrationReconciliationAuditRecord,
+      operationsAudit: current.operationsAudit,
+      reconciliationAudit: current.integrationReconciliationAudit,
     });
     const next: CommercialWorkflowState = Object.freeze({
       ...current,

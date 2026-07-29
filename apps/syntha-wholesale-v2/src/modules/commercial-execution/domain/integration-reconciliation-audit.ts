@@ -1,8 +1,11 @@
+import type { CommercialAuditChainFields } from "./commercial-audit-chain";
+
 export type IntegrationReconciliationJobStatus =
   | "completed"
   | "completed_with_unresolved";
 
-export interface IntegrationReconciliationAuditRecord {
+export interface IntegrationReconciliationAuditRecord
+  extends CommercialAuditChainFields {
   readonly jobId: string;
   readonly actorId: string;
   readonly workflowId: string;

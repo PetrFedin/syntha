@@ -1,12 +1,14 @@
+import type { IntegrationCircuit } from "@/domain/execution/integration-resilience";
 import {
   assessDecisionOperations,
   type DecisionOperationsAssessment,
   type DecisionOperationsPolicy,
 } from "@/domain/operations/decision-operations-monitor";
 
-import type { IntegrationCircuit } from "@/domain/execution/integration-resilience";
+import type { CommercialAuditIntegrityReport } from "../domain/commercial-audit-chain";
 import type { IntegrationCommand } from "../domain/integration-command";
 import type { IntegrationInboxRecord } from "../domain/integration-inbox";
+import { verifyCommercialAuditChain } from "./commercial-audit-integrity";
 import type { CommercialWorkflowRepository } from "./commercial-workflow-repository";
 
 export interface IntegrationCommandReadModel {
@@ -60,6 +62,7 @@ export interface CommercialOperationsReadModel {
   readonly version: number;
   readonly updatedAt: string;
   readonly assessment: DecisionOperationsAssessment;
+  readonly auditIntegrity: CommercialAuditIntegrityReport;
   readonly metrics: CommercialOperationsMetrics;
   readonly commands: readonly IntegrationCommandReadModel[];
   readonly callbacks: readonly IntegrationInboxReadModel[];
@@ -89,6 +92,10 @@ export async function getCommercialOperationsReadModel(input: {
     outboxes: [state.outbox],
     policy: input.policy,
     assessedAt: input.assessedAt,
+  });
+  const auditIntegrity = verifyCommercialAuditChain({
+    operationsAudit: state.operationsAudit,
+    reconciliationAudit: state.integrationReconciliationAudit,
   });
 
   const commands = [...state.integrationCommands]
@@ -148,6 +155,7 @@ export async function getCommercialOperationsReadModel(input: {
     version: state.version,
     updatedAt: state.updatedAt,
     assessment,
+    auditIntegrity,
     metrics: Object.freeze({
       pendingCommands: countByStatus(state.integrationCommands, "pending"),
       processingCommands: countByStatus(state.integrationCommands, "processing"),

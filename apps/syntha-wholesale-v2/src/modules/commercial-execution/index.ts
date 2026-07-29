@@ -3,6 +3,10 @@ export {
   type CommercialOperationsAction,
   type CommercialOperationsActionResult,
 } from "./application/apply-commercial-operations-action";
+export {
+  sealCommercialAuditRecord,
+  verifyCommercialAuditChain,
+} from "./application/commercial-audit-integrity";
 export type {
   CommercialExecutionHealthCheck,
   CommercialExecutionHealthComponent,
@@ -80,6 +84,12 @@ export {
   verifyAndReconcileIntegrationCallback,
   type VerifiedIntegrationCallbackResult,
 } from "./application/verify-and-reconcile-integration-callback";
+export type {
+  CommercialAuditChainFields,
+  CommercialAuditIntegrityReport,
+  CommercialAuditIntegrityStatus,
+  CommercialAuditStream,
+} from "./domain/commercial-audit-chain";
 export type {
   CommercialOperationsActionOutcome,
   CommercialOperationsActionType,
