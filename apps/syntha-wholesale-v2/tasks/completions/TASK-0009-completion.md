@@ -1,49 +1,60 @@
-# TASK-0009 completion report
+# TASK-0009 Completion Report
 
-## Outcome
+Task: `TASK-0009`
+Current status: `QA`
+Prepared on: 2026-07-29
 
-Authoritative Showroom publication is implemented as the first buyer-facing publication source of truth after Collection.
+## Delivered
 
-The completed slice includes:
+- Organisation-scoped Showroom aggregate under one Collection.
+- `DRAFT → PUBLISHED → ARCHIVED` lifecycle with optimistic concurrency.
+- Draft revision for title, description and presentation window.
+- Publication restricted to a `PUBLISHED` parent Collection.
+- Immutable `ShowroomPublicationSnapshot` with exact actor, aggregate version and timestamp.
+- Replay-safe create and publish commands with changed-payload conflict behavior.
+- PostgreSQL aggregate, publication snapshot, audit and outbox persistence.
+- Atomic publication transaction for aggregate status, snapshot, audit, outbox and idempotency completion.
+- Organisation-aware APIs and authoritative `/showroom` workspace.
+- Controlled no-credential state without authoritative records or mutation controls.
+- Unit, real PostgreSQL and authenticated browser coverage.
 
-- organisation-scoped Showroom aggregate under one Collection;
-- `DRAFT → PUBLISHED → ARCHIVED` lifecycle with optimistic concurrency;
-- draft revision for title, description and presentation window;
-- publication restricted to a `PUBLISHED` parent Collection;
-- immutable `ShowroomPublicationSnapshot` with exact actor, version and timestamp;
-- replay-safe create and publish commands;
-- PostgreSQL aggregate, snapshot, audit and outbox tables;
-- atomic publication transaction for status, snapshot, audit, outbox and idempotency completion;
-- organisation-aware APIs and authoritative `/showroom` workspace;
-- controlled no-credential state without records or mutation controls;
-- unit, real PostgreSQL and authenticated browser coverage.
+## Acceptance criteria evidence
 
-## Acceptance evidence
+| Criterion | Evidence | Result |
+|---|---|---|
+| Every Showroom query includes organisation scope | repository SQL and cross-organisation tests | PASS |
+| Parent Collection must belong to the same organisation | application validation and composite tenant foreign key | PASS |
+| Code is unique within a Collection | domain/repository conflict coverage and database constraint | PASS |
+| Presentation start precedes presentation end | domain tests | PASS |
+| Draft changes require expected version | workflow and repository conflict tests | PASS |
+| Publication requires an eligible published Collection | workflow tests and authenticated browser setup | PASS |
+| Publication snapshot is immutable and actor-attributed | snapshot table, domain contract and API/browser assertions | PASS |
+| Exact publish replay returns the original snapshot | unit and PostgreSQL replay tests | PASS |
+| Changed idempotent payload conflicts | idempotency workflow tests | PASS |
+| Aggregate, snapshot, audit, outbox and idempotency are atomic | duplicate-outbox rollback PostgreSQL test | PASS |
+| Unauthenticated workspace exposes no records or mutations | Playwright controlled-state test | PASS |
+| Full V2 workflow passes | GitHub Actions run `30480855159` | PASS |
 
-- Showroom reads and writes always carry active organisation scope.
-- Cross-organisation Collection ownership is rejected by application and tenant-aware foreign keys.
-- Code uniqueness is enforced within Collection.
-- Invalid presentation windows and stale versions are rejected.
-- Publication writes one immutable snapshot and one `SHOWROOM_PUBLISHED` outbox fact.
-- Changed-payload reuse of an idempotency key conflicts; exact replay returns the original entity or snapshot.
-- Duplicate outbox failure rolls back aggregate, snapshot, audit and idempotency state.
-- The browser flow creates and publishes a Showroom, then verifies the immutable snapshot through UI and API.
-- The no-credential browser test proves that authoritative records and mutation controls are absent.
+## Commands verified
 
-## Verification
+```text
+npm run preflight
+npm run typecheck
+npm run lint
+npm run test
+npm run test:postgres
+npm run build
+npm run test:e2e
+```
 
-Verified code head: `feea6517c1f912e32bf8b675112d269614e4db6c`.
+## Known limitations
 
-`Syntha V2 Foundation` run `30480855159` passed:
+- Buyer-specific access is owned by TASK-0010 rather than the Showroom aggregate.
+- Product assortment content inside a Showroom still references downstream Catalog capabilities that are not yet authoritative.
+- Merge into `main` is intentionally excluded and requires an explicit review decision.
 
-- governance and architecture validation;
-- TypeScript typecheck;
-- ESLint;
-- unit tests;
-- real PostgreSQL integration tests;
-- production build;
-- all 108 Playwright browser checks.
+## Review record
 
-## Status
-
-TASK-0009 is ready for QA review. Merge into `main` remains outside this task and requires an explicit decision.
+Reviewer: pending
+Reviewed on: pending
+Decision: pending
