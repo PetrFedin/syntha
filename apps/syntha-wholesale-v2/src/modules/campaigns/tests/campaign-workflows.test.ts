@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
+import {
+  InMemoryLifecycleIdempotencyRegistry,
+  LifecycleIdempotencyConflict,
+  type LifecycleCreateCommand,
+} from '@/modules/lifecycle-idempotency';
 import { organisationId } from '@/modules/organisations';
 import {
   InMemorySeasonRepository,
@@ -23,9 +28,14 @@ import type { Campaign, CampaignId } from '../domain/campaign';
 class MemoryCampaignRepository implements CampaignRepository {
   readonly campaigns = new Map<string, Campaign>();
   readonly audits: LifecycleAuditRecord[] = [];
+  private readonly idempotency = new InMemoryLifecycleIdempotencyRegistry();
 
   private key(organisation: string, id: string): string {
     return `${organisation}:${id}`;
+  }
+
+  private loadForCommand(command: LifecycleCreateCommand, id: string): Campaign | null {
+    return this.campaigns.get(this.key(command.organisationId, id)) ?? null;
   }
 
   async findById(organisation: Campaign['organisationId'], id: CampaignId) {
@@ -46,9 +56,31 @@ class MemoryCampaignRepository implements CampaignRepository {
     );
   }
 
-  async create(campaign: Campaign, audit: LifecycleAuditRecord) {
+  async findCreateReplay(command: LifecycleCreateCommand) {
+    return this.idempotency.findReplay({
+      command,
+      expectedEntityType: 'CAMPAIGN',
+      loadEntity: (id) => this.loadForCommand(command, id),
+    });
+  }
+
+  async create(
+    campaign: Campaign,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ) {
+    const replay = await this.findCreateReplay(command);
+    if (replay) return Object.freeze({ entity: replay, replayed: true });
+
     this.campaigns.set(this.key(campaign.organisationId, campaign.id), campaign);
     this.audits.push(audit);
+    return this.idempotency.complete({
+      command,
+      resultEntityType: 'CAMPAIGN',
+      resultEntityId: campaign.id,
+      entity: campaign,
+      loadEntity: (id) => this.loadForCommand(command, id),
+    });
   }
 
   async update(
@@ -91,26 +123,49 @@ function seasons(
   ]);
 }
 
+function createInput(input: {
+  repository: CampaignRepository;
+  organisation: Campaign['organisationId'];
+  seasonId: string;
+  idempotencyKey: string;
+  code?: string;
+  name?: string;
+  actorCredentialId?: string;
+}) {
+  const { clock, ids } = dependencies();
+  return {
+    repository: input.repository,
+    seasonRepository: seasons(input.organisation, input.seasonId),
+    clock,
+    ids,
+    organisationId: input.organisation,
+    seasonId: input.seasonId,
+    code: input.code ?? 'SS27-MAIN',
+    name: input.name ?? 'Spring Summer 2027',
+    startsAt: new Date('2026-09-01T00:00:00.000Z'),
+    endsAt: new Date('2027-03-01T00:00:00.000Z'),
+    actorCredentialId: input.actorCredentialId ?? 'org-a-operator',
+    idempotencyKey: input.idempotencyKey,
+  };
+}
+
 describe('campaign workflows', () => {
   it('creates an organisation-scoped campaign with exact audit actor', async () => {
     const repository = new MemoryCampaignRepository();
-    const { clock, ids } = dependencies();
     const organisation = organisationId('ORG-A');
 
-    const campaign = await createCampaignUseCase({
-      repository,
-      seasonRepository: seasons(organisation, 'season-ss27'),
-      clock,
-      ids,
-      organisationId: organisation,
-      seasonId: 'season-ss27',
-      code: ' ss27-main ',
-      name: 'Spring Summer 2027',
-      startsAt: new Date('2026-09-01T00:00:00.000Z'),
-      endsAt: new Date('2027-03-01T00:00:00.000Z'),
-      actorCredentialId: 'org-a-operator',
-    });
+    const result = await createCampaignUseCase(
+      createInput({
+        repository,
+        organisation,
+        seasonId: 'season-ss27',
+        idempotencyKey: 'campaign-create-001',
+        code: ' ss27-main ',
+      }),
+    );
+    const campaign = result.entity;
 
+    expect(result.replayed).toBe(false);
     expect(campaign.code).toBe('SS27-MAIN');
     expect(campaign.version).toBe(1);
     expect(repository.audits).toEqual([
@@ -124,6 +179,44 @@ describe('campaign workflows', () => {
         resultingVersion: 1,
       }),
     ]);
+  });
+
+  it('replays the original campaign without a second entity or audit record', async () => {
+    const repository = new MemoryCampaignRepository();
+    const organisation = organisationId('ORG-A');
+    const input = createInput({
+      repository,
+      organisation,
+      seasonId: 'season-ss27',
+      idempotencyKey: 'campaign-create-replay',
+    });
+
+    const first = await createCampaignUseCase(input);
+    const replay = await createCampaignUseCase(input);
+
+    expect(first.replayed).toBe(false);
+    expect(replay.replayed).toBe(true);
+    expect(replay.entity.id).toBe(first.entity.id);
+    expect(repository.campaigns).toHaveLength(1);
+    expect(repository.audits).toHaveLength(1);
+  });
+
+  it('rejects reuse of a campaign idempotency key with another payload', async () => {
+    const repository = new MemoryCampaignRepository();
+    const organisation = organisationId('ORG-A');
+    const base = createInput({
+      repository,
+      organisation,
+      seasonId: 'season-ss27',
+      idempotencyKey: 'campaign-create-conflict',
+    });
+
+    await createCampaignUseCase(base);
+    await expect(
+      createCampaignUseCase({ ...base, name: 'Different campaign name' }),
+    ).rejects.toBeInstanceOf(LifecycleIdempotencyConflict);
+    expect(repository.campaigns).toHaveLength(1);
+    expect(repository.audits).toHaveLength(1);
   });
 
   it('rejects a season owned by another organisation', async () => {
@@ -142,27 +235,26 @@ describe('campaign workflows', () => {
         startsAt: new Date('2027-01-01T00:00:00.000Z'),
         endsAt: new Date('2027-08-01T00:00:00.000Z'),
         actorCredentialId: 'org-a-operator',
+        idempotencyKey: 'campaign-cross-tenant',
       }),
     ).rejects.toBeInstanceOf(SeasonNotFound);
   });
 
   it('does not expose a campaign through another organisation scope', async () => {
     const repository = new MemoryCampaignRepository();
-    const { clock, ids } = dependencies();
     const organisation = organisationId('ORG-A');
-    const campaign = await createCampaignUseCase({
-      repository,
-      seasonRepository: seasons(organisation, 'season-1'),
-      clock,
-      ids,
-      organisationId: organisation,
-      seasonId: 'season-1',
-      code: 'FW27',
-      name: 'Fall Winter 2027',
-      startsAt: new Date('2027-01-01T00:00:00.000Z'),
-      endsAt: new Date('2027-08-01T00:00:00.000Z'),
-      actorCredentialId: 'org-a-operator',
-    });
+    const campaign = (
+      await createCampaignUseCase(
+        createInput({
+          repository,
+          organisation,
+          seasonId: 'season-1',
+          idempotencyKey: 'campaign-isolation-001',
+          code: 'FW27',
+          name: 'Fall Winter 2027',
+        }),
+      )
+    ).entity;
 
     await expect(
       getCampaign({
@@ -177,19 +269,22 @@ describe('campaign workflows', () => {
     const repository = new MemoryCampaignRepository();
     const { clock, ids } = dependencies();
     const organisation = organisationId('ORG-A');
-    const campaign = await createCampaignUseCase({
-      repository,
-      seasonRepository: seasons(organisation, 'season-1'),
-      clock,
-      ids,
-      organisationId: organisation,
-      seasonId: 'season-1',
-      code: 'RESORT27',
-      name: 'Resort 2027',
-      startsAt: new Date('2026-11-01T00:00:00.000Z'),
-      endsAt: new Date('2027-04-01T00:00:00.000Z'),
-      actorCredentialId: 'creator',
-    });
+    const campaign = (
+      await createCampaignUseCase({
+        repository,
+        seasonRepository: seasons(organisation, 'season-1'),
+        clock,
+        ids,
+        organisationId: organisation,
+        seasonId: 'season-1',
+        code: 'RESORT27',
+        name: 'Resort 2027',
+        startsAt: new Date('2026-11-01T00:00:00.000Z'),
+        endsAt: new Date('2027-04-01T00:00:00.000Z'),
+        actorCredentialId: 'creator',
+        idempotencyKey: 'campaign-stale-update',
+      })
+    ).entity;
 
     const activated = await updateCampaignUseCase({
       repository,
