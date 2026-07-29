@@ -55,29 +55,28 @@ Implemented on the current branch:
 - controlled 400, 401, 403, 404, 409 and 503 outcomes;
 - unit coverage for tenant isolation, audit attribution, parent state and stale writes.
 
-TASK-0008 remains `IN_PROGRESS` until the final branch head passes all gates and the remaining integrity work is delivered.
+TASK-0008 remains `IN_PROGRESS`: its implemented code package is green, while replay-safe create idempotency, real-PostgreSQL integration tests and server-backed lifecycle UI remain open.
 
 ## Verification state
 
-The previous commercial-execution foundation passed governance, typecheck, lint, unit tests, production build and Playwright. The final Season → Campaign → Collection head must pass its own workflow before this package can be described as QA-complete.
+Code-equivalent head `b2a9d52cf37221620556cdd8d8fa09358d7b627e` passed workflow `Syntha V2 Foundation`, run `30460658036`, on 2026-07-29. Later commits only update TASK-0008, status and change-ledger evidence and must preserve the same gates.
 
 | Gate | Current package |
 |---|---|
-| Governance and architecture preflight | PENDING FINAL CI |
-| TypeScript typecheck | PENDING FINAL CI |
-| ESLint | PENDING FINAL CI |
-| Unit tests | PENDING FINAL CI |
-| Next.js production build | PENDING FINAL CI |
-| Playwright | PENDING FINAL CI |
+| Governance and architecture preflight | PASS — run 30460658036 |
+| TypeScript typecheck | PASS — run 30460658036 |
+| ESLint | PASS — run 30460658036 |
+| Unit tests | PASS — run 30460658036 |
+| Next.js production build | PASS — run 30460658036 |
+| Playwright | PASS — run 30460658036 |
 | PostgreSQL lifecycle integration tests | NOT YET IMPLEMENTED |
 
 ## Immediate priority
 
-1. Resolve every failure from the final PR #8 workflow for the Season → Campaign → Collection package.
-2. Add replay-safe idempotency for Season, Campaign and Collection create commands.
-3. Add PostgreSQL integration coverage for rollback, uniqueness, tenant foreign keys and concurrent optimistic updates.
-4. Replace lifecycle workspace fixtures with server-backed read and mutation surfaces.
-5. Start Showroom persistence only after the authoritative lifecycle path is green.
+1. Add replay-safe idempotency for Season, Campaign and Collection create commands.
+2. Add PostgreSQL integration coverage for rollback, uniqueness, tenant foreign keys and concurrent optimistic updates.
+3. Replace lifecycle workspace fixtures with server-backed read and mutation surfaces.
+4. Start Showroom persistence only after the authoritative lifecycle path remains green.
 
 ## Known limitations
 
