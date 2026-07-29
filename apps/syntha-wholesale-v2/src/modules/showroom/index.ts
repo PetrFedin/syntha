@@ -37,6 +37,7 @@ export {
   showroomMigrations,
   runShowroomMigrations,
 } from './infrastructure/showroom-migrations';
+export { InMemoryShowroomRepository } from './infrastructure/in-memory-showroom-repository';
 export { PostgresShowroomRepository } from './infrastructure/postgres-showroom-repository';
 export {
   getShowroomRepository,
