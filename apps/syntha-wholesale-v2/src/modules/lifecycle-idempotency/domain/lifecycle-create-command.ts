@@ -9,7 +9,9 @@ export type LifecycleCreateCommandName =
   | 'CREATE_SHOWROOM'
   | 'PUBLISH_SHOWROOM'
   | 'GRANT_SHOWROOM_ACCESS'
-  | 'CREATE_SELECTION';
+  | 'CREATE_SELECTION'
+  | 'CREATE_ORDER_DRAFT'
+  | 'SUBMIT_ORDER';
 
 export type LifecycleResultEntityType =
   | 'SEASON'
@@ -18,7 +20,9 @@ export type LifecycleResultEntityType =
   | 'SHOWROOM'
   | 'SHOWROOM_SNAPSHOT'
   | 'SHOWROOM_ACCESS_GRANT'
-  | 'SELECTION';
+  | 'SELECTION'
+  | 'ORDER'
+  | 'SUBMITTED_ORDER_SNAPSHOT';
 
 export interface LifecycleCreateCommand {
   readonly organisationId: OrganisationId;
