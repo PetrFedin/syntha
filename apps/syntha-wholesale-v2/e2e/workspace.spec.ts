@@ -211,7 +211,9 @@ test('mobile shell exposes active navigation without horizontal overflow', async
   await expect(page.getByTestId('mobile-navigation')).toBeVisible();
   await expect(page.getByTestId('mobile-navigation').getByRole('link', { name: 'Заказы' }))
     .toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('link', { name: /перейти к подтверждению/i }).first()).toBeVisible();
+  await expect(
+    page.locator('nav[aria-label="Переходы коммерческого процесса"] a').last(),
+  ).toBeVisible();
   const dimensions = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
     content: document.documentElement.scrollWidth,
