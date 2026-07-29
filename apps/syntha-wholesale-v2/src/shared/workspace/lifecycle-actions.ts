@@ -2,6 +2,7 @@
 
 import { randomUUID } from 'node:crypto';
 
+import type { Route } from 'next';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -113,12 +114,12 @@ function target(path: '/campaigns' | '/collections', input: {
   readonly seasonId?: string;
   readonly campaignId?: string;
   readonly collectionId?: string;
-}): string {
+}): Route {
   const query = new URLSearchParams({ notice: input.notice });
   if (input.seasonId) query.set('seasonId', input.seasonId);
   if (input.campaignId) query.set('campaignId', input.campaignId);
   if (input.collectionId) query.set('collectionId', input.collectionId);
-  return `${path}?${query.toString()}`;
+  return `${path}?${query.toString()}` as Route;
 }
 
 export async function createSeasonAction(formData: FormData): Promise<never> {
