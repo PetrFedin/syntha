@@ -96,7 +96,9 @@ function integer(
   if (value === undefined || value.trim() === "") return fallback;
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < minimum || parsed > maximum) {
-    throw new Error(`PostgreSQL numeric setting must be between ${minimum} and ${maximum}.`);
+    throw new Error(
+      `PostgreSQL numeric setting must be between ${minimum} and ${maximum}.`,
+    );
   }
   return parsed;
 }
@@ -114,8 +116,8 @@ export async function createNodePostgresPoolFromEnvironment(input: {
   if (sslMode !== "require" && sslMode !== "disable") {
     throw new Error("SYNTHA_DATABASE_SSL_MODE must be require or disable.");
   }
-  const module = await (input.loadModule ?? defaultModuleLoader)();
-  const pool = new module.Pool({
+  const postgresModule = await (input.loadModule ?? defaultModuleLoader)();
+  const pool = new postgresModule.Pool({
     connectionString,
     max: integer(environment.SYNTHA_DATABASE_POOL_MAX, 10, 1, 100),
     idleTimeoutMillis: integer(
