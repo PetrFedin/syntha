@@ -91,7 +91,7 @@ export default async function WorkspaceSectionPage({
         <LifecycleWorkspacePanel section={section.id} searchParams={resolvedSearchParams} />
       ) : section.id === 'showroom' ? (
         <ShowroomWorkspacePanel searchParams={resolvedSearchParams} />
-      ) : section.id === 'selection' ? (
+      ) : section.id === 'selections' ? (
         <SelectionWorkspacePanel searchParams={resolvedSearchParams} />
       ) : (
         <>
