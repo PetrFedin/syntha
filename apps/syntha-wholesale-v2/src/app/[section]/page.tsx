@@ -16,6 +16,8 @@ import {
 } from '@/shared/workspace/components';
 import { ConnectedServicePanel } from '@/shared/workspace/components/connected-service-panel';
 import { LifecycleWorkspacePanel } from '@/shared/workspace/components/lifecycle-workspace-panel';
+import { SelectionWorkspacePanel } from '@/shared/workspace/components/selection-workspace-panel';
+import { ShowroomWorkspacePanel } from '@/shared/workspace/components/showroom-workspace-panel';
 
 interface WorkspaceSectionPageProps {
   readonly params: Promise<{ readonly section: string }>;
@@ -87,6 +89,10 @@ export default async function WorkspaceSectionPage({
 
       {authoritativeLifecycle ? (
         <LifecycleWorkspacePanel section={section.id} searchParams={resolvedSearchParams} />
+      ) : section.id === 'showroom' ? (
+        <ShowroomWorkspacePanel searchParams={resolvedSearchParams} />
+      ) : section.id === 'selection' ? (
+        <SelectionWorkspacePanel searchParams={resolvedSearchParams} />
       ) : (
         <>
           <ConnectedServicePanel section={section.id} />
