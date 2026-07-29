@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { RecommendedAction } from "@/domain/decision/decision";
 import {
@@ -27,20 +27,22 @@ function command() {
 
 describe("HttpIntegrationCommandTransport", () => {
   it("sends an idempotent command and returns the external reference", async () => {
-    const fetcher = vi.fn(async () =>
-      new Response(JSON.stringify({ externalReference: "ERP-100" }), {
+    const calls: Array<readonly [URL | RequestInfo, RequestInit | undefined]> = [];
+    const fetcher: typeof fetch = async (request, init) => {
+      calls.push([request, init]);
+      return new Response(JSON.stringify({ externalReference: "ERP-100" }), {
         status: 200,
-      }),
-    );
+      });
+    };
     const transport = new HttpIntegrationCommandTransport(
       { integrationId: "erp", endpoint: "https://erp.example.test/orders" },
-      fetcher as typeof fetch,
+      fetcher,
     );
 
     const result = await transport.execute(command());
 
     expect(result.externalReference).toBe("ERP-100");
-    expect(fetcher.mock.calls[0]?.[1]?.headers).toMatchObject({
+    expect(calls[0]?.[1]?.headers).toMatchObject({
       "idempotency-key": "IDEMP-1",
     });
   });
@@ -51,8 +53,10 @@ describe("HttpIntegrationCommandTransport", () => {
       (async () => new Response("unavailable", { status: 503 })) as typeof fetch,
     );
 
-    await expect(transport.execute(command())).rejects.toMatchObject<
-      Partial<IntegrationTransportError>
-    >({ retryable: true, status: 503 });
+    await expect(transport.execute(command())).rejects.toMatchObject({
+      retryable: true,
+      status: 503,
+      name: IntegrationTransportError.name,
+    });
   });
 });
