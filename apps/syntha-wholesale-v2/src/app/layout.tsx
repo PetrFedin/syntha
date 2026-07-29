@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+
 import { WorkspaceShell } from '@/shared/workspace/workspace-shell';
 import { WorkspaceContextProvider } from '@/shared/workspace/workspace-context';
 import './globals.css';
 import './workspace-pages.css';
+import './lifecycle-workspace.css';
 
 export const metadata: Metadata = {
   title: {
