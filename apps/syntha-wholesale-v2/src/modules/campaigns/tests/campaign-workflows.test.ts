@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { organisationId } from '@/modules/organisations';
+import {
+  InMemorySeasonRepository,
+  SeasonNotFound,
+  createSeason,
+} from '@/modules/seasons';
 
 import type {
   CampaignRepository,
@@ -68,6 +73,24 @@ function dependencies() {
   };
 }
 
+function seasons(
+  organisation: Campaign['organisationId'],
+  id: string,
+): InMemorySeasonRepository {
+  return new InMemorySeasonRepository([
+    createSeason({
+      id,
+      organisationId: organisation,
+      code: `CODE-${id}`,
+      name: `Season ${id}`,
+      startsAt: new Date('2026-08-01T00:00:00.000Z'),
+      endsAt: new Date('2027-08-01T00:00:00.000Z'),
+      ownerCredentialId: 'season-owner',
+      now: new Date('2026-07-29T09:00:00.000Z'),
+    }),
+  ]);
+}
+
 describe('campaign workflows', () => {
   it('creates an organisation-scoped campaign with exact audit actor', async () => {
     const repository = new MemoryCampaignRepository();
@@ -76,6 +99,7 @@ describe('campaign workflows', () => {
 
     const campaign = await createCampaignUseCase({
       repository,
+      seasonRepository: seasons(organisation, 'season-ss27'),
       clock,
       ids,
       organisationId: organisation,
@@ -102,14 +126,36 @@ describe('campaign workflows', () => {
     ]);
   });
 
+  it('rejects a season owned by another organisation', async () => {
+    const repository = new MemoryCampaignRepository();
+    const { clock, ids } = dependencies();
+    await expect(
+      createCampaignUseCase({
+        repository,
+        seasonRepository: seasons(organisationId('ORG-B'), 'season-1'),
+        clock,
+        ids,
+        organisationId: organisationId('ORG-A'),
+        seasonId: 'season-1',
+        code: 'FW27',
+        name: 'Fall Winter 2027',
+        startsAt: new Date('2027-01-01T00:00:00.000Z'),
+        endsAt: new Date('2027-08-01T00:00:00.000Z'),
+        actorCredentialId: 'org-a-operator',
+      }),
+    ).rejects.toBeInstanceOf(SeasonNotFound);
+  });
+
   it('does not expose a campaign through another organisation scope', async () => {
     const repository = new MemoryCampaignRepository();
     const { clock, ids } = dependencies();
+    const organisation = organisationId('ORG-A');
     const campaign = await createCampaignUseCase({
       repository,
+      seasonRepository: seasons(organisation, 'season-1'),
       clock,
       ids,
-      organisationId: organisationId('ORG-A'),
+      organisationId: organisation,
       seasonId: 'season-1',
       code: 'FW27',
       name: 'Fall Winter 2027',
@@ -133,6 +179,7 @@ describe('campaign workflows', () => {
     const organisation = organisationId('ORG-A');
     const campaign = await createCampaignUseCase({
       repository,
+      seasonRepository: seasons(organisation, 'season-1'),
       clock,
       ids,
       organisationId: organisation,
