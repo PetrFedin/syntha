@@ -139,7 +139,7 @@
     {
       "id": "CHG-0013",
       "date": "2026-07-29",
-      "type": "quality",
+      "type": "fix",
       "summary": "Promote lifecycle persistence to a real-PostgreSQL CI gate and fix runtime module loading and multi-statement result normalization discovered by the database suite.",
       "tasks": ["TASK-0008"],
       "adrs": ["ADR-0006", "ADR-0009"],
