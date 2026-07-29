@@ -114,9 +114,9 @@ test('authenticated operator creates and advances the authoritative lifecycle', 
   await submitAndWaitForNotice(page, seasonForm, 'Создать сезон', 'season_created');
   await expect(page.getByText('Сезон создан и записан в авторитетный контур.')).toBeVisible();
 
-  let seasonCard = page.locator('article.lifecycleEntityCard').filter({ hasText: seasonCode });
+  const seasonCard = page.locator('article.lifecycleEntityCard').filter({ hasText: seasonCode });
   await expect(seasonCard).toBeVisible();
-  let seasonStatusForm = seasonCard.locator('form.lifecycleStatusForm');
+  const seasonStatusForm = seasonCard.locator('form.lifecycleStatusForm');
   await seasonStatusForm.getByLabel('Следующий статус').selectOption('ACTIVE');
   await submitAndWaitForNotice(page, seasonStatusForm, 'Применить', 'season_updated');
 
