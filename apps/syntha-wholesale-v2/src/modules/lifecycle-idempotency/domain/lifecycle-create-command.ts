@@ -5,9 +5,16 @@ import type { OrganisationId } from '@/modules/organisations';
 export type LifecycleCreateCommandName =
   | 'CREATE_SEASON'
   | 'CREATE_CAMPAIGN'
-  | 'CREATE_COLLECTION';
+  | 'CREATE_COLLECTION'
+  | 'CREATE_SHOWROOM'
+  | 'PUBLISH_SHOWROOM';
 
-export type LifecycleResultEntityType = 'SEASON' | 'CAMPAIGN' | 'COLLECTION';
+export type LifecycleResultEntityType =
+  | 'SEASON'
+  | 'CAMPAIGN'
+  | 'COLLECTION'
+  | 'SHOWROOM'
+  | 'SHOWROOM_SNAPSHOT';
 
 export interface LifecycleCreateCommand {
   readonly organisationId: OrganisationId;
