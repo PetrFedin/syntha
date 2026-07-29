@@ -1,5 +1,15 @@
 import type { LifecycleAuditRecord } from '@/modules/campaigns';
-import type { TransactionalSqlClient, TransactionalSqlPool } from '@/modules/commercial-execution';
+import type {
+  SqlExecutor,
+  TransactionalSqlClient,
+  TransactionalSqlPool,
+} from '@/modules/commercial-execution';
+import {
+  executeLifecycleCreate,
+  findLifecycleCreateReplay,
+  type LifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import { organisationId, type OrganisationId } from '@/modules/organisations';
 
 import type { CollectionRepository } from '../application/collection-repository';
@@ -54,6 +64,18 @@ function freezeCollection(row: CollectionRow): Collection {
   });
 }
 
+async function loadCollection(
+  executor: SqlExecutor,
+  organisationIdValue: OrganisationId,
+  id: string,
+): Promise<Collection | null> {
+  const result = await executor.query<CollectionRow>(
+    `${selection} WHERE organisation_id = $1 AND id = $2`,
+    [organisationIdValue, id],
+  );
+  return result.rows[0] ? freezeCollection(result.rows[0]) : null;
+}
+
 async function appendAudit(
   client: TransactionalSqlClient,
   audit: LifecycleAuditRecord,
@@ -84,11 +106,7 @@ export class PostgresCollectionRepository implements CollectionRepository {
     organisationIdValue: OrganisationId,
     id: CollectionId,
   ): Promise<Collection | null> {
-    const result = await this.pool.query<CollectionRow>(
-      `${selection} WHERE organisation_id = $1 AND id = $2`,
-      [organisationIdValue, id],
-    );
-    return result.rows[0] ? freezeCollection(result.rows[0]) : null;
+    return loadCollection(this.pool, organisationIdValue, id);
   }
 
   async findByCode(
@@ -117,32 +135,58 @@ export class PostgresCollectionRepository implements CollectionRepository {
     return Object.freeze(result.rows.map(freezeCollection));
   }
 
-  async create(collection: Collection, audit: LifecycleAuditRecord): Promise<void> {
+  async findCreateReplay(command: LifecycleCreateCommand): Promise<Collection | null> {
+    return findLifecycleCreateReplay({
+      executor: this.pool,
+      command,
+      expectedEntityType: 'COLLECTION',
+      loadEntity: (executor, id) =>
+        loadCollection(executor, command.organisationId, id),
+    });
+  }
+
+  async create(
+    collection: Collection,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Collection>> {
     const client = await this.pool.connect();
     await client.query('BEGIN');
     try {
-      await client.query(
-        `INSERT INTO syntha_collection
-           (organisation_id, id, campaign_id, code, name, currency, status,
-            owner_credential_id, created_at, updated_at, version)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
-                 $9::timestamptz, $10::timestamptz, $11)`,
-        [
-          collection.organisationId,
-          collection.id,
-          collection.campaignId,
-          collection.code,
-          collection.name,
-          collection.currency,
-          collection.status,
-          collection.ownerCredentialId,
-          collection.createdAt,
-          collection.updatedAt,
-          collection.version,
-        ],
-      );
-      await appendAudit(client, audit);
+      const result = await executeLifecycleCreate({
+        client,
+        command,
+        resultEntityType: 'COLLECTION',
+        resultEntityId: collection.id,
+        loadEntity: (executor, id) =>
+          loadCollection(executor, command.organisationId, id),
+        createEntity: async () => {
+          await client.query(
+            `INSERT INTO syntha_collection
+               (organisation_id, id, campaign_id, code, name, currency, status,
+                owner_credential_id, created_at, updated_at, version)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
+                     $9::timestamptz, $10::timestamptz, $11)`,
+            [
+              collection.organisationId,
+              collection.id,
+              collection.campaignId,
+              collection.code,
+              collection.name,
+              collection.currency,
+              collection.status,
+              collection.ownerCredentialId,
+              collection.createdAt,
+              collection.updatedAt,
+              collection.version,
+            ],
+          );
+          await appendAudit(client, audit);
+          return collection;
+        },
+      });
       await client.query('COMMIT');
+      return result;
     } catch (error) {
       try {
         await client.query('ROLLBACK');
