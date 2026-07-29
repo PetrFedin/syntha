@@ -1,4 +1,8 @@
 import type { CampaignId, LifecycleAuditRecord } from '@/modules/campaigns';
+import type {
+  LifecycleCreateCommand,
+  LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import type { Collection, CollectionId } from '../domain/collection';
@@ -14,7 +18,12 @@ export interface CollectionRepository {
     organisationId: OrganisationId,
     campaignId: CampaignId,
   ): Promise<readonly Collection[]>;
-  create(collection: Collection, audit: LifecycleAuditRecord): Promise<void>;
+  findCreateReplay(command: LifecycleCreateCommand): Promise<Collection | null>;
+  create(
+    collection: Collection,
+    audit: LifecycleAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Collection>>;
   update(
     collection: Collection,
     expectedVersion: number,
