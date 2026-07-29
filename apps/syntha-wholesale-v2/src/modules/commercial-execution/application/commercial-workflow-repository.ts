@@ -7,6 +7,7 @@ import { createIdempotencyRegistry } from "@/domain/execution/idempotency-engine
 import type { IntegrationCircuit } from "@/domain/execution/integration-resilience";
 
 import type { IntegrationCommand } from "../domain/integration-command";
+import type { IntegrationInboxRecord } from "../domain/integration-inbox";
 
 export interface CommercialWorkflowState {
   readonly id: string;
@@ -17,6 +18,7 @@ export interface CommercialWorkflowState {
   readonly outbox: TransactionalOutbox;
   readonly integrationCircuits: readonly IntegrationCircuit[];
   readonly integrationCommands: readonly IntegrationCommand[];
+  readonly integrationInbox: readonly IntegrationInboxRecord[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -59,6 +61,7 @@ export function createCommercialWorkflowState(input: {
     outbox: createTransactionalOutbox(),
     integrationCircuits: Object.freeze([]),
     integrationCommands: Object.freeze([]),
+    integrationInbox: Object.freeze([]),
     createdAt,
     updatedAt: createdAt,
   });

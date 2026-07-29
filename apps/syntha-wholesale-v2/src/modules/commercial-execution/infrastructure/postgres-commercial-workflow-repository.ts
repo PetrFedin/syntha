@@ -26,7 +26,11 @@ function decode(row: WorkflowRow): CommercialWorkflowState {
     typeof row.state === "string"
       ? (JSON.parse(row.state) as CommercialWorkflowState)
       : row.state;
-  return Object.freeze({ ...state, version: Number(row.version) });
+  return Object.freeze({
+    ...state,
+    version: Number(row.version),
+    integrationInbox: Object.freeze([...(state.integrationInbox ?? [])]),
+  });
 }
 
 export class PostgresCommercialWorkflowRepository
@@ -54,24 +58,31 @@ export class PostgresCommercialWorkflowRepository
       version: expectedVersion + 1,
     });
     const serialized = JSON.stringify(next);
-    const result = expectedVersion === 0
-      ? await this.executor.query<WorkflowRow>(
-          `INSERT INTO syntha_commercial_workflow_state
-             (workflow_id, version, state, updated_at)
-           VALUES ($1, 1, $2::jsonb, $3::timestamptz)
-           ON CONFLICT (workflow_id) DO NOTHING
-           RETURNING version, state`,
-          [state.id, serialized, state.updatedAt],
-        )
-      : await this.executor.query<WorkflowRow>(
-          `UPDATE syntha_commercial_workflow_state
-           SET version = $2,
-               state = $3::jsonb,
-               updated_at = $4::timestamptz
-           WHERE workflow_id = $1 AND version = $5
-           RETURNING version, state`,
-          [state.id, expectedVersion + 1, serialized, state.updatedAt, expectedVersion],
-        );
+    const result =
+      expectedVersion === 0
+        ? await this.executor.query<WorkflowRow>(
+            `INSERT INTO syntha_commercial_workflow_state
+               (workflow_id, version, state, updated_at)
+             VALUES ($1, 1, $2::jsonb, $3::timestamptz)
+             ON CONFLICT (workflow_id) DO NOTHING
+             RETURNING version, state`,
+            [state.id, serialized, state.updatedAt],
+          )
+        : await this.executor.query<WorkflowRow>(
+            `UPDATE syntha_commercial_workflow_state
+             SET version = $2,
+                 state = $3::jsonb,
+                 updated_at = $4::timestamptz
+             WHERE workflow_id = $1 AND version = $5
+             RETURNING version, state`,
+            [
+              state.id,
+              expectedVersion + 1,
+              serialized,
+              state.updatedAt,
+              expectedVersion,
+            ],
+          );
     const row = result.rows[0];
     if (!row) {
       const current = await this.findById(state.id);
