@@ -1,3 +1,7 @@
+import {
+  lifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import {
@@ -48,6 +52,7 @@ export interface CreateSeasonCommand {
   readonly startsAt: Date;
   readonly endsAt: Date;
   readonly actorCredentialId: string;
+  readonly idempotencyKey: string;
 }
 
 function audit(input: {
@@ -75,25 +80,43 @@ export async function createSeasonUseCase(
   clock: Clock,
   ids: IdGenerator,
   command: CreateSeasonCommand,
-): Promise<Season> {
+): Promise<LifecycleCreateResult<Season>> {
+  const now = clock.now();
+  const normalizedCode = command.code.trim().toUpperCase();
+  const idempotency = lifecycleCreateCommand({
+    organisationId: command.organisationId,
+    commandName: 'CREATE_SEASON',
+    idempotencyKey: command.idempotencyKey,
+    payload: {
+      code: normalizedCode,
+      name: command.name.trim(),
+      startsAt: command.startsAt.toISOString(),
+      endsAt: command.endsAt.toISOString(),
+    },
+    actorCredentialId: command.actorCredentialId,
+    requestedAt: now,
+  });
+
+  const replay = await repository.findCreateReplay(idempotency);
+  if (replay) return Object.freeze({ entity: replay, replayed: true });
+
   const duplicate = await repository.findByCode(
     command.organisationId,
-    command.code.trim().toUpperCase(),
+    normalizedCode,
   );
   if (duplicate) throw new SeasonAlreadyExists(command.code);
 
-  const now = clock.now();
   const season = createSeason({
     id: ids.next('season'),
     organisationId: command.organisationId,
-    code: command.code,
+    code: normalizedCode,
     name: command.name,
     startsAt: command.startsAt,
     endsAt: command.endsAt,
     ownerCredentialId: command.actorCredentialId,
     now,
   });
-  await repository.create(
+  return repository.create(
     season,
     audit({
       ids,
@@ -103,8 +126,8 @@ export async function createSeasonUseCase(
       expectedVersion: null,
       occurredAt: now,
     }),
+    idempotency,
   );
-  return season;
 }
 
 export async function listOrganisationSeasons(
@@ -140,6 +163,8 @@ export async function changeSeasonStatusUseCase(
   if (current.version !== input.expectedVersion) {
     throw new SeasonVersionConflict(input.id);
   }
+  if (current.status === input.status) return current;
+
   const now = clock.now();
   const changed = changeSeasonStatus(current, input.status, now);
   const updated = await repository.update(
