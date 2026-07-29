@@ -6,11 +6,11 @@ Draft PR: `#8`
 
 ## Verified foundation
 
-TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0010 are implemented and in QA.
+TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0011 are implemented and in QA.
 
 The current authoritative commercial lifecycle is:
 
-`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection`
+`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection → Draft Order → Submitted Order snapshot`
 
 ## QA slices
 
@@ -45,11 +45,23 @@ The current authoritative commercial lifecycle is:
 - authoritative `/selections` workspace and buyer-scoped APIs;
 - cross-organisation, replay, rollback and optimistic-version coverage.
 
+### TASK-0011 — Order Builder and submission
+
+- one buyer-private Draft Order per READY Selection;
+- product, variant and size identity inherited from Selection;
+- deterministic integer-only pricing, discount, tax and total calculations;
+- optimistic Order mutations and replay-safe create/submit commands;
+- immutable submitted-order snapshot with seller-visible commercial projection;
+- atomic PostgreSQL Order, snapshot, audit, outbox and idempotency persistence;
+- authoritative `/order-builder` and `/orders` workspaces;
+- real PostgreSQL rollback, composite tenant-FK and authenticated browser coverage;
+- canonical `@/modules/orders` boundary without temporary shims or probe files.
+
 ## Verification checkpoint
 
-Verified code head: `feea6517c1f912e32bf8b675112d269614e4db6c`.
+Verified code head: `83a0c361bf9bdac6758cd6d228a7aafcb13175b1`.
 
-`Syntha V2 Foundation` run `30480855159` passed:
+`Syntha V2 Foundation` run `30495432689` passed:
 
 - governance and architecture validation;
 - TypeScript typecheck;
@@ -57,26 +69,27 @@ Verified code head: `feea6517c1f912e32bf8b675112d269614e4db6c`.
 - unit tests;
 - real PostgreSQL integration tests;
 - production build;
-- all 108 Playwright browser checks.
+- Playwright browser suite: 95 passed, 16 skipped and one Showroom test passed on retry.
 
 Completion evidence is stored in:
 
 - `tasks/completions/TASK-0009-completion.md`;
-- `tasks/completions/TASK-0010-completion.md`.
+- `tasks/completions/TASK-0010-completion.md`;
+- `tasks/completions/TASK-0011-completion.md`.
 
 ## Next P0
 
-The next vertical slice is Order Builder and commercial order submission from a READY Selection:
+The next vertical slice is the seller commercial response to one immutable submitted Order:
 
-`Selection READY → Draft Order → commercial totals → Submit Order → immutable submitted-order snapshot`
+`Submitted Order snapshot → seller review → accept or request changes → immutable response version`
 
 Priority rules for the next slice:
 
-- order data remains scoped to the buyer organisation while seller projections expose only the submitted commercial contract;
-- quantities must originate from Selection item and size-curve intent;
-- prices, currency, discounts, taxes and totals require deterministic minor-unit calculations;
-- submission must be idempotent, optimistic-versioned, audited and transactional;
-- no legacy fallback or synthetic order records are permitted.
+- seller responses must reference one immutable submitted-order snapshot;
+- acceptance and change requests must never mutate the buyer's submitted contract;
+- every response requires organisation scope, expected version, actor audit, outbox and replay-safe commands;
+- buyer and seller projections must expose only their permitted negotiation fields;
+- no synthetic confirmation records or legacy fallback are permitted.
 
 ## Merge status
 
