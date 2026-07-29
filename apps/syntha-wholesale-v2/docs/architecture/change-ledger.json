@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "entries": [
     {
       "id": "CHG-0001",
@@ -169,6 +169,17 @@
       "files": ["src/modules/selection/README.md", "src/modules/selection/index.ts", "src/modules/selection/domain/selection.ts", "src/modules/selection/application/selection-repository.ts", "src/modules/selection/application/selection-workflows.ts", "src/modules/selection/infrastructure/in-memory-selection-repository.ts", "src/modules/selection/infrastructure/selection-migrations.ts", "src/modules/selection/infrastructure/postgres-selection-repository.ts", "src/modules/selection/infrastructure/selection-runtime.ts", "src/modules/selection/tests/selection-domain.test.ts", "src/modules/selection/tests/selection-workflows.test.ts", "src/modules/selection/tests/selection-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/modules/lifecycle-idempotency/infrastructure/lifecycle-idempotency-migrations.ts", "src/shared/server/selection-api.ts", "src/app/api/showrooms/[showroomId]/access-grants/route.ts", "src/app/api/showroom-access-grants/route.ts", "src/app/api/showroom-access-grants/[grantId]/route.ts", "src/app/api/selections/route.ts", "src/app/api/selections/[selectionId]/route.ts", "src/shared/workspace/selection-actions.ts", "src/shared/workspace/components/selection-workspace-panel.tsx", "src/app/[section]/page.tsx", "e2e/selection.spec.ts", "e2e/selection-access.spec.ts", "tasks/TASK-0010-buyer-access-selection-vertical-slice.md", "tasks/completions/TASK-0010-completion.md", "tasks/task-manifest.json", "STATUS.md"],
       "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30480855159},
       "rollback": "Revert CHG-0015 to remove buyer grants, private Selection persistence, scoped APIs and workspace flows while preserving authoritative Showroom publication from CHG-0014."
+    },
+    {
+      "id": "CHG-0016",
+      "date": "2026-07-29",
+      "type": "feature",
+      "summary": "Add buyer-private Order Builder and immutable submitted-order commercial contracts with deterministic minor-unit totals, optimistic concurrency, replay-safe commands, transactional persistence, scoped APIs and seller-visible submitted projections.",
+      "tasks": ["TASK-0011"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/orders/README.md", "src/modules/orders/index.ts", "src/modules/orders/domain/order.ts", "src/modules/orders/application/order-repository.ts", "src/modules/orders/application/order-workflows.ts", "src/modules/orders/application/order-conflicts.ts", "src/modules/orders/infrastructure/in-memory-order-repository.ts", "src/modules/orders/infrastructure/order-migrations.ts", "src/modules/orders/infrastructure/order-idempotency-migration.ts", "src/modules/orders/infrastructure/postgres-order-repository.ts", "src/modules/orders/infrastructure/order-runtime.ts", "src/modules/orders/tests/order-domain.test.ts", "src/modules/orders/tests/order-workflows.test.ts", "src/modules/orders/tests/order-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/shared/server/order-api.ts", "src/app/api/orders/route.ts", "src/app/api/orders/[orderId]/route.ts", "src/app/api/orders/[orderId]/submit/route.ts", "src/app/api/submitted-orders/route.ts", "src/app/api/submitted-orders/[snapshotId]/route.ts", "src/shared/workspace/order-actions.ts", "src/shared/workspace/components/order-workspace-page.tsx", "src/shared/workspace/components/order-workspace-panel.tsx", "e2e/order.spec.ts", "e2e/workspace.spec.ts", "tasks/TASK-0011-order-builder-submission-vertical-slice.md", "tasks/completions/TASK-0011-completion.md", "tasks/task-manifest.json", "STATUS.md"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30495432689},
+      "rollback": "Revert CHG-0016 to remove Order Builder persistence, submitted commercial snapshots, APIs, workspace flows and task evidence while preserving the verified READY Selection lifecycle from CHG-0015."
     }
   ]
 }
