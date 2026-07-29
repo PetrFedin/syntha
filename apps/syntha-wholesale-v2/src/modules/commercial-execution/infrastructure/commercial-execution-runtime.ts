@@ -1,3 +1,4 @@
+import type { CommercialExecutionHealthCheck } from "../application/commercial-execution-health-check";
 import type { CommercialExecutionUnitOfWork } from "../application/commercial-execution-unit-of-work";
 import type { CommercialOperationsAuthorizer } from "../application/commercial-operations-authorizer";
 import type { CommercialWorkflowRepository } from "../application/commercial-workflow-repository";
@@ -7,6 +8,7 @@ import type { IntegrationWorkerSettingsProvider } from "../application/integrati
 import { EnvironmentCommercialOperationsAuthorizer } from "./environment-commercial-operations-authorizer";
 import { EnvironmentIntegrationSigningKeyProvider } from "./environment-integration-signing-key-provider";
 import { EnvironmentIntegrationWorkerSettingsProvider } from "./environment-integration-worker-settings-provider";
+import { PostgresCommercialExecutionHealthCheck } from "./postgres-commercial-execution-health-check";
 import { PostgresCommercialExecutionUnitOfWork } from "./postgres-commercial-execution-unit-of-work";
 import { PostgresCommercialWorkflowRepository } from "./postgres-commercial-workflow-repository";
 import type { TransactionalSqlPool } from "./postgres-commercial-execution-unit-of-work";
@@ -18,6 +20,7 @@ export interface CommercialExecutionRuntime {
   readonly signingKeys: IntegrationSigningKeyProvider;
   readonly workerSettings: IntegrationWorkerSettingsProvider;
   readonly operationsAuthorizer: CommercialOperationsAuthorizer;
+  readonly healthCheck: CommercialExecutionHealthCheck;
 }
 
 let configuredRuntime:
@@ -31,13 +34,19 @@ export function createPostgresCommercialExecutionRuntime(input: {
   readonly environment?: Readonly<Record<string, string | undefined>>;
 }): CommercialExecutionRuntime {
   const environment = input.environment ?? process.env;
+  const signingKeys = new EnvironmentIntegrationSigningKeyProvider(environment);
   return Object.freeze({
     repository: new PostgresCommercialWorkflowRepository(input.pool),
     unitOfWork: new PostgresCommercialExecutionUnitOfWork(input.pool),
     transports: input.transports,
-    signingKeys: new EnvironmentIntegrationSigningKeyProvider(environment),
+    signingKeys,
     workerSettings: new EnvironmentIntegrationWorkerSettingsProvider(environment),
     operationsAuthorizer: new EnvironmentCommercialOperationsAuthorizer(environment),
+    healthCheck: new PostgresCommercialExecutionHealthCheck(
+      input.pool,
+      input.transports,
+      signingKeys,
+    ),
   });
 }
 

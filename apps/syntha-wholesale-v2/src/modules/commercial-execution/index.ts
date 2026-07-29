@@ -3,6 +3,12 @@ export {
   type CommercialOperationsAction,
   type CommercialOperationsActionResult,
 } from "./application/apply-commercial-operations-action";
+export type {
+  CommercialExecutionHealthCheck,
+  CommercialExecutionHealthComponent,
+  CommercialExecutionHealthReport,
+  CommercialExecutionHealthStatus,
+} from "./application/commercial-execution-health-check";
 export type { CommercialExecutionUnitOfWork } from "./application/commercial-execution-unit-of-work";
 export type { CommercialOperationsAuthorizer } from "./application/commercial-operations-authorizer";
 export {
@@ -83,6 +89,12 @@ export {
   type BootstrappedCommercialExecutionRuntime,
 } from "./infrastructure/bootstrap-commercial-execution-runtime";
 export {
+  commercialExecutionMigrations,
+  runPostgresCommercialExecutionMigrations,
+  type CommercialExecutionMigration,
+  type CommercialExecutionMigrationResult,
+} from "./infrastructure/commercial-execution-migrations";
+export {
   createPostgresCommercialExecutionRuntime,
   getCommercialExecutionRuntime,
   registerCommercialExecutionRuntime,
@@ -112,6 +124,7 @@ export {
   type NodePostgresModuleLoader,
   type NodePostgresPoolLike,
 } from "./infrastructure/node-postgres-pool-adapter";
+export { PostgresCommercialExecutionHealthCheck } from "./infrastructure/postgres-commercial-execution-health-check";
 export {
   PostgresCommercialExecutionUnitOfWork,
   type TransactionalSqlClient,

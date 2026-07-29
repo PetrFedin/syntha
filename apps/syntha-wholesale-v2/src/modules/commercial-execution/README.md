@@ -4,30 +4,30 @@ This module owns durable storage and controlled delivery for commercial decision
 
 ## Responsibilities
 
-- persist idempotency, approvals, execution journals, outbox records and integration circuits as one versioned workflow aggregate;
-- enforce optimistic concurrency on every write;
+- persist the complete commercial execution aggregate with optimistic concurrency;
 - execute aggregate changes through a PostgreSQL transaction unit-of-work;
-- bootstrap a deployment runtime from server-only configuration;
-- load a concrete `pg` Pool lazily at runtime and verify connectivity before registration;
-- convert approved automatic actions into durable integration commands;
+- bootstrap the runtime from server-only deployment configuration;
+- load a concrete `pg` Pool lazily and verify connectivity;
+- apply versioned PostgreSQL migrations under an advisory transaction lock;
+- reject modified historical migrations through SHA-256 checksum comparison;
 - send commands through HTTPS transports with stable idempotency headers and bounded timeouts;
 - lease and dispatch commands to ERP, OMS and supplier transports;
-- run bounded worker cycles without infinite retries;
-- apply retry and circuit-breaker policies without creating duplicate external operations;
-- deduplicate and reconcile asynchronous external callbacks;
-- automatically retry only unambiguous orphaned/conflicting callbacks and retain dangerous contradictions for review;
-- verify webhook signatures, replay windows and signing-key rotation before any state change;
-- expose authorized operations and reconciliation APIs without returning command payloads or secrets.
+- apply retry and circuit-breaker policies without duplicate external operations;
+- verify and deduplicate signed callbacks;
+- automatically retry only unambiguous orphaned/conflicting callbacks;
+- expose authorized operations and reconciliation APIs;
+- expose a secret-free readiness report for database and integration configuration.
 
 ## Deployment
 
 Set `SYNTHA_COMMERCIAL_EXECUTION_ENABLED=true` to bootstrap from `src/instrumentation.ts`.
 The deployment image must provide the `pg` package; it is loaded lazily so browser bundles and disabled environments do not import it.
+Migrations run before runtime registration. A checksum mismatch stops startup instead of silently changing an applied schema.
 Transport and signing secrets must be stored in the deployment secret manager and passed through server-only environment variables.
 
 ## Boundaries
 
-- application code depends on repository, transaction, transport, authorization and verification ports;
+- application code depends on repository, transaction, transport, authorization, health and verification ports;
 - infrastructure adapters implement those ports;
 - PostgreSQL is the default transactional implementation;
 - signing keys, transport tokens and operations tokens are server-only configuration;

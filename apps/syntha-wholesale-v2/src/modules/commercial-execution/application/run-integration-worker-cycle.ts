@@ -9,6 +9,7 @@ import type { CommercialWorkflowRepository } from "./commercial-workflow-reposit
 
 export interface IntegrationTransportRegistry {
   get(integrationId: string): IntegrationCommandTransport | null;
+  integrationIds?(): readonly string[];
 }
 
 export interface IntegrationWorkerCycleResult {

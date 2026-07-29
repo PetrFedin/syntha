@@ -1,3 +1,5 @@
+import type { CommercialExecutionMigrationResult } from "./commercial-execution-migrations";
+import { runPostgresCommercialExecutionMigrations } from "./commercial-execution-migrations";
 import {
   createPostgresCommercialExecutionRuntime,
   registerCommercialExecutionRuntime,
@@ -13,6 +15,7 @@ import {
 export interface BootstrappedCommercialExecutionRuntime {
   readonly runtime: CommercialExecutionRuntime;
   readonly pool: NodePostgresPoolAdapter;
+  readonly migrations: CommercialExecutionMigrationResult;
   close(): Promise<void>;
 }
 
@@ -31,6 +34,7 @@ export function bootstrapCommercialExecutionRuntimeFromEnvironment(input: {
       loadModule: input.loadPostgresModule,
     });
     try {
+      const migrations = await runPostgresCommercialExecutionMigrations({ pool });
       const transports = new EnvironmentHttpIntegrationTransportRegistry(
         environment,
         input.fetcher,
@@ -44,6 +48,7 @@ export function bootstrapCommercialExecutionRuntimeFromEnvironment(input: {
       return Object.freeze({
         runtime,
         pool,
+        migrations,
         async close() {
           await pool.close();
           bootstrapPromise = null;
