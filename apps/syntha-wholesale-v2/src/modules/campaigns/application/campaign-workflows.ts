@@ -1,3 +1,7 @@
+import {
+  lifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 import {
   getSeason,
@@ -86,7 +90,28 @@ export async function createCampaignUseCase(input: {
   readonly startsAt: Date;
   readonly endsAt: Date;
   readonly actorCredentialId: string;
-}): Promise<Campaign> {
+  readonly idempotencyKey: string;
+}): Promise<LifecycleCreateResult<Campaign>> {
+  const now = input.clock.now();
+  const code = input.code.trim().toUpperCase();
+  const idempotency = lifecycleCreateCommand({
+    organisationId: input.organisationId,
+    commandName: 'CREATE_CAMPAIGN',
+    idempotencyKey: input.idempotencyKey,
+    payload: {
+      seasonId: input.seasonId.trim(),
+      code,
+      name: input.name.trim(),
+      startsAt: input.startsAt.toISOString(),
+      endsAt: input.endsAt.toISOString(),
+    },
+    actorCredentialId: input.actorCredentialId,
+    requestedAt: now,
+  });
+
+  const replay = await input.repository.findCreateReplay(idempotency);
+  if (replay) return Object.freeze({ entity: replay, replayed: true });
+
   const season = await getSeason(
     input.seasonRepository,
     input.organisationId,
@@ -95,12 +120,10 @@ export async function createCampaignUseCase(input: {
   if (season.status === 'CLOSED' || season.status === 'ARCHIVED') {
     throw new SeasonDoesNotAcceptCampaigns(season.id);
   }
-
-  const code = input.code.trim().toUpperCase();
   if (await input.repository.findByCode(input.organisationId, code)) {
     throw new CampaignAlreadyExists(code);
   }
-  const now = input.clock.now();
+
   const campaign = createCampaign({
     id: input.ids.next('campaign'),
     organisationId: input.organisationId,
@@ -112,7 +135,7 @@ export async function createCampaignUseCase(input: {
     ownerCredentialId: input.actorCredentialId,
     now,
   });
-  await input.repository.create(
+  return input.repository.create(
     campaign,
     audit({
       ids: input.ids,
@@ -123,8 +146,8 @@ export async function createCampaignUseCase(input: {
       expectedVersion: null,
       occurredAt: now,
     }),
+    idempotency,
   );
-  return campaign;
 }
 
 export async function listCampaigns(
