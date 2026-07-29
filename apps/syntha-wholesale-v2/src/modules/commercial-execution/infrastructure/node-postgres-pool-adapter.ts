@@ -13,11 +13,15 @@ export interface NodePostgresQueryResult<Row> {
   readonly rowCount: number | null;
 }
 
+export type NodePostgresQueryResponse<Row> =
+  | NodePostgresQueryResult<Row>
+  | readonly NodePostgresQueryResult<Row>[];
+
 export interface NodePostgresClientLike {
   query<Row>(
     sql: string,
     parameters?: readonly unknown[],
-  ): Promise<NodePostgresQueryResult<Row>>;
+  ): Promise<NodePostgresQueryResponse<Row>>;
   release(): void;
 }
 
@@ -25,7 +29,7 @@ export interface NodePostgresPoolLike {
   query<Row>(
     sql: string,
     parameters?: readonly unknown[],
-  ): Promise<NodePostgresQueryResult<Row>>;
+  ): Promise<NodePostgresQueryResponse<Row>>;
   connect(): Promise<NodePostgresClientLike>;
   end(): Promise<void>;
 }
@@ -40,10 +44,17 @@ export interface NodePostgresModule {
 
 export type NodePostgresModuleLoader = () => Promise<NodePostgresModule>;
 
-function result<Row>(value: NodePostgresQueryResult<Row>): SqlQueryResult<Row> {
+function result<Row>(value: NodePostgresQueryResponse<Row>): SqlQueryResult<Row> {
+  const results: readonly NodePostgresQueryResult<Row>[] = Array.isArray(value)
+    ? value
+    : [value as NodePostgresQueryResult<Row>];
+  const rows = results.flatMap((item) => [...item.rows]);
   return Object.freeze({
-    rows: Object.freeze([...value.rows]),
-    rowCount: value.rowCount ?? value.rows.length,
+    rows: Object.freeze(rows),
+    rowCount: results.reduce(
+      (total, item) => total + (item.rowCount ?? item.rows.length),
+      0,
+    ),
   });
 }
 
