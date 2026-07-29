@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0010
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: selection
 capability_ids:
@@ -59,7 +59,7 @@ Create the first authoritative buyer-planning path after Showroom publication. A
 - per-item quantity intent, note and size-curve intent;
 - optimistic concurrency for all mutable Selection commands;
 - organisation-scoped Brand grant APIs and Shop Selection APIs;
-- authoritative `/selection` workspace with controlled access states;
+- authoritative `/selections` workspace with controlled access states;
 - unit, PostgreSQL and authenticated browser coverage.
 
 ## Acceptance criteria
@@ -81,6 +81,8 @@ Create the first authoritative buyer-planning path after Showroom publication. A
 
 ## Implementation checkpoint
 
-TASK-0010 starts only after the Showroom source of truth is implemented. TASK-0009 remains the dependency and must reach QA on a fully green workflow before TASK-0010 can be promoted to QA.
+TASK-0010 reached QA on code head `feea6517c1f912e32bf8b675112d269614e4db6c`, after TASK-0009 reached the same verified checkpoint.
 
-The first implementation priority is the domain contract for snapshot-bound access grants and Shop-private Selection planning. PostgreSQL, APIs and workspace projections follow in the same vertical slice.
+Verification: `Syntha V2 Foundation` run `30480855159` passed governance, typecheck, lint, unit tests, real PostgreSQL integration tests, production build and all 108 Playwright browser checks.
+
+The buyer access grant is bound to the immutable publication snapshot, and Shop-private budget, notes, shortlist and size curves remain unavailable to seller-scoped reads.
