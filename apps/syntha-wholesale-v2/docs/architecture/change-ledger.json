@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 15,
   "entries": [
     {
       "id": "CHG-0001",
@@ -147,6 +147,28 @@
       "repository_files": [".github/workflows/syntha-v2-architecture.yml"],
       "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30472074274},
       "rollback": "Revert CHG-0013 to remove the PostgreSQL service gate and exact pg dependency, then restore the prior adapter behavior and mock-only persistence coverage."
+    },
+    {
+      "id": "CHG-0014",
+      "date": "2026-07-29",
+      "type": "feature",
+      "summary": "Add authoritative Showroom draft management and immutable publication snapshots under published Collections, with transactional audit, outbox, idempotency, APIs and server-backed workspace controls.",
+      "tasks": ["TASK-0009"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/showroom/README.md", "src/modules/showroom/index.ts", "src/modules/showroom/domain/showroom.ts", "src/modules/showroom/application/showroom-repository.ts", "src/modules/showroom/application/showroom-workflows.ts", "src/modules/showroom/infrastructure/showroom-migrations.ts", "src/modules/showroom/infrastructure/postgres-showroom-repository.ts", "src/modules/showroom/infrastructure/showroom-runtime.ts", "src/modules/showroom/tests/showroom-workflows.test.ts", "src/modules/showroom/tests/showroom-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/modules/lifecycle-idempotency/infrastructure/lifecycle-idempotency-migrations.ts", "src/app/api/collections/[collectionId]/showrooms/route.ts", "src/app/api/showrooms/[showroomId]/route.ts", "src/app/api/showrooms/[showroomId]/publish/route.ts", "src/shared/workspace/showroom-actions.ts", "src/shared/workspace/components/showroom-workspace-panel.tsx", "e2e/showroom.spec.ts", "e2e/showroom-access.spec.ts", "tasks/TASK-0009-showroom-publication-vertical-slice.md", "tasks/completions/TASK-0009-completion.md", "tasks/task-manifest.json", "STATUS.md"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30480855159},
+      "rollback": "Revert CHG-0014 to remove authoritative Showroom persistence, publication snapshots, APIs, workspace actions and task evidence while preserving the verified Season to Collection lifecycle."
+    },
+    {
+      "id": "CHG-0015",
+      "date": "2026-07-29",
+      "type": "feature",
+      "summary": "Add immutable-snapshot-bound buyer access grants and Shop-private Selection planning with budget, shortlist, quantity intent, size curves, transactional persistence, scoped APIs and browser workflows.",
+      "tasks": ["TASK-0010"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/selection/README.md", "src/modules/selection/index.ts", "src/modules/selection/domain/selection.ts", "src/modules/selection/application/selection-repository.ts", "src/modules/selection/application/selection-workflows.ts", "src/modules/selection/infrastructure/in-memory-selection-repository.ts", "src/modules/selection/infrastructure/selection-migrations.ts", "src/modules/selection/infrastructure/postgres-selection-repository.ts", "src/modules/selection/infrastructure/selection-runtime.ts", "src/modules/selection/tests/selection-domain.test.ts", "src/modules/selection/tests/selection-workflows.test.ts", "src/modules/selection/tests/selection-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/modules/lifecycle-idempotency/infrastructure/lifecycle-idempotency-migrations.ts", "src/shared/server/selection-api.ts", "src/app/api/showrooms/[showroomId]/access-grants/route.ts", "src/app/api/showroom-access-grants/route.ts", "src/app/api/showroom-access-grants/[grantId]/route.ts", "src/app/api/selections/route.ts", "src/app/api/selections/[selectionId]/route.ts", "src/shared/workspace/selection-actions.ts", "src/shared/workspace/components/selection-workspace-panel.tsx", "src/app/[section]/page.tsx", "e2e/selection.spec.ts", "e2e/selection-access.spec.ts", "tasks/TASK-0010-buyer-access-selection-vertical-slice.md", "tasks/completions/TASK-0010-completion.md", "tasks/task-manifest.json", "STATUS.md"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30480855159},
+      "rollback": "Revert CHG-0015 to remove buyer grants, private Selection persistence, scoped APIs and workspace flows while preserving authoritative Showroom publication from CHG-0014."
     }
   ]
 }
