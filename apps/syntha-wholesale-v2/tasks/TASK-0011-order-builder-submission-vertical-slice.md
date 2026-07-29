@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0011
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: orders
 capability_ids:
@@ -85,4 +85,10 @@ Convert one buyer-owned READY Selection into a versioned Draft Order, calculate 
 
 ## Implementation checkpoint
 
-TASK-0011 starts from the fully verified TASK-0010 checkpoint at evidence head `848136756bfba189a7c6ded1ac5c4586324af89c`, `Syntha V2 Foundation` run `30481584812`.
+TASK-0011 started from the fully verified TASK-0010 checkpoint at evidence head `848136756bfba189a7c6ded1ac5c4586324af89c`, `Syntha V2 Foundation` run `30481584812`.
+
+The implemented Order Builder now uses the canonical `@/modules/orders` boundary and contains no temporary export shims, marker files or push probes. The full seller-to-buyer lifecycle, PostgreSQL transaction behavior and browser projections were verified at code head `83a0c361bf9bdac6758cd6d228a7aafcb13175b1`.
+
+## Verification checkpoint
+
+`Syntha V2 Foundation` run `30495432689` passed governance, typecheck, lint, unit tests, real PostgreSQL integration tests, production build and Playwright. The browser result was 95 passed and 16 skipped, with one Showroom test succeeding on retry. Completion evidence is recorded in `tasks/completions/TASK-0011-completion.md`.
