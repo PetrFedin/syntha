@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0009
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: showroom
 capability_ids:
@@ -70,6 +70,8 @@ Create the first authoritative digital Showroom path so a Brand can prepare a bu
 
 ## Implementation checkpoint
 
-TASK-0009 is opened after TASK-0007 and TASK-0008 reached QA on workflow run `30474774287`.
+TASK-0009 reached QA on code head `feea6517c1f912e32bf8b675112d269614e4db6c`.
 
-The first implementation priority is the Showroom aggregate, publication snapshot contract and PostgreSQL schema. Buyer account grants and Selection integration follow only after the publication source of truth is stable.
+Verification: `Syntha V2 Foundation` run `30480855159` passed governance, typecheck, lint, unit tests, real PostgreSQL integration tests, production build and all 108 Playwright browser checks.
+
+The immutable publication source of truth is now the dependency for snapshot-bound buyer access and Selection planning in TASK-0010.
