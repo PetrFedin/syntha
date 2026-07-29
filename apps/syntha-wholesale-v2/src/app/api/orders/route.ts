@@ -6,7 +6,7 @@ import {
   createOrderDraftUseCase,
   getOrderRepository,
   listBuyerOrders,
-} from '@/modules/orders/index-next';
+} from '@/modules/orders';
 import { getSelectionRepository } from '@/modules/selection';
 import {
   requireCommercialApiAccess,
