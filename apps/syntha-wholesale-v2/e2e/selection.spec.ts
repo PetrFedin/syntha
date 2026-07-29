@@ -157,11 +157,11 @@ test('seller grants a snapshot and buyer plans a private Selection', async ({
   await expect(page.getByTestId('authoritative-selection-workspace')).toBeVisible();
   await expect(page.getByTestId('selection-controlled-state')).toHaveCount(0);
   await expect(page.getByText('Brand видит grant, Shop видит свой Selection')).toBeVisible();
-  await expect(page.getByText(`Main Buy ${suffix}`)).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Main Buy ${suffix}` })).toBeVisible();
 
   const selectionCard = page
     .locator('article.lifecycleEntityCard')
-    .filter({ hasText: `Main Buy ${suffix}` });
+    .filter({ has: page.getByRole('heading', { name: `Main Buy ${suffix}` }) });
   await expect(selectionCard).toContainText(/5[\s\u00a0\u202f]?000,00/);
 
   const addItemForm = selectionCard.getByTestId('add-selection-item-form');
