@@ -102,9 +102,19 @@ export class InMemorySelectionRepository implements SelectionRepository {
     grantId: ShowroomAccessGrantId,
   ): Promise<ShowroomAccessGrant | null> {
     const grant = [...this.grants.values()].find(
-      (candidate) => candidate.id === grantId && candidate.buyerOrganisationId === buyerOrganisationId,
+      (candidate) =>
+        candidate.id === grantId && candidate.buyerOrganisationId === buyerOrganisationId,
     );
     return grant ? copyGrant(grant) : null;
+  }
+
+  async listGrantsForSeller(
+    sellerOrganisationId: OrganisationId,
+  ): Promise<readonly ShowroomAccessGrant[]> {
+    return [...this.grants.values()]
+      .filter((grant) => grant.sellerOrganisationId === sellerOrganisationId)
+      .sort((left, right) => right.grantedAt.localeCompare(left.grantedAt))
+      .map(copyGrant);
   }
 
   async listGrantsForBuyer(
@@ -161,9 +171,9 @@ export class InMemorySelectionRepository implements SelectionRepository {
 
   async findSelection(
     buyerOrganisationId: OrganisationId,
-    selectionId: SelectionId,
+    id: SelectionId,
   ): Promise<Selection | null> {
-    const selection = this.selections.get(this.selectionKey(buyerOrganisationId, selectionId));
+    const selection = this.selections.get(this.selectionKey(buyerOrganisationId, id));
     return selection ? copySelection(selection) : null;
   }
 
