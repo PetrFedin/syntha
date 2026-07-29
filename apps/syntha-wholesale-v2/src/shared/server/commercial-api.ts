@@ -4,6 +4,7 @@ import {
   type CommercialOperationsAuthorizer,
   type CommercialOperationsPermission,
 } from '@/modules/commercial-execution';
+import { lifecycleIdempotencyKey } from '@/modules/lifecycle-idempotency';
 import { organisationId, type OrganisationId } from '@/modules/organisations';
 
 export class CommercialApiError extends Error {
@@ -77,6 +78,22 @@ export async function requireCommercialApiAccess(
     organisationId: organisationId(normalizedOrganisationId),
     actorCredentialId,
   });
+}
+
+export function requireIdempotencyKey(request: Request): string {
+  const value = request.headers.get('idempotency-key');
+  if (!value?.trim()) {
+    throw new CommercialApiError(400, 'idempotency_key_required');
+  }
+  try {
+    return lifecycleIdempotencyKey(value);
+  } catch (error) {
+    throw new CommercialApiError(
+      400,
+      'invalid_idempotency_key',
+      error instanceof Error ? error.message : 'Invalid idempotency key',
+    );
+  }
 }
 
 export async function requireJsonObject(request: Request): Promise<Record<string, unknown>> {
