@@ -299,6 +299,18 @@ export class PostgresSelectionRepository implements SelectionRepository {
     return result.rows[0] ? freezeGrant(result.rows[0]) : null;
   }
 
+  async listGrantsForSeller(
+    sellerOrganisationId: OrganisationId,
+  ): Promise<readonly ShowroomAccessGrant[]> {
+    const result = await this.pool.query<GrantRow>(
+      `${grantSelection}
+       WHERE seller_organisation_id = $1
+       ORDER BY granted_at DESC, id`,
+      [sellerOrganisationId],
+    );
+    return Object.freeze(result.rows.map(freezeGrant));
+  }
+
   async listGrantsForBuyer(
     buyerOrganisationId: OrganisationId,
   ): Promise<readonly ShowroomAccessGrant[]> {
