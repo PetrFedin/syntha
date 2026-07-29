@@ -1,3 +1,13 @@
+export type { CommercialExecutionUnitOfWork } from "./application/commercial-execution-unit-of-work";
+export type { CommercialOperationsAuthorizer } from "./application/commercial-operations-authorizer";
+export {
+  getCommercialOperationsReadModel,
+  type CommercialOperationsMetrics,
+  type CommercialOperationsReadModel,
+  type IntegrationCircuitReadModel,
+  type IntegrationCommandReadModel,
+  type IntegrationInboxReadModel,
+} from "./application/commercial-operations-read-model";
 export {
   createCommercialWorkflowState,
   WorkflowVersionConflictError,
@@ -15,12 +25,18 @@ export type {
   IntegrationCallbackVerificationResult,
   IntegrationCallbackVerifier,
 } from "./application/integration-callback-verifier";
+export type { IntegrationSigningKeyProvider } from "./application/integration-signing-key-provider";
 export { persistDurableReplenishment } from "./application/persist-durable-replenishment";
 export {
   reconcileIntegrationCallback,
   type IntegrationCallback,
   type IntegrationCallbackResult,
 } from "./application/reconcile-integration-callback";
+export {
+  runIntegrationWorkerCycle,
+  type IntegrationTransportRegistry,
+  type IntegrationWorkerCycleResult,
+} from "./application/run-integration-worker-cycle";
 export {
   verifyAndReconcileIntegrationCallback,
   type VerifiedIntegrationCallbackResult,
@@ -36,11 +52,25 @@ export type {
   IntegrationInboxStatus,
 } from "./domain/integration-inbox";
 export {
+  createPostgresCommercialExecutionRuntime,
+  getCommercialExecutionRuntime,
+  registerCommercialExecutionRuntime,
+  resetCommercialExecutionRuntime,
+  type CommercialExecutionRuntime,
+} from "./infrastructure/commercial-execution-runtime";
+export { EnvironmentCommercialOperationsAuthorizer } from "./infrastructure/environment-commercial-operations-authorizer";
+export { EnvironmentIntegrationSigningKeyProvider } from "./infrastructure/environment-integration-signing-key-provider";
+export {
   createHmacIntegrationSignature,
   HmacIntegrationCallbackVerifier,
   type IntegrationSigningKey,
 } from "./infrastructure/hmac-integration-callback-verifier";
 export { InMemoryCommercialWorkflowRepository } from "./infrastructure/in-memory-commercial-workflow-repository";
+export {
+  PostgresCommercialExecutionUnitOfWork,
+  type TransactionalSqlClient,
+  type TransactionalSqlPool,
+} from "./infrastructure/postgres-commercial-execution-unit-of-work";
 export {
   PostgresCommercialWorkflowRepository,
   type SqlExecutor,

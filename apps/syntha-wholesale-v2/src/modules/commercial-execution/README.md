@@ -6,15 +6,20 @@ This module owns durable storage and controlled delivery for commercial decision
 
 - persist idempotency, approvals, execution journals, outbox records and integration circuits as one versioned workflow aggregate;
 - enforce optimistic concurrency on every write;
+- execute aggregate changes through a PostgreSQL transaction unit-of-work;
 - convert approved automatic actions into durable integration commands;
 - lease and dispatch commands to ERP, OMS and supplier transports;
+- run bounded worker cycles without infinite retries;
 - apply retry and circuit-breaker policies without creating duplicate external operations;
 - deduplicate and reconcile asynchronous external callbacks;
-- verify webhook signatures, replay windows and signing-key rotation before any state change.
+- verify webhook signatures, replay windows and signing-key rotation before any state change;
+- expose an authorized operations read model without returning command payloads or secrets.
 
 ## Boundaries
 
-- application code depends on repository, transport and verification ports;
+- application code depends on repository, transaction, transport, authorization and verification ports;
 - infrastructure adapters implement those ports;
 - PostgreSQL is the default transactional implementation;
+- the concrete database driver is injected through `TransactionalSqlPool`;
+- signing keys and operations tokens are server-only runtime configuration;
 - domain calculations remain outside this module and are referenced through explicit contracts.
