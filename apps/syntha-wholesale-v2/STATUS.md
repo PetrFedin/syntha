@@ -1,16 +1,16 @@
 # Syntha Wholesale V2 — current status
 
-Date: 2026-07-29
+Date: 2026-07-30
 Branch: `agent/v2-commercial-core`
 Draft PR: `#8`
 
 ## Verified foundation
 
-TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0011 are implemented and in QA.
+TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0012 are implemented and in QA.
 
 The current authoritative commercial lifecycle is:
 
-`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection → Draft Order → Submitted Order snapshot`
+`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection → Draft Order → Submitted Order snapshot → Seller decision → Confirmed Order version`
 
 ## QA slices
 
@@ -57,11 +57,24 @@ The current authoritative commercial lifecycle is:
 - real PostgreSQL rollback, composite tenant-FK and authenticated browser coverage;
 - canonical `@/modules/orders` boundary without temporary shims or probe files.
 
+### TASK-0012 — Seller decision and confirmation
+
+- one seller-owned review per immutable Submitted Order snapshot;
+- mutually exclusive approval or structured amendment request;
+- line and size proposals restricted to submitted commercial identities;
+- original Submitted Order remains unchanged after every decision;
+- replay-safe approval, amendment and confirmation commands;
+- optimistic review version control;
+- immutable Confirmed Order version visible to buyer and seller;
+- atomic PostgreSQL review, confirmed version, audit, outbox and idempotency persistence;
+- authoritative `/confirmation` workspace and scoped review/confirmed APIs;
+- real PostgreSQL replay, rollback, tenant-FK and authenticated browser coverage.
+
 ## Verification checkpoint
 
-Verified code head: `83a0c361bf9bdac6758cd6d228a7aafcb13175b1`.
+Verified TASK-0012 code head: `b887f8f203a6c13c773b829f9b28a2b85a62e79b`.
 
-`Syntha V2 Foundation` run `30495432689` passed:
+`Syntha V2 Foundation` run `30497410958` passed:
 
 - governance and architecture validation;
 - TypeScript typecheck;
@@ -69,27 +82,28 @@ Verified code head: `83a0c361bf9bdac6758cd6d228a7aafcb13175b1`.
 - unit tests;
 - real PostgreSQL integration tests;
 - production build;
-- Playwright browser suite: 95 passed, 16 skipped and one Showroom test passed on retry.
+- Playwright browser suite: 97 passed, 22 skipped and one existing Selection flow passed on retry.
 
 Completion evidence is stored in:
 
 - `tasks/completions/TASK-0009-completion.md`;
 - `tasks/completions/TASK-0010-completion.md`;
-- `tasks/completions/TASK-0011-completion.md`.
+- `tasks/completions/TASK-0011-completion.md`;
+- `tasks/completions/TASK-0012-completion.md`.
 
 ## Next P0
 
-The next vertical slice is the seller commercial response to one immutable submitted Order:
+The next vertical slice is controlled buyer response to a seller amendment request and production handoff from a confirmed contract:
 
-`Submitted Order snapshot → seller review → accept or request changes → immutable response version`
+`Amendment request → buyer accept/counter/reject → revised immutable submission → seller approval → Confirmed Order → Production Commitment`
 
 Priority rules for the next slice:
 
-- seller responses must reference one immutable submitted-order snapshot;
-- acceptance and change requests must never mutate the buyer's submitted contract;
-- every response requires organisation scope, expected version, actor audit, outbox and replay-safe commands;
-- buyer and seller projections must expose only their permitted negotiation fields;
-- no synthetic confirmation records or legacy fallback are permitted.
+- amendment responses must never rewrite the original submitted snapshot or seller request;
+- each revision must become a new immutable commercial version with explicit lineage;
+- production commitment may start only from one confirmed immutable Order version;
+- every command requires organisation scope, expected version, exact actor audit, outbox and idempotency;
+- no synthetic confirmation, production or legacy fallback records are permitted.
 
 ## Merge status
 
