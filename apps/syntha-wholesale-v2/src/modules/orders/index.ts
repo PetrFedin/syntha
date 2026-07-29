@@ -20,6 +20,23 @@ export {
   type SubmittedOrderSnapshot,
   type SubmittedOrderSnapshotId,
 } from './domain/order';
+export {
+  OrderReviewDomainError,
+  approveOrder,
+  confirmOrder,
+  confirmedOrderVersionId,
+  createOrderReview,
+  orderReviewId,
+  requestOrderAmendment,
+  type ConfirmedOrderVersion,
+  type ConfirmedOrderVersionId,
+  type OrderAmendmentRequest,
+  type OrderApproval,
+  type OrderReview,
+  type OrderReviewId,
+  type OrderReviewStatus,
+  type ProposedOrderLineChange,
+} from './domain/order-review';
 export type {
   OrderAuditAction,
   OrderAuditRecord,
