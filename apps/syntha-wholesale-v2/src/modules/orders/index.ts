@@ -51,7 +51,10 @@ export type {
   OrderReviewOutboxEvent,
   OrderReviewRepository,
 } from './application/order-review-repository';
-export { OrderPersistenceVersionConflict } from './application/order-conflicts';
+export {
+  OrderPersistenceVersionConflict,
+  OrderReviewPersistenceVersionConflict,
+} from './application/order-conflicts';
 export {
   OrderAlreadyExists,
   OrderNotFound,
@@ -93,6 +96,11 @@ export {
 export { InMemoryOrderRepository } from './infrastructure/in-memory-order-repository';
 export { InMemoryOrderReviewRepository } from './infrastructure/in-memory-order-review-repository';
 export { PostgresOrderRepository } from './infrastructure/postgres-order-repository';
+export { PostgresOrderReviewRepository } from './infrastructure/postgres-order-review-repository';
 export { orderMigrations, runOrderMigrations } from './infrastructure/order-migrations';
 export { runOrderIdempotencyMigration } from './infrastructure/order-idempotency-migration';
-export { getOrderRepository, resetOrderRuntime } from './infrastructure/order-runtime';
+export {
+  getOrderRepository,
+  getOrderReviewRepository,
+  resetOrderRuntime,
+} from './infrastructure/order-runtime';
