@@ -1,6 +1,9 @@
 import type { OrganisationId } from '@/modules/organisations';
-import type { SeasonRepository } from '../application/season-repository';
-import { SeasonVersionConflict } from '../application/season-workflows';
+
+import type {
+  SeasonAuditRecord,
+  SeasonRepository,
+} from '../application/season-repository';
 import type { Season, SeasonId } from '../domain/season';
 
 function copySeason(season: Season): Season {
@@ -8,17 +11,26 @@ function copySeason(season: Season): Season {
 }
 
 export class InMemorySeasonRepository implements SeasonRepository {
-  private readonly records = new Map<SeasonId, Season>();
+  private readonly records = new Map<string, Season>();
+  readonly audits: SeasonAuditRecord[] = [];
 
   constructor(initial: readonly Season[] = []) {
     for (const season of initial) {
-      if (this.records.has(season.id)) throw new Error(`Duplicate season fixture: ${season.id}`);
-      this.records.set(season.id, copySeason(season));
+      const key = this.key(season.organisationId, season.id);
+      if (this.records.has(key)) throw new Error(`Duplicate season fixture: ${season.id}`);
+      this.records.set(key, copySeason(season));
     }
   }
 
-  async findById(id: SeasonId): Promise<Season | null> {
-    const season = this.records.get(id);
+  private key(organisationId: OrganisationId, id: SeasonId): string {
+    return `${organisationId}:${id}`;
+  }
+
+  async findById(
+    organisationId: OrganisationId,
+    id: SeasonId,
+  ): Promise<Season | null> {
+    const season = this.records.get(this.key(organisationId, id));
     return season ? copySeason(season) : null;
   }
 
@@ -37,17 +49,32 @@ export class InMemorySeasonRepository implements SeasonRepository {
     return season ? copySeason(season) : null;
   }
 
-  async save(season: Season, expectedVersion?: number): Promise<void> {
-    const current = this.records.get(season.id);
-    if (expectedVersion !== undefined && current?.version !== expectedVersion) {
-      throw new SeasonVersionConflict(season.id);
-    }
+  async create(season: Season, audit: SeasonAuditRecord): Promise<void> {
+    const key = this.key(season.organisationId, season.id);
+    if (this.records.has(key)) throw new Error(`Duplicate season id: ${season.id}`);
+    const duplicate = await this.findByCode(season.organisationId, season.code);
+    if (duplicate) throw new Error(`Duplicate season code: ${season.code}`);
+    this.records.set(key, copySeason(season));
+    this.audits.push(Object.freeze({ ...audit }));
+  }
+
+  async update(
+    season: Season,
+    expectedVersion: number,
+    audit: SeasonAuditRecord,
+  ): Promise<boolean> {
+    const key = this.key(season.organisationId, season.id);
+    const current = this.records.get(key);
+    if (!current || current.version !== expectedVersion) return false;
     const duplicate = [...this.records.values()].find(
-      (candidate) => candidate.id !== season.id
-        && candidate.organisationId === season.organisationId
-        && candidate.code === season.code,
+      (candidate) =>
+        candidate.id !== season.id &&
+        candidate.organisationId === season.organisationId &&
+        candidate.code === season.code,
     );
     if (duplicate) throw new Error(`Duplicate season code: ${season.code}`);
-    this.records.set(season.id, copySeason(season));
+    this.records.set(key, copySeason(season));
+    this.audits.push(Object.freeze({ ...audit }));
+    return true;
   }
 }
