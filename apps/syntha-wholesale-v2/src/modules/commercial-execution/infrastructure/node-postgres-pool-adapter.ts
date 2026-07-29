@@ -1,3 +1,5 @@
+import { createRequire } from "node:module";
+
 import type {
   TransactionalSqlClient,
   TransactionalSqlPool,
@@ -76,11 +78,8 @@ export class NodePostgresPoolAdapter implements TransactionalSqlPool {
 }
 
 async function defaultModuleLoader(): Promise<NodePostgresModule> {
-  const dynamicImport = new Function(
-    "specifier",
-    "return import(specifier)",
-  ) as (specifier: string) => Promise<unknown>;
-  const loaded = (await dynamicImport("pg")) as Partial<NodePostgresModule>;
+  const load = createRequire(import.meta.url);
+  const loaded = load("pg") as Partial<NodePostgresModule>;
   if (typeof loaded.Pool !== "function") {
     throw new Error("The installed pg module does not export Pool.");
   }
