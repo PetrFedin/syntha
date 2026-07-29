@@ -11,7 +11,10 @@ export type LifecycleCreateCommandName =
   | 'GRANT_SHOWROOM_ACCESS'
   | 'CREATE_SELECTION'
   | 'CREATE_ORDER_DRAFT'
-  | 'SUBMIT_ORDER';
+  | 'SUBMIT_ORDER'
+  | 'APPROVE_ORDER'
+  | 'REQUEST_ORDER_AMENDMENT'
+  | 'CONFIRM_ORDER';
 
 export type LifecycleResultEntityType =
   | 'SEASON'
@@ -22,7 +25,9 @@ export type LifecycleResultEntityType =
   | 'SHOWROOM_ACCESS_GRANT'
   | 'SELECTION'
   | 'ORDER'
-  | 'SUBMITTED_ORDER_SNAPSHOT';
+  | 'SUBMITTED_ORDER_SNAPSHOT'
+  | 'ORDER_REVIEW'
+  | 'CONFIRMED_ORDER_VERSION';
 
 export interface LifecycleCreateCommand {
   readonly organisationId: OrganisationId;
