@@ -6,6 +6,7 @@ import type { IdempotencyRegistry } from "@/domain/execution/idempotency-engine"
 import { createIdempotencyRegistry } from "@/domain/execution/idempotency-engine";
 import type { IntegrationCircuit } from "@/domain/execution/integration-resilience";
 
+import type { CommercialOperationsAuditRecord } from "../domain/commercial-operations-audit";
 import type { IntegrationCommand } from "../domain/integration-command";
 import type { IntegrationInboxRecord } from "../domain/integration-inbox";
 
@@ -19,6 +20,7 @@ export interface CommercialWorkflowState {
   readonly integrationCircuits: readonly IntegrationCircuit[];
   readonly integrationCommands: readonly IntegrationCommand[];
   readonly integrationInbox: readonly IntegrationInboxRecord[];
+  readonly operationsAudit: readonly CommercialOperationsAuditRecord[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -62,6 +64,7 @@ export function createCommercialWorkflowState(input: {
     integrationCircuits: Object.freeze([]),
     integrationCommands: Object.freeze([]),
     integrationInbox: Object.freeze([]),
+    operationsAudit: Object.freeze([]),
     createdAt,
     updatedAt: createdAt,
   });

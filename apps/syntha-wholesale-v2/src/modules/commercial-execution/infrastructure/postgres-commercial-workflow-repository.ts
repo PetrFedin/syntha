@@ -30,6 +30,7 @@ function decode(row: WorkflowRow): CommercialWorkflowState {
     ...state,
     version: Number(row.version),
     integrationInbox: Object.freeze([...(state.integrationInbox ?? [])]),
+    operationsAudit: Object.freeze([...(state.operationsAudit ?? [])]),
   });
 }
 

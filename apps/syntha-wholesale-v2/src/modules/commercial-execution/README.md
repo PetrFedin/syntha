@@ -15,7 +15,8 @@ This module owns durable storage and controlled delivery for commercial decision
 - deduplicate and reconcile asynchronous external callbacks;
 - parse and verify signed callback HTTP requests before opening a transaction;
 - verify webhook signatures, replay windows and signing-key rotation before any state change;
-- expose an authorized operations read model without returning command payloads or secrets.
+- expose an authorized operations read model without returning command payloads or secrets;
+- provide audited, idempotent operator actions for retry, cancellation and circuit reset.
 
 ## Boundaries
 
@@ -24,4 +25,5 @@ This module owns durable storage and controlled delivery for commercial decision
 - PostgreSQL is the default transactional implementation;
 - the concrete database driver is injected through `TransactionalSqlPool`;
 - signing keys, worker identity and operations tokens are server-only runtime configuration;
+- every operator mutation requires authorization, actor identity and an idempotent action id;
 - domain calculations remain outside this module and are referenced through explicit contracts.

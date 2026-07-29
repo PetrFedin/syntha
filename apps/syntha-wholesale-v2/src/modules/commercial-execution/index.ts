@@ -1,3 +1,8 @@
+export {
+  applyCommercialOperationsAction,
+  type CommercialOperationsAction,
+  type CommercialOperationsActionResult,
+} from "./application/apply-commercial-operations-action";
 export type { CommercialExecutionUnitOfWork } from "./application/commercial-execution-unit-of-work";
 export type { CommercialOperationsAuthorizer } from "./application/commercial-operations-authorizer";
 export {
@@ -49,6 +54,11 @@ export {
   verifyAndReconcileIntegrationCallback,
   type VerifiedIntegrationCallbackResult,
 } from "./application/verify-and-reconcile-integration-callback";
+export type {
+  CommercialOperationsActionOutcome,
+  CommercialOperationsActionType,
+  CommercialOperationsAuditRecord,
+} from "./domain/commercial-operations-audit";
 export {
   createIntegrationCommand,
   type IntegrationCommand,
