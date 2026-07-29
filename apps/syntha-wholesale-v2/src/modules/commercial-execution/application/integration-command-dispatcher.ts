@@ -39,7 +39,9 @@ export interface IntegrationDispatchResult {
 
 function date(value: string, field: string): Date {
   const timestamp = Date.parse(value);
-  if (Number.isNaN(timestamp)) throw new Error(`${field} must be a valid ISO date string.`);
+  if (Number.isNaN(timestamp)) {
+    throw new Error(`${field} must be a valid ISO date string.`);
+  }
   return new Date(timestamp);
 }
 
@@ -79,7 +81,10 @@ async function mutateWithRetry(input: {
     try {
       return await input.repository.save(input.mutate(current), current.version);
     } catch (error) {
-      if (!(error instanceof WorkflowVersionConflictError) || attempt === maximumAttempts) {
+      if (
+        !(error instanceof WorkflowVersionConflictError) ||
+        attempt === maximumAttempts
+      ) {
         throw error;
       }
     }
@@ -98,31 +103,48 @@ export async function dispatchNextIntegrationCommand(input: {
   readonly leaseSeconds?: number;
   readonly retryable?: (error: unknown) => boolean;
 }): Promise<IntegrationDispatchResult> {
-  if (!input.workerId.trim()) throw new Error("Integration worker id is required.");
+  if (!input.workerId.trim()) {
+    throw new Error("Integration worker id is required.");
+  }
   const now = date(input.now ?? new Date().toISOString(), "Dispatch time");
   const leaseSeconds = Math.max(1, Math.floor(input.leaseSeconds ?? 60));
   const current = await input.repository.findById(input.workflowId);
-  if (!current) return Object.freeze({ status: "no_command", workflowId: input.workflowId });
+  if (!current) {
+    return Object.freeze({
+      status: "no_command",
+      workflowId: input.workflowId,
+    });
+  }
+
   const command = [...current.integrationCommands]
     .filter((candidate) => candidate.integrationId === input.integrationId)
     .filter((candidate) => {
-      if (candidate.status === "pending") {
-        return date(candidate.availableAt, "Command availability") <= now;
-      }
+      if (candidate.status === "pending") return true;
       return candidate.status === "processing" && candidate.lockedUntil
         ? date(candidate.lockedUntil, "Command lease expiry") <= now
         : false;
     })
-    .sort((left, right) =>
-      left.availableAt.localeCompare(right.availableAt) ||
-      left.createdAt.localeCompare(right.createdAt) ||
-      left.id.localeCompare(right.id),
+    .sort(
+      (left, right) =>
+        left.availableAt.localeCompare(right.availableAt) ||
+        left.createdAt.localeCompare(right.createdAt) ||
+        left.id.localeCompare(right.id),
     )[0];
-  if (!command) return Object.freeze({ status: "no_command", workflowId: input.workflowId });
+  if (!command) {
+    return Object.freeze({
+      status: "no_command",
+      workflowId: input.workflowId,
+    });
+  }
 
-  const circuit = current.integrationCircuits.find(
-    (candidate) => candidate.integrationId === input.integrationId,
-  ) ?? createIntegrationCircuit({ integrationId: input.integrationId, createdAt: now.toISOString() });
+  const circuit =
+    current.integrationCircuits.find(
+      (candidate) => candidate.integrationId === input.integrationId,
+    ) ??
+    createIntegrationCircuit({
+      integrationId: input.integrationId,
+      createdAt: now.toISOString(),
+    });
   const attempt = command.attempts + 1;
   const decision = evaluateIntegrationAttempt({
     circuit,
@@ -136,7 +158,9 @@ export async function dispatchNextIntegrationCommand(input: {
         repository: input.repository,
         workflowId: input.workflowId,
         mutate: (state) => {
-          const target = state.integrationCommands.find((candidate) => candidate.id === command.id);
+          const target = state.integrationCommands.find(
+            (candidate) => candidate.id === command.id,
+          );
           if (!target) return state;
           const dead: IntegrationCommand = Object.freeze({
             ...target,
@@ -170,6 +194,18 @@ export async function dispatchNextIntegrationCommand(input: {
     });
   }
 
+  if (
+    command.status === "pending" &&
+    date(command.availableAt, "Command availability") > now
+  ) {
+    return Object.freeze({
+      status: "no_command",
+      workflowId: input.workflowId,
+      commandId: command.id,
+      retryAt: command.availableAt,
+    });
+  }
+
   let claimed: CommercialWorkflowState;
   try {
     claimed = await input.repository.save(
@@ -182,7 +218,9 @@ export async function dispatchNextIntegrationCommand(input: {
             status: "processing",
             attempts: attempt,
             lockedBy: input.workerId,
-            lockedUntil: new Date(now.getTime() + leaseSeconds * 1000).toISOString(),
+            lockedUntil: new Date(
+              now.getTime() + leaseSeconds * 1000,
+            ).toISOString(),
             updatedAt: now.toISOString(),
           }),
         ),
@@ -193,7 +231,10 @@ export async function dispatchNextIntegrationCommand(input: {
     );
   } catch (error) {
     if (error instanceof WorkflowVersionConflictError) {
-      return Object.freeze({ status: "storage_conflict", workflowId: input.workflowId });
+      return Object.freeze({
+        status: "storage_conflict",
+        workflowId: input.workflowId,
+      });
     }
     throw error;
   }
@@ -201,7 +242,9 @@ export async function dispatchNextIntegrationCommand(input: {
   const claimedCommand = claimed.integrationCommands.find(
     (candidate) => candidate.id === command.id,
   );
-  if (!claimedCommand) throw new Error("Claimed integration command disappeared.");
+  if (!claimedCommand) {
+    throw new Error("Claimed integration command disappeared.");
+  }
 
   try {
     const transportResult = await input.transport.execute(claimedCommand);
@@ -212,7 +255,11 @@ export async function dispatchNextIntegrationCommand(input: {
         const target = state.integrationCommands.find(
           (candidate) => candidate.id === claimedCommand.id,
         );
-        if (!target || target.status !== "processing" || target.lockedBy !== input.workerId) {
+        if (
+          !target ||
+          target.status !== "processing" ||
+          target.lockedBy !== input.workerId
+        ) {
           return state;
         }
         const completedAt = now.toISOString();
@@ -226,9 +273,10 @@ export async function dispatchNextIntegrationCommand(input: {
           lockedUntil: undefined,
           lastError: undefined,
         });
-        const activeCircuit = state.integrationCircuits.find(
-          (candidate) => candidate.integrationId === input.integrationId,
-        ) ?? decision.circuit;
+        const activeCircuit =
+          state.integrationCircuits.find(
+            (candidate) => candidate.integrationId === input.integrationId,
+          ) ?? decision.circuit;
         return Object.freeze({
           ...state,
           integrationCommands: replaceCommand(state, completed),
@@ -251,7 +299,8 @@ export async function dispatchNextIntegrationCommand(input: {
       externalReference: transportResult.externalReference,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown integration error";
+    const message =
+      error instanceof Error ? error.message : "Unknown integration error";
     const retryable = input.retryable?.(error) ?? true;
     let dispatchStatus: IntegrationDispatchStatus = "dead_letter";
     let retryAt: string | undefined;
@@ -262,12 +311,17 @@ export async function dispatchNextIntegrationCommand(input: {
         const target = state.integrationCommands.find(
           (candidate) => candidate.id === claimedCommand.id,
         );
-        if (!target || target.status !== "processing" || target.lockedBy !== input.workerId) {
+        if (
+          !target ||
+          target.status !== "processing" ||
+          target.lockedBy !== input.workerId
+        ) {
           return state;
         }
-        const activeCircuit = state.integrationCircuits.find(
-          (candidate) => candidate.integrationId === input.integrationId,
-        ) ?? decision.circuit;
+        const activeCircuit =
+          state.integrationCircuits.find(
+            (candidate) => candidate.integrationId === input.integrationId,
+          ) ?? decision.circuit;
         const failure = recordIntegrationFailure({
           circuit: activeCircuit,
           attempt: target.attempts,
