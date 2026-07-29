@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "entries": [
     {
       "id": "CHG-0001",
@@ -180,6 +180,17 @@
       "files": ["src/modules/orders/README.md", "src/modules/orders/index.ts", "src/modules/orders/domain/order.ts", "src/modules/orders/application/order-repository.ts", "src/modules/orders/application/order-workflows.ts", "src/modules/orders/application/order-conflicts.ts", "src/modules/orders/infrastructure/in-memory-order-repository.ts", "src/modules/orders/infrastructure/order-migrations.ts", "src/modules/orders/infrastructure/order-idempotency-migration.ts", "src/modules/orders/infrastructure/postgres-order-repository.ts", "src/modules/orders/infrastructure/order-runtime.ts", "src/modules/orders/tests/order-domain.test.ts", "src/modules/orders/tests/order-workflows.test.ts", "src/modules/orders/tests/order-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/shared/server/order-api.ts", "src/app/api/orders/route.ts", "src/app/api/orders/[orderId]/route.ts", "src/app/api/orders/[orderId]/submit/route.ts", "src/app/api/submitted-orders/route.ts", "src/app/api/submitted-orders/[snapshotId]/route.ts", "src/shared/workspace/order-actions.ts", "src/shared/workspace/components/order-workspace-page.tsx", "src/shared/workspace/components/order-workspace-panel.tsx", "e2e/order.spec.ts", "e2e/workspace.spec.ts", "tasks/TASK-0011-order-builder-submission-vertical-slice.md", "tasks/completions/TASK-0011-completion.md", "tasks/task-manifest.json", "STATUS.md"],
       "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30495432689},
       "rollback": "Revert CHG-0016 to remove Order Builder persistence, submitted commercial snapshots, APIs, workspace flows and task evidence while preserving the verified READY Selection lifecycle from CHG-0015."
+    },
+    {
+      "id": "CHG-0017",
+      "date": "2026-07-30",
+      "type": "feature",
+      "summary": "Add seller approval, structured amendment requests and immutable confirmed-order versions over submitted commercial snapshots, with scoped projections, transactional PostgreSQL persistence, authoritative confirmation workspace and end-to-end evidence.",
+      "tasks": ["TASK-0012"],
+      "adrs": ["ADR-0002", "ADR-0006", "ADR-0007", "ADR-0008", "ADR-0009"],
+      "files": ["src/modules/orders/README.md", "src/modules/orders/index.ts", "src/modules/orders/domain/order-review.ts", "src/modules/orders/application/order-review-repository.ts", "src/modules/orders/application/order-review-workflows.ts", "src/modules/orders/application/order-conflicts.ts", "src/modules/orders/infrastructure/in-memory-order-review-repository.ts", "src/modules/orders/infrastructure/postgres-order-review-repository.ts", "src/modules/orders/infrastructure/order-migrations.ts", "src/modules/orders/infrastructure/order-idempotency-migration.ts", "src/modules/orders/infrastructure/order-runtime.ts", "src/modules/orders/tests/order-review-domain.test.ts", "src/modules/orders/tests/order-review-workflows.test.ts", "src/modules/orders/tests/order-review-postgres.postgres.test.ts", "src/modules/lifecycle-idempotency/domain/lifecycle-create-command.ts", "src/shared/server/order-review-api.ts", "src/app/api/submitted-orders/[snapshotId]/review/route.ts", "src/app/api/order-reviews/route.ts", "src/app/api/order-reviews/[reviewId]/route.ts", "src/app/api/order-reviews/[reviewId]/confirm/route.ts", "src/app/api/confirmed-orders/route.ts", "src/app/api/confirmed-orders/[versionId]/route.ts", "src/shared/workspace/order-review-actions.ts", "src/shared/workspace/components/order-confirmation-workspace-page.tsx", "src/shared/workspace/components/order-confirmation-workspace-panel.tsx", "src/app/confirmation/page.tsx", "e2e/order-confirmation.spec.ts", "e2e/lifecycle-auth.ts", "tasks/TASK-0012-order-approval-confirmation-vertical-slice.md", "tasks/completions/TASK-0012-completion.md", "tasks/task-manifest.json", "STATUS.md"],
+      "verification": {"command": "npm run preflight && npm run typecheck && npm run lint && npm run test && npm run test:postgres && npm run build && npm run test:e2e", "result": "PASS", "workflow_run": 30497410958},
+      "rollback": "Revert CHG-0017 to remove Order Review decisions, confirmed versions, scoped APIs, confirmation workspace and TASK-0012 evidence while preserving immutable Submitted Orders from CHG-0016."
     }
   ]
 }
