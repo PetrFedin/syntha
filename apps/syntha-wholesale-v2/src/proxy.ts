@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 
 import { workspaceSections } from '@/shared/navigation';
 
-const workspaceSlugs = new Set(workspaceSections.map((section) => section.id));
-const platformPaths = new Set(['api', 'favicon.ico', 'robots.txt', 'sitemap.xml']);
+const workspaceSlugs = new Set<string>(workspaceSections.map((section) => section.id));
+const platformPaths = new Set<string>(['api', 'favicon.ico', 'robots.txt', 'sitemap.xml']);
 
 function notFoundDocument(pathname: string): string {
   const escapedPath = pathname.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
