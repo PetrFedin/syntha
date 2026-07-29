@@ -4,7 +4,7 @@ Updated: 2026-07-29
 
 ## Current phase
 
-Authoritative Campaign → Collection vertical slice on top of the tenant-isolated commercial execution foundation.
+Authoritative Season → Campaign → Collection vertical slice on top of the tenant-isolated commercial execution foundation.
 
 The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
 
@@ -36,16 +36,19 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 - eight-stage Campaign → DealSpace lifecycle;
 - typed Workspace and Commercial Context;
 - context-preserving links, shared page states and responsive browser coverage;
-- remains `IN_PROGRESS` until Campaign and Collection pages use authoritative server projections.
+- remains `IN_PROGRESS` until lifecycle pages use authoritative server projections.
 
-### TASK-0008 — Campaign and Collection vertical slice
+### TASK-0008 — Season, Campaign and Collection vertical slice
 
 Implemented on the current branch:
 
-- organisation-scoped Campaign and Collection aggregates;
-- validated lifecycle transitions, selling dates and collection currency;
-- create, list, read and optimistic-update use cases;
-- PostgreSQL tables, indexes, foreign keys and checksum-protected migration ledger;
+- organisation-scoped Season, Campaign and Collection aggregates;
+- validated lifecycle transitions, commercial windows and collection currency;
+- exact owner credential and optimistic version on each aggregate;
+- create, list, read and lifecycle-update use cases;
+- PostgreSQL repositories with an organisation predicate on every query;
+- checksum-protected Season and Campaign migration ledgers;
+- composite tenant foreign keys from Campaign to Season and Collection to Campaign;
 - transactional entity writes and immutable lifecycle audit records;
 - exact scoped credential identity on each audit entry;
 - App Router APIs protected by `read` and `operate` permissions;
@@ -56,7 +59,7 @@ TASK-0008 remains `IN_PROGRESS` until the final branch head passes all gates and
 
 ## Verification state
 
-The previous PR #8 head passed governance, typecheck, lint, unit tests, production build and Playwright. The Campaign → Collection package added on 2026-07-29 has not yet been certified by the final GitHub Actions run and must not be described as QA-complete before that evidence exists.
+The previous commercial-execution foundation passed governance, typecheck, lint, unit tests, production build and Playwright. The final Season → Campaign → Collection head must pass its own workflow before this package can be described as QA-complete.
 
 | Gate | Current package |
 |---|---|
@@ -70,20 +73,19 @@ The previous PR #8 head passed governance, typecheck, lint, unit tests, producti
 
 ## Immediate priority
 
-1. Resolve every failure from the final PR #8 workflow for the Campaign → Collection package.
-2. Validate `seasonId` against an authoritative persisted Season owned by the same organisation.
-3. Add replay-safe idempotency for Campaign and Collection create commands.
-4. Add PostgreSQL integration coverage for rollback, uniqueness and concurrent optimistic updates.
-5. Replace Campaign and Collection workspace fixtures with server-backed read and mutation surfaces.
-6. Start Showroom persistence only after Campaign → Collection has one green authoritative path.
+1. Resolve every failure from the final PR #8 workflow for the Season → Campaign → Collection package.
+2. Add replay-safe idempotency for Season, Campaign and Collection create commands.
+3. Add PostgreSQL integration coverage for rollback, uniqueness, tenant foreign keys and concurrent optimistic updates.
+4. Replace lifecycle workspace fixtures with server-backed read and mutation surfaces.
+5. Start Showroom persistence only after the authoritative lifecycle path is green.
 
 ## Known limitations
 
-- Campaign currently stores a validated non-empty `seasonId`, but the Season source is not yet persisted and checked transactionally.
 - Create commands are protected by database uniqueness but do not yet replay the original successful response for the same idempotency key.
-- Campaign and Collection APIs are implemented, while their workspace pages still show architectural and empty-state content.
+- Season, Campaign and Collection APIs are implemented, while their workspace pages still show architectural and empty-state content.
+- PostgreSQL schema behavior is not yet exercised by a real-database integration suite in CI.
 - Domain events are intentionally deferred until consumers and transactional outbox ownership are explicit.
 
 ## Stop conditions
 
-Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, scoped authorization, expected-version checks or transactional audit evidence.
+Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, scoped authorization, expected-version checks, composite tenant foreign keys or transactional audit evidence.
