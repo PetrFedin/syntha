@@ -86,6 +86,18 @@ CREATE TABLE IF NOT EXISTS syntha_lifecycle_audit (
 CREATE INDEX IF NOT EXISTS syntha_lifecycle_audit_entity_idx
   ON syntha_lifecycle_audit (organisation_id, entity_type, entity_id, occurred_at DESC);`,
   ),
+  migration(
+    2,
+    'campaign_season_tenant_foreign_key',
+    `ALTER TABLE syntha_campaign
+  DROP CONSTRAINT IF EXISTS syntha_campaign_season_fk;
+ALTER TABLE syntha_campaign
+  ADD CONSTRAINT syntha_campaign_season_fk
+  FOREIGN KEY (organisation_id, season_id)
+  REFERENCES syntha_season (organisation_id, id)
+  ON DELETE RESTRICT
+  NOT VALID;`,
+  ),
 ]);
 
 export async function runCampaignLifecycleMigrations(input: {
