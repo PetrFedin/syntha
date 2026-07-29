@@ -1,3 +1,8 @@
+import {
+  InMemoryLifecycleIdempotencyRegistry,
+  type LifecycleCreateCommand,
+  type LifecycleCreateResult,
+} from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
 
 import type {
@@ -12,6 +17,7 @@ function copySeason(season: Season): Season {
 
 export class InMemorySeasonRepository implements SeasonRepository {
   private readonly records = new Map<string, Season>();
+  private readonly idempotency = new InMemoryLifecycleIdempotencyRegistry();
   readonly audits: SeasonAuditRecord[] = [];
 
   constructor(initial: readonly Season[] = []) {
@@ -26,12 +32,16 @@ export class InMemorySeasonRepository implements SeasonRepository {
     return `${organisationId}:${id}`;
   }
 
+  private loadByRawId(organisationId: OrganisationId, id: string): Season | null {
+    const season = this.records.get(this.key(organisationId, id as SeasonId));
+    return season ? copySeason(season) : null;
+  }
+
   async findById(
     organisationId: OrganisationId,
     id: SeasonId,
   ): Promise<Season | null> {
-    const season = this.records.get(this.key(organisationId, id));
-    return season ? copySeason(season) : null;
+    return this.loadByRawId(organisationId, id);
   }
 
   async findByOrganisation(organisationId: OrganisationId): Promise<readonly Season[]> {
@@ -49,13 +59,36 @@ export class InMemorySeasonRepository implements SeasonRepository {
     return season ? copySeason(season) : null;
   }
 
-  async create(season: Season, audit: SeasonAuditRecord): Promise<void> {
+  async findCreateReplay(command: LifecycleCreateCommand): Promise<Season | null> {
+    return this.idempotency.findReplay({
+      command,
+      expectedEntityType: 'SEASON',
+      loadEntity: (id) => this.loadByRawId(command.organisationId, id),
+    });
+  }
+
+  async create(
+    season: Season,
+    audit: SeasonAuditRecord,
+    command: LifecycleCreateCommand,
+  ): Promise<LifecycleCreateResult<Season>> {
+    const replay = await this.findCreateReplay(command);
+    if (replay) return Object.freeze({ entity: replay, replayed: true });
+
     const key = this.key(season.organisationId, season.id);
     if (this.records.has(key)) throw new Error(`Duplicate season id: ${season.id}`);
     const duplicate = await this.findByCode(season.organisationId, season.code);
     if (duplicate) throw new Error(`Duplicate season code: ${season.code}`);
-    this.records.set(key, copySeason(season));
+    const stored = copySeason(season);
+    this.records.set(key, stored);
     this.audits.push(Object.freeze({ ...audit }));
+    return this.idempotency.complete({
+      command,
+      resultEntityType: 'SEASON',
+      resultEntityId: season.id,
+      entity: stored,
+      loadEntity: (id) => this.loadByRawId(command.organisationId, id),
+    });
   }
 
   async update(
