@@ -1,95 +1,89 @@
 # Syntha Wholesale V2 — Status
 
-Updated: 2026-07-24
+Updated: 2026-07-29
 
 ## Current phase
 
-Workspace architecture normalization: registry-driven routes, typed commercial context and
-context-preserving navigation across the wholesale lifecycle.
+Authoritative Campaign → Collection vertical slice on top of the tenant-isolated commercial execution foundation.
 
 The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
 
 ## Canonical branch and review
 
-- Working branch: `syntha-v2-architecture-normalization`
-- Review vehicle: draft PR #7
-- Base: current `main`
+- Working branch: `agent/v2-commercial-core`
+- Review vehicle: draft PR #8
+- Base: `main`
 - All V2 writes must specify the branch explicitly.
 
-## Completed
+## Completed foundation
 
 - ADR-0001 through ADR-0009 accepted.
 - Canonical vertical modular architecture and root `index.ts` module API.
 - Strict V2/Legacy isolation boundary.
-- Foundation tasks TASK-0001 through TASK-0005 complete.
+- Foundation tasks TASK-0001 through TASK-0006 complete.
 - Architecture, documentation, task, ledger and import-boundary validation.
 - Product Canon with twenty WSC decisions, module ownership and eight core workflows.
-- Independent Next.js App Router runtime, health endpoint and foundation screen.
-- Complete dependency lock with deterministic `npm ci`.
-- TypeScript, ESLint, Vitest, Testing Library and Playwright gates.
-- First organisation and identity-access domain contracts.
-- One root-owned `WorkspaceShell` and a single validated registry for 15 real workspace routes.
-- Eight-stage Campaign → DealSpace lifecycle with reciprocal previous/next transitions.
-- Typed Workspace and Commercial Context models with explicit descendant invalidation.
-- Typed URL helpers that preserve compatible context and remove stale descendant identifiers.
-- Shared page header, context bar, lifecycle navigation, empty, error, loading and entity-link states.
-- Central contextual destination resolver for lifecycle, service and entity-return actions.
-- Invalid or obsolete URL entity types are rejected before route resolution.
-- Service sections have explicit non-dead-end fallbacks and contextual return routes.
-- Unit coverage now protects entity mappings, lifecycle priority, terminal-stage return and damaged URL fallbacks.
-- Context-linked structural models for messages, notifications, calendar and search; demo fixtures are
-  isolated and visibly labelled.
-- Responsive Desktop, Wide Desktop, Tablet and iPhone Playwright coverage.
+- Independent Next.js App Router runtime and responsive adaptive workspace.
+- Organisation and identity-access domain contracts.
+- Tenant-isolated commercial intelligence, durable execution, scheduler, integrations, reconciliation and tamper-evident operational audit in PR #8.
 
-## Foundation gates
+## Active P0 delivery
 
-| Gate | Requirement | Status |
-|---|---|---|
-| G0 | Clean branch based on current `main` | PASS |
-| G1 | Canonical documentation and context map | PASS |
-| G2 | ADR-0001 through ADR-0009 accepted | PASS |
-| G3 | Documentation, ADR, task, ledger and import-boundary guard | FAIL IN CI — investigation active |
-| G4 | Runtime package boundary and command contract | PASS |
-| G5 | Runtime test, typecheck, lint, build and Playwright toolchain | BLOCKED BY G3 IN LATEST V2 WORKFLOW |
-| G6 | Wholesale benchmark converted into accepted Product Canon | PASS |
-| G7 | First business implementation task meets traced contract | PASS — TASK-0006 |
-| G8 | Coherent adaptive workspace and route lifecycle | IN PROGRESS — TASK-0007 server slices remain |
+### TASK-0007 — adaptive workspace
 
-## Active implementation
+- one root-owned `WorkspaceShell`;
+- one validated registry for 15 workspace routes;
+- eight-stage Campaign → DealSpace lifecycle;
+- typed Workspace and Commercial Context;
+- context-preserving links, shared page states and responsive browser coverage;
+- remains `IN_PROGRESS` until Campaign and Collection pages use authoritative server projections.
 
-TASK-0007 now connects the workspace foundation end to end:
+### TASK-0008 — Campaign and Collection vertical slice
 
-- dashboard and all registered sections are real App Router destinations;
-- navigation, lifecycle metadata and section content use one registry;
-- route, Workspace Context and Commercial Context use distinct typed identifiers;
-- deep links preserve compatible parent context and clear incompatible descendants;
-- connected service records always point back to a source entity;
-- service and empty-state actions use one destination resolver instead of duplicated local logic;
-- malformed entity context cannot produce an undefined route;
-- unit tests cover the destination resolver and terminal lifecycle behaviour.
+Implemented on the current branch:
+
+- organisation-scoped Campaign and Collection aggregates;
+- validated lifecycle transitions, selling dates and collection currency;
+- create, list, read and optimistic-update use cases;
+- PostgreSQL tables, indexes, foreign keys and checksum-protected migration ledger;
+- transactional entity writes and immutable lifecycle audit records;
+- exact scoped credential identity on each audit entry;
+- App Router APIs protected by `read` and `operate` permissions;
+- controlled 400, 401, 403, 404, 409 and 503 outcomes;
+- unit coverage for tenant isolation, audit attribution, parent state and stale writes.
+
+TASK-0008 remains `IN_PROGRESS` until the final branch head passes all gates and the remaining integrity work is delivered.
+
+## Verification state
+
+The previous PR #8 head passed governance, typecheck, lint, unit tests, production build and Playwright. The Campaign → Collection package added on 2026-07-29 has not yet been certified by the final GitHub Actions run and must not be described as QA-complete before that evidence exists.
+
+| Gate | Current package |
+|---|---|
+| Governance and architecture preflight | PENDING FINAL CI |
+| TypeScript typecheck | PENDING FINAL CI |
+| ESLint | PENDING FINAL CI |
+| Unit tests | PENDING FINAL CI |
+| Next.js production build | PENDING FINAL CI |
+| Playwright | PENDING FINAL CI |
+| PostgreSQL lifecycle integration tests | NOT YET IMPLEMENTED |
 
 ## Immediate priority
 
-1. Resolve the current `npm run preflight` failure in the Syntha V2 Foundation workflow.
-2. Re-run typecheck, lint, unit tests, production build and Playwright after preflight is green.
-3. Replace structural fixtures with the first server-backed Campaign → Collection vertical slice.
-4. Resolve organisation and season context from the existing identity/organisation application APIs.
-5. Add persisted entity ownership, authorization and audit at each server-backed transition.
-6. Continue Showroom → Selection only after Campaign and Collection have one authoritative read/write path.
+1. Resolve every failure from the final PR #8 workflow for the Campaign → Collection package.
+2. Validate `seasonId` against an authoritative persisted Season owned by the same organisation.
+3. Add replay-safe idempotency for Campaign and Collection create commands.
+4. Add PostgreSQL integration coverage for rollback, uniqueness and concurrent optimistic updates.
+5. Replace Campaign and Collection workspace fixtures with server-backed read and mutation surfaces.
+6. Start Showroom persistence only after Campaign → Collection has one green authoritative path.
 
-## Known tooling diagnostics
+## Known limitations
 
-- The latest draft PR head is mergeable, but workflow run `30108614156` failed during
-  `Validate V2 governance and architecture`; downstream V2 checks were skipped.
-- The preceding V2 workflow run `30107781753` failed at the same preflight stage, so this is not caused
-  solely by the latest destination test file.
-- The repository-wide `CI` workflow passed for commit `3dc79c92113a0940d40d3609407974e452a1b0b4`.
-- Next.js 16.2.11 canonically generates `next-env.d.ts` with
-  `import "./.next/types/routes.d.ts";` when typed routes are enabled.
-- A production request for an unknown static section returns the expected 404 page and the server
-  remains healthy, but Next.js 16.2.11 emits an internal `NoFallbackError` diagnostic for that
-  expected `dynamicParams = false` miss. No runtime workaround is applied.
+- Campaign currently stores a validated non-empty `seasonId`, but the Season source is not yet persisted and checked transactionally.
+- Create commands are protected by database uniqueness but do not yet replay the original successful response for the same idempotency key.
+- Campaign and Collection APIs are implemented, while their workspace pages still show architectural and empty-state content.
+- Domain events are intentionally deferred until consumers and transactional outbox ownership are explicit.
 
 ## Stop conditions
 
-Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, active organisation validation or server-side authorization.
+Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, scoped authorization, expected-version checks or transactional audit evidence.
