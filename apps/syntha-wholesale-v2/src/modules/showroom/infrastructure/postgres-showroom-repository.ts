@@ -16,6 +16,7 @@ import type {
   ShowroomPublishedEvent,
   ShowroomRepository,
 } from '../application/showroom-repository';
+import { ShowroomVersionConflict } from '../application/showroom-workflows';
 import {
   showroomId,
   showroomSnapshotId,
@@ -189,8 +190,6 @@ async function appendOutbox(
     ],
   );
 }
-
-class OptimisticPublishConflict extends Error {}
 
 export class PostgresShowroomRepository implements ShowroomRepository {
   constructor(private readonly pool: TransactionalSqlPool) {}
@@ -374,7 +373,7 @@ export class PostgresShowroomRepository implements ShowroomRepository {
     audit: ShowroomAuditRecord,
     event: ShowroomPublishedEvent,
     command: LifecycleCreateCommand,
-  ): Promise<LifecycleCreateResult<ShowroomPublicationSnapshot> | null> {
+  ): Promise<LifecycleCreateResult<ShowroomPublicationSnapshot>> {
     const client = await this.pool.connect();
     await client.query('BEGIN');
     try {
@@ -400,7 +399,9 @@ export class PostgresShowroomRepository implements ShowroomRepository {
               expectedVersion,
             ],
           );
-          if (updated.rowCount === 0) throw new OptimisticPublishConflict();
+          if (updated.rowCount === 0) {
+            throw new ShowroomVersionConflict(showroom.id);
+          }
           await client.query(
             `INSERT INTO syntha_showroom_publication_snapshot
                (organisation_id, id, showroom_id, showroom_version, collection_id,
@@ -436,7 +437,6 @@ export class PostgresShowroomRepository implements ShowroomRepository {
       } catch {
         // Preserve the write failure.
       }
-      if (error instanceof OptimisticPublishConflict) return null;
       throw error;
     } finally {
       client.release();
