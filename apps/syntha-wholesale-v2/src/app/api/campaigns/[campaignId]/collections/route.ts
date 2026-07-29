@@ -2,7 +2,11 @@ import { randomUUID } from 'node:crypto';
 
 import { NextResponse } from 'next/server';
 
-import { CampaignNotFound, getCampaignRepository } from '@/modules/campaigns';
+import {
+  CampaignNotFound,
+  getCampaign,
+  getCampaignRepository,
+} from '@/modules/campaigns';
 import {
   CampaignDoesNotAcceptCollections,
   CollectionAlreadyExists,
@@ -64,9 +68,17 @@ export async function GET(
   try {
     const access = await requireCommercialApiAccess(request, 'read');
     const { campaignId } = await context.params;
-    const repository = await getCollectionRepository();
+    const [campaignRepository, collectionRepository] = await Promise.all([
+      getCampaignRepository(),
+      getCollectionRepository(),
+    ]);
+    await getCampaign({
+      repository: campaignRepository,
+      organisationId: access.organisationId,
+      id: campaignId,
+    });
     const collections = await listCampaignCollections({
-      repository,
+      repository: collectionRepository,
       organisationId: access.organisationId,
       campaignId,
     });
