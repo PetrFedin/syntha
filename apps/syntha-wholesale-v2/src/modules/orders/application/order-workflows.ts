@@ -5,7 +5,6 @@ import {
 import type { OrganisationId } from '@/modules/organisations';
 import {
   getSelection,
-  selectionId,
   type SelectionRepository,
   type ShowroomAccessGrant,
 } from '@/modules/selection';
@@ -19,7 +18,6 @@ import {
   submitOrder,
   submittedOrderSnapshotId,
   type CommercialOrder,
-  type OrderLineId,
   type SubmittedOrderSnapshot,
 } from '../domain/order';
 import type {
