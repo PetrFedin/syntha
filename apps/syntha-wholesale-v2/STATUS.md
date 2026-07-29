@@ -1,97 +1,83 @@
-# Syntha Wholesale V2 — Status
+# Syntha Wholesale V2 — current status
 
-Updated: 2026-07-29
+Date: 2026-07-29
+Branch: `agent/v2-commercial-core`
+Draft PR: `#8`
 
-## Current phase
+## Verified foundation
 
-Authoritative Showroom publication on top of the verified Season → Campaign → Collection lifecycle and adaptive workspace.
+TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0010 are implemented and in QA.
 
-The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
+The current authoritative commercial lifecycle is:
 
-## Canonical branch and review
+`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection`
 
-- Working branch: `agent/v2-commercial-core`
-- Review vehicle: draft PR #8
-- Base: `main`
-- All V2 writes must specify the branch explicitly.
+## QA slices
 
-## Completed foundation
+### TASK-0007 — Adaptive Workspace
 
-- ADR-0001 through ADR-0009 accepted.
-- Canonical vertical modular architecture and root `index.ts` module API.
-- Strict V2/Legacy isolation boundary.
-- Foundation tasks TASK-0001 through TASK-0006 complete.
-- Architecture, documentation, task, ledger and import-boundary validation.
-- Product Canon with twenty WSC decisions, module ownership and eight core workflows.
-- Tenant-isolated commercial intelligence, durable execution, scheduler, integrations, reconciliation and tamper-evident operational audit in PR #8.
+- responsive workspace shell for desktop, wide desktop, tablet and mobile;
+- canonical navigation and real route-level 404 behavior;
+- controlled access states without fixture business records;
+- server-backed lifecycle surfaces.
 
-## QA-ready P0 delivery
+### TASK-0008 — Season, Campaign and Collection
 
-### TASK-0007 — adaptive workspace
+- organisation-scoped aggregates and APIs;
+- PostgreSQL repositories and tenant-aware foreign keys;
+- optimistic concurrency, exact actor audit and replay-safe creation;
+- authenticated end-to-end lifecycle flow.
 
-- one root-owned responsive `WorkspaceShell`;
-- one validated registry for 15 workspace routes and eight lifecycle stages;
-- typed Workspace and Commercial Context with context-preserving links;
-- desktop, wide desktop, iPad and iPhone navigation modes;
-- single page `main` landmark during loading;
-- real network-boundary 404 for unknown workspace slugs;
-- authoritative Campaign and Collection workspaces with controlled access states;
-- completion report: `tasks/completions/TASK-0007-completion.md`;
-- status: `QA`.
+### TASK-0009 — Authoritative Showroom publication
 
-### TASK-0008 — Season, Campaign and Collection vertical slice
+- Showroom `DRAFT → PUBLISHED → ARCHIVED` lifecycle;
+- publication only from an eligible published Collection;
+- immutable publication snapshot;
+- atomic aggregate, snapshot, audit, outbox and idempotency transaction;
+- authoritative `/showroom` workspace and controlled no-credential state.
 
-- organisation-scoped aggregates, repositories, APIs and server actions;
-- PostgreSQL migrations and composite tenant foreign keys;
-- optimistic concurrency and exact actor audit evidence;
-- replay-safe create commands and atomic idempotency completion;
-- real PostgreSQL rollback, uniqueness, tenant-FK and concurrency tests;
-- authenticated browser creation and status advancement for the full path;
-- API readback confirms parent links and resulting versions;
-- completion report: `tasks/completions/TASK-0008-completion.md`;
-- status: `QA`.
+### TASK-0010 — Buyer access and Selection planning
 
-## Active P0 delivery
+- snapshot-bound seller-to-buyer access grants;
+- explicit access revocation;
+- Shop-private Selection with budget, shortlist, notes and size curves;
+- seller projections never expose buyer-private planning fields;
+- authoritative `/selections` workspace and buyer-scoped APIs;
+- cross-organisation, replay, rollback and optimistic-version coverage.
 
-### TASK-0009 — authoritative Showroom publication
+## Verification checkpoint
 
-- Showroom belongs to one Collection and organisation;
-- draft editing uses optimistic versioning;
-- publication creates an immutable snapshot;
-- publish behavior is replay-safe and transactionally audited;
-- PostgreSQL, API, workspace and browser coverage are required before QA.
+Verified code head: `feea6517c1f912e32bf8b675112d269614e4db6c`.
 
-## Verification state
+`Syntha V2 Foundation` run `30480855159` passed:
 
-Code head `c0e0bbead0a6c1f359199037d7f7a577e0fa2768` passed workflow `Syntha V2 Foundation`, run `30474774287`, on 2026-07-29.
+- governance and architecture validation;
+- TypeScript typecheck;
+- ESLint;
+- unit tests;
+- real PostgreSQL integration tests;
+- production build;
+- all 108 Playwright browser checks.
 
-| Gate | Current lifecycle package |
-|---|---|
-| Locked dependency install | PASS — run 30474774287 |
-| Governance and architecture preflight | PASS — run 30474774287 |
-| TypeScript typecheck | PASS — run 30474774287 |
-| ESLint | PASS — run 30474774287 |
-| Unit tests | PASS — run 30474774287 |
-| PostgreSQL integration tests | PASS — run 30474774287 |
-| Next.js production build | PASS — run 30474774287 |
-| Controlled-state Playwright | PASS — run 30474774287 |
-| Authenticated lifecycle Playwright | PASS — run 30474774287 |
+Completion evidence is stored in:
 
-## Immediate priority
+- `tasks/completions/TASK-0009-completion.md`;
+- `tasks/completions/TASK-0010-completion.md`.
 
-1. Implement the Showroom aggregate and immutable publication snapshot contract.
-2. Add PostgreSQL schema, tenant foreign key to Collection and transactional publication evidence.
-3. Add replay-safe create and publish application commands.
-4. Replace the Showroom empty state with authoritative projections and mutations.
-5. Add authenticated Showroom publication browser coverage before QA.
+## Next P0
 
-## Known limitations
+The next vertical slice is Order Builder and commercial order submission from a READY Selection:
 
-- TASK-0007 and TASK-0008 await explicit review before transition from QA to DONE.
-- Domain events for the completed lifecycle remain deferred until named consumers and outbox ownership are explicit.
-- Showroom, buyer access and Selection are not yet authoritative.
-- PR #8 remains draft and is not merged into `main` without a separate decision.
+`Selection READY → Draft Order → commercial totals → Submit Order → immutable submitted-order snapshot`
 
-## Stop conditions
+Priority rules for the next slice:
 
-Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, idempotency fingerprints, expected-version checks, immutable publication snapshots, composite tenant foreign keys, real-PostgreSQL coverage or transactional audit evidence.
+- order data remains scoped to the buyer organisation while seller projections expose only the submitted commercial contract;
+- quantities must originate from Selection item and size-curve intent;
+- prices, currency, discounts, taxes and totals require deterministic minor-unit calculations;
+- submission must be idempotent, optimistic-versioned, audited and transactional;
+- no legacy fallback or synthetic order records are permitted.
+
+## Merge status
+
+PR `#8` remains draft. Nothing is merged into `main` without an explicit decision.
