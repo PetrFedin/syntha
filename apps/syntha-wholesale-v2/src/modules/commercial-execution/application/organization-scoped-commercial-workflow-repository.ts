@@ -1,3 +1,4 @@
+import type { IntegrationCommand } from "../domain/integration-command";
 import type {
   CommercialWorkflowRepository,
   CommercialWorkflowState,
@@ -16,16 +17,46 @@ export function normalizeCommercialOrganizationId(value: string): string {
   return normalized;
 }
 
+export function requireCommercialOrganizationId(
+  value: string | null | undefined,
+): string {
+  if (!value?.trim()) throw new Error("Organization id is required.");
+  return normalizeCommercialOrganizationId(value);
+}
+
 function storageId(organizationId: string, workflowId: string): string {
   if (!workflowId.trim()) throw new Error("Commercial workflow id is required.");
   return `org/${encodeURIComponent(organizationId)}/workflow/${encodeURIComponent(workflowId)}`;
 }
 
-function logicalState(
-  state: CommercialWorkflowState,
-  workflowId: string,
-): CommercialWorkflowState {
-  return Object.freeze({ ...state, id: workflowId });
+function namespaceCommand(
+  command: IntegrationCommand,
+  organizationId: string,
+): IntegrationCommand {
+  const prefix = `org:${organizationId}:`;
+  return Object.freeze({
+    ...command,
+    organizationId,
+    idempotencyKey: command.idempotencyKey.startsWith(prefix)
+      ? command.idempotencyKey
+      : `${prefix}${command.idempotencyKey}`,
+  });
+}
+
+function scopedState(input: {
+  readonly state: CommercialWorkflowState;
+  readonly stateId: string;
+  readonly organizationId: string;
+}): CommercialWorkflowState {
+  return Object.freeze({
+    ...input.state,
+    id: input.stateId,
+    integrationCommands: Object.freeze(
+      input.state.integrationCommands.map((command) =>
+        namespaceCommand(command, input.organizationId),
+      ),
+    ),
+  });
 }
 
 export class OrganizationScopedCommercialWorkflowRepository
@@ -42,7 +73,13 @@ export class OrganizationScopedCommercialWorkflowRepository
 
   async findById(id: string): Promise<CommercialWorkflowState | null> {
     const state = await this.repository.findById(storageId(this.organizationId, id));
-    return state ? logicalState(state, id) : null;
+    return state
+      ? scopedState({
+          state,
+          stateId: id,
+          organizationId: this.organizationId,
+        })
+      : null;
   }
 
   async save(
@@ -52,10 +89,18 @@ export class OrganizationScopedCommercialWorkflowRepository
     const physicalId = storageId(this.organizationId, state.id);
     try {
       const saved = await this.repository.save(
-        Object.freeze({ ...state, id: physicalId }),
+        scopedState({
+          state,
+          stateId: physicalId,
+          organizationId: this.organizationId,
+        }),
         expectedVersion,
       );
-      return logicalState(saved, state.id);
+      return scopedState({
+        state: saved,
+        stateId: state.id,
+        organizationId: this.organizationId,
+      });
     } catch (error) {
       if (error instanceof WorkflowVersionConflictError) {
         throw new WorkflowVersionConflictError(

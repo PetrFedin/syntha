@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import {
   getCommercialExecutionRuntime,
   HmacIntegrationCallbackVerifier,
+  normalizeCommercialOrganizationId,
   parseIntegrationCallbackRequest,
+  scopeCommercialWorkflowRepository,
   verifyAndReconcileIntegrationCallback,
 } from "@/modules/commercial-execution";
 
@@ -39,13 +41,26 @@ export async function POST(
       timestamp: request.headers.get("x-syntha-timestamp"),
       keyId: request.headers.get("x-syntha-key-id"),
     });
+    const headerOrganizationId = request.headers.get(
+      "x-syntha-organization-id",
+    );
+    if (
+      headerOrganizationId &&
+      normalizeCommercialOrganizationId(headerOrganizationId) !==
+        parsed.organizationId
+    ) {
+      throw new Error("Callback organization id does not match the header.");
+    }
     const keys = await commercialRuntime.signingKeys.load(integrationId);
     const verifier = new HmacIntegrationCallbackVerifier(keys);
     const result = await commercialRuntime.unitOfWork.execute((repository) =>
       verifyAndReconcileIntegrationCallback({
         verifier,
         verificationRequest: parsed.verificationRequest,
-        repository,
+        repository: scopeCommercialWorkflowRepository(
+          repository,
+          parsed.organizationId,
+        ),
         workflowId,
         callback: parsed.callback,
         receivedAt,
@@ -59,6 +74,7 @@ export async function POST(
     }
     return NextResponse.json(
       {
+        organizationId: parsed.organizationId,
         status: result.reconciliation.status,
         eventId: result.reconciliation.inboxRecord.id,
       },

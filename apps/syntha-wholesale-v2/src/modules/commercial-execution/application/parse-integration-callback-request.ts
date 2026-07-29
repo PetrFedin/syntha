@@ -1,15 +1,14 @@
+import { normalizeCommercialOrganizationId } from "./organization-scoped-commercial-workflow-repository";
 import type { IntegrationCallbackVerificationRequest } from "./integration-callback-verifier";
 import type { IntegrationCallback } from "./reconcile-integration-callback";
 
 export interface ParsedIntegrationCallbackRequest {
+  readonly organizationId: string;
   readonly callback: IntegrationCallback;
   readonly verificationRequest: IntegrationCallbackVerificationRequest;
 }
 
-function requiredString(
-  value: unknown,
-  field: string,
-): string {
+function requiredString(value: unknown, field: string): string {
   if (typeof value !== "string" || !value.trim()) {
     throw new Error(`${field} is required.`);
   }
@@ -75,8 +74,12 @@ export function parseIntegrationCallbackRequest(input: {
   ) {
     throw new Error("Callback outcome must be succeeded, rejected or cancelled.");
   }
+  const organizationId = normalizeCommercialOrganizationId(
+    requiredString(body.organizationId, "Callback organization id"),
+  );
 
   return Object.freeze({
+    organizationId,
     callback: Object.freeze({
       externalEventId: requiredString(
         body.externalEventId,

@@ -1,5 +1,5 @@
-import type { IntegrationCommand } from "../domain/integration-command";
 import type { IntegrationCommandTransport } from "../application/integration-command-dispatcher";
+import type { IntegrationCommand } from "../domain/integration-command";
 
 export interface HttpIntegrationTransportConfiguration {
   readonly integrationId: string;
@@ -87,6 +87,13 @@ export class HttpIntegrationCommandTransport
         false,
       );
     }
+    if (!command.organizationId?.trim()) {
+      throw new IntegrationTransportError(
+        "Integration command organization id is required.",
+        null,
+        false,
+      );
+    }
     const controller = new AbortController();
     const timeout = setTimeout(
       () => controller.abort(),
@@ -100,6 +107,7 @@ export class HttpIntegrationCommandTransport
           "content-type": "application/json",
           "idempotency-key": command.idempotencyKey,
           "x-syntha-command-id": command.id,
+          "x-syntha-organization-id": command.organizationId,
           ...(this.configuration.bearerToken
             ? { authorization: `Bearer ${this.configuration.bearerToken}` }
             : {}),
@@ -108,6 +116,7 @@ export class HttpIntegrationCommandTransport
         body: JSON.stringify({
           commandId: command.id,
           workflowId: command.workflowId,
+          organizationId: command.organizationId,
           actionType: command.actionType,
           payload: command.payload,
         }),

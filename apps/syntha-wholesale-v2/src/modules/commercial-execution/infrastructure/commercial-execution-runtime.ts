@@ -1,4 +1,5 @@
 import type { CommercialExecutionHealthCheck } from "../application/commercial-execution-health-check";
+import type { CommercialExecutionScheduleRepository } from "../application/commercial-execution-schedule-repository";
 import type { CommercialExecutionUnitOfWork } from "../application/commercial-execution-unit-of-work";
 import type { CommercialOperationsAuthorizer } from "../application/commercial-operations-authorizer";
 import type { CommercialWorkflowRepository } from "../application/commercial-workflow-repository";
@@ -9,6 +10,7 @@ import { EnvironmentCommercialOperationsAuthorizer } from "./environment-commerc
 import { EnvironmentIntegrationSigningKeyProvider } from "./environment-integration-signing-key-provider";
 import { EnvironmentIntegrationWorkerSettingsProvider } from "./environment-integration-worker-settings-provider";
 import { PostgresCommercialExecutionHealthCheck } from "./postgres-commercial-execution-health-check";
+import { PostgresCommercialExecutionScheduleRepository } from "./postgres-commercial-execution-schedule-repository";
 import { PostgresCommercialExecutionUnitOfWork } from "./postgres-commercial-execution-unit-of-work";
 import { PostgresCommercialWorkflowRepository } from "./postgres-commercial-workflow-repository";
 import type { TransactionalSqlPool } from "./postgres-commercial-execution-unit-of-work";
@@ -16,6 +18,7 @@ import type { TransactionalSqlPool } from "./postgres-commercial-execution-unit-
 export interface CommercialExecutionRuntime {
   readonly repository: CommercialWorkflowRepository;
   readonly unitOfWork: CommercialExecutionUnitOfWork;
+  readonly schedules: CommercialExecutionScheduleRepository;
   readonly transports: IntegrationTransportRegistry;
   readonly signingKeys: IntegrationSigningKeyProvider;
   readonly workerSettings: IntegrationWorkerSettingsProvider;
@@ -38,6 +41,7 @@ export function createPostgresCommercialExecutionRuntime(input: {
   return Object.freeze({
     repository: new PostgresCommercialWorkflowRepository(input.pool),
     unitOfWork: new PostgresCommercialExecutionUnitOfWork(input.pool),
+    schedules: new PostgresCommercialExecutionScheduleRepository(input.pool),
     transports: input.transports,
     signingKeys,
     workerSettings: new EnvironmentIntegrationWorkerSettingsProvider(environment),

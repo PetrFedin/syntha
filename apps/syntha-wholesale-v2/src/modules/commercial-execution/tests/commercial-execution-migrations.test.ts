@@ -34,17 +34,16 @@ function fixture(applied: readonly { version: number; name: string; checksum: st
 }
 
 describe("commercial execution migrations", () => {
-  it("applies pending migrations under an advisory transaction lock", async () => {
+  it("applies workflow and scheduler migrations under an advisory lock", async () => {
     const value = fixture();
-
     const result = await runPostgresCommercialExecutionMigrations({
       pool: value.pool,
       appliedAt: "2026-07-29T00:00:00.000Z",
     });
 
-    expect(result.appliedVersions).toEqual([1]);
+    expect(result.appliedVersions).toEqual([1, 2]);
     expect(value.statements[0]).toBe("BEGIN");
-    expect(value.statements.some((sql) => sql.includes("pg_advisory_xact_lock"))).toBe(true);
+    expect(value.statements.some((sql) => sql.includes("SKIP LOCKED") || sql.includes("commercial_execution_schedule"))).toBe(true);
     expect(value.statements.at(-1)).toBe("COMMIT");
     expect(value.released()).toBe(true);
   });
@@ -53,7 +52,6 @@ describe("commercial execution migrations", () => {
     const value = fixture([
       { version: 1, name: "commercial_workflow_state", checksum: "wrong" },
     ]);
-
     await expect(
       runPostgresCommercialExecutionMigrations({ pool: value.pool }),
     ).rejects.toThrow("differs from the already applied definition");

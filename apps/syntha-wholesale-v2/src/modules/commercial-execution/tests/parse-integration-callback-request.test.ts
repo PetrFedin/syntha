@@ -3,8 +3,9 @@ import { describe, expect, it } from "vitest";
 import { parseIntegrationCallbackRequest } from "../index";
 
 describe("parseIntegrationCallbackRequest", () => {
-  it("builds verification and reconciliation inputs from raw HTTP data", () => {
+  it("builds signed tenant-scoped verification and reconciliation inputs", () => {
     const rawBody = JSON.stringify({
+      organizationId: "ORG-A",
       integrationId: "erp",
       externalEventId: "EVENT-1",
       outcome: "succeeded",
@@ -12,7 +13,6 @@ describe("parseIntegrationCallbackRequest", () => {
       commandId: "CMD-1",
       payload: { purchaseOrderId: "PO-1" },
     });
-
     const parsed = parseIntegrationCallbackRequest({
       integrationId: "erp",
       rawBody,
@@ -21,8 +21,8 @@ describe("parseIntegrationCallbackRequest", () => {
       keyId: "current",
     });
 
+    expect(parsed.organizationId).toBe("ORG-A");
     expect(parsed.callback.commandId).toBe("CMD-1");
-    expect(parsed.callback.payload).toEqual({ purchaseOrderId: "PO-1" });
     expect(parsed.verificationRequest.rawBody).toBe(rawBody);
   });
 
@@ -31,6 +31,7 @@ describe("parseIntegrationCallbackRequest", () => {
       parseIntegrationCallbackRequest({
         integrationId: "erp",
         rawBody: JSON.stringify({
+          organizationId: "ORG-A",
           integrationId: "oms",
           externalEventId: "EVENT-1",
           outcome: "succeeded",

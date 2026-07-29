@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 
 import {
   getCommercialExecutionRuntime,
+  requireCommercialOrganizationId,
   runIntegrationReconciliationJob,
   runIntegrationWorkerCycle,
+  scopeCommercialWorkflowRepository,
 } from "@/modules/commercial-execution";
 
 export const runtime = "nodejs";
@@ -39,20 +41,15 @@ export async function POST(
   if (!(await commercialRuntime.operationsAuthorizer.authorize(request))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  let body: Record<string, unknown>;
   try {
+    const organizationId = requireCommercialOrganizationId(
+      request.headers.get("x-syntha-organization-id"),
+    );
     const value: unknown = await request.json();
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       throw new Error("Worker request body must be a JSON object.");
     }
-    body = value as Record<string, unknown>;
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "invalid_request" },
-      { status: 400 },
-    );
-  }
-  try {
+    const body = value as Record<string, unknown>;
     const settings = await commercialRuntime.workerSettings.load();
     const requestedMaximum =
       body.maximumCommands === undefined
@@ -63,7 +60,10 @@ export async function POST(
     }
     const { workflowId } = await context.params;
     const worker = await runIntegrationWorkerCycle({
-      repository: commercialRuntime.repository,
+      repository: scopeCommercialWorkflowRepository(
+        commercialRuntime.repository,
+        organizationId,
+      ),
       transports: commercialRuntime.transports,
       workflowId,
       integrationIds: integrationIds(body.integrationIds),
@@ -72,7 +72,7 @@ export async function POST(
     });
     const reconciliation = await commercialRuntime.unitOfWork.execute((repository) =>
       runIntegrationReconciliationJob({
-        repository,
+        repository: scopeCommercialWorkflowRepository(repository, organizationId),
         workflowId,
         jobId: request.headers.get("x-syntha-job-id")?.trim() || randomUUID(),
         actorId: settings.workerId,
@@ -80,7 +80,7 @@ export async function POST(
       }),
     );
     return NextResponse.json(
-      { worker, reconciliation },
+      { organizationId, worker, reconciliation },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (error) {

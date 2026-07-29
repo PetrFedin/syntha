@@ -9,6 +9,7 @@ export type {
   CommercialExecutionHealthReport,
   CommercialExecutionHealthStatus,
 } from "./application/commercial-execution-health-check";
+export type { CommercialExecutionScheduleRepository } from "./application/commercial-execution-schedule-repository";
 export type { CommercialExecutionUnitOfWork } from "./application/commercial-execution-unit-of-work";
 export type { CommercialOperationsAuthorizer } from "./application/commercial-operations-authorizer";
 export {
@@ -42,6 +43,12 @@ export type {
   IntegrationWorkerSettingsProvider,
 } from "./application/integration-worker-settings-provider";
 export {
+  normalizeCommercialOrganizationId,
+  OrganizationScopedCommercialWorkflowRepository,
+  requireCommercialOrganizationId,
+  scopeCommercialWorkflowRepository,
+} from "./application/organization-scoped-commercial-workflow-repository";
+export {
   parseIntegrationCallbackRequest,
   type ParsedIntegrationCallbackRequest,
 } from "./application/parse-integration-callback-request";
@@ -51,6 +58,11 @@ export {
   type IntegrationCallback,
   type IntegrationCallbackResult,
 } from "./application/reconcile-integration-callback";
+export {
+  runCommercialExecutionSchedulerCycle,
+  type CommercialExecutionSchedulerCycleResult,
+  type CommercialExecutionSchedulerItemResult,
+} from "./application/run-commercial-execution-scheduler-cycle";
 export {
   runIntegrationReconciliationJob,
   type IntegrationReconciliationJobResult,
@@ -69,6 +81,10 @@ export type {
   CommercialOperationsActionType,
   CommercialOperationsAuditRecord,
 } from "./domain/commercial-operations-audit";
+export {
+  createCommercialExecutionSchedule,
+  type CommercialExecutionSchedule,
+} from "./domain/commercial-execution-schedule";
 export {
   createIntegrationCommand,
   type IntegrationCommand,
@@ -116,6 +132,7 @@ export {
   isRetryableIntegrationTransportError,
   type HttpIntegrationTransportConfiguration,
 } from "./infrastructure/http-integration-command-transport";
+export { InMemoryCommercialExecutionScheduleRepository } from "./infrastructure/in-memory-commercial-execution-schedule-repository";
 export { InMemoryCommercialWorkflowRepository } from "./infrastructure/in-memory-commercial-workflow-repository";
 export {
   createNodePostgresPoolFromEnvironment,
@@ -125,6 +142,7 @@ export {
   type NodePostgresPoolLike,
 } from "./infrastructure/node-postgres-pool-adapter";
 export { PostgresCommercialExecutionHealthCheck } from "./infrastructure/postgres-commercial-execution-health-check";
+export { PostgresCommercialExecutionScheduleRepository } from "./infrastructure/postgres-commercial-execution-schedule-repository";
 export {
   PostgresCommercialExecutionUnitOfWork,
   type TransactionalSqlClient,

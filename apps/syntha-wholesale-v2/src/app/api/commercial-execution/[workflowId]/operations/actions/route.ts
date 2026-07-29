@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import {
   applyCommercialOperationsAction,
   getCommercialExecutionRuntime,
+  requireCommercialOrganizationId,
+  scopeCommercialWorkflowRepository,
   type CommercialOperationsAction,
 } from "@/modules/commercial-execution";
 
@@ -33,6 +35,9 @@ export async function POST(
   }
 
   try {
+    const organizationId = requireCommercialOrganizationId(
+      request.headers.get("x-syntha-organization-id"),
+    );
     const value: unknown = await request.json();
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       throw new Error("Operations action body must be a JSON object.");
@@ -63,7 +68,11 @@ export async function POST(
     });
     const { workflowId } = await context.params;
     const result = await commercialRuntime.unitOfWork.execute((repository) =>
-      applyCommercialOperationsAction({ repository, workflowId, action }),
+      applyCommercialOperationsAction({
+        repository: scopeCommercialWorkflowRepository(repository, organizationId),
+        workflowId,
+        action,
+      }),
     );
     const status =
       result.status === "not_found"

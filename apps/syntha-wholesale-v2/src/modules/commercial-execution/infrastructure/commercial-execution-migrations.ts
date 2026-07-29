@@ -1,8 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type {
-  TransactionalSqlPool,
-} from "./postgres-commercial-execution-unit-of-work";
+import type { TransactionalSqlPool } from "./postgres-commercial-execution-unit-of-work";
 
 export interface CommercialExecutionMigration {
   readonly version: number;
@@ -31,10 +29,7 @@ function migration(input: {
   readonly name: string;
   readonly sql: string;
 }): CommercialExecutionMigration {
-  return Object.freeze({
-    ...input,
-    checksum: checksum(input.sql),
-  });
+  return Object.freeze({ ...input, checksum: checksum(input.sql) });
 }
 
 export const commercialExecutionMigrations: readonly CommercialExecutionMigration[] =
@@ -51,6 +46,34 @@ export const commercialExecutionMigrations: readonly CommercialExecutionMigratio
 
 CREATE INDEX IF NOT EXISTS syntha_commercial_workflow_state_updated_at_idx
   ON syntha_commercial_workflow_state (updated_at);`,
+    }),
+    migration({
+      version: 2,
+      name: "commercial_execution_schedule",
+      sql: `CREATE TABLE IF NOT EXISTS syntha_commercial_execution_schedule (
+  organization_id text NOT NULL,
+  workflow_id text NOT NULL,
+  integration_ids jsonb NOT NULL,
+  interval_seconds integer NOT NULL CHECK (interval_seconds BETWEEN 60 AND 86400),
+  enabled boolean NOT NULL DEFAULT TRUE,
+  next_run_at timestamptz NOT NULL,
+  lease_owner text,
+  lease_until timestamptz,
+  last_started_at timestamptz,
+  last_completed_at timestamptz,
+  last_error text,
+  updated_at timestamptz NOT NULL,
+  updated_by text NOT NULL,
+  PRIMARY KEY (organization_id, workflow_id)
+);
+
+CREATE INDEX IF NOT EXISTS syntha_commercial_execution_schedule_due_idx
+  ON syntha_commercial_execution_schedule (next_run_at, organization_id, workflow_id)
+  WHERE enabled = TRUE;
+
+CREATE INDEX IF NOT EXISTS syntha_commercial_execution_schedule_lease_idx
+  ON syntha_commercial_execution_schedule (lease_until)
+  WHERE lease_until IS NOT NULL;`,
     }),
   ]);
 

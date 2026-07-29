@@ -13,6 +13,7 @@ export type IntegrationCommandStatus =
 export interface IntegrationCommand {
   readonly id: string;
   readonly workflowId: string;
+  readonly organizationId?: string;
   readonly integrationId: string;
   readonly actionType: DecisionActionType;
   readonly payload: Readonly<Record<string, unknown>>;
@@ -39,6 +40,7 @@ function validDate(value: string, field: string): string {
 export function createIntegrationCommand(input: {
   readonly id: string;
   readonly workflowId: string;
+  readonly organizationId?: string;
   readonly integrationId: string;
   readonly action: RecommendedAction;
   readonly idempotencyKey: string;
@@ -60,6 +62,7 @@ export function createIntegrationCommand(input: {
   return Object.freeze({
     id: input.id,
     workflowId: input.workflowId,
+    organizationId: input.organizationId,
     integrationId: input.integrationId,
     actionType: input.action.type,
     payload: Object.freeze({
