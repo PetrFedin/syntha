@@ -27,6 +27,7 @@ export type {
   OrderOutboxEvent,
   OrderRepository,
 } from './application/order-repository';
+export { OrderPersistenceVersionConflict } from './application/order-conflicts';
 export {
   OrderAlreadyExists,
   OrderNotFound,
@@ -48,3 +49,7 @@ export {
   type OrderIdGenerator,
 } from './application/order-workflows';
 export { InMemoryOrderRepository } from './infrastructure/in-memory-order-repository';
+export { PostgresOrderRepository } from './infrastructure/postgres-order-repository';
+export { orderMigrations, runOrderMigrations } from './infrastructure/order-migrations';
+export { runOrderIdempotencyMigration } from './infrastructure/order-idempotency-migration';
+export { getOrderRepository, resetOrderRuntime } from './infrastructure/order-runtime';
