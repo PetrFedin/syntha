@@ -11,12 +11,18 @@ import {
   listCampaigns,
 } from '@/modules/campaigns';
 import {
+  LifecycleIdempotencyConflict,
+  LifecycleIdempotencyInProgress,
+  LifecycleIdempotencyResultMissing,
+} from '@/modules/lifecycle-idempotency';
+import {
   SeasonNotFound,
   getSeasonRepository,
 } from '@/modules/seasons';
 import {
   CommercialApiError,
   requireCommercialApiAccess,
+  requireIdempotencyKey,
   requireJsonObject,
   requiredDate,
   requiredString,
@@ -39,6 +45,18 @@ function failure(error: unknown): NextResponse {
       { error: error.code, message: error.message },
       { status: error.status },
     );
+  }
+  if (error instanceof LifecycleIdempotencyConflict) {
+    return NextResponse.json(
+      { error: 'idempotency_conflict', message: error.message },
+      { status: 409 },
+    );
+  }
+  if (error instanceof LifecycleIdempotencyInProgress) {
+    return NextResponse.json({ error: 'idempotency_in_progress' }, { status: 409 });
+  }
+  if (error instanceof LifecycleIdempotencyResultMissing) {
+    return NextResponse.json({ error: 'idempotency_result_missing' }, { status: 503 });
   }
   if (error instanceof SeasonNotFound) {
     return NextResponse.json({ error: 'season_not_found' }, { status: 404 });
@@ -78,12 +96,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const access = await requireCommercialApiAccess(request, 'operate');
+    const idempotencyKey = requireIdempotencyKey(request);
     const body = await requireJsonObject(request);
     const [repository, seasonRepository] = await Promise.all([
       getCampaignRepository(),
       getSeasonRepository(),
     ]);
-    const campaign = await createCampaignUseCase({
+    const result = await createCampaignUseCase({
       repository,
       seasonRepository,
       clock,
@@ -95,10 +114,14 @@ export async function POST(request: Request) {
       startsAt: requiredDate(body.startsAt, 'startsAt'),
       endsAt: requiredDate(body.endsAt, 'endsAt'),
       actorCredentialId: access.actorCredentialId,
+      idempotencyKey,
     });
-    return NextResponse.json(campaign, {
-      status: 201,
-      headers: { 'cache-control': 'no-store' },
+    return NextResponse.json(result.entity, {
+      status: result.replayed ? 200 : 201,
+      headers: {
+        'cache-control': 'no-store',
+        'idempotency-replayed': result.replayed ? 'true' : 'false',
+      },
     });
   } catch (error) {
     return failure(error);
