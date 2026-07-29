@@ -11,6 +11,7 @@ export interface Season {
   readonly startsAt: string;
   readonly endsAt: string;
   readonly status: SeasonStatus;
+  readonly ownerCredentialId: string;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly version: number;
@@ -23,6 +24,7 @@ export interface CreateSeasonInput {
   readonly name: string;
   readonly startsAt: Date;
   readonly endsAt: Date;
+  readonly ownerCredentialId: string;
   readonly now: Date;
 }
 
@@ -57,6 +59,7 @@ export function createSeason(input: CreateSeasonInput): Season {
     startsAt: input.startsAt.toISOString(),
     endsAt: input.endsAt.toISOString(),
     status: 'PLANNING' as const,
+    ownerCredentialId: requiredText(input.ownerCredentialId, 'Owner credential id'),
     createdAt: timestamp,
     updatedAt: timestamp,
     version: 1,
