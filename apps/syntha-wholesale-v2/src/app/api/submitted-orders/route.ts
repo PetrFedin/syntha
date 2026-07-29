@@ -4,7 +4,7 @@ import {
   getOrderRepository,
   listSubmittedOrdersForBuyer,
   listSubmittedOrdersForSeller,
-} from '@/modules/orders/index-next';
+} from '@/modules/orders';
 import { requireCommercialApiAccess } from '@/shared/server/commercial-api';
 import { orderApiFailure, requiredPerspective } from '@/shared/server/order-api';
 
