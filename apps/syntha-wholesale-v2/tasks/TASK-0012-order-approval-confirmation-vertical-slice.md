@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0012
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: orders
 capability_ids:
@@ -54,7 +54,7 @@ Let the seller review one immutable submitted-order snapshot, either request an 
 - optimistic concurrency for every review mutation;
 - replay-safe approval, amendment-request and confirmation commands;
 - atomic review, confirmed version, audit, outbox and idempotency persistence;
-- authoritative approval queue and order-detail actions;
+- authoritative `/confirmation` queue and order-detail actions;
 - unit, real PostgreSQL and authenticated browser coverage.
 
 ## Acceptance criteria
@@ -79,4 +79,10 @@ Let the seller review one immutable submitted-order snapshot, either request an 
 
 ## Implementation checkpoint
 
-TASK-0012 starts from final TASK-0011 evidence head `3daa912145510a2fa3cf3c4bbf29fb652c096b43`, `Syntha V2 Foundation` run `30495865626`.
+TASK-0012 started from final TASK-0011 evidence head `3daa912145510a2fa3cf3c4bbf29fb652c096b43`, `Syntha V2 Foundation` run `30495865626`.
+
+The implemented slice uses one immutable submitted-order snapshot as the only decision source, one seller-owned review aggregate, replay-safe approval/amendment/confirmation commands, PostgreSQL transaction boundaries and the authoritative `/confirmation` workspace.
+
+## Verification checkpoint
+
+Code head `b887f8f203a6c13c773b829f9b28a2b85a62e79b` passed `Syntha V2 Foundation` run `30497410958`: governance, typecheck, lint, unit, real PostgreSQL integration, production build and Playwright. Browser result: 97 passed, 22 skipped and one pre-existing Selection flow passed on retry. Completion evidence is recorded in `tasks/completions/TASK-0012-completion.md`.
