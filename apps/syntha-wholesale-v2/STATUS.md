@@ -4,7 +4,7 @@ Updated: 2026-07-29
 
 ## Current phase
 
-Server-backed Season → Campaign → Collection workspace integration on top of a green authoritative PostgreSQL lifecycle path.
+Authoritative Showroom publication on top of the verified Season → Campaign → Collection lifecycle and adaptive workspace.
 
 The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy remains separate and is not an implementation source.
 
@@ -23,73 +23,75 @@ The independent V2 product lives only in `apps/syntha-wholesale-v2`. Legacy rema
 - Foundation tasks TASK-0001 through TASK-0006 complete.
 - Architecture, documentation, task, ledger and import-boundary validation.
 - Product Canon with twenty WSC decisions, module ownership and eight core workflows.
-- Independent Next.js App Router runtime and responsive adaptive workspace.
-- Organisation and identity-access domain contracts.
 - Tenant-isolated commercial intelligence, durable execution, scheduler, integrations, reconciliation and tamper-evident operational audit in PR #8.
 
-## Active P0 delivery
+## QA-ready P0 delivery
 
 ### TASK-0007 — adaptive workspace
 
-- one root-owned `WorkspaceShell`;
-- one validated registry for 15 workspace routes;
-- eight-stage Campaign → DealSpace lifecycle;
-- typed Workspace and Commercial Context;
-- context-preserving links, shared page states and responsive browser coverage;
-- remains `IN_PROGRESS` until lifecycle pages use authoritative server projections.
+- one root-owned responsive `WorkspaceShell`;
+- one validated registry for 15 workspace routes and eight lifecycle stages;
+- typed Workspace and Commercial Context with context-preserving links;
+- desktop, wide desktop, iPad and iPhone navigation modes;
+- single page `main` landmark during loading;
+- real network-boundary 404 for unknown workspace slugs;
+- authoritative Campaign and Collection workspaces with controlled access states;
+- completion report: `tasks/completions/TASK-0007-completion.md`;
+- status: `QA`.
 
 ### TASK-0008 — Season, Campaign and Collection vertical slice
 
-Implemented and verified on the current branch:
+- organisation-scoped aggregates, repositories, APIs and server actions;
+- PostgreSQL migrations and composite tenant foreign keys;
+- optimistic concurrency and exact actor audit evidence;
+- replay-safe create commands and atomic idempotency completion;
+- real PostgreSQL rollback, uniqueness, tenant-FK and concurrency tests;
+- authenticated browser creation and status advancement for the full path;
+- API readback confirms parent links and resulting versions;
+- completion report: `tasks/completions/TASK-0008-completion.md`;
+- status: `QA`.
 
-- organisation-scoped Season, Campaign and Collection aggregates;
-- validated lifecycle transitions, commercial windows and collection currency;
-- exact owner credential and optimistic version on each aggregate;
-- create, list, read and lifecycle-update use cases;
-- PostgreSQL repositories with an organisation predicate on every query;
-- checksum-protected Season, Campaign and idempotency migration ledgers;
-- composite tenant foreign keys from Campaign to Season and Collection to Campaign;
-- replay-safe `Idempotency-Key` contract with canonical payload fingerprints;
-- same-key replay of the original entity without duplicate facts or audits;
-- deterministic conflict for changed payload or actor;
-- transactional entity, immutable audit and idempotency completion writes;
-- exact scoped credential identity on each audit entry;
-- App Router APIs protected by `read` and `operate` permissions;
-- controlled 400, 401, 403, 404, 409 and 503 outcomes;
-- unit coverage for tenant isolation, replay, audit attribution, parent state and stale writes;
-- real PostgreSQL coverage for rollback, uniqueness, tenant foreign keys and concurrent optimistic updates;
-- exact `pg@8.22.0` runtime dependency and mandatory PostgreSQL 16 CI service gate.
+## Active P0 delivery
 
-TASK-0008 remains `IN_PROGRESS` only because the workspace still needs authoritative server-backed read and mutation surfaces and domain events remain intentionally deferred.
+### TASK-0009 — authoritative Showroom publication
+
+- Showroom belongs to one Collection and organisation;
+- draft editing uses optimistic versioning;
+- publication creates an immutable snapshot;
+- publish behavior is replay-safe and transactionally audited;
+- PostgreSQL, API, workspace and browser coverage are required before QA.
 
 ## Verification state
 
-Code head `e8a2f666eaf51aa6f1c945df4bd0961b4334f68d` passed workflow `Syntha V2 Foundation`, run `30472074274`, on 2026-07-29.
+Code head `c0e0bbead0a6c1f359199037d7f7a577e0fa2768` passed workflow `Syntha V2 Foundation`, run `30474774287`, on 2026-07-29.
 
-| Gate | Current package |
+| Gate | Current lifecycle package |
 |---|---|
-| Locked dependency install | PASS — run 30472074274 |
-| Governance and architecture preflight | PASS — run 30472074274 |
-| TypeScript typecheck | PASS — run 30472074274 |
-| ESLint | PASS — run 30472074274 |
-| Unit tests | PASS — run 30472074274 |
-| PostgreSQL lifecycle integration tests | PASS — run 30472074274 |
-| Next.js production build | PASS — run 30472074274 |
-| Playwright | PASS — run 30472074274 |
+| Locked dependency install | PASS — run 30474774287 |
+| Governance and architecture preflight | PASS — run 30474774287 |
+| TypeScript typecheck | PASS — run 30474774287 |
+| ESLint | PASS — run 30474774287 |
+| Unit tests | PASS — run 30474774287 |
+| PostgreSQL integration tests | PASS — run 30474774287 |
+| Next.js production build | PASS — run 30474774287 |
+| Controlled-state Playwright | PASS — run 30474774287 |
+| Authenticated lifecycle Playwright | PASS — run 30474774287 |
 
 ## Immediate priority
 
-1. Replace Season, Campaign and Collection workspace fixtures with server-backed read projections.
-2. Add create and lifecycle mutation surfaces with required idempotency keys and expected versions.
-3. Cover loading, empty, unauthorized, conflict and service-unavailable states in unit and browser tests.
-4. Start Showroom persistence only after the authoritative lifecycle workspace remains green.
+1. Implement the Showroom aggregate and immutable publication snapshot contract.
+2. Add PostgreSQL schema, tenant foreign key to Collection and transactional publication evidence.
+3. Add replay-safe create and publish application commands.
+4. Replace the Showroom empty state with authoritative projections and mutations.
+5. Add authenticated Showroom publication browser coverage before QA.
 
 ## Known limitations
 
-- Season, Campaign and Collection APIs are authoritative, while their workspace pages still show architectural and empty-state content.
-- Domain events are intentionally deferred until consumers and transactional outbox ownership are explicit.
+- TASK-0007 and TASK-0008 await explicit review before transition from QA to DONE.
+- Domain events for the completed lifecycle remain deferred until named consumers and outbox ownership are explicit.
+- Showroom, buyer access and Selection are not yet authoritative.
 - PR #8 remains draft and is not merged into `main` without a separate decision.
 
 ## Stop conditions
 
-Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, scoped authorization, idempotency fingerprints, expected-version checks, composite tenant foreign keys, real-PostgreSQL coverage or transactional audit evidence.
+Do not import, copy or fall back to Legacy. Do not add persistence or provider SDKs directly to domain code. Do not bypass module-root public APIs, organisation predicates, idempotency fingerprints, expected-version checks, immutable publication snapshots, composite tenant foreign keys, real-PostgreSQL coverage or transactional audit evidence.
