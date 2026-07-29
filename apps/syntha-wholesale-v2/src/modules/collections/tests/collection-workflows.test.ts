@@ -117,13 +117,25 @@ function fixture(status: Campaign['status'] = 'DRAFT') {
     ownerCredentialId: 'campaign-owner',
     now: new Date('2026-07-29T10:00:00.000Z'),
   });
-  const campaign =
-    status === 'DRAFT'
-      ? created
-      : reviseCampaign(created, {
-          status,
-          now: new Date('2026-07-29T11:00:00.000Z'),
-        });
+  let campaign = created;
+  if (status === 'ACTIVE' || status === 'CLOSED') {
+    campaign = reviseCampaign(campaign, {
+      status: 'ACTIVE',
+      now: new Date('2026-07-29T10:30:00.000Z'),
+    });
+  }
+  if (status === 'CLOSED') {
+    campaign = reviseCampaign(campaign, {
+      status: 'CLOSED',
+      now: new Date('2026-07-29T11:00:00.000Z'),
+    });
+  }
+  if (status === 'ARCHIVED') {
+    campaign = reviseCampaign(campaign, {
+      status: 'ARCHIVED',
+      now: new Date('2026-07-29T11:00:00.000Z'),
+    });
+  }
   let sequence = 0;
   return {
     organisation,
