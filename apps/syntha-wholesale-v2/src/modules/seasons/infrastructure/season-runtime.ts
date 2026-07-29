@@ -2,6 +2,7 @@ import {
   createNodePostgresPoolFromEnvironment,
   type TransactionalSqlPool,
 } from '@/modules/commercial-execution';
+import { runLifecycleIdempotencyMigrations } from '@/modules/lifecycle-idempotency';
 
 import type { SeasonRepository } from '../application/season-repository';
 import { PostgresSeasonRepository } from './postgres-season-repository';
@@ -15,6 +16,7 @@ export async function getSeasonLifecyclePool(): Promise<TransactionalSqlPool> {
     poolPromise = (async () => {
       const pool = await createNodePostgresPoolFromEnvironment();
       try {
+        await runLifecycleIdempotencyMigrations({ pool });
         await runSeasonMigrations({ pool });
         return pool;
       } catch (error) {
