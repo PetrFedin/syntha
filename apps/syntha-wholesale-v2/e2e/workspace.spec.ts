@@ -67,6 +67,17 @@ for (const route of routes) {
   });
 }
 
+test('lifecycle pages expose controlled state without gateway credentials', async ({ page }) => {
+  for (const route of ['/campaigns', '/collections']) {
+    await page.goto(route);
+    await expect(page.getByTestId('lifecycle-controlled-state')).toBeVisible();
+    await expect(page.getByText('Demo fixture')).toHaveCount(0);
+    await expect(page.locator('form.lifecycleForm')).toHaveCount(0);
+    await expect(page.getByText(/требуется серверная авторизация|авторитетный lifecycle временно недоступен/i))
+      .toBeVisible();
+  }
+});
+
 test('unknown workspace section returns 404', async ({ request }) => {
   const response = await request.get('/not-a-workspace-section');
   expect(response.status()).toBe(404);
