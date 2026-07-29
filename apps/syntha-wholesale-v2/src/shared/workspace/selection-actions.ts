@@ -36,6 +36,7 @@ import { requireWorkspaceAccess } from '@/shared/server/workspace-access';
 
 const clock = Object.freeze({ now: () => new Date() });
 const ids = Object.freeze({ next: (prefix: string) => `${prefix}_${randomUUID()}` });
+const selectionPath = '/selections';
 
 function required(formData: FormData, field: string): string {
   const value = formData.get(field);
@@ -111,7 +112,7 @@ function noticeFor(error: unknown): string {
   if (error instanceof SelectionAlreadyExists) return 'selection_exists';
   if (error instanceof SelectionNotFound) return 'selection_not_found';
   if (error instanceof SelectionVersionConflict) return 'selection_version_conflict';
-  if (error instanceof SelectionAccessRevoked) return 'selection_access_revoked';
+  if (error instanceof SelectionAccessRevoked) return 'selection_mutation_blocked_revoked';
   if (error instanceof SelectionDomainError || error instanceof CommercialApiError) {
     return 'invalid_selection_input';
   }
@@ -121,7 +122,11 @@ function noticeFor(error: unknown): string {
 function target(notice: string, selectionId?: string): Route {
   const query = new URLSearchParams({ notice });
   if (selectionId) query.set('selectionId', selectionId);
-  return `/selection?${query.toString()}` as Route;
+  return `${selectionPath}?${query.toString()}` as Route;
+}
+
+function revalidateSelections(): void {
+  revalidatePath(selectionPath);
 }
 
 export async function grantShowroomAccessAction(formData: FormData): Promise<never> {
@@ -144,7 +149,7 @@ export async function grantShowroomAccessAction(formData: FormData): Promise<nev
       idempotencyKey: required(formData, 'idempotencyKey'),
     });
     notice = result.replayed ? 'selection_access_replayed' : 'selection_access_granted';
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -165,7 +170,7 @@ export async function revokeShowroomAccessAction(formData: FormData): Promise<ne
       expectedVersion: positiveInteger(formData, 'expectedVersion'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -192,7 +197,7 @@ export async function createSelectionAction(formData: FormData): Promise<never> 
     });
     selectionId = result.entity.id;
     notice = result.replayed ? 'selection_replayed' : 'selection_created';
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -216,7 +221,7 @@ export async function setSelectionBudgetAction(formData: FormData): Promise<neve
       currency: optional(formData, 'currency'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -242,7 +247,7 @@ export async function addSelectionItemAction(formData: FormData): Promise<never>
       note: optional(formData, 'note'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -267,7 +272,7 @@ export async function setSelectionSizeCurveAction(formData: FormData): Promise<n
       note: optional(formData, 'note'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -289,7 +294,7 @@ export async function markSelectionReadyAction(formData: FormData): Promise<neve
       expectedVersion: positiveInteger(formData, 'expectedVersion'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
@@ -311,7 +316,7 @@ export async function archiveSelectionAction(formData: FormData): Promise<never>
       expectedVersion: positiveInteger(formData, 'expectedVersion'),
       actorCredentialId: access.actorCredentialId,
     });
-    revalidatePath('/selection');
+    revalidateSelections();
   } catch (error) {
     notice = noticeFor(error);
   }
