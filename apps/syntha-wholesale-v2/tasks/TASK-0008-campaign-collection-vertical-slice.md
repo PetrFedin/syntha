@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0008
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: commercial-lifecycle
 capability_ids:
@@ -79,7 +79,7 @@ Create the first server-backed wholesale lifecycle path so Season, Campaign and 
 
 ## Implementation checkpoint
 
-Implemented in `agent/v2-commercial-core`:
+Implemented and ready for review in `agent/v2-commercial-core`:
 
 - authoritative Season, Campaign and Collection domain aggregates and public module APIs;
 - application use cases for create, list, read and optimistic lifecycle updates;
@@ -88,17 +88,17 @@ Implemented in `agent/v2-commercial-core`:
 - composite `(organisation_id, season_id)` and `(organisation_id, campaign_id)` foreign keys;
 - canonical SHA-256 command fingerprints and replay-safe `Idempotency-Key` handling;
 - transactional entity, audit and idempotency writes for all three create commands;
-- scoped bearer authorization and exact credential identification;
-- App Router APIs for Season, Campaign and nested Collection operations;
+- scoped server access and exact credential identification;
+- App Router APIs and server actions for Season, Campaign and nested Collection operations;
+- server-backed responsive workspaces with controlled access states;
 - regression tests for organisation isolation, audit actor, parent state, replay conflicts and stale writes;
 - real PostgreSQL 16 tests for replay, rollback, unique constraints, tenant foreign keys and concurrent optimistic updates;
-- an exact `pg` runtime dependency and a mandatory PostgreSQL service gate in GitHub Actions;
-- native Node module loading and multi-statement `pg` result normalization.
+- an exact `pg` runtime dependency and mandatory PostgreSQL service gate in GitHub Actions;
+- native Node module loading and multi-statement `pg` result normalization;
+- authenticated Playwright creation and status advancement for the full lifecycle path;
+- API readback of parent identifiers and resulting versions;
+- all gates passed on workflow run `30474774287`.
 
-Code head `e8a2f666eaf51aa6f1c945df4bd0961b4334f68d` passed the complete `Syntha V2 Foundation` workflow, run `30472074274`, including PostgreSQL integration and Playwright.
+Domain events remain intentionally deferred until named consumers and transactional outbox ownership are specified; this is a controlled boundary rather than incomplete persistence behavior.
 
-## Remaining before QA
-
-- replace Season, Campaign and Collection workspace fixtures with server-backed projections and mutation surfaces;
-- define and publish domain events only after their consumers and transactional outbox contract are explicit;
-- pass the complete repository workflow on the final task head after the workspace integration.
+TASK-0008 is in `QA`; acceptance requires review of `tasks/completions/TASK-0008-completion.md` before transition to `DONE`.
