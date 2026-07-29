@@ -26,6 +26,14 @@ export type {
   IntegrationCallbackVerifier,
 } from "./application/integration-callback-verifier";
 export type { IntegrationSigningKeyProvider } from "./application/integration-signing-key-provider";
+export type {
+  IntegrationWorkerSettings,
+  IntegrationWorkerSettingsProvider,
+} from "./application/integration-worker-settings-provider";
+export {
+  parseIntegrationCallbackRequest,
+  type ParsedIntegrationCallbackRequest,
+} from "./application/parse-integration-callback-request";
 export { persistDurableReplenishment } from "./application/persist-durable-replenishment";
 export {
   reconcileIntegrationCallback,
@@ -60,6 +68,7 @@ export {
 } from "./infrastructure/commercial-execution-runtime";
 export { EnvironmentCommercialOperationsAuthorizer } from "./infrastructure/environment-commercial-operations-authorizer";
 export { EnvironmentIntegrationSigningKeyProvider } from "./infrastructure/environment-integration-signing-key-provider";
+export { EnvironmentIntegrationWorkerSettingsProvider } from "./infrastructure/environment-integration-worker-settings-provider";
 export {
   createHmacIntegrationSignature,
   HmacIntegrationCallbackVerifier,

@@ -3,8 +3,10 @@ import type { CommercialOperationsAuthorizer } from "../application/commercial-o
 import type { CommercialWorkflowRepository } from "../application/commercial-workflow-repository";
 import type { IntegrationSigningKeyProvider } from "../application/integration-signing-key-provider";
 import type { IntegrationTransportRegistry } from "../application/run-integration-worker-cycle";
+import type { IntegrationWorkerSettingsProvider } from "../application/integration-worker-settings-provider";
 import { EnvironmentCommercialOperationsAuthorizer } from "./environment-commercial-operations-authorizer";
 import { EnvironmentIntegrationSigningKeyProvider } from "./environment-integration-signing-key-provider";
+import { EnvironmentIntegrationWorkerSettingsProvider } from "./environment-integration-worker-settings-provider";
 import { PostgresCommercialExecutionUnitOfWork } from "./postgres-commercial-execution-unit-of-work";
 import { PostgresCommercialWorkflowRepository } from "./postgres-commercial-workflow-repository";
 import type { TransactionalSqlPool } from "./postgres-commercial-execution-unit-of-work";
@@ -14,6 +16,7 @@ export interface CommercialExecutionRuntime {
   readonly unitOfWork: CommercialExecutionUnitOfWork;
   readonly transports: IntegrationTransportRegistry;
   readonly signingKeys: IntegrationSigningKeyProvider;
+  readonly workerSettings: IntegrationWorkerSettingsProvider;
   readonly operationsAuthorizer: CommercialOperationsAuthorizer;
 }
 
@@ -33,6 +36,7 @@ export function createPostgresCommercialExecutionRuntime(input: {
     unitOfWork: new PostgresCommercialExecutionUnitOfWork(input.pool),
     transports: input.transports,
     signingKeys: new EnvironmentIntegrationSigningKeyProvider(environment),
+    workerSettings: new EnvironmentIntegrationWorkerSettingsProvider(environment),
     operationsAuthorizer: new EnvironmentCommercialOperationsAuthorizer(environment),
   });
 }
