@@ -197,7 +197,7 @@ describe('campaign workflows', () => {
     expect(first.replayed).toBe(false);
     expect(replay.replayed).toBe(true);
     expect(replay.entity.id).toBe(first.entity.id);
-    expect(repository.campaigns).toHaveLength(1);
+    expect(repository.campaigns.size).toBe(1);
     expect(repository.audits).toHaveLength(1);
   });
 
@@ -215,7 +215,7 @@ describe('campaign workflows', () => {
     await expect(
       createCampaignUseCase({ ...base, name: 'Different campaign name' }),
     ).rejects.toBeInstanceOf(LifecycleIdempotencyConflict);
-    expect(repository.campaigns).toHaveLength(1);
+    expect(repository.campaigns.size).toBe(1);
     expect(repository.audits).toHaveLength(1);
   });
 
