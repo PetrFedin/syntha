@@ -49,6 +49,9 @@ describe("commercial execution environment security", () => {
     });
 
     await expect(authorizer.authorize(request(token))).resolves.toBe(true);
+    await expect(authorizer.identifyCredential(request(token))).resolves.toBe(
+      "org-a-operator",
+    );
     await expect(
       authorizer.authorizeAccess(request(token), {
         organizationId: "ORG-A",
@@ -68,5 +71,6 @@ describe("commercial execution environment security", () => {
       }),
     ).resolves.toBe(false);
     await expect(authorizer.authorize(request("wrong"))).resolves.toBe(false);
+    await expect(authorizer.identifyCredential(request("wrong"))).resolves.toBeNull();
   });
 });
