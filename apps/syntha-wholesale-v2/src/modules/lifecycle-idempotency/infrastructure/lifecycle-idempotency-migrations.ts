@@ -84,6 +84,38 @@ ALTER TABLE syntha_lifecycle_idempotency
     )
   );`,
   ),
+  migration(
+    3,
+    'buyer_access_and_selection_idempotency',
+    `ALTER TABLE syntha_lifecycle_idempotency
+  DROP CONSTRAINT IF EXISTS syntha_lifecycle_idempotency_command_name_check;
+ALTER TABLE syntha_lifecycle_idempotency
+  DROP CONSTRAINT IF EXISTS syntha_lifecycle_idempotency_result_entity_type_check;
+ALTER TABLE syntha_lifecycle_idempotency
+  ADD CONSTRAINT syntha_lifecycle_idempotency_command_name_check CHECK (
+    command_name IN (
+      'CREATE_SEASON',
+      'CREATE_CAMPAIGN',
+      'CREATE_COLLECTION',
+      'CREATE_SHOWROOM',
+      'PUBLISH_SHOWROOM',
+      'GRANT_SHOWROOM_ACCESS',
+      'CREATE_SELECTION'
+    )
+  );
+ALTER TABLE syntha_lifecycle_idempotency
+  ADD CONSTRAINT syntha_lifecycle_idempotency_result_entity_type_check CHECK (
+    result_entity_type IS NULL OR result_entity_type IN (
+      'SEASON',
+      'CAMPAIGN',
+      'COLLECTION',
+      'SHOWROOM',
+      'SHOWROOM_SNAPSHOT',
+      'SHOWROOM_ACCESS_GRANT',
+      'SELECTION'
+    )
+  );`,
+  ),
 ]);
 
 export async function runLifecycleIdempotencyMigrations(input: {
