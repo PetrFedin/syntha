@@ -7,14 +7,18 @@ export type LifecycleCreateCommandName =
   | 'CREATE_CAMPAIGN'
   | 'CREATE_COLLECTION'
   | 'CREATE_SHOWROOM'
-  | 'PUBLISH_SHOWROOM';
+  | 'PUBLISH_SHOWROOM'
+  | 'GRANT_SHOWROOM_ACCESS'
+  | 'CREATE_SELECTION';
 
 export type LifecycleResultEntityType =
   | 'SEASON'
   | 'CAMPAIGN'
   | 'COLLECTION'
   | 'SHOWROOM'
-  | 'SHOWROOM_SNAPSHOT';
+  | 'SHOWROOM_SNAPSHOT'
+  | 'SHOWROOM_ACCESS_GRANT'
+  | 'SELECTION';
 
 export interface LifecycleCreateCommand {
   readonly organisationId: OrganisationId;
