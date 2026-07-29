@@ -1,55 +1,62 @@
-# TASK-0010 completion report
+# TASK-0010 Completion Report
 
-## Outcome
+Task: `TASK-0010`
+Current status: `QA`
+Prepared on: 2026-07-29
 
-Snapshot-bound buyer access and Shop-private Selection planning are implemented as the next authoritative vertical slice after Showroom publication.
+## Delivered
 
-The completed slice includes:
+- Seller-issued access grant from one Brand organisation to one distinct Shop organisation.
+- Grant binding to one immutable Showroom publication snapshot.
+- `ACTIVE → REVOKED` grant lifecycle with exact actor, audit and optimistic version.
+- Shop-private Selection aggregate with `DRAFT → READY → ARCHIVED` lifecycle.
+- Budget in minor currency units with validated three-letter currency code.
+- Shortlist items with stable product and variant references.
+- Quantity intent, buyer notes and normalized unique size-curve entries.
+- Replay-safe access-grant and Selection creation.
+- PostgreSQL grant, Selection, audit and outbox persistence.
+- Seller grant APIs and buyer-private Selection APIs with separate organisation projections.
+- Authoritative `/selections` workspace and controlled no-credential state.
+- Unit, real PostgreSQL and authenticated browser coverage.
 
-- seller-issued access grant from one Brand organisation to one distinct Shop organisation;
-- grant binding to one immutable Showroom publication snapshot;
-- `ACTIVE → REVOKED` grant lifecycle with exact actor, audit and optimistic version;
-- Shop-private Selection aggregate with `DRAFT → READY → ARCHIVED` lifecycle;
-- budget in minor currency units and validated ISO currency code;
-- shortlist items with stable product and variant references;
-- quantity intent, buyer notes and unique size-curve entries;
-- replay-safe access and Selection creation;
-- PostgreSQL grant, Selection, audit and outbox persistence;
-- seller grant APIs and buyer-private Selection APIs;
-- authoritative `/selections` workspace with seller and buyer projections separated;
-- controlled no-credential state;
-- unit, real PostgreSQL and authenticated browser coverage.
+## Acceptance criteria evidence
 
-## Acceptance evidence
+| Criterion | Evidence | Result |
+|---|---|---|
+| Access requires a published Showroom and immutable snapshot | workflow and PostgreSQL tests | PASS |
+| Seller and buyer organisations differ | domain invariant and tests | PASS |
+| Only one active grant exists per Showroom and buyer | partial unique index and conflict coverage | PASS |
+| Revocation blocks Selection creation and mutation | workflow tests | PASS |
+| Selection reads and writes are buyer-scoped | repository SQL, API behavior and cross-organisation tests | PASS |
+| Seller projections expose no buyer-private planning fields | separate repository projections and seller HTTP 404 browser assertion | PASS |
+| Budget and currency are valid | domain tests and database constraints | PASS |
+| Duplicate product references are rejected | domain tests | PASS |
+| Size labels are unique and quantities are non-negative | domain tests and size-curve browser flow | PASS |
+| Mutable commands reject stale expected versions | workflow and repository conflict tests | PASS |
+| Grant and Selection writes are atomic with audit and outbox | PostgreSQL rollback tests | PASS |
+| Authenticated browser completes Selection to READY | Playwright seller-to-buyer lifecycle test | PASS |
+| Full V2 workflow passes | GitHub Actions run `30480855159` | PASS |
 
-- Access is granted only for a published Showroom with an existing immutable snapshot.
-- Seller and buyer organisations must differ.
-- One active grant is enforced for a Showroom and buyer pair.
-- Revocation blocks new Selection creation and further Selection mutations.
-- Selection reads and writes require buyer organisation scope.
-- Seller-scoped reads cannot retrieve buyer budget, notes, shortlist or size curves.
-- Budget, quantities and size-curve values reject negative or unsafe integers.
-- Product/variant duplicates and normalized duplicate size labels are rejected.
-- Every mutable command rejects stale expected versions.
-- Grant and Selection persistence is atomic with audit, outbox and idempotency facts.
-- PostgreSQL tests cover replay, rollback and cross-tenant foreign-key isolation.
-- The browser flow proves seller grant, buyer Selection creation, budget display, shortlist, size curve and READY transition.
-- The browser flow explicitly verifies that seller credentials receive HTTP 404 for the buyer-private Selection.
+## Commands verified
 
-## Verification
+```text
+npm run preflight
+npm run typecheck
+npm run lint
+npm run test
+npm run test:postgres
+npm run build
+npm run test:e2e
+```
 
-Verified code head: `feea6517c1f912e32bf8b675112d269614e4db6c`.
+## Known limitations
 
-`Syntha V2 Foundation` run `30480855159` passed:
+- Product references remain stable external identifiers until Catalog becomes an authoritative module.
+- Submitted commercial orders are intentionally deferred to the next Order Builder vertical slice.
+- Merge into `main` is intentionally excluded and requires an explicit review decision.
 
-- governance and architecture validation;
-- TypeScript typecheck;
-- ESLint;
-- unit tests;
-- real PostgreSQL integration tests;
-- production build;
-- all 108 Playwright browser checks.
+## Review record
 
-## Status
-
-TASK-0010 is ready for QA review. Merge into `main` remains outside this task and requires an explicit decision.
+Reviewer: pending
+Reviewed on: pending
+Decision: pending
