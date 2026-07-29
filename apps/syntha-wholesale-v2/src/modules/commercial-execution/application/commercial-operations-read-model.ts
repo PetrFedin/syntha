@@ -28,9 +28,10 @@ export interface IntegrationInboxReadModel {
   readonly outcome: IntegrationInboxRecord["outcome"];
   readonly status: IntegrationInboxRecord["status"];
   readonly commandId?: string;
+  readonly occurredAt: string;
   readonly receivedAt: string;
-  readonly processedAt?: string;
   readonly error?: string;
+  readonly conflictReason?: string;
 }
 
 export interface IntegrationCircuitReadModel {
@@ -92,7 +93,8 @@ export async function getCommercialOperationsReadModel(input: {
 
   const commands = [...state.integrationCommands]
     .sort((left, right) =>
-      right.updatedAt.localeCompare(left.updatedAt) || left.id.localeCompare(right.id),
+      right.updatedAt.localeCompare(left.updatedAt) ||
+      left.id.localeCompare(right.id),
     )
     .map<IntegrationCommandReadModel>((command) =>
       Object.freeze({
@@ -110,7 +112,8 @@ export async function getCommercialOperationsReadModel(input: {
 
   const callbacks = [...state.integrationInbox]
     .sort((left, right) =>
-      right.receivedAt.localeCompare(left.receivedAt) || left.id.localeCompare(right.id),
+      right.receivedAt.localeCompare(left.receivedAt) ||
+      left.id.localeCompare(right.id),
     )
     .map<IntegrationInboxReadModel>((callback) =>
       Object.freeze({
@@ -120,9 +123,10 @@ export async function getCommercialOperationsReadModel(input: {
         outcome: callback.outcome,
         status: callback.status,
         commandId: callback.commandId,
+        occurredAt: callback.occurredAt,
         receivedAt: callback.receivedAt,
-        processedAt: callback.processedAt,
         error: callback.error,
+        conflictReason: callback.conflictReason,
       }),
     );
 
@@ -148,7 +152,10 @@ export async function getCommercialOperationsReadModel(input: {
       pendingCommands: countByStatus(state.integrationCommands, "pending"),
       processingCommands: countByStatus(state.integrationCommands, "processing"),
       succeededCommands: countByStatus(state.integrationCommands, "succeeded"),
-      deadLetterCommands: countByStatus(state.integrationCommands, "dead_letter"),
+      deadLetterCommands: countByStatus(
+        state.integrationCommands,
+        "dead_letter",
+      ),
       cancelledCommands: countByStatus(state.integrationCommands, "cancelled"),
       appliedCallbacks: countByStatus(state.integrationInbox, "applied"),
       orphanedCallbacks: countByStatus(state.integrationInbox, "orphaned"),
