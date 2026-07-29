@@ -16,8 +16,14 @@ import {
   listCampaignCollections,
 } from '@/modules/collections';
 import {
+  LifecycleIdempotencyConflict,
+  LifecycleIdempotencyInProgress,
+  LifecycleIdempotencyResultMissing,
+} from '@/modules/lifecycle-idempotency';
+import {
   CommercialApiError,
   requireCommercialApiAccess,
+  requireIdempotencyKey,
   requireJsonObject,
   requiredString,
 } from '@/shared/server/commercial-api';
@@ -39,6 +45,18 @@ function failure(error: unknown): NextResponse {
       { error: error.code, message: error.message },
       { status: error.status },
     );
+  }
+  if (error instanceof LifecycleIdempotencyConflict) {
+    return NextResponse.json(
+      { error: 'idempotency_conflict', message: error.message },
+      { status: 409 },
+    );
+  }
+  if (error instanceof LifecycleIdempotencyInProgress) {
+    return NextResponse.json({ error: 'idempotency_in_progress' }, { status: 409 });
+  }
+  if (error instanceof LifecycleIdempotencyResultMissing) {
+    return NextResponse.json({ error: 'idempotency_result_missing' }, { status: 503 });
   }
   if (error instanceof CampaignNotFound) {
     return NextResponse.json({ error: 'campaign_not_found' }, { status: 404 });
@@ -97,13 +115,14 @@ export async function POST(
 ) {
   try {
     const access = await requireCommercialApiAccess(request, 'operate');
+    const idempotencyKey = requireIdempotencyKey(request);
     const { campaignId } = await context.params;
     const body = await requireJsonObject(request);
     const [campaignRepository, collectionRepository] = await Promise.all([
       getCampaignRepository(),
       getCollectionRepository(),
     ]);
-    const collection = await createCollectionUseCase({
+    const result = await createCollectionUseCase({
       campaignRepository,
       collectionRepository,
       clock,
@@ -114,10 +133,14 @@ export async function POST(
       name: requiredString(body.name, 'name'),
       currency: requiredString(body.currency, 'currency'),
       actorCredentialId: access.actorCredentialId,
+      idempotencyKey,
     });
-    return NextResponse.json(collection, {
-      status: 201,
-      headers: { 'cache-control': 'no-store' },
+    return NextResponse.json(result.entity, {
+      status: result.replayed ? 200 : 201,
+      headers: {
+        'cache-control': 'no-store',
+        'idempotency-replayed': result.replayed ? 'true' : 'false',
+      },
     });
   } catch (error) {
     return failure(error);
