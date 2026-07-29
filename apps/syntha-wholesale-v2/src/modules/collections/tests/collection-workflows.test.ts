@@ -43,8 +43,8 @@ class MemoryCampaignRepository implements CampaignRepository {
     throw new Error('not used');
   }
 
-  async update() {
-    throw new Error('not used');
+  async update(): Promise<boolean> {
+    return false;
   }
 }
 
