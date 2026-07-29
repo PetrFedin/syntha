@@ -16,4 +16,5 @@ export interface CommercialOperationsAuthorizer {
     request: Request,
     access: CommercialOperationsAccessRequest,
   ): Promise<boolean>;
+  identifyCredential?(request: Request): Promise<string | null>;
 }
