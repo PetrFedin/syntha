@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+
 import {
   getNextWorkspaceSection,
   getPreviousWorkspaceSection,
   getWorkspaceSection,
-  workspaceSections,
 } from '@/shared/navigation';
 import { Badge, Icon } from '@/shared/ui';
 import {
@@ -14,15 +14,11 @@ import {
   WorkspacePageHeader,
 } from '@/shared/workspace/components';
 import { ConnectedServicePanel } from '@/shared/workspace/components/connected-service-panel';
-
-export const dynamicParams = false;
+import { LifecycleWorkspacePanel } from '@/shared/workspace/components/lifecycle-workspace-panel';
 
 interface WorkspaceSectionPageProps {
   readonly params: Promise<{ readonly section: string }>;
-}
-
-export function generateStaticParams() {
-  return workspaceSections.map(({ slug }) => ({ section: slug }));
+  readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export async function generateMetadata({
@@ -37,13 +33,15 @@ export async function generateMetadata({
 
 export default async function WorkspaceSectionPage({
   params,
+  searchParams,
 }: WorkspaceSectionPageProps) {
-  const { section: slug } = await params;
+  const [{ section: slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
   const section = getWorkspaceSection(slug);
   if (!section) notFound();
 
   const previous = getPreviousWorkspaceSection(section);
   const next = getNextWorkspaceSection(section);
+  const authoritativeLifecycle = section.id === 'campaigns' || section.id === 'collections';
 
   return (
     <main className="workspacePage">
@@ -80,8 +78,14 @@ export default async function WorkspaceSectionPage({
         </aside>
       </section>
 
-      <ConnectedServicePanel section={section.id} />
-      <WorkspaceEmptyState section={section} />
+      {authoritativeLifecycle ? (
+        <LifecycleWorkspacePanel section={section.id} searchParams={resolvedSearchParams} />
+      ) : (
+        <>
+          <ConnectedServicePanel section={section.id} />
+          <WorkspaceEmptyState section={section} />
+        </>
+      )}
       <LifecycleNavigation section={section} />
     </main>
   );
