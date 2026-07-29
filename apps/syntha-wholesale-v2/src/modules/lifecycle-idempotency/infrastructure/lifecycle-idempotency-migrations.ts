@@ -56,6 +56,34 @@ CREATE INDEX IF NOT EXISTS syntha_lifecycle_idempotency_result_idx
   (organisation_id, result_entity_type, result_entity_id)
   WHERE status = 'COMPLETED';`,
   ),
+  migration(
+    2,
+    'showroom_create_and_publish_idempotency',
+    `ALTER TABLE syntha_lifecycle_idempotency
+  DROP CONSTRAINT IF EXISTS syntha_lifecycle_idempotency_command_name_check;
+ALTER TABLE syntha_lifecycle_idempotency
+  DROP CONSTRAINT IF EXISTS syntha_lifecycle_idempotency_result_entity_type_check;
+ALTER TABLE syntha_lifecycle_idempotency
+  ADD CONSTRAINT syntha_lifecycle_idempotency_command_name_check CHECK (
+    command_name IN (
+      'CREATE_SEASON',
+      'CREATE_CAMPAIGN',
+      'CREATE_COLLECTION',
+      'CREATE_SHOWROOM',
+      'PUBLISH_SHOWROOM'
+    )
+  );
+ALTER TABLE syntha_lifecycle_idempotency
+  ADD CONSTRAINT syntha_lifecycle_idempotency_result_entity_type_check CHECK (
+    result_entity_type IS NULL OR result_entity_type IN (
+      'SEASON',
+      'CAMPAIGN',
+      'COLLECTION',
+      'SHOWROOM',
+      'SHOWROOM_SNAPSHOT'
+    )
+  );`,
+  ),
 ]);
 
 export async function runLifecycleIdempotencyMigrations(input: {
