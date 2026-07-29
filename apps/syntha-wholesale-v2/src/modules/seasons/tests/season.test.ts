@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { LifecycleIdempotencyConflict } from '@/modules/lifecycle-idempotency';
 import { organisationId } from '@/modules/organisations';
 import {
   InMemorySeasonRepository,
@@ -20,6 +21,19 @@ const clock = { now: () => new Date('2026-07-24T10:00:00.000Z') };
 function ids() {
   let sequence = 0;
   return { next: (prefix: string) => `${prefix}-${++sequence}` };
+}
+
+function createCommand(overrides: Partial<Parameters<typeof createSeasonUseCase>[3]> = {}) {
+  return {
+    organisationId: organisation,
+    code: 'fw26',
+    name: 'Fall Winter 2026',
+    startsAt: new Date('2026-08-01T00:00:00.000Z'),
+    endsAt: new Date('2027-02-01T00:00:00.000Z'),
+    actorCredentialId: 'org-operator',
+    idempotencyKey: 'season-create-0001',
+    ...overrides,
+  };
 }
 
 function draftSeason(organisationIdValue = organisation) {
@@ -87,20 +101,14 @@ describe('Season domain', () => {
 describe('Season application', () => {
   it('creates and audits a season using injected clock and id generator', async () => {
     const repository = new InMemorySeasonRepository();
-    const created = await createSeasonUseCase(repository, clock, ids(), {
-      organisationId: organisation,
-      code: 'fw26',
-      name: 'Fall Winter 2026',
-      startsAt: new Date('2026-08-01T00:00:00.000Z'),
-      endsAt: new Date('2027-02-01T00:00:00.000Z'),
-      actorCredentialId: 'org-operator',
-    });
-    expect(created.code).toBe('FW26');
+    const result = await createSeasonUseCase(repository, clock, ids(), createCommand());
+    expect(result).toMatchObject({ replayed: false });
+    expect(result.entity.code).toBe('FW26');
     expect(await repository.findByOrganisation(organisation)).toHaveLength(1);
     expect(repository.audits[0]).toEqual(
       expect.objectContaining({
         organisationId: organisation,
-        seasonId: created.id,
+        seasonId: result.entity.id,
         action: 'CREATED',
         actorCredentialId: 'org-operator',
         resultingVersion: 1,
@@ -108,17 +116,38 @@ describe('Season application', () => {
     );
   });
 
-  it('enforces code uniqueness inside an organisation', async () => {
+  it('replays the original result without another entity or audit', async () => {
+    const repository = new InMemorySeasonRepository();
+    const first = await createSeasonUseCase(repository, clock, ids(), createCommand());
+    const replay = await createSeasonUseCase(repository, clock, ids(), createCommand());
+
+    expect(replay).toEqual({ entity: first.entity, replayed: true });
+    expect(await repository.findByOrganisation(organisation)).toHaveLength(1);
+    expect(repository.audits).toHaveLength(1);
+  });
+
+  it('rejects idempotency-key reuse with another payload', async () => {
+    const repository = new InMemorySeasonRepository();
+    await createSeasonUseCase(repository, clock, ids(), createCommand());
+    await expect(
+      createSeasonUseCase(
+        repository,
+        clock,
+        ids(),
+        createCommand({ name: 'Different season name' }),
+      ),
+    ).rejects.toBeInstanceOf(LifecycleIdempotencyConflict);
+  });
+
+  it('enforces code uniqueness inside an organisation for another command key', async () => {
     const repository = new InMemorySeasonRepository([draftSeason()]);
     await expect(
-      createSeasonUseCase(repository, clock, ids(), {
-        organisationId: organisation,
-        code: 'fw26',
-        name: 'Duplicate',
-        startsAt: new Date('2026-08-01T00:00:00.000Z'),
-        endsAt: new Date('2027-02-01T00:00:00.000Z'),
-        actorCredentialId: 'operator',
-      }),
+      createSeasonUseCase(
+        repository,
+        clock,
+        ids(),
+        createCommand({ idempotencyKey: 'season-create-0002' }),
+      ),
     ).rejects.toThrow(SeasonAlreadyExists);
   });
 
