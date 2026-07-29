@@ -180,7 +180,7 @@ export function WorkspaceErrorState({
 
 export function WorkspaceLoadingState() {
   return (
-    <main className="workspacePage" aria-busy="true" aria-label="Загрузка раздела">
+    <div className="workspacePage" aria-busy="true" aria-label="Загрузка раздела" role="status">
       <div className="workspaceSkeleton workspaceSkeleton--hero" />
       <div className="workspaceContextGrid">
         {Array.from({ length: 4 }, (_, index) => (
@@ -188,7 +188,7 @@ export function WorkspaceLoadingState() {
         ))}
       </div>
       <div className="workspaceSkeleton workspaceSkeleton--content" />
-    </main>
+    </div>
   );
 }
 
