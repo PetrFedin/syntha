@@ -3,11 +3,7 @@ import {
   type LifecycleCreateResult,
 } from '@/modules/lifecycle-idempotency';
 import type { OrganisationId } from '@/modules/organisations';
-import {
-  getShowroom,
-  showroomId,
-  type ShowroomRepository,
-} from '@/modules/showroom';
+import { getShowroom, type ShowroomRepository } from '@/modules/showroom';
 
 import {
   addSelectionItem,
@@ -57,7 +53,9 @@ export class ShowroomNotPublishedForBuyerAccess extends Error {
 
 export class ShowroomAccessAlreadyExists extends Error {
   constructor(showroomIdValue: string, buyerOrganisationId: OrganisationId) {
-    super(`Active access already exists for Showroom ${showroomIdValue} and buyer ${buyerOrganisationId}`);
+    super(
+      `Active access already exists for Showroom ${showroomIdValue} and buyer ${buyerOrganisationId}`,
+    );
     this.name = 'ShowroomAccessAlreadyExists';
   }
 }
@@ -223,13 +221,12 @@ export async function grantShowroomAccessUseCase(input: {
     showroom.id,
   );
   if (!snapshot) throw new ShowroomUnavailableForBuyerAccess(showroom.id);
-  if (
-    await input.repository.findActiveGrant(
-      input.sellerOrganisationId,
-      showroom.id,
-      input.buyerOrganisationId,
-    )
-  ) {
+  const existing = await input.repository.findActiveGrant(
+    input.sellerOrganisationId,
+    showroom.id,
+    input.buyerOrganisationId,
+  );
+  if (existing) {
     throw new ShowroomAccessAlreadyExists(showroom.id, input.buyerOrganisationId);
   }
 
@@ -352,9 +349,12 @@ export async function createSelectionUseCase(input: {
 
   const grant = await getGrantForBuyer(input);
   if (grant.status !== 'ACTIVE') throw new SelectionAccessRevoked(grant.id);
-  if (await input.repository.findSelectionByGrant(input.buyerOrganisationId, grant.id)) {
-    throw new SelectionAlreadyExists(grant.id);
-  }
+  const existing = await input.repository.findSelectionByGrant(
+    input.buyerOrganisationId,
+    grant.id,
+  );
+  if (existing) throw new SelectionAlreadyExists(grant.id);
+
   const selection = createSelection({
     id: input.ids.next('selection'),
     grant,
@@ -410,6 +410,23 @@ export async function listBuyerSelections(input: {
   return input.repository.listSelections(input.buyerOrganisationId);
 }
 
+async function loadMutableSelection(input: {
+  readonly repository: SelectionRepository;
+  readonly buyerOrganisationId: OrganisationId;
+  readonly selectionId: string;
+  readonly expectedVersion: number;
+}): Promise<{ readonly selection: Selection; readonly grant: ShowroomAccessGrant }> {
+  const selection = await getSelection(input);
+  if (selection.version !== input.expectedVersion) {
+    throw new SelectionVersionConflict(input.selectionId);
+  }
+  const grant = await requireActiveGrantForSelection({
+    repository: input.repository,
+    selection,
+  });
+  return Object.freeze({ selection, grant });
+}
+
 async function persistSelectionChange(input: {
   readonly repository: SelectionRepository;
   readonly ids: SelectionIdGenerator;
@@ -450,20 +467,6 @@ async function persistSelectionChange(input: {
   return input.changed;
 }
 
-async function loadMutableSelection(input: {
-  readonly repository: SelectionRepository;
-  readonly buyerOrganisationId: OrganisationId;
-  readonly selectionId: string;
-  readonly expectedVersion: number;
-}): Promise<{ readonly selection: Selection; readonly grant: ShowroomAccessGrant }> {
-  const selection = await getSelection(input);
-  if (selection.version !== input.expectedVersion) {
-    throw new SelectionVersionConflict(input.selectionId);
-  }
-  const grant = await requireActiveGrantForSelection({ repository: input.repository, selection });
-  return Object.freeze({ selection, grant });
-}
-
 export async function setSelectionBudgetUseCase(input: {
   readonly repository: SelectionRepository;
   readonly clock: SelectionClock;
@@ -483,10 +486,13 @@ export async function setSelectionBudgetUseCase(input: {
     now,
   });
   return persistSelectionChange({
-    ...input,
+    repository: input.repository,
+    ids: input.ids,
     current: loaded.selection,
     changed,
     grant: loaded.grant,
+    expectedVersion: input.expectedVersion,
+    actorCredentialId: input.actorCredentialId,
     action: 'BUDGET_CHANGED',
     eventName: 'SELECTION_BUDGET_CHANGED',
     payload: { budgetMinor: changed.budgetMinor, currency: changed.currency },
@@ -519,10 +525,13 @@ export async function addSelectionItemUseCase(input: {
   });
   const item = changed.items.at(-1);
   return persistSelectionChange({
-    ...input,
+    repository: input.repository,
+    ids: input.ids,
     current: loaded.selection,
     changed,
     grant: loaded.grant,
+    expectedVersion: input.expectedVersion,
+    actorCredentialId: input.actorCredentialId,
     action: 'ITEM_ADDED',
     eventName: 'SELECTION_ITEM_ADDED',
     payload: {
@@ -555,10 +564,13 @@ export async function setSelectionSizeCurveUseCase(input: {
   });
   const item = changed.items.find((candidate) => candidate.id === input.itemId);
   return persistSelectionChange({
-    ...input,
+    repository: input.repository,
+    ids: input.ids,
     current: loaded.selection,
     changed,
     grant: loaded.grant,
+    expectedVersion: input.expectedVersion,
+    actorCredentialId: input.actorCredentialId,
     action: 'SIZE_CURVE_CHANGED',
     eventName: 'SELECTION_SIZE_CURVE_CHANGED',
     payload: { itemId: input.itemId, quantityIntent: item?.quantityIntent ?? 0 },
@@ -579,10 +591,13 @@ export async function markSelectionReadyUseCase(input: {
   const now = input.clock.now();
   const changed = markSelectionReady(loaded.selection, now);
   return persistSelectionChange({
-    ...input,
+    repository: input.repository,
+    ids: input.ids,
     current: loaded.selection,
     changed,
     grant: loaded.grant,
+    expectedVersion: input.expectedVersion,
+    actorCredentialId: input.actorCredentialId,
     action: 'MARKED_READY',
     eventName: 'SELECTION_READY',
     occurredAt: now,
@@ -602,10 +617,13 @@ export async function archiveSelectionUseCase(input: {
   const now = input.clock.now();
   const changed = archiveSelection(loaded.selection, now);
   return persistSelectionChange({
-    ...input,
+    repository: input.repository,
+    ids: input.ids,
     current: loaded.selection,
     changed,
     grant: loaded.grant,
+    expectedVersion: input.expectedVersion,
+    actorCredentialId: input.actorCredentialId,
     action: 'ARCHIVED',
     eventName: 'SELECTION_ARCHIVED',
     occurredAt: now,
