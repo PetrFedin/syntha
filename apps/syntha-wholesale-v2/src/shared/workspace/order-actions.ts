@@ -19,7 +19,7 @@ import {
   setOrderLineCommercialTermsUseCase,
   setOrderLineQuantityUseCase,
   submitOrderUseCase,
-} from '@/modules/orders/index-next';
+} from '@/modules/orders';
 import { SelectionNotFound, getSelectionRepository } from '@/modules/selection';
 import { CommercialApiError } from '@/shared/server/commercial-api';
 import { requireWorkspaceAccess } from '@/shared/server/workspace-access';
