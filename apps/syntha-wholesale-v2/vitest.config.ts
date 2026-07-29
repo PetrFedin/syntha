@@ -11,5 +11,6 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/testkit/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
+    exclude: ['src/**/*.postgres.test.ts'],
   },
 });
