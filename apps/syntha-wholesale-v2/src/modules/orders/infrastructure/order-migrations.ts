@@ -161,6 +161,155 @@ CREATE INDEX IF NOT EXISTS syntha_order_outbox_pending_idx
   ON syntha_order_outbox (occurred_at, id)
   WHERE published_at IS NULL;`,
   ),
+  migration(
+    2,
+    'order_review_approval_amendment_and_confirmation_source_of_truth',
+    `DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'syntha_submitted_order_snapshot_seller_id_unique'
+  ) THEN
+    ALTER TABLE syntha_submitted_order_snapshot
+      ADD CONSTRAINT syntha_submitted_order_snapshot_seller_id_unique
+      UNIQUE (seller_organisation_id, id);
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS syntha_order_review (
+  seller_organisation_id text NOT NULL,
+  id text NOT NULL,
+  buyer_organisation_id text NOT NULL,
+  order_id text NOT NULL,
+  submitted_order_snapshot_id text NOT NULL,
+  status text NOT NULL CHECK (status IN (
+    'PENDING',
+    'AMENDMENT_REQUESTED',
+    'APPROVED',
+    'CONFIRMED'
+  )),
+  amendment_request jsonb,
+  approval jsonb,
+  confirmed_order_version_id text,
+  owner_credential_id text NOT NULL,
+  created_at timestamptz NOT NULL,
+  updated_at timestamptz NOT NULL,
+  version bigint NOT NULL CHECK (version > 0),
+  PRIMARY KEY (seller_organisation_id, id),
+  UNIQUE (seller_organisation_id, submitted_order_snapshot_id),
+  FOREIGN KEY (seller_organisation_id, submitted_order_snapshot_id)
+    REFERENCES syntha_submitted_order_snapshot (seller_organisation_id, id)
+    ON DELETE RESTRICT,
+  FOREIGN KEY (buyer_organisation_id, order_id)
+    REFERENCES syntha_order (buyer_organisation_id, id)
+    ON DELETE RESTRICT,
+  CHECK (buyer_organisation_id <> seller_organisation_id),
+  CHECK (
+    (status = 'PENDING' AND amendment_request IS NULL AND approval IS NULL
+      AND confirmed_order_version_id IS NULL)
+    OR
+    (status = 'AMENDMENT_REQUESTED' AND amendment_request IS NOT NULL
+      AND approval IS NULL AND confirmed_order_version_id IS NULL)
+    OR
+    (status = 'APPROVED' AND amendment_request IS NULL
+      AND approval IS NOT NULL AND confirmed_order_version_id IS NULL)
+    OR
+    (status = 'CONFIRMED' AND amendment_request IS NULL
+      AND approval IS NOT NULL AND confirmed_order_version_id IS NOT NULL)
+  )
+);
+
+CREATE INDEX IF NOT EXISTS syntha_order_review_seller_status_idx
+  ON syntha_order_review (seller_organisation_id, status, updated_at DESC, id);
+
+CREATE INDEX IF NOT EXISTS syntha_order_review_buyer_status_idx
+  ON syntha_order_review (buyer_organisation_id, status, updated_at DESC, id);
+
+CREATE TABLE IF NOT EXISTS syntha_confirmed_order_version (
+  seller_organisation_id text NOT NULL,
+  id text NOT NULL,
+  buyer_organisation_id text NOT NULL,
+  order_review_id text NOT NULL,
+  submitted_order_snapshot_id text NOT NULL,
+  order_id text NOT NULL,
+  source_order_version bigint NOT NULL CHECK (source_order_version > 0),
+  currency text NOT NULL CHECK (currency ~ '^[A-Z]{3}$'),
+  lines jsonb NOT NULL CHECK (jsonb_typeof(lines) = 'array'),
+  totals jsonb NOT NULL CHECK (jsonb_typeof(totals) = 'object'),
+  approved_by_credential_id text NOT NULL,
+  approved_at timestamptz NOT NULL,
+  confirmed_by_credential_id text NOT NULL,
+  confirmed_at timestamptz NOT NULL,
+  PRIMARY KEY (seller_organisation_id, id),
+  UNIQUE (seller_organisation_id, order_review_id),
+  FOREIGN KEY (seller_organisation_id, order_review_id)
+    REFERENCES syntha_order_review (seller_organisation_id, id)
+    ON DELETE RESTRICT,
+  FOREIGN KEY (seller_organisation_id, submitted_order_snapshot_id)
+    REFERENCES syntha_submitted_order_snapshot (seller_organisation_id, id)
+    ON DELETE RESTRICT,
+  FOREIGN KEY (buyer_organisation_id, order_id)
+    REFERENCES syntha_order (buyer_organisation_id, id)
+    ON DELETE RESTRICT,
+  CHECK (buyer_organisation_id <> seller_organisation_id)
+);
+
+CREATE INDEX IF NOT EXISTS syntha_confirmed_order_seller_idx
+  ON syntha_confirmed_order_version
+  (seller_organisation_id, confirmed_at DESC, id);
+
+CREATE INDEX IF NOT EXISTS syntha_confirmed_order_buyer_idx
+  ON syntha_confirmed_order_version
+  (buyer_organisation_id, confirmed_at DESC, id);
+
+CREATE TABLE IF NOT EXISTS syntha_order_review_audit (
+  id text PRIMARY KEY,
+  buyer_organisation_id text NOT NULL,
+  seller_organisation_id text NOT NULL,
+  order_id text NOT NULL,
+  submitted_order_snapshot_id text NOT NULL,
+  order_review_id text NOT NULL,
+  action text NOT NULL CHECK (action IN (
+    'ORDER_APPROVED',
+    'ORDER_AMENDMENT_REQUESTED',
+    'ORDER_CONFIRMED'
+  )),
+  actor_credential_id text NOT NULL,
+  expected_version bigint NOT NULL CHECK (expected_version >= 0),
+  resulting_version bigint NOT NULL CHECK (resulting_version > 0),
+  occurred_at timestamptz NOT NULL,
+  FOREIGN KEY (seller_organisation_id, order_review_id)
+    REFERENCES syntha_order_review (seller_organisation_id, id)
+    ON DELETE RESTRICT
+);
+
+CREATE INDEX IF NOT EXISTS syntha_order_review_audit_scope_idx
+  ON syntha_order_review_audit
+  (seller_organisation_id, order_review_id, occurred_at DESC);
+
+CREATE TABLE IF NOT EXISTS syntha_order_review_outbox (
+  id text PRIMARY KEY,
+  buyer_organisation_id text NOT NULL,
+  seller_organisation_id text NOT NULL,
+  aggregate_id text NOT NULL,
+  aggregate_version bigint NOT NULL CHECK (aggregate_version > 0),
+  event_name text NOT NULL CHECK (event_name IN (
+    'ORDER_APPROVED',
+    'ORDER_AMENDMENT_REQUESTED',
+    'ORDER_CONFIRMED'
+  )),
+  payload jsonb NOT NULL CHECK (jsonb_typeof(payload) = 'object'),
+  occurred_at timestamptz NOT NULL,
+  published_at timestamptz,
+  attempts integer NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  last_error text,
+  UNIQUE (seller_organisation_id, aggregate_id, aggregate_version, event_name)
+);
+
+CREATE INDEX IF NOT EXISTS syntha_order_review_outbox_pending_idx
+  ON syntha_order_review_outbox (occurred_at, id)
+  WHERE published_at IS NULL;`,
+  ),
 ]);
 
 export async function runOrderMigrations(input: {
