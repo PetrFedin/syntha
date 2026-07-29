@@ -8,7 +8,11 @@ export {
   type SeasonId,
   type SeasonStatus,
 } from './domain/season';
-export type { SeasonRepository } from './application/season-repository';
+export type {
+  SeasonAuditAction,
+  SeasonAuditRecord,
+  SeasonRepository,
+} from './application/season-repository';
 export {
   SeasonAlreadyExists,
   SeasonNotFound,
@@ -22,3 +26,13 @@ export {
   type IdGenerator,
 } from './application/season-workflows';
 export { InMemorySeasonRepository } from './infrastructure/in-memory-season-repository';
+export {
+  getSeasonLifecyclePool,
+  getSeasonRepository,
+  resetSeasonRuntime,
+} from './infrastructure/season-runtime';
+export {
+  runSeasonMigrations,
+  seasonMigrations,
+} from './infrastructure/season-migrations';
+export { PostgresSeasonRepository } from './infrastructure/postgres-season-repository';
