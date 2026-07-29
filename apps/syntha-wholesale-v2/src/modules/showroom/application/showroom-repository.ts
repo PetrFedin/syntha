@@ -74,5 +74,5 @@ export interface ShowroomRepository {
     audit: ShowroomAuditRecord,
     event: ShowroomPublishedEvent,
     command: LifecycleCreateCommand,
-  ): Promise<LifecycleCreateResult<ShowroomPublicationSnapshot>>;
+  ): Promise<LifecycleCreateResult<ShowroomPublicationSnapshot> | null>;
 }
