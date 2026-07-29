@@ -6,10 +6,11 @@ on:
       - '.github/workflows/syntha-v2-pg-lock-refresh.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -17,6 +18,8 @@ jobs:
         working-directory: apps/syntha-wholesale-v2
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -24,12 +27,17 @@ jobs:
           cache-dependency-path: apps/syntha-wholesale-v2/package-lock.json
       - name: Generate exact pg dependency lock
         run: npm install --package-lock-only --save-exact --ignore-scripts --no-audit --no-fund pg@8.22.0
-      - name: Upload generated package files
-        uses: actions/upload-artifact@v4
-        with:
-          name: syntha-v2-pg-lock
-          path: |
-            apps/syntha-wholesale-v2/package.json
-            apps/syntha-wholesale-v2/package-lock.json
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit generated package files
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/syntha-wholesale-v2/package.json apps/syntha-wholesale-v2/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Package files already current."
+            exit 0
+          fi
+          git commit -m "build(v2): add PostgreSQL runtime dependency"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
