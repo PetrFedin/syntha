@@ -3,6 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
 
 import {
+  LifecycleIdempotencyConflict,
+  LifecycleIdempotencyInProgress,
+  LifecycleIdempotencyResultMissing,
+} from '@/modules/lifecycle-idempotency';
+import {
   SeasonAlreadyExists,
   SeasonDomainError,
   createSeasonUseCase,
@@ -12,6 +17,7 @@ import {
 import {
   CommercialApiError,
   requireCommercialApiAccess,
+  requireIdempotencyKey,
   requireJsonObject,
   requiredDate,
   requiredString,
@@ -34,6 +40,18 @@ function failure(error: unknown): NextResponse {
       { error: error.code, message: error.message },
       { status: error.status },
     );
+  }
+  if (error instanceof LifecycleIdempotencyConflict) {
+    return NextResponse.json(
+      { error: 'idempotency_conflict', message: error.message },
+      { status: 409 },
+    );
+  }
+  if (error instanceof LifecycleIdempotencyInProgress) {
+    return NextResponse.json({ error: 'idempotency_in_progress' }, { status: 409 });
+  }
+  if (error instanceof LifecycleIdempotencyResultMissing) {
+    return NextResponse.json({ error: 'idempotency_result_missing' }, { status: 503 });
   }
   if (error instanceof SeasonAlreadyExists || postgresCode(error) === '23505') {
     return NextResponse.json({ error: 'season_already_exists' }, { status: 409 });
@@ -64,19 +82,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const access = await requireCommercialApiAccess(request, 'operate');
+    const idempotencyKey = requireIdempotencyKey(request);
     const body = await requireJsonObject(request);
     const repository = await getSeasonRepository();
-    const season = await createSeasonUseCase(repository, clock, ids, {
+    const result = await createSeasonUseCase(repository, clock, ids, {
       organisationId: access.organisationId,
       code: requiredString(body.code, 'code'),
       name: requiredString(body.name, 'name'),
       startsAt: requiredDate(body.startsAt, 'startsAt'),
       endsAt: requiredDate(body.endsAt, 'endsAt'),
       actorCredentialId: access.actorCredentialId,
+      idempotencyKey,
     });
-    return NextResponse.json(season, {
-      status: 201,
-      headers: { 'cache-control': 'no-store' },
+    return NextResponse.json(result.entity, {
+      status: result.replayed ? 200 : 201,
+      headers: {
+        'cache-control': 'no-store',
+        'idempotency-replayed': result.replayed ? 'true' : 'false',
+      },
     });
   } catch (error) {
     return failure(error);
