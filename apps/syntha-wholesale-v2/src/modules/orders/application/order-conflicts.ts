@@ -4,3 +4,10 @@ export class OrderPersistenceVersionConflict extends Error {
     this.name = 'OrderPersistenceVersionConflict';
   }
 }
+
+export class OrderReviewPersistenceVersionConflict extends Error {
+  constructor(readonly orderReviewId: string) {
+    super(`Order review ${orderReviewId} was modified by another persistence operation`);
+    this.name = 'OrderReviewPersistenceVersionConflict';
+  }
+}
