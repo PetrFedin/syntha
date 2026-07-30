@@ -170,15 +170,21 @@ export { InMemoryRevisedOrderReviewRepository } from './infrastructure/in-memory
 export { PostgresOrderRepository } from './infrastructure/postgres-order-repository';
 export { PostgresOrderReviewRepository } from './infrastructure/postgres-order-review-repository';
 export { PostgresOrderAmendmentResponseRepository } from './infrastructure/postgres-order-amendment-response-repository';
+export { PostgresRevisedOrderReviewRepository } from './infrastructure/postgres-revised-order-review-repository';
 export { orderMigrations, runOrderMigrations } from './infrastructure/order-migrations';
 export {
   orderAmendmentResponseMigrations,
   runOrderAmendmentResponseMigrations,
 } from './infrastructure/order-amendment-response-migrations';
+export {
+  revisedOrderReviewMigrations,
+  runRevisedOrderReviewMigrations,
+} from './infrastructure/revised-order-review-migrations';
 export { runOrderIdempotencyMigration } from './infrastructure/order-idempotency-migration';
 export {
   getOrderAmendmentResponseRepository,
   getOrderRepository,
   getOrderReviewRepository,
+  getRevisedOrderReviewRepository,
   resetOrderRuntime,
 } from './infrastructure/order-runtime';
