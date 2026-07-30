@@ -7,7 +7,7 @@ export async function runOrderIdempotencyMigration(input: {
   await client.query('BEGIN');
   try {
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
-      'syntha-order-idempotency-migration-v5',
+      'syntha-order-idempotency-migration-v6',
     ]);
     await client.query(`ALTER TABLE syntha_lifecycle_idempotency
       DROP CONSTRAINT IF EXISTS syntha_lifecycle_idempotency_command_name_check;
@@ -27,7 +27,10 @@ export async function runOrderIdempotencyMigration(input: {
           'SUBMIT_ORDER',
           'APPROVE_ORDER',
           'REQUEST_ORDER_AMENDMENT',
-          'CONFIRM_ORDER'
+          'CONFIRM_ORDER',
+          'ACCEPT_ORDER_AMENDMENT',
+          'COUNTER_ORDER_AMENDMENT',
+          'REJECT_ORDER_AMENDMENT'
         )
       );
     ALTER TABLE syntha_lifecycle_idempotency
@@ -43,7 +46,8 @@ export async function runOrderIdempotencyMigration(input: {
           'ORDER',
           'SUBMITTED_ORDER_SNAPSHOT',
           'ORDER_REVIEW',
-          'CONFIRMED_ORDER_VERSION'
+          'CONFIRMED_ORDER_VERSION',
+          'ORDER_AMENDMENT_RESPONSE'
         )
       );`);
     await client.query('COMMIT');
