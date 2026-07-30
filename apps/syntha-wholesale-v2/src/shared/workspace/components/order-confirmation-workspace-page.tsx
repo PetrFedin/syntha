@@ -11,6 +11,7 @@ import {
   WorkspaceContextBar,
   WorkspacePageHeader,
 } from '@/shared/workspace/components';
+import { OrderAmendmentResponseWorkspacePanel } from '@/shared/workspace/components/order-amendment-response-workspace-panel';
 import { OrderConfirmationWorkspacePanel } from '@/shared/workspace/components/order-confirmation-workspace-panel';
 
 export async function OrderConfirmationWorkspacePage({
@@ -57,6 +58,7 @@ export async function OrderConfirmationWorkspacePage({
         </aside>
       </section>
       <OrderConfirmationWorkspacePanel searchParams={resolvedSearchParams} />
+      <OrderAmendmentResponseWorkspacePanel />
       <LifecycleNavigation section={section} />
     </main>
   );
