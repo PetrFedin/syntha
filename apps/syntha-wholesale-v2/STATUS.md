@@ -6,11 +6,15 @@ Draft PR: `#8`
 
 ## Verified foundation
 
-TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0012 are implemented and in QA.
+TASK-0001 through TASK-0006 are complete. TASK-0007 through TASK-0013 are implemented and in QA.
 
-The current authoritative commercial lifecycle is:
+The current authoritative commercial lifecycle supports both confirmation and controlled negotiation branches:
 
-`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection → Draft Order → Submitted Order snapshot → Seller decision → Confirmed Order version`
+`Season → Campaign → Collection → Showroom publication snapshot → Buyer access grant → Selection → Draft Order → Submitted Order snapshot → Seller approval → Confirmed Order version`
+
+or
+
+`Submitted Order snapshot → Seller amendment request → Buyer accept/counter/reject → immutable Revised Order version`
 
 ## QA slices
 
@@ -70,11 +74,25 @@ The current authoritative commercial lifecycle is:
 - authoritative `/confirmation` workspace and scoped review/confirmed APIs;
 - real PostgreSQL replay, rollback, tenant-FK and authenticated browser coverage.
 
+### TASK-0013 — Buyer amendment response and immutable revision
+
+- one buyer response per seller `AMENDMENT_REQUESTED` Order Review;
+- buyer decisions `ACCEPTED`, `COUNTERED` or `REJECTED`;
+- accept and counter create a new immutable Revised Order version;
+- reject records an immutable response without creating a revision;
+- revised lines are restricted to submitted line and size identities;
+- deterministic integer-only recalculation uses the Order Builder commercial rules;
+- original Submitted Order and seller amendment request remain unchanged;
+- buyer and seller receive independently organisation-scoped projections;
+- atomic PostgreSQL response, revision, audit, outbox and idempotency persistence;
+- authoritative buyer-response workflow inside `/confirmation`;
+- replay, rollback, tenant-FK and authenticated browser coverage.
+
 ## Verification checkpoint
 
-Verified TASK-0012 code head: `b887f8f203a6c13c773b829f9b28a2b85a62e79b`.
+Verified TASK-0013 code head: `f244a79839689d86ec54759a4b5e8671deb9f5a0`.
 
-`Syntha V2 Foundation` run `30497410958` passed:
+`Syntha V2 Foundation` run `30532143257` passed:
 
 - governance and architecture validation;
 - TypeScript typecheck;
@@ -82,27 +100,31 @@ Verified TASK-0012 code head: `b887f8f203a6c13c773b829f9b28a2b85a62e79b`.
 - unit tests;
 - real PostgreSQL integration tests;
 - production build;
-- Playwright browser suite: 97 passed, 22 skipped and one existing Selection flow passed on retry.
+- authenticated Playwright browser suite.
 
 Completion evidence is stored in:
 
 - `tasks/completions/TASK-0009-completion.md`;
 - `tasks/completions/TASK-0010-completion.md`;
 - `tasks/completions/TASK-0011-completion.md`;
-- `tasks/completions/TASK-0012-completion.md`.
+- `tasks/completions/TASK-0012-completion.md`;
+- `tasks/completions/TASK-0013-completion.md`.
 
 ## Next P0
 
-The next vertical slice is controlled buyer response to a seller amendment request and production handoff from a confirmed contract:
+The next controlled vertical slice is seller re-review of a Revised Order and convergence back to one confirmed immutable contract:
 
-`Amendment request → buyer accept/counter/reject → revised immutable submission → seller approval → Confirmed Order → Production Commitment`
+`Revised Order version → seller approve or request another explicit revision → Confirmed Order version`
 
-Priority rules for the next slice:
+After that commercial gate is complete, production handoff may start only from an immutable Confirmed Order version.
 
-- amendment responses must never rewrite the original submitted snapshot or seller request;
-- each revision must become a new immutable commercial version with explicit lineage;
-- production commitment may start only from one confirmed immutable Order version;
+Priority rules:
+
+- a Revised Order must never replace or mutate its Submitted Order, seller request or buyer response sources;
+- seller re-review must reference exactly one immutable Revised Order version;
+- confirmation must create a new immutable Confirmed Order version with complete lineage;
 - every command requires organisation scope, expected version, exact actor audit, outbox and idempotency;
+- production commitment cannot start from an unconfirmed revision;
 - no synthetic confirmation, production or legacy fallback records are permitted.
 
 ## Merge status
