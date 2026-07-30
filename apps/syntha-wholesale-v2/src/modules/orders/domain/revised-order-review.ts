@@ -5,7 +5,6 @@ import {
   submittedOrderSnapshotId,
   type OrderLine,
   type OrderLineId,
-  type OrderSizeQuantity,
   type OrderTotals,
   type SubmittedOrderSnapshotId,
 } from './order';
