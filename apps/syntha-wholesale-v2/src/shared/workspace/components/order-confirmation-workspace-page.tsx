@@ -13,6 +13,7 @@ import {
 } from '@/shared/workspace/components';
 import { OrderAmendmentResponseWorkspacePanel } from '@/shared/workspace/components/order-amendment-response-workspace-panel';
 import { OrderConfirmationWorkspacePanel } from '@/shared/workspace/components/order-confirmation-workspace-panel';
+import { RevisedOrderReviewWorkspacePanel } from '@/shared/workspace/components/revised-order-review-workspace-panel';
 
 export async function OrderConfirmationWorkspacePage({
   searchParams,
@@ -59,6 +60,7 @@ export async function OrderConfirmationWorkspacePage({
       </section>
       <OrderConfirmationWorkspacePanel searchParams={resolvedSearchParams} />
       <OrderAmendmentResponseWorkspacePanel />
+      <RevisedOrderReviewWorkspacePanel />
       <LifecycleNavigation section={section} />
     </main>
   );
