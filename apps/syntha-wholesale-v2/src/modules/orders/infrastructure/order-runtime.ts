@@ -3,16 +3,20 @@ import { runLifecycleIdempotencyMigrations } from '@/modules/lifecycle-idempoten
 import { runSelectionMigrations } from '@/modules/selection';
 import { runShowroomMigrations } from '@/modules/showroom';
 
+import type { OrderAmendmentResponseRepository } from '../application/order-amendment-response-repository';
 import type { OrderRepository } from '../application/order-repository';
 import type { OrderReviewRepository } from '../application/order-review-repository';
+import { runOrderAmendmentResponseMigrations } from './order-amendment-response-migrations';
 import { runOrderIdempotencyMigration } from './order-idempotency-migration';
 import { runOrderMigrations } from './order-migrations';
+import { PostgresOrderAmendmentResponseRepository } from './postgres-order-amendment-response-repository';
 import { PostgresOrderRepository } from './postgres-order-repository';
 import { PostgresOrderReviewRepository } from './postgres-order-review-repository';
 
 let poolPromise: ReturnType<typeof getCampaignLifecyclePool> | null = null;
 let repositoryPromise: Promise<OrderRepository> | null = null;
 let reviewRepositoryPromise: Promise<OrderReviewRepository> | null = null;
+let amendmentResponseRepositoryPromise: Promise<OrderAmendmentResponseRepository> | null = null;
 
 function getReadyOrderPool(): ReturnType<typeof getCampaignLifecyclePool> {
   if (!poolPromise) {
@@ -23,12 +27,14 @@ function getReadyOrderPool(): ReturnType<typeof getCampaignLifecyclePool> {
         await runSelectionMigrations({ pool });
         await runOrderMigrations({ pool });
         await runOrderIdempotencyMigration({ pool });
+        await runOrderAmendmentResponseMigrations({ pool });
         return pool;
       })
       .catch((error) => {
         poolPromise = null;
         repositoryPromise = null;
         reviewRepositoryPromise = null;
+        amendmentResponseRepositoryPromise = null;
         throw error;
       });
   }
@@ -53,8 +59,18 @@ export async function getOrderReviewRepository(): Promise<OrderReviewRepository>
   return reviewRepositoryPromise;
 }
 
+export async function getOrderAmendmentResponseRepository(): Promise<OrderAmendmentResponseRepository> {
+  if (!amendmentResponseRepositoryPromise) {
+    amendmentResponseRepositoryPromise = getReadyOrderPool().then(
+      (pool) => new PostgresOrderAmendmentResponseRepository(pool),
+    );
+  }
+  return amendmentResponseRepositoryPromise;
+}
+
 export function resetOrderRuntime(): void {
   poolPromise = null;
   repositoryPromise = null;
   reviewRepositoryPromise = null;
+  amendmentResponseRepositoryPromise = null;
 }
