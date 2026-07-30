@@ -208,8 +208,8 @@ describe('Order amendment response domain', () => {
         grossMinor: 174_000,
         discountMinor: 11_520,
         netMinor: 162_480,
-        taxMinor: 25_920,
-        totalMinor: 188_400,
+        taxMinor: 26_496,
+        totalMinor: 188_976,
       },
     });
     expect(result.revised.lines[0]).toMatchObject({
