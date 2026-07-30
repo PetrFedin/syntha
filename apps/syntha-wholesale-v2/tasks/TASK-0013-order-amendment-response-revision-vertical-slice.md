@@ -1,6 +1,6 @@
 ---
 task_id: TASK-0013
-status: IN_PROGRESS
+status: QA
 priority: P0
 product_area: orders
 capability_ids:
@@ -81,3 +81,15 @@ Let the buyer respond once to a seller amendment request by accepting it, submit
 ## Implementation checkpoint
 
 TASK-0013 starts from final TASK-0012 evidence head `07d01f5b630633ac729325d89ec55f50e8d5c076`, `Syntha V2 Foundation` run `30497845937`.
+
+## QA checkpoint
+
+Code head `f244a79839689d86ec54759a4b5e8671deb9f5a0` passed `Syntha V2 Foundation` run `30532143257`:
+
+- governance and architecture validation;
+- TypeScript typecheck;
+- ESLint;
+- unit tests;
+- real PostgreSQL integration tests;
+- production build;
+- authenticated Playwright browser suite.
