@@ -11,17 +11,22 @@ export const COMMERCIAL_STAGES = Object.freeze([
   'deal-space',
 ]);
 
-export function createCommercialCycle({ id, brandId, shopId, campaignName, createdAt }) {
+export function createCommercialCycle({ id, brandId, shopId, campaign, collection, createdAt }) {
   invariant(id, 'CYCLE_ID_REQUIRED', 'Commercial cycle id is required');
   invariant(brandId && shopId, 'CYCLE_PARTIES_REQUIRED', 'Brand and shop are required');
   invariant(brandId !== shopId, 'CYCLE_PARTIES_MUST_DIFFER', 'Brand and shop must be different');
-  invariant(campaignName?.trim(), 'CAMPAIGN_NAME_REQUIRED', 'Campaign name is required');
+  invariant(campaign?.brandId === brandId, 'CYCLE_CAMPAIGN_BRAND_MISMATCH', 'Campaign must belong to cycle brand');
+  invariant(campaign.status === 'open', 'CYCLE_CAMPAIGN_NOT_OPEN', 'Campaign must be open');
+  invariant(collection?.campaignId === campaign.id, 'CYCLE_COLLECTION_CAMPAIGN_MISMATCH', 'Collection must belong to campaign');
+  invariant(collection.brandId === brandId, 'CYCLE_COLLECTION_BRAND_MISMATCH', 'Collection must belong to cycle brand');
+  invariant(collection.status === 'published', 'CYCLE_COLLECTION_NOT_PUBLISHED', 'Collection must be published');
 
   return Object.freeze({
     id,
     brandId,
     shopId,
-    campaignName: campaignName.trim(),
+    campaignId: campaign.id,
+    collectionId: collection.id,
     stage: 'campaign',
     version: 1,
     order: null,
@@ -51,6 +56,11 @@ export function attachOrder(cycle, order, updatedAt) {
   invariant(Number.isFinite(order.totalAmount) && order.totalAmount > 0, 'ORDER_TOTAL_INVALID', 'Order total must be positive');
   invariant(typeof order.currency === 'string' && order.currency.length === 3, 'ORDER_CURRENCY_INVALID', 'Order currency must be ISO-4217 code');
   invariant(Array.isArray(order.lines) && order.lines.length > 0, 'ORDER_LINES_REQUIRED', 'Order must contain at least one line');
+  for (const line of order.lines) {
+    invariant(typeof line.sku === 'string' && line.sku.length > 0, 'ORDER_LINE_SKU_REQUIRED', 'Order line SKU is required');
+    invariant(Number.isInteger(line.quantity) && line.quantity > 0, 'ORDER_LINE_QUANTITY_INVALID', 'Order line quantity must be a positive integer');
+    invariant(Number.isFinite(line.unitPrice) && line.unitPrice >= 0, 'ORDER_LINE_PRICE_INVALID', 'Order line unit price must be non-negative');
+  }
   const lineTotal = order.lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0);
   invariant(Math.abs(lineTotal - order.totalAmount) < 0.000001, 'ORDER_TOTAL_MISMATCH', 'Order total does not match line totals', {
     expected: lineTotal,

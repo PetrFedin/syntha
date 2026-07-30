@@ -2,6 +2,8 @@ import { invariant } from '../../core/errors.mjs';
 
 export const CAPABILITIES = Object.freeze({
   ORGANISATION_MANAGE: 'organisation.manage',
+  CAMPAIGN_MANAGE: 'campaign.manage',
+  COLLECTION_MANAGE: 'collection.manage',
   COMMERCIAL_CYCLE_CREATE: 'commercial-cycle.create',
   COMMERCIAL_CYCLE_ADVANCE: 'commercial-cycle.advance',
   ORDER_WRITE: 'order.write',
@@ -16,6 +18,8 @@ const ROLE_CAPABILITIES = Object.freeze({
   owner: ALL_CAPABILITIES,
   admin: ALL_CAPABILITIES,
   sales: Object.freeze([
+    CAPABILITIES.CAMPAIGN_MANAGE,
+    CAPABILITIES.COLLECTION_MANAGE,
     CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
     CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE,
     CAPABILITIES.ORDER_WRITE,

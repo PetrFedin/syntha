@@ -1,12 +1,14 @@
 import { domainEvent } from '../core/events.mjs';
 import { invariant } from '../core/errors.mjs';
+import { assertWholesaleStore } from './store-contract.mjs';
 import { assertTradePair } from '../modules/organisations/public.mjs';
 import {
   CAPABILITIES,
   assertCapability,
   assertTradeCapability,
-  membershipKey,
 } from '../modules/access-control/public.mjs';
+import { createCampaign, changeCampaignStatus } from '../modules/campaigns/public.mjs';
+import { createCollection, publishCollection } from '../modules/collections/public.mjs';
 import {
   advanceCommercialCycle,
   attachOrder,
@@ -16,31 +18,28 @@ import { openDealSpace } from '../modules/deal-space/public.mjs';
 import { createCalendarMilestone } from '../modules/calendar/public.mjs';
 
 export function createWholesalePlatform({
+  store,
   clock = () => new Date().toISOString(),
   nextId = defaultIdGenerator(),
   systemActorId = 'system',
 } = {}) {
-  const organisations = new Map();
-  const memberships = new Map();
-  const cycles = new Map();
-  const deals = new Map();
-  const calendar = new Map();
-  const events = [];
-  const commandResults = new Map();
+  assertWholesaleStore(store);
 
-  function execute(commandId, fingerprint, action) {
+  function execute(commandId, fingerprint, actorId, action) {
     invariant(commandId, 'COMMAND_ID_REQUIRED', 'Every mutation requires commandId');
-    const previous = commandResults.get(commandId);
-    if (previous) {
-      invariant(previous.fingerprint === fingerprint, 'COMMAND_ID_CONFLICT', 'commandId was already used by another mutation', { commandId });
-      return previous.result;
-    }
-    const result = action();
-    commandResults.set(commandId, Object.freeze({ fingerprint, result }));
-    return result;
+    return store.transaction(async (tx) => {
+      const previous = tx.getCommand(commandId);
+      if (previous) {
+        invariant(previous.fingerprint === fingerprint, 'COMMAND_ID_CONFLICT', 'commandId was already used by another mutation', { commandId });
+        return previous.result;
+      }
+      const result = await action(tx);
+      tx.insertCommand(Object.freeze({ id: commandId, fingerprint, actorId, result, completedAt: clock() }));
+      return result;
+    });
   }
 
-  function append(type, aggregateId, payload, commandId, actorId) {
+  function append(tx, type, aggregateId, payload, commandId, actorId) {
     const event = domainEvent({
       id: nextId('event'),
       type,
@@ -49,19 +48,19 @@ export function createWholesalePlatform({
       payload,
       metadata: { commandId, actorId },
     });
-    events.push(event);
+    tx.appendOutbox(event);
     return event;
   }
 
-  function tradeMemberships(cycle) {
-    return [...memberships.values()].filter((membership) =>
-      membership.organisationId === cycle.brandId || membership.organisationId === cycle.shopId,
-    );
+  function assertOrganisationActor(tx, organisationId, actorId, capability) {
+    const membership = tx.getMembership(organisationId, actorId);
+    assertCapability(membership, capability);
+    return membership;
   }
 
-  function authorizeTrade(actorId, cycle, capability) {
+  function authorizeTrade(tx, actorId, cycle, capability) {
     return assertTradeCapability({
-      memberships: tradeMemberships(cycle),
+      memberships: tx.listMembershipsForTrade(cycle.brandId, cycle.shopId),
       actorId,
       brandId: cycle.brandId,
       shopId: cycle.shopId,
@@ -71,35 +70,28 @@ export function createWholesalePlatform({
 
   return Object.freeze({
     registerOrganisation(commandId, actorId, organisation) {
-      return execute(commandId, `registerOrganisation:${actorId}:${JSON.stringify(organisation)}`, () => {
+      return execute(commandId, `registerOrganisation:${actorId}:${JSON.stringify(organisation)}`, actorId, (tx) => {
         invariant(actorId === systemActorId, 'SYSTEM_ACTOR_REQUIRED', 'Only the system actor can register organisations');
-        invariant(!organisations.has(organisation.id), 'ORG_ALREADY_EXISTS', 'Organisation already exists', { id: organisation.id });
-        organisations.set(organisation.id, organisation);
-        append('organisation.registered', organisation.id, { type: organisation.type }, commandId, actorId);
+        tx.insertOrganisation(organisation);
+        append(tx, 'organisation.registered', organisation.id, { type: organisation.type }, commandId, actorId);
         return organisation;
       });
     },
 
     grantMembership(commandId, actorId, membership) {
-      return execute(commandId, `grantMembership:${actorId}:${JSON.stringify(membership)}`, () => {
-        const organisation = organisations.get(membership.organisationId);
+      return execute(commandId, `grantMembership:${actorId}:${JSON.stringify(membership)}`, actorId, (tx) => {
+        const organisation = tx.getOrganisation(membership.organisationId);
         invariant(organisation, 'ORG_NOT_FOUND', 'Membership organisation not found', { organisationId: membership.organisationId });
         invariant(organisation.type === membership.organisationType, 'MEMBERSHIP_ORG_TYPE_MISMATCH', 'Membership organisation type does not match organisation');
-        const organisationMemberships = [...memberships.values()].filter((item) => item.organisationId === organisation.id);
+        const organisationMemberships = tx.listMembershipsByOrganisation(organisation.id);
         if (organisationMemberships.length === 0) {
           invariant(actorId === systemActorId, 'SYSTEM_ACTOR_REQUIRED', 'Only the system actor can bootstrap the first membership');
           invariant(membership.role === 'owner', 'FIRST_MEMBERSHIP_OWNER_REQUIRED', 'The first membership must be owner');
         } else {
-          const actorMembership = memberships.get(membershipKey(organisation.id, actorId));
-          assertCapability(actorMembership, CAPABILITIES.ORGANISATION_MANAGE);
+          assertOrganisationActor(tx, organisation.id, actorId, CAPABILITIES.ORGANISATION_MANAGE);
         }
-        const key = membershipKey(organisation.id, membership.userId);
-        invariant(!memberships.has(key), 'MEMBERSHIP_ALREADY_EXISTS', 'User already belongs to organisation', {
-          organisationId: organisation.id,
-          userId: membership.userId,
-        });
-        memberships.set(key, membership);
-        append('membership.granted', membership.id, {
+        tx.insertMembership(membership);
+        append(tx, 'membership.granted', membership.id, {
           organisationId: organisation.id,
           userId: membership.userId,
           role: membership.role,
@@ -108,58 +100,114 @@ export function createWholesalePlatform({
       });
     },
 
-    startCycle(commandId, actorId, { brandId, shopId, campaignName }) {
-      return execute(commandId, `startCycle:${actorId}:${JSON.stringify({ brandId, shopId, campaignName })}`, () => {
-        const brand = organisations.get(brandId);
-        const shop = organisations.get(shopId);
+    createCampaign(commandId, actorId, input) {
+      return execute(commandId, `createCampaign:${actorId}:${JSON.stringify(input)}`, actorId, (tx) => {
+        const brand = tx.getOrganisation(input.brandId);
+        invariant(brand?.type === 'brand', 'BRAND_REQUIRED', 'Campaign owner must be a brand');
+        assertOrganisationActor(tx, brand.id, actorId, CAPABILITIES.CAMPAIGN_MANAGE);
+        const campaign = createCampaign({ id: nextId('campaign'), ...input, createdAt: clock() });
+        tx.insertCampaign(campaign);
+        append(tx, 'campaign.created', campaign.id, { brandId: campaign.brandId, season: campaign.season }, commandId, actorId);
+        return campaign;
+      });
+    },
+
+    openCampaign(commandId, actorId, campaignId) {
+      return execute(commandId, `openCampaign:${actorId}:${campaignId}`, actorId, (tx) => {
+        const current = requireEntity(tx.getCampaign(campaignId), 'CAMPAIGN_NOT_FOUND', { campaignId });
+        assertOrganisationActor(tx, current.brandId, actorId, CAPABILITIES.CAMPAIGN_MANAGE);
+        const updated = changeCampaignStatus(current, 'open', clock());
+        tx.saveCampaign(updated, current.version);
+        append(tx, 'campaign.opened', campaignId, { version: updated.version }, commandId, actorId);
+        return updated;
+      });
+    },
+
+    createCollection(commandId, actorId, input) {
+      return execute(commandId, `createCollection:${actorId}:${JSON.stringify(input)}`, actorId, (tx) => {
+        const campaign = requireEntity(tx.getCampaign(input.campaignId), 'CAMPAIGN_NOT_FOUND', { campaignId: input.campaignId });
+        assertOrganisationActor(tx, campaign.brandId, actorId, CAPABILITIES.COLLECTION_MANAGE);
+        const collection = createCollection({ id: nextId('collection'), campaign, ...input, createdAt: clock() });
+        tx.insertCollection(collection);
+        append(tx, 'collection.created', collection.id, { campaignId: campaign.id, currency: collection.currency }, commandId, actorId);
+        return collection;
+      });
+    },
+
+    publishCollection(commandId, actorId, collectionId) {
+      return execute(commandId, `publishCollection:${actorId}:${collectionId}`, actorId, (tx) => {
+        const current = requireEntity(tx.getCollection(collectionId), 'COLLECTION_NOT_FOUND', { collectionId });
+        const campaign = requireEntity(tx.getCampaign(current.campaignId), 'CAMPAIGN_NOT_FOUND', { campaignId: current.campaignId });
+        assertOrganisationActor(tx, current.brandId, actorId, CAPABILITIES.COLLECTION_MANAGE);
+        const updated = publishCollection(current, campaign, clock());
+        tx.saveCollection(updated, current.version);
+        append(tx, 'collection.published', collectionId, { version: updated.version }, commandId, actorId);
+        return updated;
+      });
+    },
+
+    startCycle(commandId, actorId, { brandId, shopId, campaignId, collectionId }) {
+      const input = { brandId, shopId, campaignId, collectionId };
+      return execute(commandId, `startCycle:${actorId}:${JSON.stringify(input)}`, actorId, (tx) => {
+        const brand = tx.getOrganisation(brandId);
+        const shop = tx.getOrganisation(shopId);
         assertTradePair({ brand, shop });
         assertTradeCapability({
-          memberships: [...memberships.values()],
+          memberships: tx.listMembershipsForTrade(brandId, shopId),
           actorId,
           brandId,
           shopId,
           capability: CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
         });
+        const campaign = requireEntity(tx.getCampaign(campaignId), 'CAMPAIGN_NOT_FOUND', { campaignId });
+        const collection = requireEntity(tx.getCollection(collectionId), 'COLLECTION_NOT_FOUND', { collectionId });
         const cycle = createCommercialCycle({
           id: nextId('cycle'),
           brandId,
           shopId,
-          campaignName,
+          campaign,
+          collection,
           createdAt: clock(),
         });
-        cycles.set(cycle.id, cycle);
-        append('commercial-cycle.started', cycle.id, { brandId, shopId, campaignName: cycle.campaignName }, commandId, actorId);
+        tx.insertCycle(cycle);
+        append(tx, 'commercial-cycle.started', cycle.id, input, commandId, actorId);
         return cycle;
       });
     },
 
     advanceCycle(commandId, actorId, cycleId, targetStage) {
-      return execute(commandId, `advanceCycle:${actorId}:${cycleId}:${targetStage}`, () => {
-        const current = requireCycle(cycles, cycleId);
-        authorizeTrade(actorId, current, CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE);
+      return execute(commandId, `advanceCycle:${actorId}:${cycleId}:${targetStage}`, actorId, (tx) => {
+        const current = requireEntity(tx.getCycle(cycleId), 'CYCLE_NOT_FOUND', { cycleId });
+        authorizeTrade(tx, actorId, current, CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE);
         const updated = advanceCommercialCycle(current, targetStage, clock());
-        cycles.set(cycleId, updated);
-        append('commercial-cycle.advanced', cycleId, { from: current.stage, to: targetStage, version: updated.version }, commandId, actorId);
+        tx.saveCycle(updated, current.version);
+        append(tx, 'commercial-cycle.advanced', cycleId, { from: current.stage, to: targetStage, version: updated.version }, commandId, actorId);
         return updated;
       });
     },
 
     attachOrder(commandId, actorId, cycleId, order) {
-      return execute(commandId, `attachOrder:${actorId}:${cycleId}:${JSON.stringify(order)}`, () => {
-        const current = requireCycle(cycles, cycleId);
-        authorizeTrade(actorId, current, CAPABILITIES.ORDER_WRITE);
+      return execute(commandId, `attachOrder:${actorId}:${cycleId}:${JSON.stringify(order)}`, actorId, (tx) => {
+        const current = requireEntity(tx.getCycle(cycleId), 'CYCLE_NOT_FOUND', { cycleId });
+        authorizeTrade(tx, actorId, current, CAPABILITIES.ORDER_WRITE);
+        const collection = requireEntity(tx.getCollection(current.collectionId), 'COLLECTION_NOT_FOUND', { collectionId: current.collectionId });
+        invariant(order.currency === collection.currency, 'ORDER_COLLECTION_CURRENCY_MISMATCH', 'Order currency must match collection currency', {
+          orderCurrency: order.currency,
+          collectionCurrency: collection.currency,
+        });
         const updated = attachOrder(current, order, clock());
-        cycles.set(cycleId, updated);
-        append('order.attached', cycleId, { orderId: order.id, totalAmount: order.totalAmount, currency: order.currency }, commandId, actorId);
+        tx.saveCycle(updated, current.version);
+        append(tx, 'order.attached', cycleId, { orderId: order.id, totalAmount: order.totalAmount, currency: order.currency }, commandId, actorId);
         return updated;
       });
     },
 
     confirmAndOpenDeal(commandId, actorId, cycleId) {
-      return execute(commandId, `confirmAndOpenDeal:${actorId}:${cycleId}`, () => {
-        const current = requireCycle(cycles, cycleId);
-        authorizeTrade(actorId, current, CAPABILITIES.ORDER_CONFIRM);
+      return execute(commandId, `confirmAndOpenDeal:${actorId}:${cycleId}`, actorId, (tx) => {
+        const current = requireEntity(tx.getCycle(cycleId), 'CYCLE_NOT_FOUND', { cycleId });
+        authorizeTrade(tx, actorId, current, CAPABILITIES.ORDER_CONFIRM);
         const confirmed = advanceCommercialCycle(current, 'confirmation', clock());
+        tx.saveCycle(confirmed, current.version);
         const deal = openDealSpace({ id: nextId('deal'), cycle: confirmed, createdAt: clock() });
         const brandMilestone = createCalendarMilestone({
           id: nextId('calendar'),
@@ -180,33 +228,25 @@ export function createWholesalePlatform({
           visibility: 'shared',
         });
         const completed = advanceCommercialCycle(confirmed, 'deal-space', clock());
-        cycles.set(cycleId, completed);
-        deals.set(deal.id, deal);
-        calendar.set(brandMilestone.id, brandMilestone);
-        calendar.set(shopMilestone.id, shopMilestone);
-        append('order.confirmed', cycleId, { orderId: completed.order.id }, commandId, actorId);
-        append('deal-space.opened', deal.id, { cycleId, orderId: deal.orderId }, commandId, actorId);
+        tx.saveCycle(completed, confirmed.version);
+        tx.insertDeal(deal);
+        tx.insertCalendarMilestone(brandMilestone);
+        tx.insertCalendarMilestone(shopMilestone);
+        append(tx, 'order.confirmed', cycleId, { orderId: completed.order.id }, commandId, actorId);
+        append(tx, 'deal-space.opened', deal.id, { cycleId, orderId: deal.orderId }, commandId, actorId);
         return Object.freeze({ cycle: completed, deal, milestones: Object.freeze([brandMilestone, shopMilestone]) });
       });
     },
 
     snapshot() {
-      return Object.freeze({
-        organisations: [...organisations.values()],
-        memberships: [...memberships.values()],
-        cycles: [...cycles.values()],
-        deals: [...deals.values()],
-        calendar: [...calendar.values()],
-        events: [...events],
-      });
+      return store.snapshot();
     },
   });
 }
 
-function requireCycle(cycles, cycleId) {
-  const cycle = cycles.get(cycleId);
-  invariant(cycle, 'CYCLE_NOT_FOUND', 'Commercial cycle not found', { cycleId });
-  return cycle;
+function requireEntity(entity, code, details) {
+  invariant(entity, code, 'Entity not found', details);
+  return entity;
 }
 
 function defaultIdGenerator() {

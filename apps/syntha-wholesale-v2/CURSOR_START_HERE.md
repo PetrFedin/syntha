@@ -35,7 +35,7 @@ npm run verify
 
 1. Foundation and architecture guardrails. ✅
 2. Organisation membership and RBAC. ✅
-3. Campaign and collection persistence.
+3. Campaign and collection persistence. ✅
 4. Showroom and selection collaboration.
 5. Order builder, pricing, terms and confirmation.
 6. DealSpace, calendar and notifications.

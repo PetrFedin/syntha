@@ -2,13 +2,14 @@
 
 ## Current vertical slice
 
-The foundation package implements an executable in-memory vertical slice from organisation registration to confirmed wholesale deal. It is deliberately storage-agnostic so PostgreSQL, Firestore or another adapter cannot leak into domain rules.
+The foundation package implements an executable vertical slice from organisation registration to confirmed wholesale deal. Application logic depends on a transactional store contract; the supplied memory adapter is used for tests and local execution.
 
 ## Layers
 
 - `src/core`: shared errors and immutable event envelope.
 - `src/modules/*/public.mjs`: public module contracts, including organisation-scoped RBAC.
-- `src/application`: cross-module use cases and transaction boundary.
+- `src/application`: asynchronous cross-module use cases and transactional store port.
+- `src/infrastructure`: adapters, currently the deterministic memory store.
 - `scripts`: architecture verification.
 - `tests`: domain and integration tests.
 
@@ -22,8 +23,12 @@ Private files may be added inside modules later, but consumers must import only 
 
 ## Next persistence contract
 
-The first database implementation should add repositories for organisations, commercial cycles, deals, calendar milestones, commands and outbox events. Optimistic concurrency must use the aggregate `version` field.
+The PostgreSQL adapter must implement the existing transaction contract for organisations, memberships, campaigns, collections, commercial cycles, deals, calendar milestones, durable commands and outbox events. Versioned saves already require optimistic concurrency.
 
 ## Access control
 
 Every business mutation records `actorId`. The actor must hold an active membership in Brand or Shop participating in the trade and the role must grant the required capability. The system actor is reserved for organisation registration and first-owner bootstrap.
+
+## Persistence guarantees
+
+Commands and emitted events are stored in the same transaction as aggregate changes. Failed use cases roll back all writes. Durable command fingerprints provide idempotency across application instances. The outbox separates transaction commit from external event publication.
