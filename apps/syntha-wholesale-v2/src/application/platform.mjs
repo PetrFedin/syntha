@@ -2,6 +2,12 @@ import { domainEvent } from '../core/events.mjs';
 import { invariant } from '../core/errors.mjs';
 import { assertTradePair } from '../modules/organisations/public.mjs';
 import {
+  CAPABILITIES,
+  assertCapability,
+  assertTradeCapability,
+  membershipKey,
+} from '../modules/access-control/public.mjs';
+import {
   advanceCommercialCycle,
   attachOrder,
   createCommercialCycle,
@@ -9,8 +15,13 @@ import {
 import { openDealSpace } from '../modules/deal-space/public.mjs';
 import { createCalendarMilestone } from '../modules/calendar/public.mjs';
 
-export function createWholesalePlatform({ clock = () => new Date().toISOString(), nextId = defaultIdGenerator() } = {}) {
+export function createWholesalePlatform({
+  clock = () => new Date().toISOString(),
+  nextId = defaultIdGenerator(),
+  systemActorId = 'system',
+} = {}) {
   const organisations = new Map();
+  const memberships = new Map();
   const cycles = new Map();
   const deals = new Map();
   const calendar = new Map();
@@ -29,34 +40,86 @@ export function createWholesalePlatform({ clock = () => new Date().toISOString()
     return result;
   }
 
-  function append(type, aggregateId, payload, commandId) {
+  function append(type, aggregateId, payload, commandId, actorId) {
     const event = domainEvent({
       id: nextId('event'),
       type,
       aggregateId,
       occurredAt: clock(),
       payload,
-      metadata: { commandId },
+      metadata: { commandId, actorId },
     });
     events.push(event);
     return event;
   }
 
+  function tradeMemberships(cycle) {
+    return [...memberships.values()].filter((membership) =>
+      membership.organisationId === cycle.brandId || membership.organisationId === cycle.shopId,
+    );
+  }
+
+  function authorizeTrade(actorId, cycle, capability) {
+    return assertTradeCapability({
+      memberships: tradeMemberships(cycle),
+      actorId,
+      brandId: cycle.brandId,
+      shopId: cycle.shopId,
+      capability,
+    });
+  }
+
   return Object.freeze({
-    registerOrganisation(commandId, organisation) {
-      return execute(commandId, `registerOrganisation:${JSON.stringify(organisation)}`, () => {
+    registerOrganisation(commandId, actorId, organisation) {
+      return execute(commandId, `registerOrganisation:${actorId}:${JSON.stringify(organisation)}`, () => {
+        invariant(actorId === systemActorId, 'SYSTEM_ACTOR_REQUIRED', 'Only the system actor can register organisations');
         invariant(!organisations.has(organisation.id), 'ORG_ALREADY_EXISTS', 'Organisation already exists', { id: organisation.id });
         organisations.set(organisation.id, organisation);
-        append('organisation.registered', organisation.id, { type: organisation.type }, commandId);
+        append('organisation.registered', organisation.id, { type: organisation.type }, commandId, actorId);
         return organisation;
       });
     },
 
-    startCycle(commandId, { brandId, shopId, campaignName }) {
-      return execute(commandId, `startCycle:${JSON.stringify({ brandId, shopId, campaignName })}`, () => {
+    grantMembership(commandId, actorId, membership) {
+      return execute(commandId, `grantMembership:${actorId}:${JSON.stringify(membership)}`, () => {
+        const organisation = organisations.get(membership.organisationId);
+        invariant(organisation, 'ORG_NOT_FOUND', 'Membership organisation not found', { organisationId: membership.organisationId });
+        invariant(organisation.type === membership.organisationType, 'MEMBERSHIP_ORG_TYPE_MISMATCH', 'Membership organisation type does not match organisation');
+        const organisationMemberships = [...memberships.values()].filter((item) => item.organisationId === organisation.id);
+        if (organisationMemberships.length === 0) {
+          invariant(actorId === systemActorId, 'SYSTEM_ACTOR_REQUIRED', 'Only the system actor can bootstrap the first membership');
+          invariant(membership.role === 'owner', 'FIRST_MEMBERSHIP_OWNER_REQUIRED', 'The first membership must be owner');
+        } else {
+          const actorMembership = memberships.get(membershipKey(organisation.id, actorId));
+          assertCapability(actorMembership, CAPABILITIES.ORGANISATION_MANAGE);
+        }
+        const key = membershipKey(organisation.id, membership.userId);
+        invariant(!memberships.has(key), 'MEMBERSHIP_ALREADY_EXISTS', 'User already belongs to organisation', {
+          organisationId: organisation.id,
+          userId: membership.userId,
+        });
+        memberships.set(key, membership);
+        append('membership.granted', membership.id, {
+          organisationId: organisation.id,
+          userId: membership.userId,
+          role: membership.role,
+        }, commandId, actorId);
+        return membership;
+      });
+    },
+
+    startCycle(commandId, actorId, { brandId, shopId, campaignName }) {
+      return execute(commandId, `startCycle:${actorId}:${JSON.stringify({ brandId, shopId, campaignName })}`, () => {
         const brand = organisations.get(brandId);
         const shop = organisations.get(shopId);
         assertTradePair({ brand, shop });
+        assertTradeCapability({
+          memberships: [...memberships.values()],
+          actorId,
+          brandId,
+          shopId,
+          capability: CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
+        });
         const cycle = createCommercialCycle({
           id: nextId('cycle'),
           brandId,
@@ -65,34 +128,37 @@ export function createWholesalePlatform({ clock = () => new Date().toISOString()
           createdAt: clock(),
         });
         cycles.set(cycle.id, cycle);
-        append('commercial-cycle.started', cycle.id, { brandId, shopId, campaignName: cycle.campaignName }, commandId);
+        append('commercial-cycle.started', cycle.id, { brandId, shopId, campaignName: cycle.campaignName }, commandId, actorId);
         return cycle;
       });
     },
 
-    advanceCycle(commandId, cycleId, targetStage) {
-      return execute(commandId, `advanceCycle:${cycleId}:${targetStage}`, () => {
+    advanceCycle(commandId, actorId, cycleId, targetStage) {
+      return execute(commandId, `advanceCycle:${actorId}:${cycleId}:${targetStage}`, () => {
         const current = requireCycle(cycles, cycleId);
+        authorizeTrade(actorId, current, CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE);
         const updated = advanceCommercialCycle(current, targetStage, clock());
         cycles.set(cycleId, updated);
-        append('commercial-cycle.advanced', cycleId, { from: current.stage, to: targetStage, version: updated.version }, commandId);
+        append('commercial-cycle.advanced', cycleId, { from: current.stage, to: targetStage, version: updated.version }, commandId, actorId);
         return updated;
       });
     },
 
-    attachOrder(commandId, cycleId, order) {
-      return execute(commandId, `attachOrder:${cycleId}:${JSON.stringify(order)}`, () => {
+    attachOrder(commandId, actorId, cycleId, order) {
+      return execute(commandId, `attachOrder:${actorId}:${cycleId}:${JSON.stringify(order)}`, () => {
         const current = requireCycle(cycles, cycleId);
+        authorizeTrade(actorId, current, CAPABILITIES.ORDER_WRITE);
         const updated = attachOrder(current, order, clock());
         cycles.set(cycleId, updated);
-        append('order.attached', cycleId, { orderId: order.id, totalAmount: order.totalAmount, currency: order.currency }, commandId);
+        append('order.attached', cycleId, { orderId: order.id, totalAmount: order.totalAmount, currency: order.currency }, commandId, actorId);
         return updated;
       });
     },
 
-    confirmAndOpenDeal(commandId, cycleId) {
-      return execute(commandId, `confirmAndOpenDeal:${cycleId}`, () => {
+    confirmAndOpenDeal(commandId, actorId, cycleId) {
+      return execute(commandId, `confirmAndOpenDeal:${actorId}:${cycleId}`, () => {
         const current = requireCycle(cycles, cycleId);
+        authorizeTrade(actorId, current, CAPABILITIES.ORDER_CONFIRM);
         const confirmed = advanceCommercialCycle(current, 'confirmation', clock());
         const deal = openDealSpace({ id: nextId('deal'), cycle: confirmed, createdAt: clock() });
         const brandMilestone = createCalendarMilestone({
@@ -118,8 +184,8 @@ export function createWholesalePlatform({ clock = () => new Date().toISOString()
         deals.set(deal.id, deal);
         calendar.set(brandMilestone.id, brandMilestone);
         calendar.set(shopMilestone.id, shopMilestone);
-        append('order.confirmed', cycleId, { orderId: completed.order.id }, commandId);
-        append('deal-space.opened', deal.id, { cycleId, orderId: deal.orderId }, commandId);
+        append('order.confirmed', cycleId, { orderId: completed.order.id }, commandId, actorId);
+        append('deal-space.opened', deal.id, { cycleId, orderId: deal.orderId }, commandId, actorId);
         return Object.freeze({ cycle: completed, deal, milestones: Object.freeze([brandMilestone, shopMilestone]) });
       });
     },
@@ -127,6 +193,7 @@ export function createWholesalePlatform({ clock = () => new Date().toISOString()
     snapshot() {
       return Object.freeze({
         organisations: [...organisations.values()],
+        memberships: [...memberships.values()],
         cycles: [...cycles.values()],
         deals: [...deals.values()],
         calendar: [...calendar.values()],

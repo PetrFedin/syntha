@@ -7,7 +7,7 @@ The foundation package implements an executable in-memory vertical slice from or
 ## Layers
 
 - `src/core`: shared errors and immutable event envelope.
-- `src/modules/*/public.mjs`: public module contracts.
+- `src/modules/*/public.mjs`: public module contracts, including organisation-scoped RBAC.
 - `src/application`: cross-module use cases and transaction boundary.
 - `scripts`: architecture verification.
 - `tests`: domain and integration tests.
@@ -23,3 +23,7 @@ Private files may be added inside modules later, but consumers must import only 
 ## Next persistence contract
 
 The first database implementation should add repositories for organisations, commercial cycles, deals, calendar milestones, commands and outbox events. Optimistic concurrency must use the aggregate `version` field.
+
+## Access control
+
+Every business mutation records `actorId`. The actor must hold an active membership in Brand or Shop participating in the trade and the role must grant the required capability. The system actor is reserved for organisation registration and first-owner bootstrap.
