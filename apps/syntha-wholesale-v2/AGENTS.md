@@ -10,4 +10,4 @@ Brand and Shop are organisation types. Roles belong to organisations.
 
 Calendar and DealSpace are core. PLM, production, BOM, QC and supply chain are outside MVP.
 
-Cross-module imports go only through `public.ts`. Boundary changes require an ADR.
+Cross-module imports use only the target module root `index.ts`. Deep imports across module boundaries are forbidden. Boundary changes require an ADR.

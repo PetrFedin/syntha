@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updated": "2026-07-17",
+  "decision_values": ["ADOPT", "ADAPT", "DEFER", "EXCLUDE"],
+  "coverage_values": ["CANONICAL", "PARTIAL", "MISSING"],
+  "capabilities": [
+    {"id":"WSC-001","name":"Digital showroom and linesheets","source_patterns":["JOOR","NuORDER","Brandboom"],"decision":"ADOPT","coverage":"CANONICAL","phase":"MVP","module":"showroom"},
+    {"id":"WSC-002","name":"Account-specific assortment, price lists and terms","source_patterns":["JOOR","NuORDER","Le New Black"],"decision":"ADAPT","coverage":"MISSING","phase":"MVP","module":"commercial-policy"},
+    {"id":"WSC-003","name":"Visual assortment planning and budget control","source_patterns":["NuORDER","JOOR"],"decision":"ADAPT","coverage":"PARTIAL","phase":"MVP","module":"selection"},
+    {"id":"WSC-004","name":"Order writing with size curves, packs and bulk actions","source_patterns":["JOOR","NuORDER","Brandboom"],"decision":"ADOPT","coverage":"PARTIAL","phase":"MVP","module":"order-builder"},
+    {"id":"WSC-005","name":"Inventory visibility, ATS and delivery windows","source_patterns":["JOOR","NuORDER","Le New Black"],"decision":"ADAPT","coverage":"MISSING","phase":"MVP","module":"availability"},
+    {"id":"WSC-006","name":"Order amendments, approvals, confirmations and audit trail","source_patterns":["JOOR","NuORDER"],"decision":"ADOPT","coverage":"PARTIAL","phase":"MVP","module":"orders"},
+    {"id":"WSC-007","name":"Wholesale payments, deposits, invoices and credit terms","source_patterns":["JOOR Pay","NuORDER Payments","Brandboom"],"decision":"ADAPT","coverage":"MISSING","phase":"POST_MVP","module":"payments"},
+    {"id":"WSC-008","name":"Retailer and account CRM with contacts, notes and activity","source_patterns":["JOOR","Brandboom","Le New Black"],"decision":"ADAPT","coverage":"PARTIAL","phase":"MVP","module":"accounts"},
+    {"id":"WSC-009","name":"Sales rep territories, targets, commissions and offline selling","source_patterns":["JOOR","NuORDER","Le New Black"],"decision":"DEFER","coverage":"MISSING","phase":"POST_MVP","module":"sales-operations"},
+    {"id":"WSC-010","name":"Marketplace discovery and connection requests","source_patterns":["JOOR Passport","NuORDER Marketplace"],"decision":"ADAPT","coverage":"PARTIAL","phase":"POST_MVP","module":"network"},
+    {"id":"WSC-011","name":"ERP, PLM, PIM, accounting and ecommerce integrations","source_patterns":["JOOR","NuORDER","Le New Black"],"decision":"ADOPT","coverage":"MISSING","phase":"MVP_FOUNDATION","module":"integrations"},
+    {"id":"WSC-012","name":"Catalog ingestion, enrichment, media and data quality","source_patterns":["NuORDER","JOOR","Brandboom"],"decision":"ADOPT","coverage":"PARTIAL","phase":"MVP","module":"catalog"},
+    {"id":"WSC-013","name":"Wholesale analytics, sell-in, reorder and performance dashboards","source_patterns":["JOOR","NuORDER"],"decision":"ADAPT","coverage":"MISSING","phase":"MVP","module":"analytics"},
+    {"id":"WSC-014","name":"Reorders and immediate/at-once availability","source_patterns":["JOOR","NuORDER","Brandboom"],"decision":"ADOPT","coverage":"MISSING","phase":"MVP","module":"reorder"},
+    {"id":"WSC-015","name":"Appointments, calendar and trade-show mode","source_patterns":["JOOR","NuORDER"],"decision":"ADAPT","coverage":"CANONICAL","phase":"MVP","module":"calendar"},
+    {"id":"WSC-016","name":"Buyer-brand collaboration, comments, files and decision history","source_patterns":["JOOR","NuORDER"],"decision":"ADAPT","coverage":"CANONICAL","phase":"MVP","module":"dealspace"},
+    {"id":"WSC-017","name":"Multi-currency, tax, locale and regional terms","source_patterns":["JOOR","NuORDER","Le New Black"],"decision":"ADOPT","coverage":"MISSING","phase":"MVP","module":"commercial-policy"},
+    {"id":"WSC-018","name":"Role, organisation, account and field-level permissions","source_patterns":["enterprise wholesale platforms"],"decision":"ADOPT","coverage":"PARTIAL","phase":"MVP_FOUNDATION","module":"identity-access"},
+    {"id":"WSC-019","name":"Returns, claims and after-order service","source_patterns":["Le New Black","ERP-connected wholesale workflows"],"decision":"DEFER","coverage":"MISSING","phase":"POST_MVP","module":"after-sales"},
+    {"id":"WSC-020","name":"Production, BOM, QC and supply-chain execution","source_patterns":["PLM and supply-chain systems"],"decision":"EXCLUDE","coverage":"CANONICAL","phase":"OUT_OF_SCOPE","module":"none"}
+  ]
+}

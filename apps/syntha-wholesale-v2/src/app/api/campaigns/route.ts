@@ -1,0 +1,129 @@
+import { randomUUID } from 'node:crypto';
+
+import { NextResponse } from 'next/server';
+
+import {
+  CampaignAlreadyExists,
+  CampaignDomainError,
+  SeasonDoesNotAcceptCampaigns,
+  createCampaignUseCase,
+  getCampaignRepository,
+  listCampaigns,
+} from '@/modules/campaigns';
+import {
+  LifecycleIdempotencyConflict,
+  LifecycleIdempotencyInProgress,
+  LifecycleIdempotencyResultMissing,
+} from '@/modules/lifecycle-idempotency';
+import {
+  SeasonNotFound,
+  getSeasonRepository,
+} from '@/modules/seasons';
+import {
+  CommercialApiError,
+  requireCommercialApiAccess,
+  requireIdempotencyKey,
+  requireJsonObject,
+  requiredDate,
+  requiredString,
+} from '@/shared/server/commercial-api';
+
+export const runtime = 'nodejs';
+
+const clock = Object.freeze({ now: () => new Date() });
+const ids = Object.freeze({ next: (prefix: string) => `${prefix}_${randomUUID()}` });
+
+function postgresCode(error: unknown): string | null {
+  if (!error || typeof error !== 'object') return null;
+  const code = (error as { readonly code?: unknown }).code;
+  return typeof code === 'string' ? code : null;
+}
+
+function failure(error: unknown): NextResponse {
+  if (error instanceof CommercialApiError) {
+    return NextResponse.json(
+      { error: error.code, message: error.message },
+      { status: error.status },
+    );
+  }
+  if (error instanceof LifecycleIdempotencyConflict) {
+    return NextResponse.json(
+      { error: 'idempotency_conflict', message: error.message },
+      { status: 409 },
+    );
+  }
+  if (error instanceof LifecycleIdempotencyInProgress) {
+    return NextResponse.json({ error: 'idempotency_in_progress' }, { status: 409 });
+  }
+  if (error instanceof LifecycleIdempotencyResultMissing) {
+    return NextResponse.json({ error: 'idempotency_result_missing' }, { status: 503 });
+  }
+  if (error instanceof SeasonNotFound) {
+    return NextResponse.json({ error: 'season_not_found' }, { status: 404 });
+  }
+  if (error instanceof SeasonDoesNotAcceptCampaigns) {
+    return NextResponse.json(
+      { error: 'season_does_not_accept_campaigns' },
+      { status: 409 },
+    );
+  }
+  if (error instanceof CampaignAlreadyExists || postgresCode(error) === '23505') {
+    return NextResponse.json({ error: 'campaign_already_exists' }, { status: 409 });
+  }
+  if (error instanceof CampaignDomainError) {
+    return NextResponse.json(
+      { error: 'invalid_campaign', message: error.message },
+      { status: 400 },
+    );
+  }
+  return NextResponse.json({ error: 'campaign_service_unavailable' }, { status: 503 });
+}
+
+export async function GET(request: Request) {
+  try {
+    const access = await requireCommercialApiAccess(request, 'read');
+    const repository = await getCampaignRepository();
+    const campaigns = await listCampaigns(repository, access.organisationId);
+    return NextResponse.json(
+      { campaigns },
+      { headers: { 'cache-control': 'no-store' } },
+    );
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const access = await requireCommercialApiAccess(request, 'operate');
+    const idempotencyKey = requireIdempotencyKey(request);
+    const body = await requireJsonObject(request);
+    const [repository, seasonRepository] = await Promise.all([
+      getCampaignRepository(),
+      getSeasonRepository(),
+    ]);
+    const result = await createCampaignUseCase({
+      repository,
+      seasonRepository,
+      clock,
+      ids,
+      organisationId: access.organisationId,
+      seasonId: requiredString(body.seasonId, 'seasonId'),
+      code: requiredString(body.code, 'code'),
+      name: requiredString(body.name, 'name'),
+      startsAt: requiredDate(body.startsAt, 'startsAt'),
+      endsAt: requiredDate(body.endsAt, 'endsAt'),
+      actorCredentialId: access.actorCredentialId,
+      idempotencyKey,
+    });
+    return NextResponse.json(result.entity, {
+      status: result.replayed ? 200 : 201,
+      headers: {
+        'cache-control': 'no-store',
+        'idempotency-replayed': result.replayed ? 'true' : 'false',
+      },
+    });
+  } catch (error) {
+    return failure(error);
+  }
+}

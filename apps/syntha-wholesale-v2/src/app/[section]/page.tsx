@@ -1,0 +1,105 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+import {
+  getNextWorkspaceSection,
+  getPreviousWorkspaceSection,
+  getWorkspaceSection,
+  workspaceSections,
+} from '@/shared/navigation';
+import { Badge, Icon } from '@/shared/ui';
+import {
+  LifecycleNavigation,
+  WorkspaceContextBar,
+  WorkspaceEmptyState,
+  WorkspacePageHeader,
+} from '@/shared/workspace/components';
+import { ConnectedServicePanel } from '@/shared/workspace/components/connected-service-panel';
+import { LifecycleWorkspacePanel } from '@/shared/workspace/components/lifecycle-workspace-panel';
+import { SelectionWorkspacePanel } from '@/shared/workspace/components/selection-workspace-panel';
+import { ShowroomWorkspacePanel } from '@/shared/workspace/components/showroom-workspace-panel';
+
+interface WorkspaceSectionPageProps {
+  readonly params: Promise<{ readonly section: string }>;
+  readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return workspaceSections.map((section) => ({ section: section.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: Pick<WorkspaceSectionPageProps, 'params'>): Promise<Metadata> {
+  const { section: slug } = await params;
+  const section = getWorkspaceSection(slug);
+  return section
+    ? { title: section.title, description: section.description }
+    : { title: 'Раздел не найден' };
+}
+
+export default async function WorkspaceSectionPage({
+  params,
+  searchParams,
+}: WorkspaceSectionPageProps) {
+  const [{ section: slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
+  const section = getWorkspaceSection(slug);
+  if (!section) notFound();
+
+  const previous = getPreviousWorkspaceSection(section);
+  const next = getNextWorkspaceSection(section);
+  const authoritativeLifecycle = section.id === 'campaigns' || section.id === 'collections';
+
+  return (
+    <main className="workspacePage">
+      <WorkspacePageHeader section={section} />
+      <WorkspaceContextBar />
+
+      <section className="workspaceModuleGrid">
+        <article className="modulePanel">
+          <div className="sectionHeader">
+            <div>
+              <p className="sectionEyebrow">Системные возможности</p>
+              <h2>{section.label} в едином контуре</h2>
+            </div>
+            {section.lifecycleStage ? <Badge tone="accent">{section.lifecycleStage}</Badge> : null}
+          </div>
+          <p>{section.systemRole}</p>
+          <ul className="moduleChecklist">
+            {section.capabilities.map((capability) => (
+              <li key={capability}>
+                <span className="moduleChecklistMark"><Icon name="check" size={15} /></span>
+                {capability}
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <aside className="modulePanel">
+          <p className="sectionEyebrow">Связанные стадии</p>
+          <h2>Переходы без тупиков</h2>
+          <div className="workflowLinks">
+            {previous ? <p>Назад: <strong>{previous.title}</strong></p> : <p>Начало lifecycle</p>}
+            {next ? <p>Далее: <strong>{next.title}</strong></p> : <p>Завершение lifecycle</p>}
+          </div>
+        </aside>
+      </section>
+
+      {authoritativeLifecycle ? (
+        <LifecycleWorkspacePanel section={section.id} searchParams={resolvedSearchParams} />
+      ) : section.id === 'showroom' ? (
+        <ShowroomWorkspacePanel searchParams={resolvedSearchParams} />
+      ) : section.id === 'selections' ? (
+        <SelectionWorkspacePanel searchParams={resolvedSearchParams} />
+      ) : (
+        <>
+          <ConnectedServicePanel section={section.id} />
+          <WorkspaceEmptyState section={section} />
+        </>
+      )}
+      <LifecycleNavigation section={section} />
+    </main>
+  );
+}
