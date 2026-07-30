@@ -17,7 +17,10 @@ export type LifecycleCreateCommandName =
   | 'CONFIRM_ORDER'
   | 'ACCEPT_ORDER_AMENDMENT'
   | 'COUNTER_ORDER_AMENDMENT'
-  | 'REJECT_ORDER_AMENDMENT';
+  | 'REJECT_ORDER_AMENDMENT'
+  | 'APPROVE_REVISED_ORDER'
+  | 'REQUEST_REVISED_ORDER_AMENDMENT'
+  | 'CONFIRM_REVISED_ORDER';
 
 export type LifecycleResultEntityType =
   | 'SEASON'
@@ -31,7 +34,9 @@ export type LifecycleResultEntityType =
   | 'SUBMITTED_ORDER_SNAPSHOT'
   | 'ORDER_REVIEW'
   | 'CONFIRMED_ORDER_VERSION'
-  | 'ORDER_AMENDMENT_RESPONSE';
+  | 'ORDER_AMENDMENT_RESPONSE'
+  | 'REVISED_ORDER_REVIEW'
+  | 'REVISED_CONFIRMED_ORDER_VERSION';
 
 export interface LifecycleCreateCommand {
   readonly organisationId: OrganisationId;
