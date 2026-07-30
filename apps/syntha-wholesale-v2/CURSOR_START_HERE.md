@@ -37,7 +37,7 @@ npm run verify
 2. Organisation membership and RBAC. ✅
 3. Campaign and collection persistence. ✅
 4. Showroom and selection collaboration. ✅
-5. Order builder, pricing, terms and confirmation.
+5. Order builder, pricing, terms and confirmation. ✅
 6. DealSpace, calendar and notifications.
 7. PostgreSQL adapters, API and UI.
 8. Only then: PLM, production, BOM, QC, logistics and landed cost.

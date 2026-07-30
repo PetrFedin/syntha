@@ -36,3 +36,7 @@ Commands and emitted events are stored in the same transaction as aggregate chan
 ## Showroom and selection
 
 A published collection can expose one or more scheduled showrooms. A shop buyer creates the cycle selection only while the cycle is at `showroom`; creation advances it to `selection`. Submitting a non-empty selection advances the same cycle to `order-builder` in the same transaction.
+
+## Order builder and bilateral terms
+
+An order draft is derived only from a submitted selection. Quantity, unit price and total are copied and recalculated from immutable selection lines; the caller cannot supply a total. Incoterm, payment structure and delivery window are validated as a commercial terms snapshot. Brand and Shop accept the same order version indepently. Only a dual-approved order can be attached to the commercial cycle and advanced from `order-builder` to `order`; confirmation then opens DealSpace through the existing atomic transaction.

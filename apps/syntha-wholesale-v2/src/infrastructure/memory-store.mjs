@@ -41,6 +41,7 @@ function emptyState() {
     collections: new Map(),
     showrooms: new Map(),
     selections: new Map(),
+    orders: new Map(),
     cycles: new Map(),
     deals: new Map(),
     calendar: new Map(),
@@ -79,6 +80,11 @@ function transactionView(state) {
     getSelectionByCycle: (cycleId) => [...state.selections.values()].find((item) => item.cycleId === cycleId),
     insertSelection: (selection) => insertUnique(state.selections, selection.id, selection, 'SELECTION_ALREADY_EXISTS'),
     saveSelection: (selection, expectedVersion) => saveVersioned(state.selections, selection, expectedVersion, 'SELECTION_CONCURRENCY_CONFLICT'),
+
+    getOrder: (id) => state.orders.get(id),
+    getOrderByCycle: (cycleId) => [...state.orders.values()].find((item) => item.cycleId === cycleId),
+    insertOrder: (order) => insertUnique(state.orders, order.id, order, 'ORDER_ALREADY_EXISTS'),
+    saveOrder: (order, expectedVersion) => saveVersioned(state.orders, order, expectedVersion, 'ORDER_CONCURRENCY_CONFLICT'),
 
     getCycle: (id) => state.cycles.get(id),
     insertCycle: (cycle) => insertUnique(state.cycles, cycle.id, cycle, 'CYCLE_ALREADY_EXISTS'),
@@ -128,6 +134,7 @@ function freezeSnapshot(state) {
     collections: [...state.collections.values()],
     showrooms: [...state.showrooms.values()],
     selections: [...state.selections.values()],
+    orders: [...state.orders.values()],
     cycles: [...state.cycles.values()],
     deals: [...state.deals.values()],
     calendar: [...state.calendar.values()],
