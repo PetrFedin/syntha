@@ -260,12 +260,21 @@ function applyLineChange(
       }),
     ),
   );
+  const totalQuantity = sizeQuantities.reduce(
+    (sum, entry) => sum + entry.quantity,
+    0,
+  );
+  if (!Number.isSafeInteger(totalQuantity)) {
+    throw new OrderAmendmentResponseDomainError(
+      `Revised total quantity for ${line.id} exceeds safe integer range`,
+    );
+  }
   const unitPriceMinor = change.unitPriceMinor ?? line.unitPriceMinor;
   const discountBasisPoints =
     change.discountBasisPoints ?? line.discountBasisPoints;
   const taxBasisPoints = change.taxBasisPoints ?? line.taxBasisPoints;
-  const calculated = calculateOrderLine({
-    sizeQuantities,
+  const totals = calculateOrderLine({
+    quantity: totalQuantity,
     unitPriceMinor,
     discountBasisPoints,
     taxBasisPoints,
@@ -273,11 +282,11 @@ function applyLineChange(
   return Object.freeze({
     ...line,
     sizeQuantities,
-    totalQuantity: calculated.totalQuantity,
+    totalQuantity,
     unitPriceMinor,
     discountBasisPoints,
     taxBasisPoints,
-    totals: calculated.totals,
+    totals,
     note: change.note ?? line.note,
     updatedAt: now,
   });
