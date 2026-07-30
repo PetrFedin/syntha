@@ -2,18 +2,11 @@ import { domainEvent } from '../core/events.mjs';
 import { invariant } from '../core/errors.mjs';
 import { assertWholesaleStore } from './store-contract.mjs';
 import { assertTradePair } from '../modules/organisations/public.mjs';
-import {
-  CAPABILITIES,
-  assertCapability,
-  assertTradeCapability,
-} from '../modules/access-control/public.mjs';
+import { CAPABILITIES, assertCapability, assertTradeCapability } from '../modules/access-control/public.mjs';
+import { assertActiveRelationship } from '../modules/counterparty-relationships/public.mjs';
 import { createCampaign, changeCampaignStatus } from '../modules/campaigns/public.mjs';
 import { createCollection, publishCollection } from '../modules/collections/public.mjs';
-import {
-  advanceCommercialCycle,
-  attachOrder,
-  createCommercialCycle,
-} from '../modules/commercial-cycle/public.mjs';
+import { advanceCommercialCycle, attachOrder, createCommercialCycle } from '../modules/commercial-cycle/public.mjs';
 import { openDealSpace } from '../modules/deal-space/public.mjs';
 import { createCalendarMilestone } from '../modules/calendar/public.mjs';
 
@@ -40,14 +33,7 @@ export function createWholesalePlatform({
   }
 
   function append(tx, type, aggregateId, payload, commandId, actorId) {
-    const event = domainEvent({
-      id: nextId('event'),
-      type,
-      aggregateId,
-      occurredAt: clock(),
-      payload,
-      metadata: { commandId, actorId },
-    });
+    const event = domainEvent({ id: nextId('event'), type, aggregateId, occurredAt: clock(), payload, metadata: { commandId, actorId } });
     tx.appendOutbox(event);
     return event;
   }
@@ -60,11 +46,8 @@ export function createWholesalePlatform({
 
   function authorizeTrade(tx, actorId, cycle, capability) {
     return assertTradeCapability({
-      memberships: tx.listMembershipsForTrade(cycle.brandId, cycle.shopId),
-      actorId,
-      brandId: cycle.brandId,
-      shopId: cycle.shopId,
-      capability,
+      memberships: tx.listMembershipsForTrade(cycle.brandId, cycle.shopId), actorId,
+      brandId: cycle.brandId, shopId: cycle.shopId, capability,
     });
   }
 
@@ -91,11 +74,7 @@ export function createWholesalePlatform({
           assertOrganisationActor(tx, organisation.id, actorId, CAPABILITIES.ORGANISATION_MANAGE);
         }
         tx.insertMembership(membership);
-        append(tx, 'membership.granted', membership.id, {
-          organisationId: organisation.id,
-          userId: membership.userId,
-          role: membership.role,
-        }, commandId, actorId);
+        append(tx, 'membership.granted', membership.id, { organisationId: organisation.id, userId: membership.userId, role: membership.role }, commandId, actorId);
         return membership;
       });
     },
@@ -153,24 +132,16 @@ export function createWholesalePlatform({
         const shop = tx.getOrganisation(shopId);
         assertTradePair({ brand, shop });
         assertTradeCapability({
-          memberships: tx.listMembershipsForTrade(brandId, shopId),
-          actorId,
-          brandId,
-          shopId,
+          memberships: tx.listMembershipsForTrade(brandId, shopId), actorId, brandId, shopId,
           capability: CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
         });
+        const relationship = tx.getRelationshipByTrade(brandId, shopId);
+        assertActiveRelationship(relationship, { brandId, shopId });
         const campaign = requireEntity(tx.getCampaign(campaignId), 'CAMPAIGN_NOT_FOUND', { campaignId });
         const collection = requireEntity(tx.getCollection(collectionId), 'COLLECTION_NOT_FOUND', { collectionId });
-        const cycle = createCommercialCycle({
-          id: nextId('cycle'),
-          brandId,
-          shopId,
-          campaign,
-          collection,
-          createdAt: clock(),
-        });
+        const cycle = createCommercialCycle({ id: nextId('cycle'), brandId, shopId, campaign, collection, createdAt: clock() });
         tx.insertCycle(cycle);
-        append(tx, 'commercial-cycle.started', cycle.id, input, commandId, actorId);
+        append(tx, 'commercial-cycle.started', cycle.id, { ...input, relationshipId: relationship.id }, commandId, actorId);
         return cycle;
       });
     },
@@ -192,8 +163,7 @@ export function createWholesalePlatform({
         authorizeTrade(tx, actorId, current, CAPABILITIES.ORDER_WRITE);
         const collection = requireEntity(tx.getCollection(current.collectionId), 'COLLECTION_NOT_FOUND', { collectionId: current.collectionId });
         invariant(order.currency === collection.currency, 'ORDER_COLLECTION_CURRENCY_MISMATCH', 'Order currency must match collection currency', {
-          orderCurrency: order.currency,
-          collectionCurrency: collection.currency,
+          orderCurrency: order.currency, collectionCurrency: collection.currency,
         });
         const updated = attachOrder(current, order, clock());
         tx.saveCycle(updated, current.version);
@@ -210,22 +180,12 @@ export function createWholesalePlatform({
         tx.saveCycle(confirmed, current.version);
         const deal = openDealSpace({ id: nextId('deal'), cycle: confirmed, createdAt: clock() });
         const brandMilestone = createCalendarMilestone({
-          id: nextId('calendar'),
-          ownerOrganisationId: confirmed.brandId,
-          cycleId,
-          type: 'deal',
-          title: `Deal opened for ${confirmed.order.id}`,
-          startsAt: clock(),
-          visibility: 'shared',
+          id: nextId('calendar'), ownerOrganisationId: confirmed.brandId, cycleId, type: 'deal',
+          title: `Deal opened for ${confirmed.order.id}`, startsAt: clock(), visibility: 'shared',
         });
         const shopMilestone = createCalendarMilestone({
-          id: nextId('calendar'),
-          ownerOrganisationId: confirmed.shopId,
-          cycleId,
-          type: 'deal',
-          title: `Deal opened for ${confirmed.order.id}`,
-          startsAt: brandMilestone.startsAt,
-          visibility: 'shared',
+          id: nextId('calendar'), ownerOrganisationId: confirmed.shopId, cycleId, type: 'deal',
+          title: `Deal opened for ${confirmed.order.id}`, startsAt: brandMilestone.startsAt, visibility: 'shared',
         });
         const completed = advanceCommercialCycle(confirmed, 'deal-space', clock());
         tx.saveCycle(completed, confirmed.version);
@@ -238,9 +198,7 @@ export function createWholesalePlatform({
       });
     },
 
-    snapshot() {
-      return store.snapshot();
-    },
+    snapshot() { return store.snapshot(); },
   });
 }
 
@@ -248,7 +206,6 @@ function requireEntity(entity, code, details) {
   invariant(entity, code, 'Entity not found', details);
   return entity;
 }
-
 function defaultIdGenerator() {
   let sequence = 0;
   return (prefix) => `${prefix}_${++sequence}`;

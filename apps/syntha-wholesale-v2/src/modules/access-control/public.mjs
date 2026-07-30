@@ -5,6 +5,9 @@ export const CAPABILITIES = Object.freeze({
   CAMPAIGN_MANAGE: 'campaign.manage',
   COLLECTION_MANAGE: 'collection.manage',
   SHOWROOM_MANAGE: 'showroom.manage',
+  PARTNER_RELATIONSHIP_MANAGE: 'partner-relationship.manage',
+  SHOWROOM_INVITATION_MANAGE: 'showroom-invitation.manage',
+  SHOWROOM_INVITATION_ACCEPT: 'showroom-invitation.accept',
   SELECTION_WRITE: 'selection.write',
   COMMERCIAL_CYCLE_CREATE: 'commercial-cycle.create',
   COMMERCIAL_CYCLE_ADVANCE: 'commercial-cycle.advance',
@@ -23,6 +26,8 @@ const ROLE_CAPABILITIES = Object.freeze({
     CAPABILITIES.CAMPAIGN_MANAGE,
     CAPABILITIES.COLLECTION_MANAGE,
     CAPABILITIES.SHOWROOM_MANAGE,
+    CAPABILITIES.PARTNER_RELATIONSHIP_MANAGE,
+    CAPABILITIES.SHOWROOM_INVITATION_MANAGE,
     CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
     CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE,
     CAPABILITIES.ORDER_WRITE,
@@ -31,6 +36,8 @@ const ROLE_CAPABILITIES = Object.freeze({
     CAPABILITIES.CALENDAR_READ,
   ]),
   buyer: Object.freeze([
+    CAPABILITIES.PARTNER_RELATIONSHIP_MANAGE,
+    CAPABILITIES.SHOWROOM_INVITATION_ACCEPT,
     CAPABILITIES.SELECTION_WRITE,
     CAPABILITIES.COMMERCIAL_CYCLE_CREATE,
     CAPABILITIES.COMMERCIAL_CYCLE_ADVANCE,
@@ -71,9 +78,7 @@ export function membershipKey(organisationId, userId) {
 }
 
 export function assertCapability(membership, capability) {
-  invariant(membership?.status === 'active', 'ACTIVE_MEMBERSHIP_REQUIRED', 'Active organisation membership is required', {
-    capability,
-  });
+  invariant(membership?.status === 'active', 'ACTIVE_MEMBERSHIP_REQUIRED', 'Active organisation membership is required', { capability });
   invariant(ROLE_CAPABILITIES[membership.role]?.includes(capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', {
     role: membership.role,
     capability,
@@ -88,10 +93,7 @@ export function assertTradeCapability({ memberships, actorId, brandId, shopId, c
     (candidate.organisationId === brandId || candidate.organisationId === shopId),
   );
   invariant(membership, 'TRADE_MEMBERSHIP_REQUIRED', 'Actor must belong to one of the trade organisations', {
-    actorId,
-    brandId,
-    shopId,
-    capability,
+    actorId, brandId, shopId, capability,
   });
   assertCapability(membership, capability);
   return membership;

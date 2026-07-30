@@ -3,17 +3,20 @@ import assert from 'node:assert/strict';
 import { createOrganisation } from '../src/modules/organisations/public.mjs';
 import { createMembership } from '../src/modules/access-control/public.mjs';
 import { createWholesalePlatform } from '../src/application/platform.mjs';
+import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
 import { createMemoryWholesaleStore } from '../src/infrastructure/memory-store.mjs';
 
 async function fixture(existingStore) {
   let tick = 0;
   let id = 0;
   const store = existingStore ?? createMemoryWholesaleStore();
-  const platform = createWholesalePlatform({
+  const options = {
     store,
     clock: () => `2026-07-30T20:00:${String(tick++).padStart(2, '0')}.000Z`,
     nextId: (prefix) => `${prefix}_${++id}`,
-  });
+  };
+  const platform = createWholesalePlatform(options);
+  const partners = createPartnerAccessService(options);
   await platform.registerOrganisation('cmd-org-brand', 'system', createOrganisation({ id: 'brand-1', type: 'brand', name: 'Syntha Brand' }));
   await platform.registerOrganisation('cmd-org-shop', 'system', createOrganisation({ id: 'shop-1', type: 'shop', name: 'Syntha Shop' }));
   await platform.grantMembership('cmd-brand-owner', 'system', createMembership({
@@ -31,6 +34,8 @@ async function fixture(existingStore) {
   await platform.grantMembership('cmd-shop-viewer', 'shop-owner', createMembership({
     id: 'membership-shop-viewer', organisationId: 'shop-1', organisationType: 'shop', userId: 'viewer-1', role: 'viewer', createdAt: 'now',
   }));
+  const relationship = await partners.requestRelationship('cmd-relationship-request', 'sales-1', { brandId: 'brand-1', shopId: 'shop-1' });
+  await partners.acceptRelationship('cmd-relationship-accept', 'buyer-1', relationship.id);
   const campaign = await platform.createCampaign('cmd-campaign', 'sales-1', {
     brandId: 'brand-1', name: 'Main Campaign', season: 'FW27',
     startsAt: '2027-01-01T00:00:00.000Z', endsAt: '2027-02-01T00:00:00.000Z',
@@ -45,9 +50,7 @@ async function fixture(existingStore) {
 
 async function moveToOrder(context, actorId = 'buyer-1') {
   const { platform, campaignId, collectionId } = context;
-  let cycle = await platform.startCycle('cmd-cycle', actorId, {
-    brandId: 'brand-1', shopId: 'shop-1', campaignId, collectionId,
-  });
+  let cycle = await platform.startCycle('cmd-cycle', actorId, { brandId: 'brand-1', shopId: 'shop-1', campaignId, collectionId });
   for (const stage of ['collection', 'showroom', 'selection', 'order-builder', 'order']) {
     cycle = await platform.advanceCycle(`cmd-cycle-stage-${stage}`, actorId, cycle.id, stage);
   }
@@ -59,10 +62,7 @@ test('confirmation atomically opens DealSpace and shared milestones', async () =
   const cycle = await moveToOrder(context);
   await context.platform.attachOrder('cmd-attach-order', 'buyer-1', cycle.id, {
     id: 'order-1', currency: 'EUR', totalAmount: 600,
-    lines: [
-      { sku: 'JACKET-01', quantity: 2, unitPrice: 200 },
-      { sku: 'SHIRT-01', quantity: 2, unitPrice: 100 },
-    ],
+    lines: [{ sku: 'JACKET-01', quantity: 2, unitPrice: 200 }, { sku: 'SHIRT-01', quantity: 2, unitPrice: 100 }],
   });
   const result = await context.platform.confirmAndOpenDeal('cmd-confirm', 'buyer-1', cycle.id);
   assert.equal(result.cycle.stage, 'deal-space');
@@ -87,10 +87,7 @@ test('reusing commandId for another actor or mutation is rejected', async () => 
   const context = await fixture();
   const input = { brandId: 'brand-1', shopId: 'shop-1', campaignId: context.campaignId, collectionId: context.collectionId };
   await context.platform.startCycle('shared-command', 'buyer-1', input);
-  await assert.rejects(
-    context.platform.startCycle('shared-command', 'shop-owner', input),
-    (error) => error.code === 'COMMAND_ID_CONFLICT',
-  );
+  await assert.rejects(context.platform.startCycle('shared-command', 'shop-owner', input), (error) => error.code === 'COMMAND_ID_CONFLICT');
 });
 
 test('viewer cannot create or mutate a commercial cycle', async () => {
@@ -107,8 +104,7 @@ test('buyer cannot manage brand campaigns', async () => {
   const context = await fixture();
   await assert.rejects(
     context.platform.createCampaign('cmd-buyer-campaign', 'buyer-1', {
-      brandId: 'brand-1', name: 'Forbidden', season: 'SS28',
-      startsAt: '2028-01-01T00:00:00.000Z', endsAt: '2028-02-01T00:00:00.000Z',
+      brandId: 'brand-1', name: 'Forbidden', season: 'SS28', startsAt: '2028-01-01T00:00:00.000Z', endsAt: '2028-02-01T00:00:00.000Z',
     }),
     (error) => error.code === 'ACTIVE_MEMBERSHIP_REQUIRED',
   );
@@ -118,10 +114,7 @@ test('failed confirmation rolls back cycle, deal, calendar and command', async (
   const context = await fixture();
   const cycle = await moveToOrder(context);
   const before = context.platform.snapshot();
-  await assert.rejects(
-    context.platform.confirmAndOpenDeal('cmd-invalid-confirm', 'buyer-1', cycle.id),
-    (error) => error.code === 'ORDER_REQUIRED_FOR_CONFIRMATION',
-  );
+  await assert.rejects(context.platform.confirmAndOpenDeal('cmd-invalid-confirm', 'buyer-1', cycle.id), (error) => error.code === 'ORDER_REQUIRED_FOR_CONFIRMATION');
   const after = context.platform.snapshot();
   assert.equal(after.cycles.find((item) => item.id === cycle.id).stage, 'order');
   assert.equal(after.deals.length, before.deals.length);

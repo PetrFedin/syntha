@@ -23,7 +23,7 @@ Private files may be added inside modules later, but consumers must import only 
 
 ## Next persistence contract
 
-The PostgreSQL adapter must implement the existing transaction contract for organisations, memberships, campaigns, collections, commercial cycles, deals, calendar milestones, durable commands and outbox events. Versioned saves already require optimistic concurrency.
+The PostgreSQL adapter must implement the existing transaction contract for organisations, memberships, counterparty relationships, showroom invitations, campaigns, collections, commercial cycles, deals, calendar milestones, durable commands and outbox events. Versioned saves already require optimistic concurrency.
 
 ## Access control
 
@@ -33,6 +33,14 @@ Every business mutation records `actorId`. The actor must hold an active members
 
 Commands and emitted events are stored in the same transaction as aggregate changes. Failed use cases roll back all writes. Durable command fingerprints provide idempotency across application instances. The outbox separates transaction commit from external event publication.
 
+## Counterparty relationships and showroom invitations
+
+A Brand and Shop must have one active, mutually accepted counterparty relationship before a commercial cycle can start. Either party may request a relationship, but the requesting organisation cannot accept or reject its own request. Either party may revoke an active relationship; revocation immediately blocks new cycles and new showroom selections.
+
+Showroom visibility is granted per Shop through a versioned invitation. The invitation requires an active counterparty relationship, belongs to one exact showroom and shop, has an expiry date, and may be accepted or declined only by the invited Shop. The Brand may revoke it. A selection can be created only while both the relationship and an accepted, unexpired showroom invitation remain valid.
+
+Relationship and invitation mutations are idempotent commands, use optimistic concurrency and emit immutable outbox events in the same transaction as their state changes.
+
 ## Showroom and selection
 
 A published collection can expose one or more scheduled showrooms. A shop buyer creates the cycle selection only while the cycle is at `showroom`; creation advances it to `selection`. Submitting a non-empty selection advances the same cycle to `order-builder` in the same transaction.
@@ -40,7 +48,6 @@ A published collection can expose one or more scheduled showrooms. A shop buyer 
 ## Order builder and bilateral terms
 
 An order draft is derived only from a submitted selection. Quantity, unit price and total are copied and recalculated from immutable selection lines; the caller cannot supply a total. Incoterm, payment structure and delivery window are validated as a commercial terms snapshot. Brand and Shop accept the same order version independently. Only a dual-approved order can be attached to the commercial cycle and advanced from `order-builder` to `order`; confirmation then opens DealSpace through the existing atomic transaction.
-
 
 ## Notification projection
 
