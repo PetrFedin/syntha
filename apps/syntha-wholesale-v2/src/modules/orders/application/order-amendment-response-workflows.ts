@@ -12,9 +12,7 @@ import {
   rejectOrderAmendment,
   revisedOrderVersionId,
   type OrderAmendmentResponse,
-  type OrderAmendmentResponseId,
   type RevisedOrderVersion,
-  type RevisedOrderVersionId,
 } from '../domain/order-amendment-response';
 import {
   orderReviewId,
