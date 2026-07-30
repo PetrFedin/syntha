@@ -50,6 +50,21 @@ export {
   type RevisedOrderVersion,
   type RevisedOrderVersionId,
 } from './domain/order-amendment-response';
+export {
+  RevisedOrderReviewDomainError,
+  approveRevisedOrder,
+  confirmRevisedOrder,
+  createRevisedOrderReview,
+  requestRevisedOrderAmendment,
+  revisedConfirmedOrderVersionId,
+  revisedOrderReviewId,
+  type RevisedConfirmedOrderVersion,
+  type RevisedConfirmedOrderVersionId,
+  type RevisedOrderAmendmentRequest,
+  type RevisedOrderReview,
+  type RevisedOrderReviewId,
+  type RevisedOrderReviewStatus,
+} from './domain/revised-order-review';
 export type {
   OrderAuditAction,
   OrderAuditRecord,
@@ -71,6 +86,13 @@ export type {
   OrderAmendmentResponseOutboxEvent,
   OrderAmendmentResponseRepository,
 } from './application/order-amendment-response-repository';
+export type {
+  RevisedOrderReviewAuditAction,
+  RevisedOrderReviewAuditRecord,
+  RevisedOrderReviewEventName,
+  RevisedOrderReviewOutboxEvent,
+  RevisedOrderReviewRepository,
+} from './application/revised-order-review-repository';
 export {
   OrderPersistenceVersionConflict,
   OrderReviewPersistenceVersionConflict,
@@ -127,9 +149,24 @@ export {
   getRevisedOrderForSeller,
   rejectOrderAmendmentUseCase,
 } from './application/order-amendment-response-workflows';
+export {
+  RevisedConfirmedOrderVersionNotFound,
+  RevisedOrderReviewAlreadyExists,
+  RevisedOrderReviewNotFound,
+  RevisedOrderReviewSourceNotFound,
+  RevisedOrderReviewVersionConflict,
+  approveRevisedOrderUseCase,
+  confirmApprovedRevisedOrderUseCase,
+  getRevisedConfirmedOrderForBuyer,
+  getRevisedConfirmedOrderForSeller,
+  getRevisedOrderReviewForBuyer,
+  getRevisedOrderReviewForSeller,
+  requestRevisedOrderAmendmentUseCase,
+} from './application/revised-order-review-workflows';
 export { InMemoryOrderRepository } from './infrastructure/in-memory-order-repository';
 export { InMemoryOrderReviewRepository } from './infrastructure/in-memory-order-review-repository';
 export { InMemoryOrderAmendmentResponseRepository } from './infrastructure/in-memory-order-amendment-response-repository';
+export { InMemoryRevisedOrderReviewRepository } from './infrastructure/in-memory-revised-order-review-repository';
 export { PostgresOrderRepository } from './infrastructure/postgres-order-repository';
 export { PostgresOrderReviewRepository } from './infrastructure/postgres-order-review-repository';
 export { PostgresOrderAmendmentResponseRepository } from './infrastructure/postgres-order-amendment-response-repository';
