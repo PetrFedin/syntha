@@ -6,6 +6,7 @@
   "scripts": {
     "synth-1:install": "npm install --no-audit --no-fund --prefix _ai-share/synth-1-full",
     "verify": "npm run verify --prefix _ai-share/synth-1-full",
+    "v2:verify": "npm run verify --prefix apps/syntha-wholesale-v2",
     "smoke": "npm run smoke:fast --prefix _ai-share/synth-1-full",
     "db:core:up": "bash scripts/core-db-up.sh",
     "db:core:down": "docker compose -f _ai-share/synth-1-full/docker-compose.workshop2.yml down",

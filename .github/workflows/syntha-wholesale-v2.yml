@@ -1,0 +1,28 @@
+name: Syntha Wholesale V2
+
+on:
+  pull_request:
+    paths:
+      - 'apps/syntha-wholesale-v2/**'
+      - 'package.json'
+      - '.github/workflows/syntha-wholesale-v2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/syntha-wholesale-v2/**'
+      - 'package.json'
+      - '.github/workflows/syntha-wholesale-v2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run v2:verify
