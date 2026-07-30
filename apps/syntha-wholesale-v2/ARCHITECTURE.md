@@ -32,3 +32,7 @@ Every business mutation records `actorId`. The actor must hold an active members
 ## Persistence guarantees
 
 Commands and emitted events are stored in the same transaction as aggregate changes. Failed use cases roll back all writes. Durable command fingerprints provide idempotency across application instances. The outbox separates transaction commit from external event publication.
+
+## Showroom and selection
+
+A published collection can expose one or more scheduled showrooms. A shop buyer creates the cycle selection only while the cycle is at `showroom`; creation advances it to `selection`. Submitting a non-empty selection advances the same cycle to `order-builder` in the same transaction.

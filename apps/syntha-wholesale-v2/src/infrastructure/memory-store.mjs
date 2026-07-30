@@ -39,6 +39,8 @@ function emptyState() {
     memberships: new Map(),
     campaigns: new Map(),
     collections: new Map(),
+    showrooms: new Map(),
+    selections: new Map(),
     cycles: new Map(),
     deals: new Map(),
     calendar: new Map(),
@@ -68,6 +70,15 @@ function transactionView(state) {
     getCollection: (id) => state.collections.get(id),
     insertCollection: (collection) => insertUnique(state.collections, collection.id, collection, 'COLLECTION_ALREADY_EXISTS'),
     saveCollection: (collection, expectedVersion) => saveVersioned(state.collections, collection, expectedVersion, 'COLLECTION_CONCURRENCY_CONFLICT'),
+
+    getShowroom: (id) => state.showrooms.get(id),
+    insertShowroom: (showroom) => insertUnique(state.showrooms, showroom.id, showroom, 'SHOWROOM_ALREADY_EXISTS'),
+    saveShowroom: (showroom, expectedVersion) => saveVersioned(state.showrooms, showroom, expectedVersion, 'SHOWROOM_CONCURRENCY_CONFLICT'),
+
+    getSelection: (id) => state.selections.get(id),
+    getSelectionByCycle: (cycleId) => [...state.selections.values()].find((item) => item.cycleId === cycleId),
+    insertSelection: (selection) => insertUnique(state.selections, selection.id, selection, 'SELECTION_ALREADY_EXISTS'),
+    saveSelection: (selection, expectedVersion) => saveVersioned(state.selections, selection, expectedVersion, 'SELECTION_CONCURRENCY_CONFLICT'),
 
     getCycle: (id) => state.cycles.get(id),
     insertCycle: (cycle) => insertUnique(state.cycles, cycle.id, cycle, 'CYCLE_ALREADY_EXISTS'),
@@ -115,6 +126,8 @@ function freezeSnapshot(state) {
     memberships: [...state.memberships.values()],
     campaigns: [...state.campaigns.values()],
     collections: [...state.collections.values()],
+    showrooms: [...state.showrooms.values()],
+    selections: [...state.selections.values()],
     cycles: [...state.cycles.values()],
     deals: [...state.deals.values()],
     calendar: [...state.calendar.values()],
