@@ -39,4 +39,9 @@ A published collection can expose one or more scheduled showrooms. A shop buyer 
 
 ## Order builder and bilateral terms
 
-An order draft is derived only from a submitted selection. Quantity, unit price and total are copied and recalculated from immutable selection lines; the caller cannot supply a total. Incoterm, payment structure and delivery window are validated as a commercial terms snapshot. Brand and Shop accept the same order version indepently. Only a dual-approved order can be attached to the commercial cycle and advanced from `order-builder` to `order`; confirmation then opens DealSpace through the existing atomic transaction.
+An order draft is derived only from a submitted selection. Quantity, unit price and total are copied and recalculated from immutable selection lines; the caller cannot supply a total. Incoterm, payment structure and delivery window are validated as a commercial terms snapshot. Brand and Shop accept the same order version independently. Only a dual-approved order can be attached to the commercial cycle and advanced from `order-builder` to `order`; confirmation then opens DealSpace through the existing atomic transaction.
+
+
+## Notification projection
+
+Notification Center consumes the transactional outbox through an independent idempotent projection checkpoint. Selection submission notifies Brand, an order-term acceptance notifies the counterparty, and DealSpace opening notifies both organisations. Notification projection deliberately does not mark the external outbox record as published; delivery to external brokers remains a separate responsibility.
