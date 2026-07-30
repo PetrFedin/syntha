@@ -37,6 +37,19 @@ export {
   type OrderReviewStatus,
   type ProposedOrderLineChange,
 } from './domain/order-review';
+export {
+  OrderAmendmentResponseDomainError,
+  acceptOrderAmendment,
+  counterOrderAmendment,
+  orderAmendmentResponseId,
+  rejectOrderAmendment,
+  revisedOrderVersionId,
+  type OrderAmendmentDecision,
+  type OrderAmendmentResponse,
+  type OrderAmendmentResponseId,
+  type RevisedOrderVersion,
+  type RevisedOrderVersionId,
+} from './domain/order-amendment-response';
 export type {
   OrderAuditAction,
   OrderAuditRecord,
@@ -51,6 +64,13 @@ export type {
   OrderReviewOutboxEvent,
   OrderReviewRepository,
 } from './application/order-review-repository';
+export type {
+  OrderAmendmentResponseAuditAction,
+  OrderAmendmentResponseAuditRecord,
+  OrderAmendmentResponseEventName,
+  OrderAmendmentResponseOutboxEvent,
+  OrderAmendmentResponseRepository,
+} from './application/order-amendment-response-repository';
 export {
   OrderPersistenceVersionConflict,
   OrderReviewPersistenceVersionConflict,
@@ -93,8 +113,23 @@ export {
   listOrderReviewsForSeller,
   requestOrderAmendmentUseCase,
 } from './application/order-review-workflows';
+export {
+  OrderAmendmentResponseAlreadyExists,
+  OrderAmendmentResponseNotFound,
+  OrderAmendmentResponseSourceNotFound,
+  OrderAmendmentResponseVersionConflict,
+  RevisedOrderVersionNotFound,
+  acceptOrderAmendmentUseCase,
+  counterOrderAmendmentUseCase,
+  getOrderAmendmentResponseForBuyer,
+  getOrderAmendmentResponseForSeller,
+  getRevisedOrderForBuyer,
+  getRevisedOrderForSeller,
+  rejectOrderAmendmentUseCase,
+} from './application/order-amendment-response-workflows';
 export { InMemoryOrderRepository } from './infrastructure/in-memory-order-repository';
 export { InMemoryOrderReviewRepository } from './infrastructure/in-memory-order-review-repository';
+export { InMemoryOrderAmendmentResponseRepository } from './infrastructure/in-memory-order-amendment-response-repository';
 export { PostgresOrderRepository } from './infrastructure/postgres-order-repository';
 export { PostgresOrderReviewRepository } from './infrastructure/postgres-order-review-repository';
 export { orderMigrations, runOrderMigrations } from './infrastructure/order-migrations';
