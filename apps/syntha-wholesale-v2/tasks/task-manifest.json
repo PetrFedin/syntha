@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "tasks": [
     {"id":"TASK-0001","file":"TASK-0001-project-boundary-and-commands.md","status":"DONE","priority":"P0","dependencies":[],"completion_report":"completions/TASK-0001-completion.md"},
     {"id":"TASK-0002","file":"TASK-0002-architecture-adr-package.md","status":"DONE","priority":"P0","dependencies":["TASK-0001"],"completion_report":"completions/TASK-0002-completion.md"},
@@ -13,6 +13,6 @@
     {"id":"TASK-0010","file":"TASK-0010-buyer-access-selection-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0009"],"completion_report":"completions/TASK-0010-completion.md"},
     {"id":"TASK-0011","file":"TASK-0011-order-builder-submission-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0010"],"completion_report":"completions/TASK-0011-completion.md"},
     {"id":"TASK-0012","file":"TASK-0012-order-approval-confirmation-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0011"],"completion_report":"completions/TASK-0012-completion.md"},
-    {"id":"TASK-0013","file":"TASK-0013-order-amendment-response-revision-vertical-slice.md","status":"IN_PROGRESS","priority":"P0","dependencies":["TASK-0012"]}
+    {"id":"TASK-0013","file":"TASK-0013-order-amendment-response-revision-vertical-slice.md","status":"QA","priority":"P0","dependencies":["TASK-0012"],"completion_report":"completions/TASK-0013-completion.md"}
   ]
 }
