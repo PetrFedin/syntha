@@ -1,5 +1,6 @@
 import { invariant } from '../core/errors.mjs';
 import { createAuthService } from '../application/auth-service.mjs';
+import { createPostgresReadinessService } from '../application/readiness-service.mjs';
 import { createWholesalePlatform } from '../application/platform.mjs';
 import { createPartnerAccessService } from '../application/partner-access-service.mjs';
 import { createShowroomSelectionService } from '../application/showroom-selection-service.mjs';
@@ -13,7 +14,7 @@ import { createPostgresWorkspaceReader } from '../infrastructure/postgres-worksp
 import { createWholesaleHttpHandler } from '../http/api.mjs';
 import { createWholesaleFetchHandler } from '../http/fetch-api.mjs';
 
-export function createPostgresWholesaleRuntime({ pool, clock, nextId, randomBytesImpl, sessionTtlMs } = {}) {
+export function createPostgresWholesaleRuntime({ pool, migrationsDir, clock, nextId, randomBytesImpl, sessionTtlMs } = {}) {
   invariant(pool, 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
   const store = createPostgresWholesaleStore({ pool });
   const options = { store, ...(clock ? { clock } : {}), ...(nextId ? { nextId } : {}) };
@@ -24,6 +25,7 @@ export function createPostgresWholesaleRuntime({ pool, clock, nextId, randomByte
     ...(randomBytesImpl ? { randomBytesImpl } : {}),
     ...(sessionTtlMs ? { sessionTtlMs } : {}),
   });
+  const readiness = migrationsDir ? createPostgresReadinessService({ pool, migrationsDir, ...(clock ? { clock } : {}) }) : undefined;
   const platform = createWholesalePlatform(options);
   const partners = createPartnerAccessService(options);
   const collaboration = createShowroomSelectionService(options);
@@ -31,8 +33,8 @@ export function createPostgresWholesaleRuntime({ pool, clock, nextId, randomByte
   const projectionStore = createPostgresNotificationProjectionStore({ pool });
   const notifications = createNotificationService({ sourceStore: store, projectionStore, ...(clock ? { clock } : {}), ...(nextId ? { nextId } : {}) });
   const workspace = createWorkspaceQueryService({ reader: createPostgresWorkspaceReader({ pool }) });
-  const transport = { authenticate: auth.authenticate, auth, platform, partners, collaboration, orders, notifications, workspace };
+  const transport = { authenticate: auth.authenticate, auth, readiness, platform, partners, collaboration, orders, notifications, workspace };
   const handler = createWholesaleHttpHandler(transport);
   const fetchHandler = createWholesaleFetchHandler(transport);
-  return Object.freeze({ auth, store, projectionStore, platform, partners, collaboration, orders, notifications, workspace, handler, fetchHandler });
+  return Object.freeze({ auth, readiness, store, projectionStore, platform, partners, collaboration, orders, notifications, workspace, handler, fetchHandler });
 }
