@@ -69,6 +69,46 @@ function view(client) {
       );
       invariant(result.rowCount === 1, 'AUTH_SESSION_NOT_FOUND', 'Session not found', { sessionId: session.id });
     },
+    async lockLoginKey(keyHash) {
+      await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [keyHash]);
+    },
+    async getLoginThrottle(keyHash) {
+      const result = await client.query('SELECT * FROM auth_login_throttles WHERE key_hash = $1 FOR UPDATE', [keyHash]);
+      return throttleFromRow(result.rows[0]);
+    },
+    async saveLoginThrottle(throttle) {
+      await client.query(
+        `INSERT INTO auth_login_throttles
+           (key_hash, failure_count, window_started_at, blocked_until, updated_at)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (key_hash) DO UPDATE SET
+           failure_count = EXCLUDED.failure_count,
+           window_started_at = EXCLUDED.window_started_at,
+           blocked_until = EXCLUDED.blocked_until,
+           updated_at = EXCLUDED.updated_at`,
+        [throttle.keyHash, throttle.failureCount, throttle.windowStartedAt, throttle.blockedUntil, throttle.updatedAt],
+      );
+    },
+    async deleteLoginThrottle(keyHash) {
+      await client.query('DELETE FROM auth_login_throttles WHERE key_hash = $1', [keyHash]);
+    },
+    async insertLoginAudit(entry) {
+      await client.query(
+        `INSERT INTO auth_login_audit
+           (id, key_hash, user_id, outcome, occurred_at, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6::jsonb)`,
+        [entry.id, entry.keyHash, entry.userId, entry.outcome, entry.occurredAt, JSON.stringify(entry.metadata)],
+      );
+    },
+    async deleteExpiredSessions(now, revokedBefore) {
+      const result = await client.query(
+        `DELETE FROM auth_sessions
+          WHERE expires_at <= $1
+             OR (status = 'revoked' AND revoked_at IS NOT NULL AND revoked_at <= $2)`,
+        [now, revokedBefore],
+      );
+      return result.rowCount;
+    },
   });
 }
 
@@ -95,6 +135,16 @@ function sessionFromRow(row) {
     createdAt: iso(row.created_at),
     expiresAt: iso(row.expires_at),
     revokedAt: row.revoked_at ? iso(row.revoked_at) : null,
+  });
+}
+function throttleFromRow(row) {
+  if (!row) return undefined;
+  return Object.freeze({
+    keyHash: row.key_hash.trim(),
+    failureCount: row.failure_count,
+    windowStartedAt: iso(row.window_started_at),
+    blockedUntil: row.blocked_until ? iso(row.blocked_until) : null,
+    updatedAt: iso(row.updated_at),
   });
 }
 function iso(value) { return value?.toISOString?.() ?? value; }
