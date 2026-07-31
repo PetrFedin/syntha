@@ -1,17 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createOrganisation } from '../src/modules/organisations/public.mjs';
 import { createMembership } from '../src/modules/access-control/public.mjs';
 import { createWholesalePlatform } from '../src/application/platform.mjs';
+import { createCatalogService } from '../src/application/catalog-service.mjs';
 import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
 import { createShowroomSelectionService } from '../src/application/showroom-selection-service.mjs';
 import { createOrderBuilderService } from '../src/application/order-builder-service.mjs';
 import { createNotificationService } from '../src/application/notification-service.mjs';
 import { createPostgresWholesaleStore } from '../src/infrastructure/postgres-store.mjs';
+import { createPostgresCatalogStore } from '../src/infrastructure/postgres-catalog-store.mjs';
 import { createPostgresNotificationProjectionStore } from '../src/infrastructure/postgres-notification-projection-store.mjs';
+import { migratePostgres } from '../src/infrastructure/postgres-migrator.mjs';
 
 const databaseUrl = process.env.POSTGRES_TEST_URL;
 
@@ -21,26 +23,26 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
     const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-    const migration = await readFile(path.join(root, 'db/migrations/001_wholesale_v2.sql'), 'utf8');
-    await pool.query(migration);
+    const migrationsDir = path.join(root, 'db', 'migrations');
 
     let id = 0;
     let tick = 0;
+    const clock = () => `2026-07-30T20:${String(Math.floor(tick / 60)).padStart(2, '0')}:${String(tick++ % 60).padStart(2, '0')}.000Z`;
+    const nextId = (prefix) => `${prefix}_pg_${++id}`;
+    await migratePostgres({ pool, migrationsDir, clock });
     const store = createPostgresWholesaleStore({ pool });
-    const options = {
-      store,
-      clock: () => `2026-07-30T20:${String(Math.floor(tick / 60)).padStart(2, '0')}:${String(tick++ % 60).padStart(2, '0')}.000Z`,
-      nextId: (prefix) => `${prefix}_pg_${++id}`,
-    };
+    const catalogStore = createPostgresCatalogStore({ pool });
+    const options = { store, clock, nextId };
     const platform = createWholesalePlatform(options);
+    const catalog = createCatalogService({ wholesaleStore: store, catalogStore, clock, nextId });
     const partners = createPartnerAccessService(options);
-    const collaboration = createShowroomSelectionService(options);
+    const collaboration = createShowroomSelectionService({ ...options, catalogReader: catalog });
     const orders = createOrderBuilderService(options);
 
     await platform.registerOrganisation('pg-org-brand', 'system', createOrganisation({ id: 'brand-pg', type: 'brand', name: 'Postgres Brand' }));
     await platform.registerOrganisation('pg-org-shop', 'system', createOrganisation({ id: 'shop-pg', type: 'shop', name: 'Postgres Shop' }));
-    await platform.grantMembership('pg-member-brand', 'system', createMembership({ id: 'member-brand-pg', organisationId: 'brand-pg', organisationType: 'brand', userId: 'sales-pg', role: 'owner', createdAt: options.clock() }));
-    await platform.grantMembership('pg-member-shop', 'system', createMembership({ id: 'member-shop-pg', organisationId: 'shop-pg', organisationType: 'shop', userId: 'buyer-pg', role: 'owner', createdAt: options.clock() }));
+    await platform.grantMembership('pg-member-brand', 'system', createMembership({ id: 'member-brand-pg', organisationId: 'brand-pg', organisationType: 'brand', userId: 'sales-pg', role: 'owner', createdAt: clock() }));
+    await platform.grantMembership('pg-member-shop', 'system', createMembership({ id: 'member-shop-pg', organisationId: 'shop-pg', organisationType: 'shop', userId: 'buyer-pg', role: 'owner', createdAt: clock() }));
 
     const relationship = await partners.requestRelationship('pg-relationship-request', 'sales-pg', { brandId: 'brand-pg', shopId: 'shop-pg' });
     await partners.acceptRelationship('pg-relationship-accept', 'buyer-pg', relationship.id);
@@ -54,6 +56,10 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
       campaignId: campaign.id, brandId: 'brand-pg', name: 'Main', currency: 'EUR',
     });
     await platform.publishCollection('pg-collection-publish', 'sales-pg', collection.id);
+    await catalog.createSku('pg-catalog-create', 'sales-pg', {
+      sku: 'SKU-PG', collectionId: collection.id, brandId: 'brand-pg', name: 'Postgres Coat', wholesalePrice: 125, currency: 'EUR',
+    });
+    await catalog.publishSku('pg-catalog-publish', 'sales-pg', 'SKU-PG');
     const showroom = await collaboration.createShowroom('pg-showroom-create', 'sales-pg', {
       collectionId: collection.id, brandId: 'brand-pg', name: 'Paris',
       opensAt: '2027-01-05T00:00:00.000Z', closesAt: '2027-01-20T00:00:00.000Z',
@@ -70,7 +76,9 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
     cycle = await platform.advanceCycle('pg-cycle-collection', 'buyer-pg', cycle.id, 'collection');
     cycle = await platform.advanceCycle('pg-cycle-showroom', 'buyer-pg', cycle.id, 'showroom');
     const created = await collaboration.createSelection('pg-selection-create', 'buyer-pg', { cycleId: cycle.id, showroomId: showroom.id });
-    const edited = await collaboration.upsertSelectionLine('pg-selection-line', 'buyer-pg', created.selection.id, { sku: 'SKU-PG', quantity: 4, unitPrice: 125 });
+    const edited = await collaboration.upsertSelectionLine('pg-selection-line', 'buyer-pg', created.selection.id, { sku: 'SKU-PG', quantity: 4 });
+    assert.equal(edited.lines[0].unitPrice, 125);
+    assert.equal(edited.lines[0].catalogVersion, 2);
     const submitted = await collaboration.submitSelection('pg-selection-submit', 'buyer-pg', edited.id);
 
     let order = await orders.createOrderDraft('pg-order-create', 'buyer-pg', {
@@ -84,24 +92,15 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
 
     assert.equal(opened.cycle.stage, 'deal-space');
     assert.equal(opened.deal.totalAmount, 500);
+    assert.equal((await catalogStore.getSku('SKU-PG')).status, 'published');
 
     const repeatedPlatform = createWholesalePlatform({ store });
     const repeated = await repeatedPlatform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
     assert.deepEqual(repeated, opened);
 
     const projectionStore = createPostgresNotificationProjectionStore({ pool });
-    const notifications = createNotificationService({
-      sourceStore: store,
-      projectionStore,
-      clock: options.clock,
-      nextId: options.nextId,
-    });
-    const secondNotifications = createNotificationService({
-      sourceStore: store,
-      projectionStore: createPostgresNotificationProjectionStore({ pool }),
-      clock: options.clock,
-      nextId: options.nextId,
-    });
+    const notifications = createNotificationService({ sourceStore: store, projectionStore, clock, nextId });
+    const secondNotifications = createNotificationService({ sourceStore: store, projectionStore: createPostgresNotificationProjectionStore({ pool }), clock, nextId });
     await Promise.all([notifications.projectPending(), secondNotifications.projectPending()]);
     await notifications.projectPending();
 
