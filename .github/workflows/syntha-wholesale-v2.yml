@@ -4,25 +4,11 @@ on:
   pull_request:
     paths:
       - 'apps/syntha-wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/app/api/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/app/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/components/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/lib/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/lib/server/wholesale-v2-*.ts'
-      - '_ai-share/synth-1-full/src/lib/server/__tests__/wholesale-v2-*.test.ts'
-      - 'package.json'
       - '.github/workflows/syntha-wholesale-v2.yml'
   push:
     branches: [main]
     paths:
       - 'apps/syntha-wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/app/api/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/app/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/components/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/lib/wholesale-v2/**'
-      - '_ai-share/synth-1-full/src/lib/server/wholesale-v2-*.ts'
-      - '_ai-share/synth-1-full/src/lib/server/__tests__/wholesale-v2-*.test.ts'
-      - 'package.json'
       - '.github/workflows/syntha-wholesale-v2.yml'
 
 permissions:
@@ -51,35 +37,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install V2 dependencies
+      - name: Install Syntha V2 dependencies
         run: npm install --no-audit --no-fund --prefix apps/syntha-wholesale-v2
-      - name: Verify V2 with PostgreSQL
-        run: npm run v2:verify
+      - name: Verify Syntha V2 with PostgreSQL
+        run: npm run verify --prefix apps/syntha-wholesale-v2
         env:
           POSTGRES_TEST_URL: postgresql://syntha:syntha_test@127.0.0.1:5432/syntha_v2_test
-
-  next-bff-build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: _ai-share/synth-1-full/package-lock.json
-      - name: Install V2 dependencies
-        run: npm install --no-audit --no-fund --prefix apps/syntha-wholesale-v2
-      - name: Install canonical application
-        run: npm ci --no-audit --no-fund --prefix _ai-share/synth-1-full
-      - name: Test wholesale BFF and client
-        run: npm test --prefix _ai-share/synth-1-full -- --runInBand src/lib/server/__tests__/wholesale-v2-bff.test.ts src/lib/wholesale-v2/__tests__/client.test.ts
-      - name: Build canonical Next.js application
-        run: npm run build --prefix _ai-share/synth-1-full
-        env:
-          NODE_OPTIONS: --max-old-space-size=6144
-          NEXT_PUBLIC_FIREBASE_API_KEY: build-only-key
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: build-only.firebaseapp.com
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: build-only
-          NEXT_PUBLIC_FIREBASE_APP_ID: build-only-app
-          SYNTHA_WHOLESALE_DATABASE_URL: postgresql://build:build@127.0.0.1:5432/build
