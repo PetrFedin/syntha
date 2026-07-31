@@ -1,14 +1,15 @@
 import { invariant } from '../core/errors.mjs';
 
 export function createWholesaleRoutes({ platform, catalog, partners, collaboration, orders, notifications, workspace }) {
-  invariant(platform && catalog && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
+  invariant(platform && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
+  const catalogService = catalog ?? unavailableCatalog();
   return [
     mutate('POST', /^\/v2\/campaigns$/, ({ commandId, actorId, body }) => platform.createCampaign(commandId, actorId, body)),
     mutate('POST', /^\/v2\/campaigns\/([^/]+)\/open$/, ({ commandId, actorId, params }) => platform.openCampaign(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/collections$/, ({ commandId, actorId, body }) => platform.createCollection(commandId, actorId, body)),
     mutate('POST', /^\/v2\/collections\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => platform.publishCollection(commandId, actorId, params[0])),
-    mutate('POST', /^\/v2\/catalog\/skus$/, ({ commandId, actorId, body }) => catalog.createSku(commandId, actorId, body)),
-    mutate('POST', /^\/v2\/catalog\/skus\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => catalog.publishSku(commandId, actorId, decodeURIComponent(params[0]))),
+    mutate('POST', /^\/v2\/catalog\/skus$/, ({ commandId, actorId, body }) => catalogService.createSku(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/catalog\/skus\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => catalogService.publishSku(commandId, actorId, decodeURIComponent(params[0]))),
     mutate('POST', /^\/v2\/showrooms$/, ({ commandId, actorId, body }) => collaboration.createShowroom(commandId, actorId, body)),
     mutate('POST', /^\/v2\/showrooms\/([^/]+)\/open$/, ({ commandId, actorId, params }) => collaboration.openShowroom(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/relationships$/, ({ commandId, actorId, body }) => partners.requestRelationship(commandId, actorId, body)),
@@ -57,4 +58,8 @@ function mutate(method, pattern, execute) { return { method, pattern, execute, m
 function read(method, pattern, execute) { return { method, pattern, execute, mutation: false }; }
 function sameId(bodyValue, routeValue, field) {
   invariant(bodyValue === undefined || bodyValue === routeValue, 'HTTP_IDENTIFIER_MISMATCH', 'Body identifier does not match route identifier', { field, routeValue, bodyValue });
+}
+function unavailableCatalog() {
+  const fail = () => invariant(false, 'CATALOG_SERVICE_REQUIRED', 'Catalog service is required');
+  return Object.freeze({ createSku: fail, publishSku: fail });
 }
