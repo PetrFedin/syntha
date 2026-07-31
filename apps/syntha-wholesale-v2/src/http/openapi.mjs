@@ -3,7 +3,7 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.6.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.7.0' },
   servers: [{ url: '/v2' }],
   'x-operational-endpoints': Object.freeze({ liveness: '/health', readiness: '/ready', specification: '/openapi.json' }),
   components: {
@@ -33,7 +33,12 @@ export const wholesaleV2OpenApi = Object.freeze({
       post: {
         operationId: 'login',
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginRequest' } } } },
-        responses: { 200: { description: 'Session created' }, 400: { description: 'Invalid credentials payload' }, 401: { description: 'Invalid credentials' } },
+        responses: {
+          200: { description: 'Session created' },
+          400: { description: 'Invalid credentials payload' },
+          401: { description: 'Invalid credentials' },
+          429: { description: 'Too many login attempts', headers: { 'Retry-After': { schema: { type: 'integer', minimum: 1 } } } },
+        },
       },
     },
     '/auth/me': { get: { operationId: 'currentUser', security: auth, responses: { 200: { description: 'Current authenticated user' }, 401: { description: 'Authentication required' } } } },
