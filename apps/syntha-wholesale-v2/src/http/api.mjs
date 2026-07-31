@@ -39,6 +39,7 @@ export function createWholesaleHttpHandler({ authenticate, auth, readiness, maxB
       return send(response, 200, { data, requestId });
     } catch (error) {
       const normalized = normalizeHttpError(error);
+      if (normalized.retryAfterSeconds) response.setHeader('retry-after', String(normalized.retryAfterSeconds));
       return send(response, normalized.status, { error: { code: normalized.code, message: normalized.message, details: normalized.details }, requestId });
     }
   };
@@ -81,11 +82,13 @@ export function normalizeHttpError(error) {
   let status = 422;
   if (code === 'HTTP_ROUTE_NOT_FOUND' || code.endsWith('_NOT_FOUND')) status = 404;
   else if (['HTTP_AUTH_REQUIRED', 'HTTP_AUTH_INVALID', 'AUTH_CREDENTIALS_INVALID'].includes(code)) status = 401;
+  else if (code === 'AUTH_RATE_LIMITED') status = 429;
   else if (code === 'CAPABILITY_DENIED' || code.includes('MEMBERSHIP_REQUIRED')) status = 403;
   else if (['HTTP_JSON_INVALID', 'HTTP_IDEMPOTENCY_KEY_REQUIRED', 'HTTP_IDENTIFIER_MISMATCH', 'AUTH_EMAIL_INVALID', 'AUTH_PASSWORD_INVALID'].includes(code)) status = 400;
   else if (code === 'HTTP_BODY_TOO_LARGE') status = 413;
   else if (code.includes('CONFLICT') || code.includes('ALREADY_EXISTS')) status = 409;
-  return { status, code, message: error.message, details: error.details ?? {} };
+  const retryAfterSeconds = code === 'AUTH_RATE_LIMITED' ? Math.max(1, Math.ceil(Number(error.details?.retryAfterSeconds) || 1)) : undefined;
+  return { status, code, message: error.message, details: error.details ?? {}, retryAfterSeconds };
 }
 
 function readinessUnavailable() {
