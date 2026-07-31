@@ -9,8 +9,9 @@ cd apps/syntha-wholesale-v2
 cp .env.example .env
 npm install
 docker compose up -d
-npm run db:migrate
 ```
+
+При `npm run dev`, `npm run db:migrate` и `npm run bootstrap:owner` приложение ждёт готовности PostgreSQL и применяет миграции через единый ledger `schema_migrations`. Повторный запуск пропускает уже применённые файлы; изменение применённой миграции блокируется checksum-ошибкой.
 
 Замените `SYNTHA_BOOTSTRAP_PASSWORD` в `.env` на пароль длиной не менее 12 символов, затем создайте первого владельца и организацию:
 
@@ -40,10 +41,17 @@ curl -X POST http://127.0.0.1:4100/v2/auth/login \
 
 В `.vscode/tasks.json` находятся задачи установки, запуска PostgreSQL, миграций, проверки и dev-сервера. В `.vscode/launch.json` находится конфигурация `Syntha V2 API` для запуска через Run and Debug.
 
+## Правила миграций
+
+- Новая схема добавляется только новым нумерованным SQL-файлом в `db/migrations`.
+- Применённые файлы не редактируются: SHA-256 checksum хранится в `schema_migrations`.
+- Одновременно может работать несколько экземпляров migrator: PostgreSQL advisory lock сериализует применение.
+- Каждый новый файл применяется в отдельной транзакции.
+
 ## Обязательная проверка перед коммитом
 
 ```bash
 npm run verify
 ```
 
-Она проверяет архитектурные границы, изоляцию V2, PostgreSQL-контракт, standalone web handler и все тесты.
+Она проверяет архитектурные границы, изоляцию V2, PostgreSQL-контракт, migration ledger, standalone UI и все тесты.

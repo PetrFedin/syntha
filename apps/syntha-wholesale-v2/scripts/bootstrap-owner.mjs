@@ -1,8 +1,11 @@
+import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { createOrganisation } from '../src/modules/organisations/public.mjs';
 import { createMembership } from '../src/modules/access-control/public.mjs';
+import { migratePostgres, waitForPostgres } from '../src/infrastructure/postgres-migrator.mjs';
 import { createPostgresWholesaleRuntime } from '../src/runtime/postgres-runtime.mjs';
 
 const databaseUrl = process.env.SYNTHA_V2_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -14,8 +17,15 @@ const organisationType = process.env.SYNTHA_BOOTSTRAP_ORGANISATION_TYPE ?? 'bran
 if (!databaseUrl || !email || !password) throw new Error('SYNTHA_V2_DATABASE_URL, SYNTHA_BOOTSTRAP_EMAIL and SYNTHA_BOOTSTRAP_PASSWORD are required');
 if (!['brand', 'shop'].includes(organisationType)) throw new Error('SYNTHA_BOOTSTRAP_ORGANISATION_TYPE must be brand or shop');
 
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pool = new pg.Pool({ connectionString: databaseUrl, max: 2 });
 try {
+  await waitForPostgres({
+    pool,
+    attempts: Number(process.env.SYNTHA_DB_READY_ATTEMPTS ?? 30),
+    delayMs: Number(process.env.SYNTHA_DB_READY_DELAY_MS ?? 1_000),
+  });
+  await migratePostgres({ pool, migrationsDir: path.join(root, 'db', 'migrations') });
   const runtime = createPostgresWholesaleRuntime({ pool });
   const userId = `user_${randomUUID()}`;
   const organisationId = `${organisationType}_${randomUUID()}`;

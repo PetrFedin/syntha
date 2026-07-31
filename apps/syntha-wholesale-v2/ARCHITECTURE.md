@@ -14,12 +14,13 @@ Syntha V2 является автономным приложением в `apps/
 - `src/auth` — парольная криптография;
 - `src/modules/*/public.mjs` — публичные доменные контракты;
 - `src/application` — use cases и транзакционные границы;
-- `src/infrastructure` — memory/PostgreSQL adapters;
+- `src/infrastructure` — memory/PostgreSQL adapters, readiness и migration engine;
 - `src/http` — Node и Fetch transport adapters;
 - `src/runtime` — composition root;
+- `src/web` и `public` — standalone same-origin workspace;
 - `db/migrations` — последовательные PostgreSQL migrations;
-- `scripts` — миграции, bootstrap и gates;
-- `tests` — domain/application/transport/real PostgreSQL integration.
+- `scripts` — migration CLI, bootstrap и gates;
+- `tests` — domain/application/transport/UI/real PostgreSQL integration.
 
 ## Аутентификация
 
@@ -33,10 +34,20 @@ Syntha V2 является автономным приложением в `apps/
 
 Каждая бизнес-мутация требует `commandId`, выполняется в одной транзакции и атомарно сохраняет aggregate changes, durable command result и outbox events. Versioned aggregates используют optimistic concurrency.
 
-## PostgreSQL
+## PostgreSQL и миграции
 
-`001_wholesale_v2.sql` содержит коммерческий write model, outbox и notification projection. `002_auth.sql` содержит пользователей и отзываемые сессии. CI поднимает PostgreSQL 17 и запускает полный тестовый набор последовательно.
+`001_wholesale_v2.sql` содержит коммерческий write model, outbox и notification projection. `002_auth.sql` содержит пользователей и отзываемые сессии.
+
+`postgres-migrator.mjs`:
+
+1. ждёт готовности PostgreSQL только через безопасный `SELECT 1` probe;
+2. сериализует конкурирующие процессы advisory lock;
+3. хранит версию, SHA-256 checksum и дату применения в `schema_migrations`;
+4. применяет каждый новый файл в отдельной транзакции;
+5. пропускает неизменённые миграции и блокирует изменённую историю.
+
+Сервер, CLI миграций и bootstrap владельца используют один migration engine. CI поднимает PostgreSQL 17 и проверяет параллельный запуск migrator, повторяемость и checksum-конфликт.
 
 ## Следующая граница
 
-Standalone web workspace должен работать поверх `/v2` API внутри этого приложения. PLM, BOM, production, QC, logistics и landed cost добавляются только после устойчивого самостоятельного runtime и UI.
+После устойчивого самостоятельного runtime, auth, UI и migration lifecycle следующий приоритет — operational health/readiness, session abuse protection и затем PLM/BOM/production/QC/logistics/landed cost поверх подтверждённых заказов и коммерческих условий.
