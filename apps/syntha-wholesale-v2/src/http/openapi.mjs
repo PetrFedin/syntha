@@ -3,10 +3,10 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.3.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.4.0' },
   servers: [{ url: '/v2' }],
   components: {
-    securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID token' } },
+    securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'Opaque Syntha V2 session token' } },
     schemas: {
       Error: {
         type: 'object',
@@ -20,10 +20,23 @@ export const wholesaleV2OpenApi = Object.freeze({
           requestId: { type: 'string' },
         },
       },
+      LoginRequest: {
+        type: 'object',
+        required: ['email', 'password'],
+        properties: { email: { type: 'string', format: 'email' }, password: { type: 'string', minLength: 12, maxLength: 1024 } },
+      },
     },
   },
   paths: {
-    '/health': { get: { operationId: 'health', responses: { 200: { description: 'Healthy' } } } },
+    '/auth/login': {
+      post: {
+        operationId: 'login',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginRequest' } } } },
+        responses: { 200: { description: 'Session created' }, 400: { description: 'Invalid credentials payload' }, 401: { description: 'Invalid credentials' } },
+      },
+    },
+    '/auth/me': { get: { operationId: 'currentUser', security: auth, responses: { 200: { description: 'Current authenticated user' }, 401: { description: 'Authentication required' } } } },
+    '/auth/logout': { post: { operationId: 'logout', security: auth, responses: { 200: { description: 'Session revoked' }, 401: { description: 'Authentication required' } } } },
     '/campaigns': { post: operation('createCampaign') },
     '/campaigns/{campaignId}/open': { post: operation('openCampaign', ['campaignId']) },
     '/collections': { post: operation('createCollection') },

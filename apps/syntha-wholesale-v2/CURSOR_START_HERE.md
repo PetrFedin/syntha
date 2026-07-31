@@ -1,43 +1,54 @@
-# Syntha Wholesale V2 — Start Here
+# Syntha V2 — запуск в Cursor
 
-## Product contract
+Рабочий проект находится только в `apps/syntha-wholesale-v2` и запускается автономно.
 
-The v2 core is a B2B wholesale transaction system. Its canonical lifecycle is:
-
-`Campaign → Collection → Showroom → Selection → Order Builder → Order → Confirmation → DealSpace`.
-
-Brand and Shop are organisation types. Users receive roles inside organisations; roles are not organisation substitutes.
-
-## Non-negotiable engineering rules
-
-1. Cross-module imports use only `src/modules/<module>/public.mjs`.
-2. Every mutation has a `commandId` and is idempotent.
-3. State changes emit immutable domain events.
-4. Financial totals are reconciled from line items before confirmation.
-5. DealSpace and linked calendar milestones are created in the same application operation as confirmation.
-6. No PLM, production, BOM, QC or supply-chain implementation enters v2 until the wholesale lifecycle is stable and covered by integration tests.
-
-## Verification
-
-Run from repository root:
+## Первый запуск
 
 ```bash
-npm run v2:verify
+cd apps/syntha-wholesale-v2
+cp .env.example .env
+npm install
+docker compose up -d
+npm run db:migrate
 ```
 
-Or from this directory:
+Замените `SYNTHA_BOOTSTRAP_PASSWORD` в `.env` на пароль длиной не менее 12 символов, затем создайте первого владельца и организацию:
+
+```bash
+npm run bootstrap:owner
+```
+
+Запуск API:
+
+```bash
+npm run dev
+```
+
+Проверка:
+
+```bash
+curl http://127.0.0.1:4100/health
+curl http://127.0.0.1:4100/openapi.json
+```
+
+## Вход
+
+```bash
+curl -X POST http://127.0.0.1:4100/v2/auth/login \
+  -H 'content-type: application/json' \
+  -d '{"email":"owner@syntha.local","password":"YOUR_PASSWORD"}'
+```
+
+Полученный `accessToken` используется как `Authorization: Bearer ...`. Все бизнес-мутации также требуют уникальный `Idempotency-Key`.
+
+## Cursor
+
+В `.vscode/tasks.json` находятся задачи установки, запуска PostgreSQL, миграций, проверки и dev-сервера. В `.vscode/launch.json` находится конфигурация `Syntha V2 API` для запуска через Run and Debug.
+
+## Обязательная проверка перед коммитом
 
 ```bash
 npm run verify
 ```
 
-## Priority order
-
-1. Foundation and architecture guardrails. ✅
-2. Organisation membership and RBAC. ✅
-3. Campaign and collection persistence. ✅
-4. Showroom and selection collaboration. ✅
-5. Order builder, pricing, terms and confirmation. ✅
-6. DealSpace, calendar and notifications. ✅
-7. PostgreSQL adapters, API and UI.
-8. Only then: PLM, production, BOM, QC, logistics and landed cost.
+Она проверяет архитектурные границы, изоляцию V2, PostgreSQL-контракт и все тесты.

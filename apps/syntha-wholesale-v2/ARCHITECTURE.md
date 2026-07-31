@@ -1,57 +1,42 @@
 # Syntha Wholesale V2 Architecture
 
-## Current vertical slice
+## Граница проекта
 
-The V2 package implements the executable wholesale transaction route:
+Syntha V2 является автономным приложением в `apps/syntha-wholesale-v2`. Оно не импортирует код замороженных приложений монорепозитория и не зависит от внешнего identity provider. Изоляция контролируется `validate-isolation.mjs` в CI.
+
+## Исполняемый маршрут
 
 `Campaign → Collection → Showroom → Selection → Order Builder → Order → Confirmation → DealSpace`.
 
-The same domain and application services run against the deterministic memory adapter and the PostgreSQL adapter. Storage concerns do not enter module rules.
+## Слои
 
-## Layers
+- `src/core` — ошибки и immutable event envelope;
+- `src/auth` — парольная криптография;
+- `src/modules/*/public.mjs` — публичные доменные контракты;
+- `src/application` — use cases и транзакционные границы;
+- `src/infrastructure` — memory/PostgreSQL adapters;
+- `src/http` — Node и Fetch transport adapters;
+- `src/runtime` — composition root;
+- `db/migrations` — последовательные PostgreSQL migrations;
+- `scripts` — миграции, bootstrap и gates;
+- `tests` — domain/application/transport/real PostgreSQL integration.
 
-- `src/core` — shared domain errors and immutable event envelopes.
-- `src/modules/*/public.mjs` — public domain contracts.
-- `src/application` — asynchronous cross-module use cases and transaction boundaries.
-- `src/infrastructure` — memory and PostgreSQL adapters.
-- `db/migrations` — PostgreSQL schema.
-- `scripts` — architecture and persistence contract verification.
-- `tests` — domain, application and real-database integration tests.
+## Аутентификация
 
-## Module boundary
+Пользователи и сессии хранятся в PostgreSQL. Пароли хешируются `scrypt` с уникальной солью. Клиент получает случайный непрозрачный Bearer token; в базе хранится только SHA-256 token hash. Сессии имеют TTL и могут быть отозваны через logout. Ответ при неверном email и неверном пароле одинаковый; оба пути выполняют `scrypt`.
 
-Consumers import another domain only through its `public.mjs`. The architecture validator rejects private cross-module imports.
+## Авторизация
 
-## Transaction guarantees
+После аутентификации действия разрешаются только через активное membership организации и explicit capabilities. `actorId` берётся исключительно из серверной сессии.
 
-Every mutation:
+## Транзакционные гарантии
 
-1. requires a durable `commandId`;
-2. executes in one store transaction;
-3. records the actor and immutable domain events;
-4. stores command result and outbox events atomically with aggregate changes;
-5. uses optimistic concurrency for versioned aggregates.
+Каждая бизнес-мутация требует `commandId`, выполняется в одной транзакции и атомарно сохраняет aggregate changes, durable command result и outbox events. Versioned aggregates используют optimistic concurrency.
 
-`confirmAndOpenDeal` validates and confirms the order, advances the cycle, opens DealSpace and creates both shared calendar milestones in one transaction.
+## PostgreSQL
 
-## Access control
+`001_wholesale_v2.sql` содержит коммерческий write model, outbox и notification projection. `002_auth.sql` содержит пользователей и отзываемые сессии. CI поднимает PostgreSQL 17 и запускает полный тестовый набор последовательно.
 
-Users act through active organisation memberships. Roles grant explicit capabilities; the system actor is restricted to organisation registration and first-owner bootstrap.
+## Следующая граница
 
-A Brand and Shop need an active, mutually accepted counterparty relationship before starting a commercial cycle. The requester cannot accept its own relationship request. Either party may revoke an active relationship.
-
-Showroom access is granted per Shop through a versioned invitation. Selection creation requires both an active relationship and an accepted, unexpired invitation for the exact Showroom and Shop. Revocation immediately blocks new access.
-
-## PostgreSQL persistence
-
-`db/migrations/001_wholesale_v2.sql` defines the write model, durable commands, transactional outbox and notification projection tables with foreign keys, unique trade/access constraints, optimistic versions and working-route indexes.
-
-`createPostgresWholesaleStore` implements the same asynchronous transaction port as the memory adapter using `BEGIN`, `COMMIT` and `ROLLBACK`. Versioned updates use `UPDATE … WHERE id = ? AND version = ?`; a zero-row update is a concurrency conflict.
-
-The specialised GitHub Actions workflow starts PostgreSQL 17, applies the migration and runs the complete route from organisation bootstrap through relationship, invitation, Selection, bilateral Order approval and DealSpace. Repeating the same command against another application instance must return the stored result without duplicating aggregates or outbox events.
-
-The memory adapter remains an obligatory regression guard. PostgreSQL success may not hide a broken domain contract, and memory success may not substitute for the real database integration test.
-
-## Deliberate scope boundary
-
-PLM, production, BOM, QC, logistics and landed cost remain outside V2 until the wholesale transaction core, partner access and PostgreSQL persistence are stable. These operational domains must be built on accepted organisations, orders and immutable commercial terms rather than parallel models.
+Standalone web workspace должен работать поверх `/v2` API внутри этого приложения. PLM, BOM, production, QC, logistics и landed cost добавляются только после устойчивого самостоятельного runtime и UI.
