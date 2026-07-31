@@ -4,7 +4,7 @@ import { normalizeHttpError } from './api.mjs';
 import { wholesaleV2OpenApi } from './openapi.mjs';
 import { createWholesaleRoutes, matchWholesaleRoute } from './routes.mjs';
 
-export function createWholesaleFetchHandler({ authenticate, auth, maxBodyBytes = 256 * 1024, nextRequestId = randomUUID, ...services } = {}) {
+export function createWholesaleFetchHandler({ authenticate, auth, readiness, maxBodyBytes = 256 * 1024, nextRequestId = randomUUID, ...services } = {}) {
   invariant(typeof authenticate === 'function', 'HTTP_AUTHENTICATOR_REQUIRED', 'HTTP authenticator is required');
   const routes = createWholesaleRoutes(services);
   return async function handleWholesaleFetchRequest(request) {
@@ -12,6 +12,10 @@ export function createWholesaleFetchHandler({ authenticate, auth, maxBodyBytes =
     try {
       const url = new URL(request.url);
       if (request.method === 'GET' && url.pathname === '/health') return json(200, { status: 'ok', service: 'syntha-wholesale-v2', requestId }, requestId);
+      if (request.method === 'GET' && url.pathname === '/ready') {
+        const result = readiness?.check ? await readiness.check() : readinessUnavailable();
+        return json(result.status === 'ready' ? 200 : 503, { ...result, requestId }, requestId);
+      }
       if (request.method === 'GET' && url.pathname === '/openapi.json') return json(200, wholesaleV2OpenApi, requestId);
       if (request.method === 'POST' && url.pathname === '/v2/auth/login') {
         invariant(auth?.login, 'AUTH_SERVICE_REQUIRED', 'Authentication service is required');
@@ -59,6 +63,13 @@ async function readJson(request, limit) {
   if (!buffer.byteLength) return {};
   try { return JSON.parse(Buffer.from(buffer).toString('utf8')); }
   catch { throw new DomainError('HTTP_JSON_INVALID', 'Request body must be valid JSON'); }
+}
+function readinessUnavailable() {
+  return Object.freeze({
+    status: 'not-ready', service: 'syntha-wholesale-v2', checkedAt: new Date().toISOString(), reason: 'readiness-not-configured',
+    database: Object.freeze({ status: 'unknown' }),
+    migrations: Object.freeze({ status: 'unknown', totalCount: 0, appliedCount: 0, pending: Object.freeze([]), mismatched: Object.freeze([]), unknown: Object.freeze([]) }),
+  });
 }
 function publicIdentity(actor) { return Object.freeze({ actorId: actor.actorId, email: actor.email ?? null, displayName: actor.displayName ?? '' }); }
 function json(status, payload, requestId) { return Response.json(payload, { status, headers: { 'x-request-id': requestId } }); }
