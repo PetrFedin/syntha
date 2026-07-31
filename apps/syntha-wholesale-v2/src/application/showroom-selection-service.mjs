@@ -16,7 +16,9 @@ export function createShowroomSelectionService({
   nextId = defaultIdGenerator(),
 } = {}) {
   assertWholesaleStore(store);
-  invariant(catalogReader && typeof catalogReader.getSku === 'function', 'CATALOG_READER_REQUIRED', 'Catalog reader is required');
+  const trustedCatalogReader = catalogReader && typeof catalogReader.getSku === 'function'
+    ? catalogReader
+    : Object.freeze({ getSku: async () => undefined });
 
   function execute(commandId, fingerprint, actorId, action) {
     invariant(commandId, 'COMMAND_ID_REQUIRED', 'Every mutation requires commandId');
@@ -91,7 +93,7 @@ export function createShowroomSelectionService({
       return execute(commandId, `upsertSelectionLine:${actorId}:${selectionId}:${JSON.stringify(line)}`, actorId, async (tx) => {
         const current = requireEntity(await tx.getSelection(selectionId), 'SELECTION_NOT_FOUND', { selectionId });
         await assertOrganisationActor(tx, current.shopId, actorId, CAPABILITIES.SELECTION_WRITE);
-        const catalogSku = assertPublishedCatalogSku(await catalogReader.getSku(line.sku), { collectionId: current.collectionId, brandId: current.brandId });
+        const catalogSku = assertPublishedCatalogSku(await trustedCatalogReader.getSku(line.sku), { collectionId: current.collectionId, brandId: current.brandId });
         const trustedLine = Object.freeze({
           sku: catalogSku.sku,
           quantity: line.quantity,
