@@ -37,7 +37,8 @@ export function createWholesaleFetchHandler({ authenticate, auth, readiness, max
       return json(200, { data, requestId }, requestId);
     } catch (error) {
       const normalized = normalizeHttpError(error);
-      return json(normalized.status, { error: { code: normalized.code, message: normalized.message, details: normalized.details }, requestId }, requestId);
+      const headers = normalized.retryAfterSeconds ? { 'retry-after': String(normalized.retryAfterSeconds) } : undefined;
+      return json(normalized.status, { error: { code: normalized.code, message: normalized.message, details: normalized.details }, requestId }, requestId, headers);
     }
   };
 }
@@ -72,4 +73,6 @@ function readinessUnavailable() {
   });
 }
 function publicIdentity(actor) { return Object.freeze({ actorId: actor.actorId, email: actor.email ?? null, displayName: actor.displayName ?? '' }); }
-function json(status, payload, requestId) { return Response.json(payload, { status, headers: { 'x-request-id': requestId } }); }
+function json(status, payload, requestId, extraHeaders = {}) {
+  return Response.json(payload, { status, headers: { 'x-request-id': requestId, ...extraHeaders } });
+}
