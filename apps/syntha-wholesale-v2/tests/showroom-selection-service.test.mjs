@@ -3,17 +3,21 @@ import assert from 'node:assert/strict';
 import { createOrganisation } from '../src/modules/organisations/public.mjs';
 import { createMembership } from '../src/modules/access-control/public.mjs';
 import { createWholesalePlatform } from '../src/application/platform.mjs';
+import { createCatalogService } from '../src/application/catalog-service.mjs';
 import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
 import { createShowroomSelectionService } from '../src/application/showroom-selection-service.mjs';
 import { createMemoryWholesaleStore } from '../src/infrastructure/memory-store.mjs';
+import { createMemoryCatalogStore } from '../src/infrastructure/memory-catalog-store.mjs';
 
 async function fixture() {
   let id = 0;
   const store = createMemoryWholesaleStore();
+  const catalogStore = createMemoryCatalogStore();
   const options = { store, clock: () => '2026-07-30T20:00:00.000Z', nextId: (prefix) => `${prefix}_${++id}` };
   const platform = createWholesalePlatform(options);
+  const catalog = createCatalogService({ wholesaleStore: store, catalogStore, clock: options.clock, nextId: options.nextId });
   const partners = createPartnerAccessService(options);
-  const collaboration = createShowroomSelectionService(options);
+  const collaboration = createShowroomSelectionService({ ...options, catalogReader: catalog });
   await platform.registerOrganisation('org-brand', 'system', createOrganisation({ id: 'brand-1', type: 'brand', name: 'Brand' }));
   await platform.registerOrganisation('org-shop', 'system', createOrganisation({ id: 'shop-1', type: 'shop', name: 'Shop' }));
   await platform.grantMembership('member-sales', 'system', createMembership({ id: 'm1', organisationId: 'brand-1', organisationType: 'brand', userId: 'sales-1', role: 'owner', createdAt: 'now' }));
@@ -26,6 +30,8 @@ async function fixture() {
   await platform.openCampaign('campaign-open', 'sales-1', campaign.id);
   const collection = await platform.createCollection('collection-create', 'sales-1', { campaignId: campaign.id, brandId: 'brand-1', name: 'Main', currency: 'EUR' });
   await platform.publishCollection('collection-publish', 'sales-1', collection.id);
+  await catalog.createSku('catalog-create', 'sales-1', { sku: 'SKU-1', collectionId: collection.id, brandId: 'brand-1', name: 'Jacket', wholesalePrice: 80, currency: 'EUR' });
+  await catalog.publishSku('catalog-publish', 'sales-1', 'SKU-1');
   const showroom = await collaboration.createShowroom('showroom-create', 'sales-1', {
     collectionId: collection.id, brandId: 'brand-1', name: 'Paris', opensAt: '2027-01-05T00:00:00.000Z', closesAt: '2027-01-20T00:00:00.000Z',
   });
@@ -44,7 +50,9 @@ test('shop selection advances cycle atomically to order-builder', async () => {
   const context = await fixture();
   const created = await context.collaboration.createSelection('selection-create', 'buyer-1', { cycleId: context.cycle.id, showroomId: context.showroomId });
   assert.equal(created.cycle.stage, 'selection');
-  const edited = await context.collaboration.upsertSelectionLine('selection-line', 'buyer-1', created.selection.id, { sku: 'SKU-1', quantity: 3, unitPrice: 80 });
+  const edited = await context.collaboration.upsertSelectionLine('selection-line', 'buyer-1', created.selection.id, { sku: 'SKU-1', quantity: 3 });
+  assert.equal(edited.lines[0].unitPrice, 80);
+  assert.equal(edited.lines[0].currency, 'EUR');
   const submitted = await context.collaboration.submitSelection('selection-submit', 'buyer-1', edited.id);
   assert.equal(submitted.selection.status, 'submitted');
   assert.equal(submitted.cycle.stage, 'order-builder');
