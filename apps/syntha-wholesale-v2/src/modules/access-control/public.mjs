@@ -4,6 +4,7 @@ export const CAPABILITIES = Object.freeze({
   ORGANISATION_MANAGE: 'organisation.manage',
   CAMPAIGN_MANAGE: 'campaign.manage',
   COLLECTION_MANAGE: 'collection.manage',
+  CATALOG_MANAGE: 'catalog.manage',
   SHOWROOM_MANAGE: 'showroom.manage',
   PARTNER_RELATIONSHIP_MANAGE: 'partner-relationship.manage',
   SHOWROOM_INVITATION_MANAGE: 'showroom-invitation.manage',
@@ -25,6 +26,7 @@ const ROLE_CAPABILITIES = Object.freeze({
   sales: Object.freeze([
     CAPABILITIES.CAMPAIGN_MANAGE,
     CAPABILITIES.COLLECTION_MANAGE,
+    CAPABILITIES.CATALOG_MANAGE,
     CAPABILITIES.SHOWROOM_MANAGE,
     CAPABILITIES.PARTNER_RELATIONSHIP_MANAGE,
     CAPABILITIES.SHOWROOM_INVITATION_MANAGE,
@@ -66,35 +68,20 @@ export function createMembership({ id, organisationId, organisationType, userId,
   invariant(id, 'MEMBERSHIP_ID_REQUIRED', 'Membership id is required');
   invariant(organisationId, 'MEMBERSHIP_ORGANISATION_REQUIRED', 'Membership organisation is required');
   invariant(userId, 'MEMBERSHIP_USER_REQUIRED', 'Membership user is required');
-  invariant(ALLOWED_ROLES[organisationType]?.includes(role), 'MEMBERSHIP_ROLE_INVALID', 'Role is not valid for organisation type', {
-    organisationType,
-    role,
-  });
+  invariant(ALLOWED_ROLES[organisationType]?.includes(role), 'MEMBERSHIP_ROLE_INVALID', 'Role is not valid for organisation type', { organisationType, role });
   return Object.freeze({ id, organisationId, organisationType, userId, role, status: 'active', createdAt });
 }
 
-export function membershipKey(organisationId, userId) {
-  return `${organisationId}:${userId}`;
-}
+export function membershipKey(organisationId, userId) { return `${organisationId}:${userId}`; }
 
 export function assertCapability(membership, capability) {
   invariant(membership?.status === 'active', 'ACTIVE_MEMBERSHIP_REQUIRED', 'Active organisation membership is required', { capability });
-  invariant(ROLE_CAPABILITIES[membership.role]?.includes(capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', {
-    role: membership.role,
-    capability,
-    organisationId: membership.organisationId,
-  });
+  invariant(ROLE_CAPABILITIES[membership.role]?.includes(capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', { role: membership.role, capability, organisationId: membership.organisationId });
 }
 
 export function assertTradeCapability({ memberships, actorId, brandId, shopId, capability }) {
-  const membership = memberships.find((candidate) =>
-    candidate.userId === actorId &&
-    candidate.status === 'active' &&
-    (candidate.organisationId === brandId || candidate.organisationId === shopId),
-  );
-  invariant(membership, 'TRADE_MEMBERSHIP_REQUIRED', 'Actor must belong to one of the trade organisations', {
-    actorId, brandId, shopId, capability,
-  });
+  const membership = memberships.find((candidate) => candidate.userId === actorId && candidate.status === 'active' && (candidate.organisationId === brandId || candidate.organisationId === shopId));
+  invariant(membership, 'TRADE_MEMBERSHIP_REQUIRED', 'Actor must belong to one of the trade organisations', { actorId, brandId, shopId, capability });
   assertCapability(membership, capability);
   return membership;
 }
