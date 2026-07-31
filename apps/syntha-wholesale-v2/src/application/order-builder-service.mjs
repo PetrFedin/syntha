@@ -2,14 +2,16 @@ import { domainEvent } from '../core/events.mjs';
 import { DomainError, invariant } from '../core/errors.mjs';
 import { assertWholesaleStore } from './store-contract.mjs';
 import { CAPABILITIES, assertCapability, assertTradeCapability } from '../modules/access-control/public.mjs';
-import { createOrderDraft, acceptOrderTerms, attachReadyOrder } from '../modules/orders/public.mjs';
-import { advanceCommercialCycle, attachOrder } from '../modules/commercial-cycle/public.mjs';
+import { createOrderDraft, acceptOrderTerms, attachReadyOrder, cancelAttachedOrder } from '../modules/orders/public.mjs';
+import { advanceCommercialCycle, attachOrder, cancelCommercialCycleOrder } from '../modules/commercial-cycle/public.mjs';
 
 const INVENTORY_ERROR_CODES = new Set([
   'CATALOG_SKU_NOT_FOUND',
   'CATALOG_SKU_NOT_PUBLISHED',
   'CATALOG_MOQ_NOT_MET',
   'CATALOG_AVAILABILITY_EXCEEDED',
+  'CATALOG_RESERVATION_NOT_FOUND',
+  'CATALOG_RELEASE_EXCEEDS_RESERVED',
 ]);
 
 export function createOrderBuilderService({
@@ -71,13 +73,7 @@ export function createOrderBuilderService({
       return execute(commandId, `attachOrderToCycle:${actorId}:${orderId}`, actorId, async (tx) => {
         const current = requireEntity(await tx.getOrder(orderId), 'ORDER_NOT_FOUND', { orderId });
         const cycle = requireEntity(await tx.getCycle(current.cycleId), 'CYCLE_NOT_FOUND', { cycleId: current.cycleId });
-        assertTradeCapability({
-          memberships: await tx.listMembershipsForTrade(cycle.brandId, cycle.shopId),
-          actorId,
-          brandId: cycle.brandId,
-          shopId: cycle.shopId,
-          capability: CAPABILITIES.ORDER_WRITE,
-        });
+        authorizeOrderMutation(await tx.listMembershipsForTrade(cycle.brandId, cycle.shopId), actorId, cycle);
         invariant(cycle.stage === 'order-builder', 'ORDER_BUILDER_STAGE_REQUIRED', 'Cycle must be at order-builder stage', { stage: cycle.stage });
         const readyOrder = attachReadyOrder(current, clock());
         const orderStage = advanceCommercialCycle(cycle, 'order', clock());
@@ -90,6 +86,24 @@ export function createOrderBuilderService({
         return Object.freeze({ order: readyOrder, cycle: cycleWithOrder });
       }).catch(translateInventoryError);
     },
+
+    cancelOrder(commandId, actorId, { orderId, reason }) {
+      return execute(commandId, `cancelOrder:${actorId}:${orderId}:${reason}`, actorId, async (tx) => {
+        const current = requireEntity(await tx.getOrder(orderId), 'ORDER_NOT_FOUND', { orderId });
+        const cycle = requireEntity(await tx.getCycle(current.cycleId), 'CYCLE_NOT_FOUND', { cycleId: current.cycleId });
+        authorizeOrderMutation(await tx.listMembershipsForTrade(cycle.brandId, cycle.shopId), actorId, cycle);
+        const cancelled = cancelAttachedOrder(current, reason, clock());
+        const cancelledCycle = cancelCommercialCycleOrder(cycle, cancelled, clock());
+        await tx.saveCycle(cancelledCycle, cycle.version);
+        await tx.saveOrder(cancelled, current.version);
+        await append(tx, 'order.cancelled', orderId, {
+          cycleId: cycle.id,
+          reason: cancelled.cancellationReason,
+          releasedLines: cancelled.lines.map((line) => ({ sku: line.sku, quantity: line.quantity })),
+        }, commandId, actorId);
+        return Object.freeze({ order: cancelled, cycle: cancelledCycle });
+      }).catch(translateInventoryError);
+    },
   });
 }
 
@@ -97,7 +111,15 @@ async function assertOrganisationActor(tx, organisationId, actorId, capability) 
   const membership = await tx.getMembership(organisationId, actorId);
   assertCapability(membership, capability);
 }
-
+function authorizeOrderMutation(memberships, actorId, cycle) {
+  return assertTradeCapability({
+    memberships,
+    actorId,
+    brandId: cycle.brandId,
+    shopId: cycle.shopId,
+    capability: CAPABILITIES.ORDER_WRITE,
+  });
+}
 function requireEntity(entity, code, details) { invariant(entity, code, 'Entity not found', details); return entity; }
 
 function translateInventoryError(error) {
@@ -110,10 +132,12 @@ function translateInventoryError(error) {
 }
 function inventoryMessage(code) {
   return ({
-    CATALOG_SKU_NOT_FOUND: 'Catalog SKU not found during reservation',
+    CATALOG_SKU_NOT_FOUND: 'Catalog SKU not found during inventory mutation',
     CATALOG_SKU_NOT_PUBLISHED: 'Order contains an unavailable catalog SKU',
     CATALOG_MOQ_NOT_MET: 'Order quantity is below minimum order quantity',
     CATALOG_AVAILABILITY_EXCEEDED: 'Order quantity exceeds available-to-sell',
-  })[code] ?? 'Inventory reservation failed';
+    CATALOG_RESERVATION_NOT_FOUND: 'Order inventory reservation is missing',
+    CATALOG_RELEASE_EXCEEDS_RESERVED: 'Inventory release exceeds reserved quantity',
+  })[code] ?? 'Inventory mutation failed';
 }
 function defaultIdGenerator() { let sequence = 0; return (prefix) => `${prefix}_${++sequence}`; }
