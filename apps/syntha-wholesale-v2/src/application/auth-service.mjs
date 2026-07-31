@@ -8,7 +8,7 @@ const DUMMY_PASSWORD_HASH = 'scrypt-v1$07070707070707070707070707070707$35973770
 export function createAuthService({
   store,
   clock = () => new Date().toISOString(),
-  nextId = randomUUID,
+  nextId = defaultIdGenerator(),
   randomBytesImpl = randomBytes,
   sessionTtlMs = 12 * 60 * 60 * 1000,
   maxLoginFailures = 5,
@@ -135,3 +135,4 @@ function normalizeEmail(email) {
 function hashToken(token) { return createHash('sha256').update(token).digest('hex'); }
 function hashLoginKey(emailNormalized) { return createHash('sha256').update(`login:${emailNormalized}`).digest('hex'); }
 function publicUser(user) { return Object.freeze({ id: user.id, email: user.email, displayName: user.displayName, status: user.status }); }
+function defaultIdGenerator() { return (prefix) => `${prefix}_${randomUUID()}`; }
