@@ -19,7 +19,14 @@ function orderEntity(item) {
   const accepted = new Set(item.acceptedOrganisationIds || []);
   for (const orgId of ownIds().filter(id => [item.brandId,item.shopId].includes(id))) if (!accepted.has(orgId) && ['draft','ready'].includes(item.status)) actions.push(actionButton(`\u0421\u043e\u0433\u043b\u0430\u0441\u043e\u0432\u0430\u0442\u044c: ${orgName(orgId)}`, () => mutate(`/v2/orders/${encodeURIComponent(item.id)}/accept`, { organisationId: orgId })));
   if (item.status === 'ready') actions.push(actionButton('\u041f\u0440\u0438\u043a\u0440\u0435\u043f\u0438\u0442\u044c \u043a \u0446\u0438\u043a\u043b\u0443', () => mutate(`/v2/orders/${encodeURIComponent(item.id)}/attach`, {}), 'primary'));
-  return entity(item.id, item.status, [`${money(item.totalAmount)} ${item.currency}`, `${item.terms?.incoterm || ''}, \u043e\u043f\u043b\u0430\u0442\u0430 ${item.terms?.paymentDays ?? 0} \u0434\u043d.`, `\u0421\u043e\u0433\u043b\u0430\u0441\u043e\u0432\u0430\u043d\u043e: ${(item.acceptedOrganisationIds || []).map(orgName).join(', ') || '\u043d\u0435\u0442'}`], actions);
+  if (item.status === 'attached') actions.push(actionButton('\u041e\u0442\u043c\u0435\u043d\u0438\u0442\u044c \u0437\u0430\u043a\u0430\u0437', () => orderCancellationForm(item)));
+  const details = [
+    `${money(item.totalAmount)} ${item.currency}`,
+    `${item.terms?.incoterm || ''}, \u043e\u043f\u043b\u0430\u0442\u0430 ${item.terms?.paymentDays ?? 0} \u0434\u043d.`,
+    `\u0421\u043e\u0433\u043b\u0430\u0441\u043e\u0432\u0430\u043d\u043e: ${(item.acceptedOrganisationIds || []).map(orgName).join(', ') || '\u043d\u0435\u0442'}`,
+  ];
+  if (item.status === 'cancelled') details.push(`\u041f\u0440\u0438\u0447\u0438\u043d\u0430: ${item.cancellationReason}`, `\u041e\u0442\u043c\u0435\u043d\u0451\u043d: ${formatDate(item.cancelledAt)}`);
+  return entity(item.id, item.status, details, actions);
 }
 function dealEntity(item) { return entity(item.id, item.status, [`\u0417\u0430\u043a\u0430\u0437: ${item.orderId}`, pairName(item.brandId,item.shopId), money(item.totalAmount)], []); }
 function calendarEntity(item) { return entity(item.title || item.type, item.visibility || item.type, [formatDate(item.startsAt), `\u041e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u044f: ${orgName(item.ownerOrganisationId)}`], []); }
