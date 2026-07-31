@@ -4,7 +4,7 @@ import { DomainError, invariant } from '../core/errors.mjs';
 import { wholesaleV2OpenApi } from './openapi.mjs';
 import { createWholesaleRoutes, matchWholesaleRoute } from './routes.mjs';
 
-export function createWholesaleHttpHandler({ authenticate, auth, maxBodyBytes = 256 * 1024, nextRequestId = randomUUID, ...services } = {}) {
+export function createWholesaleHttpHandler({ authenticate, auth, readiness, maxBodyBytes = 256 * 1024, nextRequestId = randomUUID, ...services } = {}) {
   invariant(typeof authenticate === 'function', 'HTTP_AUTHENTICATOR_REQUIRED', 'HTTP authenticator is required');
   const routes = createWholesaleRoutes(services);
   return async (request, response) => {
@@ -13,6 +13,10 @@ export function createWholesaleHttpHandler({ authenticate, auth, maxBodyBytes = 
     try {
       const url = new URL(request.url ?? '/', 'http://syntha.local');
       if (request.method === 'GET' && url.pathname === '/health') return send(response, 200, { status: 'ok', service: 'syntha-wholesale-v2', requestId });
+      if (request.method === 'GET' && url.pathname === '/ready') {
+        const result = readiness?.check ? await readiness.check() : readinessUnavailable();
+        return send(response, result.status === 'ready' ? 200 : 503, { ...result, requestId });
+      }
       if (request.method === 'GET' && url.pathname === '/openapi.json') return send(response, 200, wholesaleV2OpenApi);
       if (request.method === 'POST' && url.pathname === '/v2/auth/login') {
         invariant(auth?.login, 'AUTH_SERVICE_REQUIRED', 'Authentication service is required');
@@ -84,6 +88,16 @@ export function normalizeHttpError(error) {
   return { status, code, message: error.message, details: error.details ?? {} };
 }
 
+function readinessUnavailable() {
+  return Object.freeze({
+    status: 'not-ready',
+    service: 'syntha-wholesale-v2',
+    checkedAt: new Date().toISOString(),
+    reason: 'readiness-not-configured',
+    database: Object.freeze({ status: 'unknown' }),
+    migrations: Object.freeze({ status: 'unknown', totalCount: 0, appliedCount: 0, pending: Object.freeze([]), mismatched: Object.freeze([]), unknown: Object.freeze([]) }),
+  });
+}
 function publicIdentity(actor) { return Object.freeze({ actorId: actor.actorId, email: actor.email ?? null, displayName: actor.displayName ?? '' }); }
 function header(request, name) { const value = request.headers[name]; return Array.isArray(value) ? value[0] : value; }
 function routeDetails(request, url) { return { method: request.method, path: url.pathname }; }
