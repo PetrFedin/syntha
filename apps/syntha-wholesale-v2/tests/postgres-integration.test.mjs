@@ -17,7 +17,7 @@ import { migratePostgres } from '../src/infrastructure/postgres-migrator.mjs';
 
 const databaseUrl = process.env.POSTGRES_TEST_URL;
 
-test('PostgreSQL persists the complete wholesale route and notification projection', { skip: !databaseUrl }, async () => {
+test('PostgreSQL persists the complete wholesale route, atomic inventory reservation and notification projection', { skip: !databaseUrl }, async () => {
   const { Pool } = await import('pg');
   const pool = new Pool({ connectionString: databaseUrl, max: 4 });
   try {
@@ -57,7 +57,8 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
     });
     await platform.publishCollection('pg-collection-publish', 'sales-pg', collection.id);
     await catalog.createSku('pg-catalog-create', 'sales-pg', {
-      sku: 'SKU-PG', collectionId: collection.id, brandId: 'brand-pg', name: 'Postgres Coat', wholesalePrice: 125, currency: 'EUR',
+      sku: 'SKU-PG', collectionId: collection.id, brandId: 'brand-pg', name: 'Postgres Coat',
+      wholesalePrice: 125, currency: 'EUR', minimumOrderQuantity: 2, availableQuantity: 10,
     });
     await catalog.publishSku('pg-catalog-publish', 'sales-pg', 'SKU-PG');
     const showroom = await collaboration.createShowroom('pg-showroom-create', 'sales-pg', {
@@ -88,11 +89,21 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
     order = await orders.acceptTerms('pg-order-shop-accept', 'buyer-pg', { orderId: order.id, organisationId: 'shop-pg' });
     order = await orders.acceptTerms('pg-order-brand-accept', 'sales-pg', { orderId: order.id, organisationId: 'brand-pg' });
     const attached = await orders.attachOrderToCycle('pg-order-attach', 'buyer-pg', order.id);
-    const opened = await platform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
 
+    const inventory = await pool.query(
+      `SELECT available_quantity, reserved_quantity, payload
+         FROM catalog_skus WHERE sku = 'SKU-PG'`,
+    );
+    assert.equal(inventory.rows[0].available_quantity, 10);
+    assert.equal(inventory.rows[0].reserved_quantity, 4);
+    assert.equal(inventory.rows[0].payload.availableToSell, 6);
+    const reservations = await pool.query('SELECT order_id, sku, quantity FROM order_inventory_reservations');
+    assert.deepEqual(reservations.rows, [{ order_id: order.id, sku: 'SKU-PG', quantity: 4 }]);
+
+    const opened = await platform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
     assert.equal(opened.cycle.stage, 'deal-space');
     assert.equal(opened.deal.totalAmount, 500);
-    assert.equal((await catalogStore.getSku('SKU-PG')).status, 'published');
+    assert.equal((await catalogStore.getSku('SKU-PG')).availableToSell, 6);
 
     const repeatedPlatform = createWholesalePlatform({ store });
     const repeated = await repeatedPlatform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
