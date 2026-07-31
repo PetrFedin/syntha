@@ -36,24 +36,21 @@ export async function migratePostgres({ pool, migrationsDir, clock = () => new D
       checksum char(64) NOT NULL,
       applied_at timestamptz NOT NULL
     )`);
-    const files = (await readdir(migrationsDir)).filter((name) => /^\d+.*\.sql$/.test(name)).sort();
-    invariant(files.length > 0, 'MIGRATIONS_NOT_FOUND', 'No PostgreSQL migrations found');
-    for (const file of files) {
-      const rawSql = await readFile(path.join(migrationsDir, file), 'utf8');
-      const checksum = createHash('sha256').update(rawSql).digest('hex');
-      const existing = await client.query('SELECT checksum FROM schema_migrations WHERE version = $1', [file]);
+    const manifest = await loadMigrationManifest(migrationsDir);
+    for (const migration of manifest) {
+      const existing = await client.query('SELECT checksum FROM schema_migrations WHERE version = $1', [migration.version]);
       if (existing.rowCount) {
-        invariant(existing.rows[0].checksum.trim() === checksum, 'MIGRATION_CHECKSUM_MISMATCH', 'Applied migration checksum does not match repository', { file });
-        skipped.push(file);
+        invariant(existing.rows[0].checksum.trim() === migration.checksum, 'MIGRATION_CHECKSUM_MISMATCH', 'Applied migration checksum does not match repository', { file: migration.version });
+        skipped.push(migration.version);
         continue;
       }
-      const sql = unwrapLegacyTransaction(rawSql, file);
+      const sql = unwrapLegacyTransaction(migration.sql, migration.version);
       await client.query('BEGIN');
       try {
         await client.query(sql);
-        await client.query('INSERT INTO schema_migrations (version, checksum, applied_at) VALUES ($1, $2, $3)', [file, checksum, clock()]);
+        await client.query('INSERT INTO schema_migrations (version, checksum, applied_at) VALUES ($1, $2, $3)', [migration.version, migration.checksum, clock()]);
         await client.query('COMMIT');
-        applied.push(file);
+        applied.push(migration.version);
       } catch (error) {
         await client.query('ROLLBACK');
         throw error;
@@ -66,6 +63,54 @@ export async function migratePostgres({ pool, migrationsDir, clock = () => new D
   }
 }
 
+export async function inspectPostgresMigrations({ pool, migrationsDir } = {}) {
+  invariant(pool && typeof pool.query === 'function', 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
+  invariant(migrationsDir, 'MIGRATIONS_DIR_REQUIRED', 'Migrations directory is required');
+  const manifest = await loadMigrationManifest(migrationsDir);
+  const tableResult = await pool.query("SELECT to_regclass('public.schema_migrations') AS table_name");
+  if (!tableResult.rows[0]?.table_name) {
+    return freezeInspection({
+      totalCount: manifest.length,
+      appliedCount: 0,
+      pending: manifest.map((item) => item.version),
+      mismatched: [],
+      unknown: [],
+    });
+  }
+  const appliedResult = await pool.query('SELECT version, checksum FROM schema_migrations ORDER BY version');
+  const repositoryByVersion = new Map(manifest.map((item) => [item.version, item.checksum]));
+  const appliedByVersion = new Map(appliedResult.rows.map((row) => [row.version, String(row.checksum).trim()]));
+  const pending = manifest.filter((item) => !appliedByVersion.has(item.version)).map((item) => item.version);
+  const mismatched = manifest
+    .filter((item) => appliedByVersion.has(item.version) && appliedByVersion.get(item.version) !== item.checksum)
+    .map((item) => item.version);
+  const unknown = [...appliedByVersion.keys()].filter((version) => !repositoryByVersion.has(version)).sort();
+  return freezeInspection({
+    totalCount: manifest.length,
+    appliedCount: appliedResult.rowCount,
+    pending,
+    mismatched,
+    unknown,
+  });
+}
+
+async function loadMigrationManifest(migrationsDir) {
+  const files = (await readdir(migrationsDir)).filter((name) => /^\d+.*\.sql$/.test(name)).sort();
+  invariant(files.length > 0, 'MIGRATIONS_NOT_FOUND', 'No PostgreSQL migrations found');
+  return Promise.all(files.map(async (version) => {
+    const sql = await readFile(path.join(migrationsDir, version), 'utf8');
+    return Object.freeze({ version, sql, checksum: createHash('sha256').update(sql).digest('hex') });
+  }));
+}
+function freezeInspection(value) {
+  return Object.freeze({
+    totalCount: value.totalCount,
+    appliedCount: value.appliedCount,
+    pending: Object.freeze([...value.pending]),
+    mismatched: Object.freeze([...value.mismatched]),
+    unknown: Object.freeze([...value.unknown]),
+  });
+}
 function unwrapLegacyTransaction(sql, file) {
   const trimmed = sql.trim();
   const begins = /^BEGIN\s*;/i.test(trimmed);
