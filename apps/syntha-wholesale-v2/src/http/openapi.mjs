@@ -3,7 +3,7 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.8.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.9.0' },
   servers: [{ url: '/v2' }],
   'x-operational-endpoints': Object.freeze({ liveness: '/health', readiness: '/ready', specification: '/openapi.json' }),
   components: {
@@ -18,10 +18,18 @@ export const wholesaleV2OpenApi = Object.freeze({
       },
       LoginRequest: { type: 'object', required: ['email', 'password'], properties: { email: { type: 'string', format: 'email' }, password: { type: 'string', minLength: 12, maxLength: 1024 } } },
       CatalogSkuCreate: {
-        type: 'object', required: ['sku', 'collectionId', 'brandId', 'name', 'wholesalePrice', 'currency'], additionalProperties: false,
+        type: 'object',
+        required: ['sku', 'collectionId', 'brandId', 'name', 'wholesalePrice', 'currency', 'minimumOrderQuantity', 'availableQuantity'],
+        additionalProperties: false,
         properties: {
-          sku: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{1,63}$' }, collectionId: { type: 'string' }, brandId: { type: 'string' },
-          name: { type: 'string', minLength: 2 }, wholesalePrice: { type: 'number', exclusiveMinimum: 0 }, currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+          sku: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{1,63}$' },
+          collectionId: { type: 'string' },
+          brandId: { type: 'string' },
+          name: { type: 'string', minLength: 2 },
+          wholesalePrice: { type: 'number', exclusiveMinimum: 0 },
+          currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+          minimumOrderQuantity: { type: 'integer', minimum: 1 },
+          availableQuantity: { type: 'integer', minimum: 0 },
         },
       },
       SelectionLineInput: {
@@ -76,6 +84,13 @@ function operation(operationId, pathNames = []) {
     security: auth,
     parameters: [...pathNames.map((name) => ({ name, in: 'path', required: true, schema: { type: 'string', minLength: 1 } })), ...mutationHeaders],
     requestBody: { required: false, content: { 'application/json': { schema: { type: 'object' } } } },
-    responses: { 200: { description: 'Success' }, 400: { description: 'Invalid transport request' }, 401: { description: 'Authentication required' }, 403: { description: 'Capability denied' }, 409: { description: 'Conflict' }, 422: { description: 'Domain validation failed' } },
+    responses: {
+      200: { description: 'Success' },
+      400: { description: 'Invalid transport request' },
+      401: { description: 'Authentication required' },
+      403: { description: 'Capability denied' },
+      409: { description: 'Conflict' },
+      422: { description: 'Domain validation failed, including MOQ or availability failures' },
+    },
   };
 }
