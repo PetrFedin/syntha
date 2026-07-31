@@ -6,6 +6,8 @@ function catalogSkuForm() {
     textDef('sku','SKU'),
     textDef('name','\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435'),
     numberDef('wholesalePrice','Wholesale price',0,false),
+    numberDef('minimumOrderQuantity','MOQ',1,true),
+    numberDef('availableQuantity','Sellable quantity',0,true),
   ], values => {
     const collection = collections.find(item => item.id === values.collectionId);
     return mutate('/v2/catalog/skus', {
