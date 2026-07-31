@@ -29,7 +29,7 @@ test('PostgreSQL catalog persists immutable published SKU snapshots', { skip: !d
     const catalog = createCatalogService({ wholesaleStore: store, catalogStore, clock, nextId });
 
     await platform.registerOrganisation('org-brand', 'system', createOrganisation({ id: 'brand-pg', type: 'brand', name: 'Brand PG' }));
-    await platform.grantMembership('member-sales', 'system', createMembership({ id: 'member-pg', organisationId: 'brand-pg', organisationType: 'brand', userId: 'sales-pg', role: 'sales', createdAt: clock() }));
+    await platform.grantMembership('member-sales', 'system', createMembership({ id: 'member-pg', organisationId: 'brand-pg', organisationType: 'brand', userId: 'sales-pg', role: 'owner', createdAt: clock() }));
     const campaign = await platform.createCampaign('campaign-create', 'sales-pg', { brandId: 'brand-pg', name: 'FW', season: 'FW27', startsAt: '2027-01-01T00:00:00.000Z', endsAt: '2027-02-01T00:00:00.000Z' });
     await platform.openCampaign('campaign-open', 'sales-pg', campaign.id);
     const collection = await platform.createCollection('collection-create', 'sales-pg', { campaignId: campaign.id, brandId: 'brand-pg', name: 'Main', currency: 'EUR' });
