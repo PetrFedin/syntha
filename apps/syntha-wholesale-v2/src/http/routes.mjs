@@ -1,12 +1,14 @@
 import { invariant } from '../core/errors.mjs';
 
-export function createWholesaleRoutes({ platform, partners, collaboration, orders, notifications, workspace }) {
-  invariant(platform && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
+export function createWholesaleRoutes({ platform, catalog, partners, collaboration, orders, notifications, workspace }) {
+  invariant(platform && catalog && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
   return [
     mutate('POST', /^\/v2\/campaigns$/, ({ commandId, actorId, body }) => platform.createCampaign(commandId, actorId, body)),
     mutate('POST', /^\/v2\/campaigns\/([^/]+)\/open$/, ({ commandId, actorId, params }) => platform.openCampaign(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/collections$/, ({ commandId, actorId, body }) => platform.createCollection(commandId, actorId, body)),
     mutate('POST', /^\/v2\/collections\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => platform.publishCollection(commandId, actorId, params[0])),
+    mutate('POST', /^\/v2\/catalog\/skus$/, ({ commandId, actorId, body }) => catalog.createSku(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/catalog\/skus\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => catalog.publishSku(commandId, actorId, decodeURIComponent(params[0]))),
     mutate('POST', /^\/v2\/showrooms$/, ({ commandId, actorId, body }) => collaboration.createShowroom(commandId, actorId, body)),
     mutate('POST', /^\/v2\/showrooms\/([^/]+)\/open$/, ({ commandId, actorId, params }) => collaboration.openShowroom(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/relationships$/, ({ commandId, actorId, body }) => partners.requestRelationship(commandId, actorId, body)),
