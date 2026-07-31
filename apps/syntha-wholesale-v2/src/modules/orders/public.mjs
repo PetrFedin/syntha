@@ -26,6 +26,8 @@ export function createOrderDraft({ id, selection, currency, terms, createdAt }) 
     terms: normalizedTerms,
     acceptedOrganisationIds: Object.freeze([]),
     status: 'draft',
+    cancellationReason: null,
+    cancelledAt: null,
     version: 1,
     createdAt,
     updatedAt: createdAt,
@@ -51,6 +53,19 @@ export function acceptOrderTerms(order, organisationId, updatedAt) {
 export function attachReadyOrder(order, updatedAt) {
   invariant(order.status === 'ready', 'ORDER_NOT_READY', 'Both Brand and Shop must accept order terms');
   return Object.freeze({ ...order, status: 'attached', version: order.version + 1, updatedAt });
+}
+
+export function cancelAttachedOrder(order, reason, cancelledAt) {
+  invariant(order.status === 'attached', 'ORDER_NOT_ATTACHED', 'Only an attached order can be cancelled');
+  invariant(typeof reason === 'string' && reason.trim().length >= 3, 'ORDER_CANCELLATION_REASON_REQUIRED', 'Cancellation reason must contain at least three characters');
+  return Object.freeze({
+    ...order,
+    status: 'cancelled',
+    cancellationReason: reason.trim(),
+    cancelledAt,
+    version: order.version + 1,
+    updatedAt: cancelledAt,
+  });
 }
 
 function validateTerms(terms) {
