@@ -20,15 +20,17 @@ export function createPostgresWorkspaceReader({ pool }) {
         payloadAny(pool, 'calendar_milestones', 'owner_organisation_id', ownIds),
       ]);
       const campaignIds = unique(cycles.map((item) => item.campaignId));
-      const collectionIds = unique(cycles.map((item) => item.collectionId));
+      const cycleCollectionIds = unique(cycles.map((item) => item.collectionId));
       const showroomIds = unique([...invitations.map((item) => item.showroomId), ...selections.map((item) => item.showroomId)]);
       const brandIds = memberships.filter((item) => item.organisationType === 'brand').map((item) => item.organisationId);
       const [campaigns, collections, showrooms] = await Promise.all([
         payloadByIdsOrOwner(pool, 'campaigns', campaignIds, 'brand_id', brandIds),
-        payloadByIdsOrOwner(pool, 'collections', collectionIds, 'brand_id', brandIds),
+        payloadByIdsOrOwner(pool, 'collections', cycleCollectionIds, 'brand_id', brandIds),
         payloadByIdsOrOwner(pool, 'showrooms', showroomIds, 'brand_id', brandIds),
       ]);
-      return { memberships, organisations, relationships, invitations, campaigns, collections, showrooms, cycles, selections, orders, deals, calendar };
+      const visibleCollectionIds = unique([...cycleCollectionIds, ...showrooms.map((item) => item.collectionId)]);
+      const catalogSkus = await visibleCatalogSkus(pool, brandIds, visibleCollectionIds);
+      return { memberships, organisations, relationships, invitations, campaigns, collections, catalogSkus, showrooms, cycles, selections, orders, deals, calendar };
     },
   });
 }
@@ -52,7 +54,18 @@ async function payloadByIdsOrOwner(pool, table, ids, ownerColumn, ownerIds) {
   );
   return result.rows.map((row) => row.payload);
 }
+async function visibleCatalogSkus(pool, brandIds, collectionIds) {
+  if (!brandIds.length && !collectionIds.length) return [];
+  const result = await pool.query(
+    `SELECT payload FROM catalog_skus
+      WHERE brand_id = ANY($1::text[])
+         OR (collection_id = ANY($2::text[]) AND status = 'published')
+      ORDER BY sku`,
+    [brandIds, collectionIds],
+  );
+  return result.rows.map((row) => row.payload);
+}
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function emptyWorkspace() {
-  return { memberships: [], organisations: [], relationships: [], invitations: [], campaigns: [], collections: [], showrooms: [], cycles: [], selections: [], orders: [], deals: [], calendar: [] };
+  return { memberships: [], organisations: [], relationships: [], invitations: [], campaigns: [], collections: [], catalogSkus: [], showrooms: [], cycles: [], selections: [], orders: [], deals: [], calendar: [] };
 }
