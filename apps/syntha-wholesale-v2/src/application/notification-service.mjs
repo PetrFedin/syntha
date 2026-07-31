@@ -17,35 +17,35 @@ export function createNotificationService({
 
   return Object.freeze({
     async projectPending() {
-      const records = sourceStore.readOutbox('pending');
+      const records = await sourceStore.readOutbox('pending');
       const results = [];
       for (const record of records) results.push(await projectRecord(record));
       return Object.freeze(results);
     },
 
-    listForActor(actorId) {
-      const source = sourceStore.snapshot();
+    async listForActor(actorId) {
+      const [source, projection] = await Promise.all([sourceStore.snapshot(), projectionStore.snapshot()]);
       const organisationIds = new Set(
         source.memberships
           .filter((membership) => membership.userId === actorId && membership.status === 'active')
           .map((membership) => membership.organisationId),
       );
       return Object.freeze(
-        projectionStore.snapshot().notifications.filter((notification) => organisationIds.has(notification.recipientOrganisationId)),
+        projection.notifications.filter((notification) => organisationIds.has(notification.recipientOrganisationId)),
       );
     },
 
-    markRead(commandId, actorId, notificationId) {
+    async markRead(commandId, actorId, notificationId) {
       invariant(commandId, 'COMMAND_ID_REQUIRED', 'Every mutation requires commandId');
       const fingerprint = `markNotificationRead:${actorId}:${notificationId}`;
-      const source = sourceStore.snapshot();
-      return projectionStore.transaction((tx) => {
-        const previous = tx.getCommand(commandId);
+      const source = await sourceStore.snapshot();
+      return projectionStore.transaction(async (tx) => {
+        const previous = await tx.getCommand(commandId);
         if (previous) {
           invariant(previous.fingerprint === fingerprint, 'COMMAND_ID_CONFLICT', 'commandId was already used by another mutation', { commandId });
           return previous.result;
         }
-        const current = requireEntity(tx.getNotification(notificationId), 'NOTIFICATION_NOT_FOUND', { notificationId });
+        const current = requireEntity(await tx.getNotification(notificationId), 'NOTIFICATION_NOT_FOUND', { notificationId });
         const membership = source.memberships.find((candidate) =>
           candidate.organisationId === current.recipientOrganisationId &&
           candidate.userId === actorId &&
@@ -53,25 +53,25 @@ export function createNotificationService({
         );
         assertCapability(membership, CAPABILITIES.CALENDAR_READ);
         const updated = markNotificationRead(current, actorId, clock());
-        if (updated !== current) tx.saveNotification(updated, current.version);
-        tx.insertCommand(Object.freeze({ id: commandId, fingerprint, actorId, result: updated, completedAt: clock() }));
+        if (updated !== current) await tx.saveNotification(updated, current.version);
+        await tx.insertCommand(Object.freeze({ id: commandId, fingerprint, actorId, result: updated, completedAt: clock() }));
         return updated;
       });
     },
   });
 
-  function projectRecord(record) {
+  async function projectRecord(record) {
     const event = record.event;
-    const source = sourceStore.snapshot();
-    return projectionStore.transaction((tx) => {
-      if (tx.hasProjection(event.id)) {
+    const source = await sourceStore.snapshot();
+    return projectionStore.transaction(async (tx) => {
+      if (await tx.hasProjection(event.id)) {
         return Object.freeze({ eventId: event.id, status: 'already-projected', notificationIds: Object.freeze([]) });
       }
       const candidates = notificationCandidates(source, event);
       const notificationIds = [];
       for (const candidate of candidates) {
         const dedupeKey = notificationDedupeKey(event.id, candidate.recipientOrganisationId);
-        const existing = tx.getNotificationByDedupeKey(dedupeKey);
+        const existing = await tx.getNotificationByDedupeKey(dedupeKey);
         if (existing) {
           notificationIds.push(existing.id);
           continue;
@@ -82,10 +82,10 @@ export function createNotificationService({
           createdAt: clock(),
           ...candidate,
         });
-        tx.insertNotification(notification);
+        await tx.insertNotification(notification);
         notificationIds.push(notification.id);
       }
-      tx.insertProjection(Object.freeze({
+      await tx.insertProjection(Object.freeze({
         eventId: event.id,
         eventType: event.type,
         notificationIds: Object.freeze(notificationIds),

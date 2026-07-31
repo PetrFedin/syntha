@@ -9,7 +9,9 @@ import { createWholesalePlatform } from '../src/application/platform.mjs';
 import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
 import { createShowroomSelectionService } from '../src/application/showroom-selection-service.mjs';
 import { createOrderBuilderService } from '../src/application/order-builder-service.mjs';
+import { createNotificationService } from '../src/application/notification-service.mjs';
 import { createPostgresWholesaleStore } from '../src/infrastructure/postgres-store.mjs';
+import { createPostgresNotificationProjectionStore } from '../src/infrastructure/postgres-notification-projection-store.mjs';
 
 const databaseUrl = process.env.POSTGRES_TEST_URL;
 
@@ -24,8 +26,9 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
 
     let id = 0;
     let tick = 0;
+    const store = createPostgresWholesaleStore({ pool });
     const options = {
-      store: createPostgresWholesaleStore({ pool }),
+      store,
       clock: () => `2026-07-30T20:${String(Math.floor(tick / 60)).padStart(2, '0')}:${String(tick++ % 60).padStart(2, '0')}.000Z`,
       nextId: (prefix) => `${prefix}_pg_${++id}`,
     };
@@ -82,11 +85,40 @@ test('PostgreSQL persists the complete wholesale route and notification projecti
     assert.equal(opened.cycle.stage, 'deal-space');
     assert.equal(opened.deal.totalAmount, 500);
 
-    const repeatedPlatform = createWholesalePlatform({ store: options.store });
+    const repeatedPlatform = createWholesalePlatform({ store });
     const repeated = await repeatedPlatform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
     assert.deepEqual(repeated, opened);
 
-    const snapshot = await options.store.snapshot();
+    const projectionStore = createPostgresNotificationProjectionStore({ pool });
+    const notifications = createNotificationService({
+      sourceStore: store,
+      projectionStore,
+      clock: options.clock,
+      nextId: options.nextId,
+    });
+    const secondNotifications = createNotificationService({
+      sourceStore: store,
+      projectionStore: createPostgresNotificationProjectionStore({ pool }),
+      clock: options.clock,
+      nextId: options.nextId,
+    });
+    await Promise.all([notifications.projectPending(), secondNotifications.projectPending()]);
+    await notifications.projectPending();
+
+    const projection = await projectionStore.snapshot();
+    assert.equal(projection.notifications.length, 5);
+    assert.equal(new Set(projection.notifications.map((item) => item.dedupeKey)).size, 5);
+    const outbox = await store.readOutbox('pending');
+    assert.equal(projection.projections.length, outbox.length);
+
+    const brandNotifications = await notifications.listForActor('sales-pg');
+    const shopNotifications = await notifications.listForActor('buyer-pg');
+    assert.equal(brandNotifications.length, 3);
+    assert.equal(shopNotifications.length, 2);
+    const read = await notifications.markRead('pg-notification-read', 'sales-pg', brandNotifications[0].id);
+    assert.equal(read.status, 'read');
+
+    const snapshot = await store.snapshot();
     assert.equal(snapshot.relationships.length, 1);
     assert.equal(snapshot.showroomInvitations.length, 1);
     assert.equal(snapshot.cycles.length, 1);

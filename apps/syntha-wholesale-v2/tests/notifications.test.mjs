@@ -57,7 +57,7 @@ test('projection is idempotent and creates no duplicate notifications', async ()
 test('recipient member can read notification while another organisation cannot', async () => {
   const { projectionStore, service } = await fixture();
   await service.projectPending();
-  const brandNotification = service.listForActor('brand-user')[0];
+  const brandNotification = (await service.listForActor('brand-user'))[0];
   const read = await service.markRead('cmd-read', 'brand-user', brandNotification.id);
   assert.equal(read.status, 'read');
   assert.equal(read.readBy, 'brand-user');
