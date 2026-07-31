@@ -30,7 +30,10 @@ async function fixture() {
   await platform.openCampaign('campaign-open', 'sales-1', campaign.id);
   const collection = await platform.createCollection('collection-create', 'sales-1', { campaignId: campaign.id, brandId: 'brand-1', name: 'Main', currency: 'EUR' });
   await platform.publishCollection('collection-publish', 'sales-1', collection.id);
-  await catalog.createSku('catalog-create', 'sales-1', { sku: 'SKU-1', collectionId: collection.id, brandId: 'brand-1', name: 'Jacket', wholesalePrice: 80, currency: 'EUR' });
+  await catalog.createSku('catalog-create', 'sales-1', {
+    sku: 'SKU-1', collectionId: collection.id, brandId: 'brand-1', name: 'Jacket', wholesalePrice: 80,
+    currency: 'EUR', minimumOrderQuantity: 1, availableQuantity: 10,
+  });
   await catalog.publishSku('catalog-publish', 'sales-1', 'SKU-1');
   const showroom = await collaboration.createShowroom('showroom-create', 'sales-1', {
     collectionId: collection.id, brandId: 'brand-1', name: 'Paris', opensAt: '2027-01-05T00:00:00.000Z', closesAt: '2027-01-20T00:00:00.000Z',
