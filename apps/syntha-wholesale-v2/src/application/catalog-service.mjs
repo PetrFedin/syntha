@@ -36,28 +36,49 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
     }));
   }
 
+  async function syncAvailability(sku) {
+    await wholesaleStore.transaction(async (tx) => {
+      await tx.syncCatalogInventory?.(sku);
+    });
+  }
+
   return Object.freeze({
     async createSku(commandId, actorId, input) {
       const collection = await context(input.collectionId, actorId);
-      return execute(commandId, `createCatalogSku:${actorId}:${JSON.stringify(input)}`, actorId, async (tx) => {
+      const result = await execute(commandId, `createCatalogSku:${actorId}:${JSON.stringify(input)}`, actorId, async (tx) => {
         invariant(!await tx.getSku(input.sku), 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: input.sku });
         const sku = createCatalogSku({ ...input, collection, createdAt: clock() });
         await tx.insertSku(sku);
-        await append(tx, 'catalog-sku.created', sku.sku, { collectionId: sku.collectionId, brandId: sku.brandId }, commandId, actorId);
+        await append(tx, 'catalog-sku.created', sku.sku, {
+          collectionId: sku.collectionId,
+          brandId: sku.brandId,
+          minimumOrderQuantity: sku.minimumOrderQuantity,
+          availableQuantity: sku.availableQuantity,
+        }, commandId, actorId);
         return sku;
       });
+      await syncAvailability(result);
+      return result;
     },
 
     async publishSku(commandId, actorId, skuCode) {
       const current = requireEntity(await catalogStore.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
       const collection = await context(current.collectionId, actorId);
-      return execute(commandId, `publishCatalogSku:${actorId}:${skuCode}`, actorId, async (tx) => {
+      const result = await execute(commandId, `publishCatalogSku:${actorId}:${skuCode}`, actorId, async (tx) => {
         const locked = requireEntity(await tx.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
         const published = publishCatalogSku(locked, collection, clock());
         await tx.saveSku(published, locked.version);
-        await append(tx, 'catalog-sku.published', skuCode, { collectionId: published.collectionId, price: published.wholesalePrice, currency: published.currency }, commandId, actorId);
+        await append(tx, 'catalog-sku.published', skuCode, {
+          collectionId: published.collectionId,
+          price: published.wholesalePrice,
+          currency: published.currency,
+          minimumOrderQuantity: published.minimumOrderQuantity,
+          availableToSell: published.availableToSell,
+        }, commandId, actorId);
         return published;
       });
+      await syncAvailability(result);
+      return result;
     },
 
     getSku(skuCode) { return catalogStore.getSku(skuCode); },
