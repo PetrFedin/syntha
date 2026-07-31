@@ -1,9 +1,16 @@
 import { domainEvent } from '../core/events.mjs';
-import { invariant } from '../core/errors.mjs';
+import { DomainError, invariant } from '../core/errors.mjs';
 import { assertWholesaleStore } from './store-contract.mjs';
 import { CAPABILITIES, assertCapability, assertTradeCapability } from '../modules/access-control/public.mjs';
 import { createOrderDraft, acceptOrderTerms, attachReadyOrder } from '../modules/orders/public.mjs';
 import { advanceCommercialCycle, attachOrder } from '../modules/commercial-cycle/public.mjs';
+
+const INVENTORY_ERROR_CODES = new Set([
+  'CATALOG_SKU_NOT_FOUND',
+  'CATALOG_SKU_NOT_PUBLISHED',
+  'CATALOG_MOQ_NOT_MET',
+  'CATALOG_AVAILABILITY_EXCEEDED',
+]);
 
 export function createOrderBuilderService({
   store,
@@ -28,12 +35,7 @@ export function createOrderBuilderService({
 
   async function append(tx, type, aggregateId, payload, commandId, actorId) {
     await tx.appendOutbox(domainEvent({
-      id: nextId('event'),
-      type,
-      aggregateId,
-      occurredAt: clock(),
-      payload,
-      metadata: { commandId, actorId },
+      id: nextId('event'), type, aggregateId, occurredAt: clock(), payload, metadata: { commandId, actorId },
     }));
   }
 
@@ -86,7 +88,7 @@ export function createOrderBuilderService({
         await append(tx, 'order.attached', orderId, { cycleId: cycle.id, totalAmount: readyOrder.totalAmount }, commandId, actorId);
         await append(tx, 'commercial-cycle.advanced', cycle.id, { from: cycle.stage, to: orderStage.stage, version: orderStage.version }, commandId, actorId);
         return Object.freeze({ order: readyOrder, cycle: cycleWithOrder });
-      });
+      }).catch(translateInventoryError);
     },
   });
 }
@@ -96,12 +98,22 @@ async function assertOrganisationActor(tx, organisationId, actorId, capability) 
   assertCapability(membership, capability);
 }
 
-function requireEntity(entity, code, details) {
-  invariant(entity, code, 'Entity not found', details);
-  return entity;
-}
+function requireEntity(entity, code, details) { invariant(entity, code, 'Entity not found', details); return entity; }
 
-function defaultIdGenerator() {
-  let sequence = 0;
-  return (prefix) => `${prefix}_${++sequence}`;
+function translateInventoryError(error) {
+  if (error?.code === 'P0001' && INVENTORY_ERROR_CODES.has(error.message)) {
+    let details = {};
+    try { details = error.detail ? JSON.parse(error.detail) : {}; } catch { details = {}; }
+    throw new DomainError(error.message, inventoryMessage(error.message), details);
+  }
+  throw error;
 }
+function inventoryMessage(code) {
+  return ({
+    CATALOG_SKU_NOT_FOUND: 'Catalog SKU not found during reservation',
+    CATALOG_SKU_NOT_PUBLISHED: 'Order contains an unavailable catalog SKU',
+    CATALOG_MOQ_NOT_MET: 'Order quantity is below minimum order quantity',
+    CATALOG_AVAILABILITY_EXCEEDED: 'Order quantity exceeds available-to-sell',
+  })[code] ?? 'Inventory reservation failed';
+}
+function defaultIdGenerator() { let sequence = 0; return (prefix) => `${prefix}_${++sequence}`; }
