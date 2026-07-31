@@ -2,7 +2,7 @@ import { domainEvent } from '../core/events.mjs';
 import { invariant } from '../core/errors.mjs';
 import { assertWholesaleStore } from './store-contract.mjs';
 import { CAPABILITIES, assertCapability } from '../modules/access-control/public.mjs';
-import { assertPublishedCatalogSku } from '../modules/catalog/public.mjs';
+import { assertCatalogQuantity, assertPublishedCatalogSku } from '../modules/catalog/public.mjs';
 import { assertActiveRelationship } from '../modules/counterparty-relationships/public.mjs';
 import { assertAcceptedShowroomAccess } from '../modules/showroom-invitations/public.mjs';
 import { createShowroom, openShowroom } from '../modules/showrooms/public.mjs';
@@ -93,7 +93,8 @@ export function createShowroomSelectionService({
       return execute(commandId, `upsertSelectionLine:${actorId}:${selectionId}:${JSON.stringify(line)}`, actorId, async (tx) => {
         const current = requireEntity(await tx.getSelection(selectionId), 'SELECTION_NOT_FOUND', { selectionId });
         await assertOrganisationActor(tx, current.shopId, actorId, CAPABILITIES.SELECTION_WRITE);
-        const catalogSku = assertPublishedCatalogSku(await trustedCatalogReader.getSku(line.sku), { collectionId: current.collectionId, brandId: current.brandId });
+        const publishedSku = assertPublishedCatalogSku(await trustedCatalogReader.getSku(line.sku), { collectionId: current.collectionId, brandId: current.brandId });
+        const catalogSku = assertCatalogQuantity(publishedSku, line.quantity);
         const trustedLine = Object.freeze({
           sku: catalogSku.sku,
           quantity: line.quantity,
