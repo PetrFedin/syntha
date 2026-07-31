@@ -3,8 +3,9 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.4.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.6.0' },
   servers: [{ url: '/v2' }],
+  'x-operational-endpoints': Object.freeze({ liveness: '/health', readiness: '/ready', specification: '/openapi.json' }),
   components: {
     securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'Opaque Syntha V2 session token' } },
     schemas: {
