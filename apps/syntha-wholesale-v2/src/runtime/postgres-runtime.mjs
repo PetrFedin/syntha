@@ -14,7 +14,18 @@ import { createPostgresWorkspaceReader } from '../infrastructure/postgres-worksp
 import { createWholesaleHttpHandler } from '../http/api.mjs';
 import { createWholesaleFetchHandler } from '../http/fetch-api.mjs';
 
-export function createPostgresWholesaleRuntime({ pool, migrationsDir, clock, nextId, randomBytesImpl, sessionTtlMs } = {}) {
+export function createPostgresWholesaleRuntime({
+  pool,
+  migrationsDir,
+  clock,
+  nextId,
+  randomBytesImpl,
+  sessionTtlMs,
+  maxLoginFailures,
+  loginWindowMs,
+  loginBlockMs,
+  revokedSessionRetentionMs,
+} = {}) {
   invariant(pool, 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
   const store = createPostgresWholesaleStore({ pool });
   const options = { store, ...(clock ? { clock } : {}), ...(nextId ? { nextId } : {}) };
@@ -24,6 +35,10 @@ export function createPostgresWholesaleRuntime({ pool, migrationsDir, clock, nex
     ...(nextId ? { nextId } : {}),
     ...(randomBytesImpl ? { randomBytesImpl } : {}),
     ...(sessionTtlMs ? { sessionTtlMs } : {}),
+    ...(maxLoginFailures ? { maxLoginFailures } : {}),
+    ...(loginWindowMs ? { loginWindowMs } : {}),
+    ...(loginBlockMs ? { loginBlockMs } : {}),
+    ...(revokedSessionRetentionMs ? { revokedSessionRetentionMs } : {}),
   });
   const readiness = migrationsDir ? createPostgresReadinessService({ pool, migrationsDir, ...(clock ? { clock } : {}) }) : undefined;
   const platform = createWholesalePlatform(options);
