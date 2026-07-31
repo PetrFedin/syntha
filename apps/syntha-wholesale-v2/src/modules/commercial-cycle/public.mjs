@@ -45,6 +45,7 @@ export function advanceCommercialCycle(cycle, targetStage, updatedAt) {
   });
   if (targetStage === 'confirmation') {
     invariant(cycle.order, 'ORDER_REQUIRED_FOR_CONFIRMATION', 'An order is required before confirmation');
+    invariant(cycle.order.status === 'attached', 'ORDER_NOT_CONFIRMABLE', 'Only an attached order can be confirmed', { status: cycle.order.status });
     invariant(cycle.order.totalAmount > 0, 'ORDER_TOTAL_INVALID', 'Order total must be positive');
   }
   return Object.freeze({ ...cycle, stage: targetStage, version: cycle.version + 1, updatedAt });
@@ -53,6 +54,7 @@ export function advanceCommercialCycle(cycle, targetStage, updatedAt) {
 export function attachOrder(cycle, order, updatedAt) {
   invariant(cycle.stage === 'order', 'ORDER_STAGE_REQUIRED', 'Order can only be attached at the order stage', { stage: cycle.stage });
   invariant(order?.id, 'ORDER_ID_REQUIRED', 'Order id is required');
+  invariant(order.status === 'attached', 'ORDER_NOT_ATTACHED', 'Cycle requires an attached order snapshot');
   invariant(Number.isFinite(order.totalAmount) && order.totalAmount > 0, 'ORDER_TOTAL_INVALID', 'Order total must be positive');
   invariant(typeof order.currency === 'string' && order.currency.length === 3, 'ORDER_CURRENCY_INVALID', 'Order currency must be ISO-4217 code');
   invariant(Array.isArray(order.lines) && order.lines.length > 0, 'ORDER_LINES_REQUIRED', 'Order must contain at least one line');
@@ -69,6 +71,21 @@ export function attachOrder(cycle, order, updatedAt) {
   return Object.freeze({
     ...cycle,
     order: Object.freeze({ ...order, lines: Object.freeze(order.lines.map((line) => Object.freeze({ ...line }))) }),
+    version: cycle.version + 1,
+    updatedAt,
+  });
+}
+
+export function cancelCommercialCycleOrder(cycle, cancelledOrder, updatedAt) {
+  invariant(cycle.stage === 'order', 'ORDER_CANCELLATION_STAGE_INVALID', 'Order can be cancelled only before confirmation', { stage: cycle.stage });
+  invariant(cycle.order?.id === cancelledOrder?.id, 'ORDER_CYCLE_MISMATCH', 'Cancelled order does not match cycle order', {
+    cycleOrderId: cycle.order?.id,
+    orderId: cancelledOrder?.id,
+  });
+  invariant(cancelledOrder.status === 'cancelled', 'ORDER_NOT_CANCELLED', 'Cycle cancellation requires a cancelled order');
+  return Object.freeze({
+    ...cycle,
+    order: Object.freeze({ ...cancelledOrder, lines: Object.freeze(cancelledOrder.lines.map((line) => Object.freeze({ ...line }))) }),
     version: cycle.version + 1,
     updatedAt,
   });
