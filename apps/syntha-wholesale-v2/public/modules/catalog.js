@@ -23,5 +23,15 @@ function catalogSkuEntity(item) {
   const actions = ownBrand && item.status === 'draft'
     ? [actionButton('\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u0442\u044c', () => mutate(`/v2/catalog/skus/${encodeURIComponent(item.sku)}/publish`, {}), 'primary')]
     : [];
-  return entity(item.name, item.status, [item.sku, `${money(item.wholesalePrice)} ${item.currency}`, `\u041a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044f: ${nameById('collections', item.collectionId)}`, `v${item.version}`], actions);
+  const ats = Number.isInteger(item.availableToSell)
+    ? item.availableToSell
+    : Math.max(0, Number(item.availableQuantity || 0) - Number(item.reservedQuantity || 0));
+  return entity(item.name, item.status, [
+    item.sku,
+    `${money(item.wholesalePrice)} ${item.currency}`,
+    `MOQ: ${item.minimumOrderQuantity || 1}`,
+    `ATS: ${ats} / ${item.availableQuantity || 0}`,
+    `\u041a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044f: ${nameById('collections', item.collectionId)}`,
+    `v${item.version}`,
+  ], actions);
 }
