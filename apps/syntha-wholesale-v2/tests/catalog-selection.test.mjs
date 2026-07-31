@@ -33,7 +33,10 @@ async function fixture() {
   await platform.openCampaign('campaign-open', 'sales-1', campaign.id);
   const collection = await platform.createCollection('collection-create', 'sales-1', { campaignId: campaign.id, brandId: 'brand-1', name: 'Main', currency: 'EUR' });
   await platform.publishCollection('collection-publish', 'sales-1', collection.id);
-  const draftSku = await catalog.createSku('sku-create', 'sales-1', { sku: 'SKU-1', collectionId: collection.id, brandId: 'brand-1', name: 'Jacket Black 48', wholesalePrice: 80, currency: 'EUR' });
+  const draftSku = await catalog.createSku('sku-create', 'sales-1', {
+    sku: 'SKU-1', collectionId: collection.id, brandId: 'brand-1', name: 'Jacket Black 48',
+    wholesalePrice: 80, currency: 'EUR', minimumOrderQuantity: 2, availableQuantity: 10,
+  });
   const showroom = await collaboration.createShowroom('showroom-create', 'sales-1', { collectionId: collection.id, brandId: 'brand-1', name: 'Paris', opensAt: '2027-01-05T00:00:00.000Z', closesAt: '2027-01-20T00:00:00.000Z' });
   await collaboration.openShowroom('showroom-open', 'sales-1', showroom.id);
   const invitation = await partners.inviteShopToShowroom('invitation-create', 'sales-1', { showroomId: showroom.id, shopId: 'shop-1', expiresAt: '2027-01-15T00:00:00.000Z' });
@@ -45,7 +48,7 @@ async function fixture() {
   return { store, catalogStore, catalog, collaboration, orders, collection, draftSku, selection };
 }
 
-test('Selection accepts only a published catalog SKU and derives price and currency', async () => {
+test('Selection accepts only a published catalog SKU and derives price, currency, MOQ and ATS', async () => {
   const context = await fixture();
   await assert.rejects(
     () => context.collaboration.upsertSelectionLine('line-draft', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 3 }),
@@ -55,6 +58,14 @@ test('Selection accepts only a published catalog SKU and derives price and curre
   assert.throws(
     () => context.collaboration.upsertSelectionLine('line-client-price', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 3, unitPrice: 1 }),
     (error) => error.code === 'SELECTION_CLIENT_PRICE_FORBIDDEN',
+  );
+  await assert.rejects(
+    () => context.collaboration.upsertSelectionLine('line-below-moq', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 1 }),
+    (error) => error.code === 'CATALOG_MOQ_NOT_MET',
+  );
+  await assert.rejects(
+    () => context.collaboration.upsertSelectionLine('line-over-ats', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 11 }),
+    (error) => error.code === 'CATALOG_AVAILABILITY_EXCEEDED',
   );
   const edited = await context.collaboration.upsertSelectionLine('line-valid', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 3, note: 'Core buy' });
   assert.deepEqual(edited.lines[0], {
@@ -75,7 +86,10 @@ test('Selection accepts only a published catalog SKU and derives price and curre
 test('buyer cannot create brand catalog SKU', async () => {
   const context = await fixture();
   await assert.rejects(
-    () => context.catalog.createSku('sku-buyer', 'buyer-1', { sku: 'SKU-2', collectionId: context.collection.id, brandId: 'brand-1', name: 'Buyer bypass', wholesalePrice: 10, currency: 'EUR' }),
+    () => context.catalog.createSku('sku-buyer', 'buyer-1', {
+      sku: 'SKU-2', collectionId: context.collection.id, brandId: 'brand-1', name: 'Buyer bypass',
+      wholesalePrice: 10, currency: 'EUR', minimumOrderQuantity: 1, availableQuantity: 10,
+    }),
     (error) => error.code === 'ACTIVE_MEMBERSHIP_REQUIRED',
   );
 });
