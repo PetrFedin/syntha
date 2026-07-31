@@ -1,7 +1,7 @@
 import { invariant } from '../core/errors.mjs';
 
-export function createWholesaleRoutes({ platform, partners, collaboration, orders, notifications }) {
-  invariant(platform && partners && collaboration && orders && notifications, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
+export function createWholesaleRoutes({ platform, partners, collaboration, orders, notifications, workspace }) {
+  invariant(platform && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
   return [
     mutate('POST', /^\/v2\/campaigns$/, ({ commandId, actorId, body }) => platform.createCampaign(commandId, actorId, body)),
     mutate('POST', /^\/v2\/campaigns\/([^/]+)\/open$/, ({ commandId, actorId, params }) => platform.openCampaign(commandId, actorId, params[0])),
@@ -36,6 +36,7 @@ export function createWholesaleRoutes({ platform, partners, collaboration, order
       return orders.acceptTerms(commandId, actorId, { ...body, orderId: params[0] });
     }),
     mutate('POST', /^\/v2\/orders\/([^/]+)\/attach$/, ({ commandId, actorId, params }) => orders.attachOrderToCycle(commandId, actorId, params[0])),
+    read('GET', /^\/v2\/workspace$/, ({ actorId }) => workspace.loadForActor(actorId)),
     read('GET', /^\/v2\/notifications$/, ({ actorId }) => notifications.listForActor(actorId)),
     mutate('POST', /^\/v2\/notifications\/([^/]+)\/read$/, ({ commandId, actorId, params }) => notifications.markRead(commandId, actorId, params[0])),
   ];

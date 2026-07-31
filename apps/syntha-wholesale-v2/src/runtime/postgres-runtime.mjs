@@ -22,6 +22,6 @@ export function createPostgresWholesaleRuntime({ pool, authenticate, clock, next
   const projectionStore = createPostgresNotificationProjectionStore({ pool });
   const notifications = createNotificationService({ sourceStore: store, projectionStore, ...(clock ? { clock } : {}), ...(nextId ? { nextId } : {}) });
   const workspace = createWorkspaceQueryService({ reader: createPostgresWorkspaceReader({ pool }) });
-  const handler = createWholesaleHttpHandler({ authenticate, platform, partners, collaboration, orders, notifications });
+  const handler = createWholesaleHttpHandler({ authenticate, platform, partners, collaboration, orders, notifications, workspace });
   return Object.freeze({ store, projectionStore, platform, partners, collaboration, orders, notifications, workspace, handler });
 }

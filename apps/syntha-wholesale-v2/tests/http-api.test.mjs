@@ -24,6 +24,7 @@ function fixture({ maxBodyBytes = 1024 } = {}) {
     },
     orders: { createOrderDraft: service('createOrderDraft'), acceptTerms: service('acceptTerms'), attachOrderToCycle: service('attachOrderToCycle') },
     notifications: { listForActor: service('listForActor'), markRead: service('markRead') },
+    workspace: { loadForActor: service('loadForActor') },
     maxBodyBytes,
     nextRequestId: () => 'request-1',
   });
@@ -83,7 +84,7 @@ test('domain errors have stable status, code, details and request id', async () 
   const server = createWholesaleHttpServer({
     authenticate: async () => ({ actorId: 'user-1' }),
     platform: { createCampaign: async () => { throw new DomainError('CAMPAIGN_CONCURRENCY_CONFLICT', 'Concurrent update', { id: 'campaign-1' }); } },
-    partners: {}, collaboration: {}, orders: {}, notifications: {}, nextRequestId: () => 'request-domain',
+    partners: {}, collaboration: {}, orders: {}, notifications: {}, workspace: {}, nextRequestId: () => 'request-domain',
   });
   context.server = server;
   await withServer(context, async (base) => {
@@ -103,5 +104,14 @@ test('request body limit is enforced before service execution', async () => {
     assert.equal(response.status, 413);
     assert.equal((await response.json()).error.code, 'HTTP_BODY_TOO_LARGE');
     assert.equal(context.calls.length, 0);
+  });
+});
+
+test('workspace identity comes only from authenticated actor', async () => {
+  const context = fixture();
+  await withServer(context, async (base) => {
+    const response = await fetch(`${base}/v2/workspace`, { headers: { authorization: 'Bearer valid-token' } });
+    assert.equal(response.status, 200);
+    assert.deepEqual(context.calls[0], ['loadForActor', 'user-1']);
   });
 });

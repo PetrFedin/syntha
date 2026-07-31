@@ -43,6 +43,7 @@ export const wholesaleV2OpenApi = Object.freeze({
     '/orders': { post: operation('createOrderDraft') },
     '/orders/{orderId}/accept': { post: operation('acceptOrderTerms', ['orderId']) },
     '/orders/{orderId}/attach': { post: operation('attachOrderToCycle', ['orderId']) },
+    '/workspace': { get: { operationId: 'loadWorkspace', security: auth, responses: { 200: { description: 'Actor workspace' } } } },
     '/notifications': { get: { operationId: 'listNotifications', security: auth, responses: { 200: { description: 'Notifications' } } } },
     '/notifications/{notificationId}/read': { post: operation('markNotificationRead', ['notificationId']) },
   },
