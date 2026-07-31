@@ -23,7 +23,7 @@ export function createWholesaleHttpHandler({ authenticate, maxBodyBytes = 256 * 
       const data = await route.execute({ actorId, commandId, body, params: route.params });
       return send(response, 200, { data, requestId });
     } catch (error) {
-      const normalized = normalize(error);
+      const normalized = normalizeHttpError(error);
       return send(response, normalized.status, { error: { code: normalized.code, message: normalized.message, details: normalized.details }, requestId });
     }
   };
@@ -60,7 +60,7 @@ async function readJson(request, limit) {
   catch { throw new DomainError('HTTP_JSON_INVALID', 'Request body must be valid JSON'); }
 }
 
-function normalize(error) {
+export function normalizeHttpError(error) {
   if (!(error instanceof DomainError)) return { status: 500, code: 'INTERNAL_ERROR', message: 'Unexpected server error', details: {} };
   const code = error.code;
   let status = 422;

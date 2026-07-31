@@ -9,6 +9,7 @@ import { createPostgresWholesaleStore } from '../infrastructure/postgres-store.m
 import { createPostgresNotificationProjectionStore } from '../infrastructure/postgres-notification-projection-store.mjs';
 import { createPostgresWorkspaceReader } from '../infrastructure/postgres-workspace-reader.mjs';
 import { createWholesaleHttpHandler } from '../http/api.mjs';
+import { createWholesaleFetchHandler } from '../http/fetch-api.mjs';
 
 export function createPostgresWholesaleRuntime({ pool, authenticate, clock, nextId } = {}) {
   invariant(pool, 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
@@ -22,6 +23,8 @@ export function createPostgresWholesaleRuntime({ pool, authenticate, clock, next
   const projectionStore = createPostgresNotificationProjectionStore({ pool });
   const notifications = createNotificationService({ sourceStore: store, projectionStore, ...(clock ? { clock } : {}), ...(nextId ? { nextId } : {}) });
   const workspace = createWorkspaceQueryService({ reader: createPostgresWorkspaceReader({ pool }) });
-  const handler = createWholesaleHttpHandler({ authenticate, platform, partners, collaboration, orders, notifications, workspace });
-  return Object.freeze({ store, projectionStore, platform, partners, collaboration, orders, notifications, workspace, handler });
+  const transport = { authenticate, platform, partners, collaboration, orders, notifications, workspace };
+  const handler = createWholesaleHttpHandler(transport);
+  const fetchHandler = createWholesaleFetchHandler(transport);
+  return Object.freeze({ store, projectionStore, platform, partners, collaboration, orders, notifications, workspace, handler, fetchHandler });
 }
