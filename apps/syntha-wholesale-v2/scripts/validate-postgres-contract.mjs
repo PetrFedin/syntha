@@ -11,13 +11,15 @@ const requiredTables = [
   'organisations', 'memberships', 'counterparty_relationships', 'campaigns', 'collections', 'showrooms',
   'showroom_invitations', 'commercial_cycles', 'selections', 'orders', 'deals', 'calendar_milestones',
   'commands', 'outbox_events', 'notifications', 'notification_projections', 'notification_commands',
-  'auth_users', 'auth_sessions',
+  'auth_users', 'auth_sessions', 'auth_login_throttles', 'auth_login_audit',
 ];
 const requiredFragments = [
   'UNIQUE (brand_id, shop_id)', 'UNIQUE (showroom_id, shop_id)', 'cycle_id text NOT NULL UNIQUE',
   "status text NOT NULL CHECK (status IN ('pending', 'published'))", 'outbox_status_idx',
   'notifications_recipient_status_idx', 'version integer NOT NULL CHECK (version > 0)',
   'email_normalized text NOT NULL UNIQUE', 'token_hash char(64) NOT NULL UNIQUE', 'auth_sessions_expiry_idx',
+  "outcome text NOT NULL CHECK (outcome IN ('succeeded', 'failed', 'blocked'))", 'auth_login_throttles_blocked_idx',
+  'auth_login_audit_key_time_idx',
 ];
 const missing = [];
 for (const table of requiredTables) if (!new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);
