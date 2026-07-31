@@ -25,11 +25,15 @@ export function upsertSelectionLine(selection, line, actorId, updatedAt) {
   invariant(selection.status === 'draft', 'SELECTION_NOT_DRAFT', 'Only a draft selection can be edited');
   invariant(typeof line.sku === 'string' && line.sku.length > 0, 'SELECTION_LINE_SKU_REQUIRED', 'Selection line SKU is required');
   invariant(Number.isInteger(line.quantity) && line.quantity > 0, 'SELECTION_LINE_QUANTITY_INVALID', 'Selection quantity must be a positive integer');
-  invariant(Number.isFinite(line.unitPrice) && line.unitPrice >= 0, 'SELECTION_LINE_PRICE_INVALID', 'Selection unit price must be non-negative');
+  invariant(Number.isFinite(line.unitPrice) && line.unitPrice > 0, 'SELECTION_LINE_PRICE_INVALID', 'Selection unit price must be positive');
+  invariant(/^[A-Z]{3}$/.test(line.currency ?? ''), 'SELECTION_LINE_CURRENCY_INVALID', 'Selection line currency must be an ISO-4217 code');
+  invariant(Number.isInteger(line.catalogVersion) && line.catalogVersion > 0, 'SELECTION_CATALOG_VERSION_INVALID', 'Catalog version must be a positive integer');
   const nextLine = Object.freeze({
     sku: line.sku,
     quantity: line.quantity,
     unitPrice: line.unitPrice,
+    currency: line.currency,
+    catalogVersion: line.catalogVersion,
     note: typeof line.note === 'string' ? line.note.trim() : '',
     updatedBy: actorId,
     updatedAt,
@@ -39,16 +43,13 @@ export function upsertSelectionLine(selection, line, actorId, updatedAt) {
   if (existingIndex >= 0) lines[existingIndex] = nextLine;
   else lines.push(nextLine);
   lines.sort((left, right) => left.sku.localeCompare(right.sku));
-  return Object.freeze({
-    ...selection,
-    lines: Object.freeze(lines),
-    version: selection.version + 1,
-    updatedAt,
-  });
+  return Object.freeze({ ...selection, lines: Object.freeze(lines), version: selection.version + 1, updatedAt });
 }
 
 export function submitSelection(selection, updatedAt) {
   invariant(selection.status === 'draft', 'SELECTION_NOT_DRAFT', 'Only a draft selection can be submitted');
   invariant(selection.lines.length > 0, 'SELECTION_LINES_REQUIRED', 'Selection must contain at least one line');
+  const currencies = new Set(selection.lines.map((line) => line.currency));
+  invariant(currencies.size === 1, 'SELECTION_CURRENCY_MISMATCH', 'All selection lines must use one currency');
   return Object.freeze({ ...selection, status: 'submitted', version: selection.version + 1, updatedAt });
 }
