@@ -1,0 +1,99 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createOrganisation } from '../src/modules/organisations/public.mjs';
+import { createMembership } from '../src/modules/access-control/public.mjs';
+import { createWholesalePlatform } from '../src/application/platform.mjs';
+import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
+import { createShowroomSelectionService } from '../src/application/showroom-selection-service.mjs';
+import { createOrderBuilderService } from '../src/application/order-builder-service.mjs';
+import { createPostgresWholesaleStore } from '../src/infrastructure/postgres-store.mjs';
+
+const databaseUrl = process.env.POSTGRES_TEST_URL;
+
+test('PostgreSQL persists the complete wholesale route and notification projection', { skip: !databaseUrl }, async () => {
+  const { Pool } = await import('pg');
+  const pool = new Pool({ connectionString: databaseUrl, max: 4 });
+  try {
+    await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
+    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+    const migration = await readFile(path.join(root, 'db/migrations/001_wholesale_v2.sql'), 'utf8');
+    await pool.query(migration);
+
+    let id = 0;
+    let tick = 0;
+    const options = {
+      store: createPostgresWholesaleStore({ pool }),
+      clock: () => `2026-07-30T20:${String(Math.floor(tick / 60)).padStart(2, '0')}:${String(tick++ % 60).padStart(2, '0')}.000Z`,
+      nextId: (prefix) => `${prefix}_pg_${++id}`,
+    };
+    const platform = createWholesalePlatform(options);
+    const partners = createPartnerAccessService(options);
+    const collaboration = createShowroomSelectionService(options);
+    const orders = createOrderBuilderService(options);
+
+    await platform.registerOrganisation('pg-org-brand', 'system', createOrganisation({ id: 'brand-pg', type: 'brand', name: 'Postgres Brand' }));
+    await platform.registerOrganisation('pg-org-shop', 'system', createOrganisation({ id: 'shop-pg', type: 'shop', name: 'Postgres Shop' }));
+    await platform.grantMembership('pg-member-brand', 'system', createMembership({ id: 'member-brand-pg', organisationId: 'brand-pg', organisationType: 'brand', userId: 'sales-pg', role: 'owner', createdAt: options.clock() }));
+    await platform.grantMembership('pg-member-shop', 'system', createMembership({ id: 'member-shop-pg', organisationId: 'shop-pg', organisationType: 'shop', userId: 'buyer-pg', role: 'owner', createdAt: options.clock() }));
+
+    const relationship = await partners.requestRelationship('pg-relationship-request', 'sales-pg', { brandId: 'brand-pg', shopId: 'shop-pg' });
+    await partners.acceptRelationship('pg-relationship-accept', 'buyer-pg', relationship.id);
+
+    const campaign = await platform.createCampaign('pg-campaign-create', 'sales-pg', {
+      brandId: 'brand-pg', name: 'FW PostgreSQL', season: 'FW27',
+      startsAt: '2027-01-01T00:00:00.000Z', endsAt: '2027-02-01T00:00:00.000Z',
+    });
+    await platform.openCampaign('pg-campaign-open', 'sales-pg', campaign.id);
+    const collection = await platform.createCollection('pg-collection-create', 'sales-pg', {
+      campaignId: campaign.id, brandId: 'brand-pg', name: 'Main', currency: 'EUR',
+    });
+    await platform.publishCollection('pg-collection-publish', 'sales-pg', collection.id);
+    const showroom = await collaboration.createShowroom('pg-showroom-create', 'sales-pg', {
+      collectionId: collection.id, brandId: 'brand-pg', name: 'Paris',
+      opensAt: '2027-01-05T00:00:00.000Z', closesAt: '2027-01-20T00:00:00.000Z',
+    });
+    await collaboration.openShowroom('pg-showroom-open', 'sales-pg', showroom.id);
+    const invitation = await partners.inviteShopToShowroom('pg-invitation-create', 'sales-pg', {
+      showroomId: showroom.id, shopId: 'shop-pg', expiresAt: '2027-01-15T00:00:00.000Z',
+    });
+    await partners.acceptShowroomInvitation('pg-invitation-accept', 'buyer-pg', invitation.id);
+
+    let cycle = await platform.startCycle('pg-cycle-create', 'buyer-pg', {
+      brandId: 'brand-pg', shopId: 'shop-pg', campaignId: campaign.id, collectionId: collection.id,
+    });
+    cycle = await platform.advanceCycle('pg-cycle-collection', 'buyer-pg', cycle.id, 'collection');
+    cycle = await platform.advanceCycle('pg-cycle-showroom', 'buyer-pg', cycle.id, 'showroom');
+    const created = await collaboration.createSelection('pg-selection-create', 'buyer-pg', { cycleId: cycle.id, showroomId: showroom.id });
+    const edited = await collaboration.upsertSelectionLine('pg-selection-line', 'buyer-pg', created.selection.id, { sku: 'SKU-PG', quantity: 4, unitPrice: 125 });
+    const submitted = await collaboration.submitSelection('pg-selection-submit', 'buyer-pg', edited.id);
+
+    let order = await orders.createOrderDraft('pg-order-create', 'buyer-pg', {
+      selectionId: submitted.selection.id,
+      terms: { incoterm: 'DAP', paymentDays: 30, prepaymentPercent: 20, deliveryStart: '2027-03-01', deliveryEnd: '2027-03-31' },
+    });
+    order = await orders.acceptTerms('pg-order-shop-accept', 'buyer-pg', { orderId: order.id, organisationId: 'shop-pg' });
+    order = await orders.acceptTerms('pg-order-brand-accept', 'sales-pg', { orderId: order.id, organisationId: 'brand-pg' });
+    const attached = await orders.attachOrderToCycle('pg-order-attach', 'buyer-pg', order.id);
+    const opened = await platform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
+
+    assert.equal(opened.cycle.stage, 'deal-space');
+    assert.equal(opened.deal.totalAmount, 500);
+
+    const repeatedPlatform = createWholesalePlatform({ store: options.store });
+    const repeated = await repeatedPlatform.confirmAndOpenDeal('pg-deal-open', 'buyer-pg', attached.cycle.id);
+    assert.deepEqual(repeated, opened);
+
+    const snapshot = await options.store.snapshot();
+    assert.equal(snapshot.relationships.length, 1);
+    assert.equal(snapshot.showroomInvitations.length, 1);
+    assert.equal(snapshot.cycles.length, 1);
+    assert.equal(snapshot.orders.length, 1);
+    assert.equal(snapshot.deals.length, 1);
+    assert.equal(new Set(snapshot.outbox.map((record) => record.event.id)).size, snapshot.outbox.length);
+  } finally {
+    await pool.end();
+  }
+});

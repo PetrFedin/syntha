@@ -2,53 +2,56 @@
 
 ## Current vertical slice
 
-The foundation package implements an executable vertical slice from organisation registration to confirmed wholesale deal. Application logic depends on a transactional store contract; the supplied memory adapter is used for tests and local execution.
+The V2 package implements the executable wholesale transaction route:
+
+`Campaign → Collection → Showroom → Selection → Order Builder → Order → Confirmation → DealSpace`.
+
+The same domain and application services run against the deterministic memory adapter and the PostgreSQL adapter. Storage concerns do not enter module rules.
 
 ## Layers
 
-- `src/core`: shared errors and immutable event envelope.
-- `src/modules/*/public.mjs`: public module contracts, including organisation-scoped RBAC.
-- `src/application`: asynchronous cross-module use cases and transactional store port.
-- `src/infrastructure`: adapters, currently the deterministic memory store.
-- `scripts`: architecture verification.
-- `tests`: domain and integration tests.
+- `src/core` — shared domain errors and immutable event envelopes.
+- `src/modules/*/public.mjs` — public domain contracts.
+- `src/application` — asynchronous cross-module use cases and transaction boundaries.
+- `src/infrastructure` — memory and PostgreSQL adapters.
+- `db/migrations` — PostgreSQL schema.
+- `scripts` — architecture and persistence contract verification.
+- `tests` — domain, application and real-database integration tests.
 
 ## Module boundary
 
-Private files may be added inside modules later, but consumers must import only the module's `public.mjs`. The validator fails CI when a module reaches into another module's private path.
+Consumers import another domain only through its `public.mjs`. The architecture validator rejects private cross-module imports.
 
-## Transaction semantics
+## Transaction guarantees
 
-`confirmAndOpenDeal` is one application transaction: it validates the order, advances confirmation, opens DealSpace, creates both shared calendar milestones and emits events. The next persistence adapter must preserve this atomicity with a database transaction and an outbox table.
+Every mutation:
 
-## Next persistence contract
+1. requires a durable `commandId`;
+2. executes in one store transaction;
+3. records the actor and immutable domain events;
+4. stores command result and outbox events atomically with aggregate changes;
+5. uses optimistic concurrency for versioned aggregates.
 
-The PostgreSQL adapter must implement the existing transaction contract for organisations, memberships, counterparty relationships, showroom invitations, campaigns, collections, commercial cycles, deals, calendar milestones, durable commands and outbox events. Versioned saves already require optimistic concurrency.
+`confirmAndOpenDeal` validates and confirms the order, advances the cycle, opens DealSpace and creates both shared calendar milestones in one transaction.
 
 ## Access control
 
-Every business mutation records `actorId`. The actor must hold an active membership in Brand or Shop participating in the trade and the role must grant the required capability. The system actor is reserved for organisation registration and first-owner bootstrap.
+Users act through active organisation memberships. Roles grant explicit capabilities; the system actor is restricted to organisation registration and first-owner bootstrap.
 
-## Persistence guarantees
+A Brand and Shop need an active, mutually accepted counterparty relationship before starting a commercial cycle. The requester cannot accept its own relationship request. Either party may revoke an active relationship.
 
-Commands and emitted events are stored in the same transaction as aggregate changes. Failed use cases roll back all writes. Durable command fingerprints provide idempotency across application instances. The outbox separates transaction commit from external event publication.
+Showroom access is granted per Shop through a versioned invitation. Selection creation requires both an active relationship and an accepted, unexpired invitation for the exact Showroom and Shop. Revocation immediately blocks new access.
 
-## Counterparty relationships and showroom invitations
+## PostgreSQL persistence
 
-A Brand and Shop must have one active, mutually accepted counterparty relationship before a commercial cycle can start. Either party may request a relationship, but the requesting organisation cannot accept or reject its own request. Either party may revoke an active relationship; revocation immediately blocks new cycles and new showroom selections.
+`db/migrations/001_wholesale_v2.sql` defines the write model, durable commands, transactional outbox and notification projection tables with foreign keys, unique trade/access constraints, optimistic versions and working-route indexes.
 
-Showroom visibility is granted per Shop through a versioned invitation. The invitation requires an active counterparty relationship, belongs to one exact showroom and shop, has an expiry date, and may be accepted or declined only by the invited Shop. The Brand may revoke it. A selection can be created only while both the relationship and an accepted, unexpired showroom invitation remain valid.
+`createPostgresWholesaleStore` implements the same asynchronous transaction port as the memory adapter using `BEGIN`, `COMMIT` and `ROLLBACK`. Versioned updates use `UPDATE … WHERE id = ? AND version = ?`; a zero-row update is a concurrency conflict.
 
-Relationship and invitation mutations are idempotent commands, use optimistic concurrency and emit immutable outbox events in the same transaction as their state changes.
+The specialised GitHub Actions workflow starts PostgreSQL 17, applies the migration and runs the complete route from organisation bootstrap through relationship, invitation, Selection, bilateral Order approval and DealSpace. Repeating the same command against another application instance must return the stored result without duplicating aggregates or outbox events.
 
-## Showroom and selection
+The memory adapter remains an obligatory regression guard. PostgreSQL success may not hide a broken domain contract, and memory success may not substitute for the real database integration test.
 
-A published collection can expose one or more scheduled showrooms. A shop buyer creates the cycle selection only while the cycle is at `showroom`; creation advances it to `selection`. Submitting a non-empty selection advances the same cycle to `order-builder` in the same transaction.
+## Deliberate scope boundary
 
-## Order builder and bilateral terms
-
-An order draft is derived only from a submitted selection. Quantity, unit price and total are copied and recalculated from immutable selection lines; the caller cannot supply a total. Incoterm, payment structure and delivery window are validated as a commercial terms snapshot. Brand and Shop accept the same order version independently. Only a dual-approved order can be attached to the commercial cycle and advanced from `order-builder` to `order`; confirmation then opens DealSpace through the existing atomic transaction.
-
-## Notification projection
-
-Notification Center consumes the transactional outbox through an independent idempotent projection checkpoint. Selection submission notifies Brand, an order-term acceptance notifies the counterparty, and DealSpace opening notifies both organisations. Notification projection deliberately does not mark the external outbox record as published; delivery to external brokers remains a separate responsibility.
+PLM, production, BOM, QC, logistics and landed cost remain outside V2 until the wholesale transaction core, partner access and PostgreSQL persistence are stable. These operational domains must be built on accepted organisations, orders and immutable commercial terms rather than parallel models.
