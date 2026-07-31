@@ -18,20 +18,15 @@ npm run db:migrate
 npm run bootstrap:owner
 ```
 
-Запуск API:
+Запуск приложения:
 
 ```bash
 npm run dev
 ```
 
-Проверка:
+Откройте `http://127.0.0.1:4100`. Тот же процесс обслуживает standalone workspace, `/v2` API, `/health` и `/openapi.json`.
 
-```bash
-curl http://127.0.0.1:4100/health
-curl http://127.0.0.1:4100/openapi.json
-```
-
-## Вход
+## Вход через API
 
 ```bash
 curl -X POST http://127.0.0.1:4100/v2/auth/login \
@@ -51,4 +46,4 @@ curl -X POST http://127.0.0.1:4100/v2/auth/login \
 npm run verify
 ```
 
-Она проверяет архитектурные границы, изоляцию V2, PostgreSQL-контракт и все тесты.
+Она проверяет архитектурные границы, изоляцию V2, PostgreSQL-контракт, standalone web handler и все тесты.
