@@ -52,7 +52,7 @@ test('Selection accepts only a published catalog SKU and derives price and curre
     (error) => error.code === 'CATALOG_SKU_NOT_PUBLISHED',
   );
   await context.catalog.publishSku('sku-publish', 'sales-1', 'SKU-1');
-  await assert.rejects(
+  assert.throws(
     () => context.collaboration.upsertSelectionLine('line-client-price', 'buyer-1', context.selection.id, { sku: 'SKU-1', quantity: 3, unitPrice: 1 }),
     (error) => error.code === 'SELECTION_CLIENT_PRICE_FORBIDDEN',
   );
