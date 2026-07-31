@@ -23,7 +23,7 @@ await waitForPostgres({
 const migrationResult = await migratePostgres({ pool, migrationsDir });
 console.log(`Syntha V2 migrations: applied=${migrationResult.applied.length}, skipped=${migrationResult.skipped.length}`);
 
-const runtime = createPostgresWholesaleRuntime({ pool, sessionTtlMs });
+const runtime = createPostgresWholesaleRuntime({ pool, migrationsDir, sessionTtlMs });
 const handler = createStandaloneHandler({ apiHandler: runtime.handler });
 const server = createServer(handler);
 server.listen(port, host, () => console.log(`Syntha V2 listening on http://${host}:${port}`));
