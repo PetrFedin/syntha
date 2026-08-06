@@ -21,6 +21,7 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
     '004_catalog.sql',
     '005_catalog_availability.sql',
     '006_order_cancellation.sql',
+    '007_product_development.sql',
   ];
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
@@ -41,13 +42,17 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
               to_regclass('public.auth_users') AS auth_users,
               to_regclass('public.auth_login_throttles') AS auth_login_throttles,
               to_regclass('public.catalog_skus') AS catalog_skus,
-              to_regclass('public.order_inventory_reservations') AS order_inventory_reservations`,
+              to_regclass('public.order_inventory_reservations') AS order_inventory_reservations,
+              to_regclass('public.product_size_grids') AS product_size_grids,
+              to_regclass('public.product_styles') AS product_styles`,
     );
     assert.equal(tables.rows[0].organisations, 'organisations');
     assert.equal(tables.rows[0].auth_users, 'auth_users');
     assert.equal(tables.rows[0].auth_login_throttles, 'auth_login_throttles');
     assert.equal(tables.rows[0].catalog_skus, 'catalog_skus');
     assert.equal(tables.rows[0].order_inventory_reservations, 'order_inventory_reservations');
+    assert.equal(tables.rows[0].product_size_grids, 'product_size_grids');
+    assert.equal(tables.rows[0].product_styles, 'product_styles');
 
     for (const file of migrationFiles) await copyFile(path.join(migrationsDir, file), path.join(tempDir, file));
     await appendFile(path.join(tempDir, '005_catalog_availability.sql'), '\n-- changed history must fail\n');

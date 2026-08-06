@@ -3,7 +3,7 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.9.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.10.0' },
   servers: [{ url: '/v2' }],
   'x-operational-endpoints': Object.freeze({ liveness: '/health', readiness: '/ready', specification: '/openapi.json' }),
   components: {
@@ -32,6 +32,32 @@ export const wholesaleV2OpenApi = Object.freeze({
           availableQuantity: { type: 'integer', minimum: 0 },
         },
       },
+      SizeGridCreate: {
+        type: 'object',
+        required: ['brandId', 'code', 'name', 'sizes', 'baseSize'],
+        additionalProperties: false,
+        properties: {
+          brandId: { type: 'string', minLength: 1 },
+          code: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{1,39}$' },
+          name: { type: 'string', minLength: 2, maxLength: 120 },
+          sizes: { type: 'array', minItems: 2, maxItems: 40, uniqueItems: true, items: { type: 'string', minLength: 1, maxLength: 16 } },
+          baseSize: { type: 'string', minLength: 1, maxLength: 16 },
+        },
+      },
+      StyleCreate: {
+        type: 'object',
+        required: ['brandId', 'collectionId', 'styleCode', 'name', 'category', 'gender', 'sizeGridId'],
+        additionalProperties: false,
+        properties: {
+          brandId: { type: 'string', minLength: 1 },
+          collectionId: { type: 'string', minLength: 1 },
+          styleCode: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{1,39}$' },
+          name: { type: 'string', minLength: 2, maxLength: 120 },
+          category: { type: 'string', minLength: 2, maxLength: 120 },
+          gender: { type: 'string', enum: ['women', 'men', 'unisex', 'kids', 'other'] },
+          sizeGridId: { type: 'string', minLength: 1 },
+        },
+      },
       SelectionLineInput: {
         type: 'object', required: ['sku', 'quantity'], additionalProperties: false,
         properties: { sku: { type: 'string' }, quantity: { type: 'integer', minimum: 1 }, note: { type: 'string' } },
@@ -57,6 +83,10 @@ export const wholesaleV2OpenApi = Object.freeze({
     '/collections/{collectionId}/publish': { post: operation('publishCollection', ['collectionId']) },
     '/catalog/skus': { post: { ...operation('createCatalogSku'), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CatalogSkuCreate' } } } } } },
     '/catalog/skus/{sku}/publish': { post: operation('publishCatalogSku', ['sku']) },
+    '/plm/size-grids': { post: { ...operation('createSizeGrid'), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SizeGridCreate' } } } } } },
+    '/plm/size-grids/{sizeGridId}/publish': { post: operation('publishSizeGrid', ['sizeGridId']) },
+    '/plm/styles': { post: { ...operation('createStyle'), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/StyleCreate' } } } } } },
+    '/plm/styles/{styleId}/approve': { post: operation('approveStyle', ['styleId']) },
     '/showrooms': { post: operation('createShowroom') },
     '/showrooms/{showroomId}/open': { post: operation('openShowroom', ['showroomId']) },
     '/relationships': { post: operation('requestRelationship') },
@@ -72,6 +102,7 @@ export const wholesaleV2OpenApi = Object.freeze({
     '/orders': { post: operation('createOrderDraft') },
     '/orders/{orderId}/accept': { post: operation('acceptOrderTerms', ['orderId']) },
     '/orders/{orderId}/attach': { post: operation('attachOrderToCycle', ['orderId']) },
+    '/orders/{orderId}/cancel': { post: operation('cancelOrder', ['orderId']) },
     '/workspace': { get: { operationId: 'loadWorkspace', security: auth, responses: { 200: { description: 'Actor workspace' } } } },
     '/notifications': { get: { operationId: 'listNotifications', security: auth, responses: { 200: { description: 'Notifications' } } } },
     '/notifications/{notificationId}/read': { post: operation('markNotificationRead', ['notificationId']) },
@@ -90,7 +121,7 @@ function operation(operationId, pathNames = []) {
       401: { description: 'Authentication required' },
       403: { description: 'Capability denied' },
       409: { description: 'Conflict' },
-      422: { description: 'Domain validation failed, including MOQ or availability failures' },
+      422: { description: 'Domain validation failed, including lifecycle, MOQ or availability failures' },
     },
   };
 }

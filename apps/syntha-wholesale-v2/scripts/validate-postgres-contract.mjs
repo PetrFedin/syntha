@@ -13,6 +13,7 @@ const requiredTables = [
   'commands', 'outbox_events', 'notifications', 'notification_projections', 'notification_commands',
   'auth_users', 'auth_sessions', 'auth_login_throttles', 'auth_login_audit',
   'catalog_skus', 'catalog_commands', 'catalog_outbox_events', 'order_inventory_reservations',
+  'product_size_grids', 'product_styles',
 ];
 const requiredFragments = [
   'UNIQUE (brand_id, shop_id)', 'UNIQUE (showroom_id, shop_id)', 'cycle_id text NOT NULL UNIQUE',
@@ -26,6 +27,9 @@ const requiredFragments = [
   'available_quantity integer NOT NULL DEFAULT 0', 'reserved_quantity integer NOT NULL DEFAULT 0',
   'catalog_skus_reserved_not_above_available', 'order_inventory_reservations_sku_idx',
   'reserve_inventory_on_order_attach', 'orders_reserve_inventory_on_attach', 'FOR UPDATE',
+  'collections_id_brand_unique', 'UNIQUE (brand_id, code)', 'UNIQUE (brand_id, style_code)',
+  'FOREIGN KEY (collection_id, brand_id)', 'FOREIGN KEY (size_grid_id, brand_id)',
+  'product_size_grids_brand_status_idx', 'product_styles_collection_status_idx',
 ];
 const missing = [];
 for (const table of requiredTables) if (!new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);

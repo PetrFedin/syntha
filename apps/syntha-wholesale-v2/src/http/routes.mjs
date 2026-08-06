@@ -1,8 +1,9 @@
 import { invariant } from '../core/errors.mjs';
 
-export function createWholesaleRoutes({ platform, catalog, partners, collaboration, orders, notifications, workspace }) {
+export function createWholesaleRoutes({ platform, catalog, productDevelopment, partners, collaboration, orders, notifications, workspace }) {
   invariant(platform && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
   const catalogService = catalog ?? unavailableCatalog();
+  const productDevelopmentService = productDevelopment ?? unavailableProductDevelopment();
   return [
     mutate('POST', /^\/v2\/campaigns$/, ({ commandId, actorId, body }) => platform.createCampaign(commandId, actorId, body)),
     mutate('POST', /^\/v2\/campaigns\/([^/]+)\/open$/, ({ commandId, actorId, params }) => platform.openCampaign(commandId, actorId, params[0])),
@@ -10,6 +11,16 @@ export function createWholesaleRoutes({ platform, catalog, partners, collaborati
     mutate('POST', /^\/v2\/collections\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => platform.publishCollection(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/catalog\/skus$/, ({ commandId, actorId, body }) => catalogService.createSku(commandId, actorId, body)),
     mutate('POST', /^\/v2\/catalog\/skus\/([^/]+)\/publish$/, ({ commandId, actorId, params }) => catalogService.publishSku(commandId, actorId, decodeURIComponent(params[0]))),
+    mutate('POST', /^\/v2\/plm\/size-grids$/, ({ commandId, actorId, body }) => productDevelopmentService.createSizeGrid(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/plm\/size-grids\/([^/]+)\/publish$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.sizeGridId, params[0], 'sizeGridId');
+      return productDevelopmentService.publishSizeGrid(commandId, actorId, params[0]);
+    }),
+    mutate('POST', /^\/v2\/plm\/styles$/, ({ commandId, actorId, body }) => productDevelopmentService.createStyle(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/plm\/styles\/([^/]+)\/approve$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.styleId, params[0], 'styleId');
+      return productDevelopmentService.approveStyle(commandId, actorId, params[0]);
+    }),
     mutate('POST', /^\/v2\/showrooms$/, ({ commandId, actorId, body }) => collaboration.createShowroom(commandId, actorId, body)),
     mutate('POST', /^\/v2\/showrooms\/([^/]+)\/open$/, ({ commandId, actorId, params }) => collaboration.openShowroom(commandId, actorId, params[0])),
     mutate('POST', /^\/v2\/relationships$/, ({ commandId, actorId, body }) => partners.requestRelationship(commandId, actorId, body)),
@@ -66,4 +77,8 @@ function sameId(bodyValue, routeValue, field) {
 function unavailableCatalog() {
   const fail = () => invariant(false, 'CATALOG_SERVICE_REQUIRED', 'Catalog service is required');
   return Object.freeze({ createSku: fail, publishSku: fail });
+}
+function unavailableProductDevelopment() {
+  const fail = () => invariant(false, 'PRODUCT_DEVELOPMENT_SERVICE_REQUIRED', 'Product development service is required');
+  return Object.freeze({ createSizeGrid: fail, publishSizeGrid: fail, createStyle: fail, approveStyle: fail });
 }

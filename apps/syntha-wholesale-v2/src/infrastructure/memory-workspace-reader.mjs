@@ -22,6 +22,9 @@ export function createMemoryWorkspaceReader({ store, catalogStore }) {
       const showroomIds = new Set([...invitations.map((item) => item.showroomId), ...selections.map((item) => item.showroomId)]);
       const showrooms = source.showrooms.filter((item) => showroomIds.has(item.id) || ownIds.has(item.brandId));
       for (const showroom of showrooms) collectionIds.add(showroom.collectionId);
+      const styles = source.styles.filter((item) => ownBrandIds.has(item.brandId) || (item.status === 'approved' && collectionIds.has(item.collectionId)));
+      const visibleSizeGridIds = new Set(styles.map((item) => item.sizeGrid?.id));
+      const sizeGrids = source.sizeGrids.filter((item) => ownBrandIds.has(item.brandId) || (item.status === 'published' && visibleSizeGridIds.has(item.id)));
       return {
         memberships,
         organisations: source.organisations.filter((item) => visibleOrgIds.has(item.id)),
@@ -29,6 +32,8 @@ export function createMemoryWorkspaceReader({ store, catalogStore }) {
         invitations,
         campaigns: source.campaigns.filter((item) => campaignIds.has(item.id) || ownIds.has(item.brandId)),
         collections: source.collections.filter((item) => collectionIds.has(item.id) || ownIds.has(item.brandId)),
+        sizeGrids,
+        styles,
         catalogSkus: catalogSource.skus.filter((item) => ownBrandIds.has(item.brandId) || (item.status === 'published' && collectionIds.has(item.collectionId))),
         showrooms,
         cycles,

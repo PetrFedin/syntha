@@ -29,8 +29,28 @@ export function createPostgresWorkspaceReader({ pool }) {
         payloadByIdsOrOwner(pool, 'showrooms', showroomIds, 'brand_id', brandIds),
       ]);
       const visibleCollectionIds = unique([...cycleCollectionIds, ...showrooms.map((item) => item.collectionId)]);
-      const catalogSkus = await visibleCatalogSkus(pool, brandIds, visibleCollectionIds);
-      return { memberships, organisations, relationships, invitations, campaigns, collections, catalogSkus, showrooms, cycles, selections, orders, deals, calendar };
+      const [catalogSkus, styles] = await Promise.all([
+        visibleCatalogSkus(pool, brandIds, visibleCollectionIds),
+        visibleStyles(pool, brandIds, visibleCollectionIds),
+      ]);
+      const sizeGrids = await visibleSizeGrids(pool, brandIds, unique(styles.map((item) => item.sizeGrid?.id)));
+      return {
+        memberships,
+        organisations,
+        relationships,
+        invitations,
+        campaigns,
+        collections,
+        sizeGrids,
+        styles,
+        catalogSkus,
+        showrooms,
+        cycles,
+        selections,
+        orders,
+        deals,
+        calendar,
+      };
     },
   });
 }
@@ -65,7 +85,32 @@ async function visibleCatalogSkus(pool, brandIds, collectionIds) {
   );
   return result.rows.map((row) => row.payload);
 }
+async function visibleStyles(pool, brandIds, collectionIds) {
+  if (!brandIds.length && !collectionIds.length) return [];
+  const result = await pool.query(
+    `SELECT payload FROM product_styles
+      WHERE brand_id = ANY($1::text[])
+         OR (collection_id = ANY($2::text[]) AND status = 'approved')
+      ORDER BY style_code`,
+    [brandIds, collectionIds],
+  );
+  return result.rows.map((row) => row.payload);
+}
+async function visibleSizeGrids(pool, brandIds, sizeGridIds) {
+  if (!brandIds.length && !sizeGridIds.length) return [];
+  const result = await pool.query(
+    `SELECT payload FROM product_size_grids
+      WHERE brand_id = ANY($1::text[])
+         OR (id = ANY($2::text[]) AND status = 'published')
+      ORDER BY code`,
+    [brandIds, sizeGridIds],
+  );
+  return result.rows.map((row) => row.payload);
+}
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function emptyWorkspace() {
-  return { memberships: [], organisations: [], relationships: [], invitations: [], campaigns: [], collections: [], catalogSkus: [], showrooms: [], cycles: [], selections: [], orders: [], deals: [], calendar: [] };
+  return {
+    memberships: [], organisations: [], relationships: [], invitations: [], campaigns: [], collections: [],
+    sizeGrids: [], styles: [], catalogSkus: [], showrooms: [], cycles: [], selections: [], orders: [], deals: [], calendar: [],
+  };
 }

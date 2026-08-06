@@ -32,8 +32,9 @@ export function createMemoryWholesaleStore() {
 function emptyState() {
   return {
     organisations: new Map(), memberships: new Map(), relationships: new Map(), showroomInvitations: new Map(),
-    campaigns: new Map(), collections: new Map(), showrooms: new Map(), selections: new Map(), orders: new Map(),
-    cycles: new Map(), deals: new Map(), calendar: new Map(), commands: new Map(), outbox: new Map(),
+    campaigns: new Map(), collections: new Map(), sizeGrids: new Map(), styles: new Map(), showrooms: new Map(),
+    selections: new Map(), orders: new Map(), cycles: new Map(), deals: new Map(), calendar: new Map(),
+    commands: new Map(), outbox: new Map(),
   };
 }
 function cloneState(state) { return Object.fromEntries(Object.entries(state).map(([key, value]) => [key, new Map(value)])); }
@@ -63,6 +64,16 @@ function transactionView(state) {
     getCollection: (id) => state.collections.get(id),
     insertCollection: (collection) => insertUnique(state.collections, collection.id, collection, 'COLLECTION_ALREADY_EXISTS'),
     saveCollection: (collection, expectedVersion) => saveVersioned(state.collections, collection, expectedVersion, 'COLLECTION_CONCURRENCY_CONFLICT'),
+
+    getSizeGrid: (id) => state.sizeGrids.get(id),
+    getSizeGridByCode: (brandId, code) => [...state.sizeGrids.values()].find((item) => item.brandId === brandId && item.code === code),
+    insertSizeGrid: (sizeGrid) => insertUnique(state.sizeGrids, sizeGrid.id, sizeGrid, 'SIZE_GRID_ALREADY_EXISTS'),
+    saveSizeGrid: (sizeGrid, expectedVersion) => saveVersioned(state.sizeGrids, sizeGrid, expectedVersion, 'SIZE_GRID_CONCURRENCY_CONFLICT'),
+    getStyle: (id) => state.styles.get(id),
+    getStyleByCode: (brandId, styleCode) => [...state.styles.values()].find((item) => item.brandId === brandId && item.styleCode === styleCode),
+    insertStyle: (style) => insertUnique(state.styles, style.id, style, 'STYLE_ALREADY_EXISTS'),
+    saveStyle: (style, expectedVersion) => saveVersioned(state.styles, style, expectedVersion, 'STYLE_CONCURRENCY_CONFLICT'),
+
     getShowroom: (id) => state.showrooms.get(id),
     insertShowroom: (showroom) => insertUnique(state.showrooms, showroom.id, showroom, 'SHOWROOM_ALREADY_EXISTS'),
     saveShowroom: (showroom, expectedVersion) => saveVersioned(state.showrooms, showroom, expectedVersion, 'SHOWROOM_CONCURRENCY_CONFLICT'),
@@ -105,7 +116,8 @@ function freezeSnapshot(state) {
   return Object.freeze({
     organisations: [...state.organisations.values()], memberships: [...state.memberships.values()],
     relationships: [...state.relationships.values()], showroomInvitations: [...state.showroomInvitations.values()],
-    campaigns: [...state.campaigns.values()], collections: [...state.collections.values()], showrooms: [...state.showrooms.values()],
+    campaigns: [...state.campaigns.values()], collections: [...state.collections.values()],
+    sizeGrids: [...state.sizeGrids.values()], styles: [...state.styles.values()], showrooms: [...state.showrooms.values()],
     selections: [...state.selections.values()], orders: [...state.orders.values()], cycles: [...state.cycles.values()], deals: [...state.deals.values()],
     calendar: [...state.calendar.values()], commands: [...state.commands.values()], outbox: [...state.outbox.values()],
     events: [...state.outbox.values()].map((record) => record.event),

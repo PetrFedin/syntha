@@ -5,6 +5,7 @@ export const CAPABILITIES = Object.freeze({
   CAMPAIGN_MANAGE: 'campaign.manage',
   COLLECTION_MANAGE: 'collection.manage',
   CATALOG_MANAGE: 'catalog.manage',
+  PRODUCT_DEVELOPMENT_MANAGE: 'product-development.manage',
   SHOWROOM_MANAGE: 'showroom.manage',
   PARTNER_RELATIONSHIP_MANAGE: 'partner-relationship.manage',
   SHOWROOM_INVITATION_MANAGE: 'showroom-invitation.manage',
@@ -23,10 +24,16 @@ const ALL_CAPABILITIES = Object.freeze(Object.values(CAPABILITIES));
 const ROLE_CAPABILITIES = Object.freeze({
   owner: ALL_CAPABILITIES,
   admin: ALL_CAPABILITIES,
+  product: Object.freeze([
+    CAPABILITIES.CATALOG_MANAGE,
+    CAPABILITIES.PRODUCT_DEVELOPMENT_MANAGE,
+    CAPABILITIES.CALENDAR_READ,
+  ]),
   sales: Object.freeze([
     CAPABILITIES.CAMPAIGN_MANAGE,
     CAPABILITIES.COLLECTION_MANAGE,
     CAPABILITIES.CATALOG_MANAGE,
+    CAPABILITIES.PRODUCT_DEVELOPMENT_MANAGE,
     CAPABILITIES.SHOWROOM_MANAGE,
     CAPABILITIES.PARTNER_RELATIONSHIP_MANAGE,
     CAPABILITIES.SHOWROOM_INVITATION_MANAGE,
@@ -60,7 +67,7 @@ const ROLE_CAPABILITIES = Object.freeze({
 });
 
 const ALLOWED_ROLES = Object.freeze({
-  brand: Object.freeze(['owner', 'admin', 'sales', 'finance', 'viewer']),
+  brand: Object.freeze(['owner', 'admin', 'product', 'sales', 'finance', 'viewer']),
   shop: Object.freeze(['owner', 'admin', 'buyer', 'finance', 'viewer']),
 });
 
