@@ -97,6 +97,35 @@ export function createNotificationService({
 }
 
 function notificationCandidates(source, event) {
+  if (event.type === 'style.approved') {
+    const style = requireEntity(source.styles.find((item) => item.id === event.aggregateId), 'STYLE_NOT_FOUND', { styleId: event.aggregateId });
+    const showroomIds = new Set(
+      source.showrooms
+        .filter((item) => item.collectionId === style.collectionId && item.status === 'open')
+        .map((item) => item.id),
+    );
+    const validAt = Date.parse(event.occurredAt);
+    const recipients = new Set(
+      source.showroomInvitations
+        .filter((item) =>
+          showroomIds.has(item.showroomId) &&
+          item.status === 'accepted' &&
+          (!Number.isFinite(validAt) || Date.parse(item.expiresAt) > validAt) &&
+          source.relationships.some((relationship) =>
+            relationship.id === item.relationshipId &&
+            relationship.brandId === style.brandId &&
+            relationship.shopId === item.shopId &&
+            relationship.status === 'accepted',
+          ))
+        .map((item) => item.shopId),
+    );
+    return [...recipients].map((recipientOrganisationId) => ({
+      recipientOrganisationId,
+      type: 'style-approved',
+      title: 'New approved Style',
+      body: `${style.styleCode} is approved for collection ${style.collectionId}.`,
+    }));
+  }
   if (event.type === 'selection.submitted') {
     const selection = requireEntity(source.selections.find((item) => item.id === event.aggregateId), 'SELECTION_NOT_FOUND', { selectionId: event.aggregateId });
     return [{
