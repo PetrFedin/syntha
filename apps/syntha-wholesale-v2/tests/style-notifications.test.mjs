@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { domainEvent } from '../src/core/events.mjs';
 import { createNotificationService } from '../src/application/notification-service.mjs';
 import { createMemoryWholesaleStore } from '../src/infrastructure/memory-store.mjs';
-import { createMemoryNotificationProjectionStore } from '../src/infrastructure/memory-notification-projection-store.mjs';
+import { createMemoryNotificationProjectionStore } from '../src/infrastructure/notification-projection-store.mjs';
 
 test('approved Style notifies each shop with active showroom access exactly once', async () => {
   const sourceStore = createMemoryWholesaleStore();
@@ -66,6 +66,6 @@ test('approved Style notifies each shop with active showroom access exactly once
   assert.deepEqual((await service.listForActor('buyer-style')).map((item) => item.id), ['notification-style']);
 
   const replay = await service.projectPending();
-  assert.equal(replay[0].status, 'already-projected');
+  assert.deepEqual(replay, []);
   assert.equal(projectionStore.snapshot().notifications.length, 1);
 });

@@ -6,7 +6,13 @@ Syntha V2 является автономным приложением в `apps/
 
 ## Исполняемый маршрут
 
+Основной коммерческий маршрут:
+
 `Campaign → Collection → Showroom → Selection → Order Builder → Order → Confirmation → DealSpace`.
+
+Product-development маршрут:
+
+`Published Size Grid → Draft Style → Approved Style snapshot → Style/Color/Size SKU → Published SKU → Selection → reserved Order → DealSpace`.
 
 ## Слои
 
@@ -16,7 +22,7 @@ Syntha V2 является автономным приложением в `apps/
 - `src/application` — use cases и транзакционные границы;
 - `src/infrastructure` — memory/PostgreSQL adapters, readiness и migration engine;
 - `src/http` — Node и Fetch transport adapters;
-- `src/runtime` — composition root;
+- `src/runtime` — composition root и фоновые operational workers;
 - `src/web` и `public` — standalone same-origin workspace;
 - `db/migrations` — последовательные PostgreSQL migrations;
 - `scripts` — migration CLI, bootstrap и gates;
@@ -28,15 +34,23 @@ Syntha V2 является автономным приложением в `apps/
 
 ## Авторизация
 
-После аутентификации действия разрешаются только через активное membership организации и explicit capabilities. `actorId` берётся исключительно из серверной сессии.
+После аутентификации действия разрешаются только через активное membership организации и explicit capabilities. `actorId` берётся исключительно из серверной сессии. Product-development операции доступны только brand-ролям с `product-development.manage`; shop-пользователи получают только разрешённые опубликованные проекции.
 
 ## Транзакционные гарантии
 
-Каждая бизнес-мутация требует `commandId`, выполняется в одной транзакции и атомарно сохраняет aggregate changes, durable command result и outbox events. Versioned aggregates используют optimistic concurrency.
+Каждая бизнес-мутация требует `commandId`, выполняется в одной транзакции и атомарно сохраняет aggregate changes, durable command result и outbox events. Versioned aggregates используют optimistic concurrency. Сервер сам генерирует aggregate id и не доверяет идентификаторам из тела запроса.
+
+## Product development и каталог
+
+Size Grid публикуется до создания Style. Style хранит immutable snapshot опубликованной размерной сетки и после утверждения становится источником идентичности товарного варианта. Style-linked SKU фиксирует Style/version, Size Grid/version, color code и size label. PostgreSQL tenant FK и уникальность `(style_id, color_code, size_label)` не позволяют создать дубликат варианта или связать данные разных брендов.
+
+## Outbox и уведомления
+
+Notification projection имеет отдельный durable ledger `notification_projections`, поэтому не присваивает себе глобальный статус публикации основного outbox. `notification-projector.mjs` запускается сервером сразу после открытия listener, затем выполняется с настраиваемым интервалом без перекрывающихся прогонов. Ошибка одного цикла логируется, не завершает процесс и повторяется на следующем цикле. Graceful shutdown прекращает планирование и ждёт активную проекцию.
+
+Перед проекцией сервис отбрасывает уже обработанные event id по ledger. Отложенная обработка повторно проверяет актуальное состояние showroom, invitation и relationship, чтобы не отправлять уведомления по отозванному или истёкшему доступу.
 
 ## PostgreSQL и миграции
-
-`001_wholesale_v2.sql` содержит коммерческий write model, outbox и notification projection. `002_auth.sql` содержит пользователей и отзываемые сессии.
 
 `postgres-migrator.mjs`:
 
@@ -46,8 +60,10 @@ Syntha V2 является автономным приложением в `apps/
 4. применяет каждый новый файл в отдельной транзакции;
 5. пропускает неизменённые миграции и блокирует изменённую историю.
 
-Сервер, CLI миграций и bootstrap владельца используют один migration engine. CI поднимает PostgreSQL 17 и проверяет параллельный запуск migrator, повторяемость и checksum-конфликт.
+`007_product_development.sql` вводит Size Grid и Style с tenant-boundary constraints. `008_style_catalog_variants.sql` связывает каталог с immutable Style/size-grid snapshots. Применённые миграции не редактируются.
+
+Сервер, CLI миграций и bootstrap владельца используют один migration engine. CI поднимает PostgreSQL 17 и проверяет параллельный запуск migrator, повторяемость, checksum-конфликт, реальный product-to-order маршрут и rollback.
 
 ## Следующая граница
 
-После устойчивого самостоятельного runtime, auth, UI и migration lifecycle следующий приоритет — operational health/readiness, session abuse protection и затем PLM/BOM/production/QC/logistics/landed cost поверх подтверждённых заказов и коммерческих условий.
+После Style/size-grid и orderable variants следующий вертикальный срез — Material Library → approved material revision → BOM revision → costing → Tech Pack, затем образцы, Measurement Chart, production, QC и logistics.

@@ -4,6 +4,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { migratePostgres, waitForPostgres } from './infrastructure/postgres-migrator.mjs';
+import { createNotificationProjector } from './runtime/notification-projector.mjs';
 import { createPostgresWholesaleRuntime } from './runtime/postgres-runtime.mjs';
 import { createStandaloneHandler } from './web/static-handler.mjs';
 
@@ -32,17 +33,42 @@ const runtime = createPostgresWholesaleRuntime({
   loginBlockMs: Number(process.env.SYNTHA_AUTH_BLOCK_MS ?? 900_000),
   revokedSessionRetentionMs: Number(process.env.SYNTHA_REVOKED_SESSION_RETENTION_MS ?? 604_800_000),
 });
+const notificationProjector = createNotificationProjector({
+  notifications: runtime.notifications,
+  intervalMs: Number(process.env.SYNTHA_NOTIFICATION_PROJECTION_INTERVAL_MS ?? 1_000),
+  logger: console,
+});
 const handler = createStandaloneHandler({ apiHandler: runtime.handler });
 const server = createServer(handler);
-server.listen(port, host, () => console.log(`Syntha V2 listening on http://${host}:${port}`));
+server.listen(port, host, () => {
+  notificationProjector.start();
+  console.log(`Syntha V2 listening on http://${host}:${port}`);
+});
 
+let shuttingDown = false;
 async function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
   console.log(`Received ${signal}; shutting down`);
-  server.close(async () => {
+  const forcedExit = setTimeout(() => process.exit(1), 10_000);
+  forcedExit.unref();
+  try {
+    const serverClosed = new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve());
+    });
+    await notificationProjector.stop();
+    await serverClosed;
     await pool.end();
+    clearTimeout(forcedExit);
     process.exit(0);
-  });
-  setTimeout(() => process.exit(1), 10_000).unref();
+  } catch (error) {
+    console.error('Syntha V2 shutdown failed', {
+      name: error?.name ?? 'Error',
+      code: error?.code ?? 'SHUTDOWN_FAILED',
+      message: error?.message ?? 'Shutdown failed',
+    });
+    process.exit(1);
+  }
 }
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => { void shutdown('SIGINT'); });
+process.on('SIGTERM', () => { void shutdown('SIGTERM'); });

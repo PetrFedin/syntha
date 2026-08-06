@@ -17,9 +17,16 @@ export function createNotificationService({
 
   return Object.freeze({
     async projectPending() {
-      const records = await sourceStore.readOutbox('pending');
+      const [records, projection] = await Promise.all([
+        sourceStore.readOutbox('pending'),
+        projectionStore.snapshot(),
+      ]);
+      const projectedEventIds = new Set(projection.projections.map((item) => item.eventId));
       const results = [];
-      for (const record of records) results.push(await projectRecord(record));
+      for (const record of records) {
+        if (projectedEventIds.has(record.event.id)) continue;
+        results.push(await projectRecord(record));
+      }
       return Object.freeze(results);
     },
 
@@ -100,6 +107,17 @@ function notificationCandidates(source, event) {
   if (event.type === 'showroom-invitation.accepted') {
     const invitation = requireEntity(source.showroomInvitations.find((item) => item.id === event.aggregateId), 'SHOWROOM_INVITATION_NOT_FOUND', { invitationId: event.aggregateId });
     const showroom = requireEntity(source.showrooms.find((item) => item.id === invitation.showroomId), 'SHOWROOM_NOT_FOUND', { showroomId: invitation.showroomId });
+    const relationship = source.relationships.find((item) => item.id === invitation.relationshipId);
+    const eventTime = Date.parse(event.occurredAt);
+    const validAtEvent = !Number.isFinite(eventTime) || Date.parse(invitation.expiresAt) > eventTime;
+    const accessIsCurrent =
+      invitation.status === 'accepted' &&
+      validAtEvent &&
+      showroom.status === 'open' &&
+      relationship?.status === 'accepted' &&
+      relationship.brandId === invitation.brandId &&
+      relationship.shopId === invitation.shopId;
+    if (!accessIsCurrent) return [];
     const approvedStyles = source.styles.filter((item) => item.collectionId === showroom.collectionId && item.status === 'approved');
     if (!approvedStyles.length) return [];
     return [{
