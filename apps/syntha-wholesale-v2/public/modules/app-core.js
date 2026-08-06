@@ -1,7 +1,7 @@
 const TOKEN_KEY = 'syntha-v2-session';
 const STAGES = ['campaign','collection','showroom','selection','order-builder','order','confirmation','deal-space'];
 const NAV = [
-  ['overview','\u041e\u0431\u0437\u043e\u0440'], ['partners','\u041a\u043e\u043d\u0442\u0440\u0430\u0433\u0435\u043d\u0442\u044b'], ['catalog','\u041a\u0430\u043c\u043f\u0430\u043d\u0438\u0438'], ['showrooms','\u0428\u043e\u0443\u0440\u0443\u043c\u044b'],
+  ['overview','\u041e\u0431\u0437\u043e\u0440'], ['partners','\u041a\u043e\u043d\u0442\u0440\u0430\u0433\u0435\u043d\u0442\u044b'], ['catalog','\u041a\u0430\u043c\u043f\u0430\u043d\u0438\u0438'], ['product-development','PLM / Style'], ['showrooms','\u0428\u043e\u0443\u0440\u0443\u043c\u044b'],
   ['selections','Selection'], ['orders','\u0417\u0430\u043a\u0430\u0437\u044b'], ['calendar','\u041a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044c'], ['notifications','\u0423\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u044f'],
 ];
 
@@ -14,7 +14,6 @@ const state = {
   busy: false,
 };
 const root = document.querySelector('#app');
-
 
 async function boot() {
   if (!state.token) return renderLogin();
@@ -92,6 +91,7 @@ function renderView() {
   switch (state.view) {
     case 'partners': return renderPartners();
     case 'catalog': return renderCatalog();
+    case 'product-development': return renderProductDevelopment();
     case 'showrooms': return renderShowrooms();
     case 'selections': return renderSelections();
     case 'orders': return renderOrders();
@@ -100,4 +100,3 @@ function renderView() {
     default: return renderOverview();
   }
 }
-

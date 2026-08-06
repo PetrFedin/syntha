@@ -14,6 +14,7 @@ const ASSETS = Object.freeze({
   '/ui/overview.js': ['modules/overview.js', JS, CACHE],
   '/ui/partners.js': ['modules/partners.js', JS, CACHE],
   '/ui/catalog.js': ['modules/catalog.js', JS, CACHE],
+  '/ui/product-development.js': ['modules/product-development.js', JS, CACHE],
   '/ui/showrooms.js': ['modules/showrooms.js', JS, CACHE],
   '/ui/views-2.js': ['modules/views-2.js', JS, CACHE],
   '/ui/views-3.js': ['modules/views-3.js', JS, CACHE],
