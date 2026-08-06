@@ -11,13 +11,17 @@ on:
       - 'apps/syntha-wholesale-v2/**'
       - '.github/workflows/syntha-wholesale-v2.yml'
 
+concurrency:
+  group: syntha-wholesale-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:17
