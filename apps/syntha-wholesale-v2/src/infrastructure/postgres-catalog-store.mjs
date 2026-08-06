@@ -32,6 +32,15 @@ function view(client) {
       const result = await client.query('SELECT payload FROM catalog_skus WHERE sku = $1 FOR UPDATE', [sku]);
       return result.rows[0]?.payload;
     },
+    async getSkuByProductIdentity(styleId, colorCode, sizeLabel) {
+      const result = await client.query(
+        `SELECT payload FROM catalog_skus
+          WHERE style_id = $1 AND color_code = $2 AND size_label = $3
+          FOR UPDATE`,
+        [styleId, colorCode, sizeLabel],
+      );
+      return result.rows[0]?.payload;
+    },
     async insertSku(value) {
       const product = value.productIdentity;
       try {

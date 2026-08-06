@@ -23,6 +23,10 @@ export function createMemoryCatalogStore() {
 function view(state) {
   return Object.freeze({
     getSku: async (sku) => state.skus.get(sku),
+    getSkuByProductIdentity: async (styleId, colorCode, sizeLabel) => [...state.skus.values()].find((item) =>
+      item.productIdentity?.styleId === styleId &&
+      item.productIdentity?.colorCode === colorCode &&
+      item.productIdentity?.sizeLabel === sizeLabel),
     insertSku: async (value) => { invariant(!state.skus.has(value.sku), 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: value.sku }); state.skus.set(value.sku, value); },
     saveSku: async (value, expectedVersion) => {
       const current = state.skus.get(value.sku);

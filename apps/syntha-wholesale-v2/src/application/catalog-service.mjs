@@ -51,6 +51,19 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
       const result = await execute(commandId, `createCatalogSku:${actorId}:${JSON.stringify(input)}`, actorId, async (tx) => {
         invariant(!await tx.getSku(input.sku), 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: input.sku });
         const sku = createCatalogSku({ ...input, collection, style, createdAt: clock() });
+        if (sku.productIdentity) {
+          const duplicate = await tx.getSkuByProductIdentity?.(
+            sku.productIdentity.styleId,
+            sku.productIdentity.colorCode,
+            sku.productIdentity.sizeLabel,
+          );
+          invariant(!duplicate, 'CATALOG_STYLE_VARIANT_EXISTS', 'Style color and size variant already has a catalog SKU', {
+            styleId: sku.productIdentity.styleId,
+            colorCode: sku.productIdentity.colorCode,
+            sizeLabel: sku.productIdentity.sizeLabel,
+            existingSku: duplicate?.sku,
+          });
+        }
         await tx.insertSku(sku);
         await append(tx, 'catalog-sku.created', sku.sku, {
           collectionId: sku.collectionId,
