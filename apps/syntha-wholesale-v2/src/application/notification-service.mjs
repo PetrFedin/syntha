@@ -97,6 +97,18 @@ export function createNotificationService({
 }
 
 function notificationCandidates(source, event) {
+  if (event.type === 'showroom-invitation.accepted') {
+    const invitation = requireEntity(source.showroomInvitations.find((item) => item.id === event.aggregateId), 'SHOWROOM_INVITATION_NOT_FOUND', { invitationId: event.aggregateId });
+    const showroom = requireEntity(source.showrooms.find((item) => item.id === invitation.showroomId), 'SHOWROOM_NOT_FOUND', { showroomId: invitation.showroomId });
+    const approvedStyles = source.styles.filter((item) => item.collectionId === showroom.collectionId && item.status === 'approved');
+    if (!approvedStyles.length) return [];
+    return [{
+      recipientOrganisationId: invitation.shopId,
+      type: 'showroom-styles-available',
+      title: 'Approved Styles available',
+      body: `${approvedStyles.length} approved Style(s) are available in showroom ${showroom.name ?? showroom.id}.`,
+    }];
+  }
   if (event.type === 'style.approved') {
     const style = requireEntity(source.styles.find((item) => item.id === event.aggregateId), 'STYLE_NOT_FOUND', { styleId: event.aggregateId });
     const showroomIds = new Set(
