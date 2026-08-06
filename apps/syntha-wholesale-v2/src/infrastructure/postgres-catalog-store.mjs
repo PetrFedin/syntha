@@ -33,18 +33,32 @@ function view(client) {
       return result.rows[0]?.payload;
     },
     async insertSku(value) {
+      const product = value.productIdentity;
       try {
         await client.query(
           `INSERT INTO catalog_skus
-             (sku, collection_id, brand_id, status, currency, wholesale_price, minimum_order_quantity, available_quantity, reserved_quantity, version, payload)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb)`,
+             (sku, collection_id, brand_id, status, currency, wholesale_price, minimum_order_quantity, available_quantity, reserved_quantity,
+              style_id, style_version, size_grid_id, size_grid_version, size_label, color_code, version, payload)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb)`,
           [
             value.sku, value.collectionId, value.brandId, value.status, value.currency, value.wholesalePrice,
-            value.minimumOrderQuantity, value.availableQuantity, value.reservedQuantity, value.version, JSON.stringify(value),
+            value.minimumOrderQuantity, value.availableQuantity, value.reservedQuantity,
+            product?.styleId ?? null, product?.styleVersion ?? null, product?.sizeGridId ?? null, product?.sizeGridVersion ?? null,
+            product?.sizeLabel ?? null, product?.colorCode ?? null,
+            value.version, JSON.stringify(value),
           ],
         );
       } catch (error) {
-        if (error?.code === '23505') invariant(false, 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: value.sku });
+        if (error?.code === '23505') {
+          if (error.constraint === 'catalog_skus_style_variant_unique') {
+            invariant(false, 'CATALOG_STYLE_VARIANT_EXISTS', 'Style color and size variant already has a catalog SKU', {
+              styleId: product?.styleId,
+              colorCode: product?.colorCode,
+              sizeLabel: product?.sizeLabel,
+            });
+          }
+          invariant(false, 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: value.sku });
+        }
         throw error;
       }
     },

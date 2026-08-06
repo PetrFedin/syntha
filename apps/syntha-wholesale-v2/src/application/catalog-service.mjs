@@ -7,12 +7,15 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
   invariant(wholesaleStore && typeof wholesaleStore.transaction === 'function', 'WHOLESALE_STORE_REQUIRED', 'Wholesale store is required');
   invariant(catalogStore && typeof catalogStore.transaction === 'function', 'CATALOG_STORE_REQUIRED', 'Catalog store is required');
 
-  async function context(collectionId, actorId) {
+  async function context(input, actorId) {
     return wholesaleStore.transaction(async (tx) => {
-      const collection = requireEntity(await tx.getCollection(collectionId), 'COLLECTION_NOT_FOUND', { collectionId });
+      const collection = requireEntity(await tx.getCollection(input.collectionId), 'COLLECTION_NOT_FOUND', { collectionId: input.collectionId });
       const membership = await tx.getMembership(collection.brandId, actorId);
       assertCapability(membership, CAPABILITIES.CATALOG_MANAGE);
-      return collection;
+      const style = input.styleId
+        ? requireEntity(await tx.getStyle(input.styleId), 'STYLE_NOT_FOUND', { styleId: input.styleId })
+        : undefined;
+      return Object.freeze({ collection, style });
     });
   }
 
@@ -44,16 +47,17 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
 
   return Object.freeze({
     async createSku(commandId, actorId, input) {
-      const collection = await context(input.collectionId, actorId);
+      const { collection, style } = await context(input, actorId);
       const result = await execute(commandId, `createCatalogSku:${actorId}:${JSON.stringify(input)}`, actorId, async (tx) => {
         invariant(!await tx.getSku(input.sku), 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: input.sku });
-        const sku = createCatalogSku({ ...input, collection, createdAt: clock() });
+        const sku = createCatalogSku({ ...input, collection, style, createdAt: clock() });
         await tx.insertSku(sku);
         await append(tx, 'catalog-sku.created', sku.sku, {
           collectionId: sku.collectionId,
           brandId: sku.brandId,
           minimumOrderQuantity: sku.minimumOrderQuantity,
           availableQuantity: sku.availableQuantity,
+          productIdentity: sku.productIdentity,
         }, commandId, actorId);
         return sku;
       });
@@ -63,7 +67,7 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
 
     async publishSku(commandId, actorId, skuCode) {
       const current = requireEntity(await catalogStore.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
-      const collection = await context(current.collectionId, actorId);
+      const { collection } = await context({ collectionId: current.collectionId }, actorId);
       const result = await execute(commandId, `publishCatalogSku:${actorId}:${skuCode}`, actorId, async (tx) => {
         const locked = requireEntity(await tx.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
         const published = publishCatalogSku(locked, collection, clock());
@@ -74,6 +78,7 @@ export function createCatalogService({ wholesaleStore, catalogStore, clock = () 
           currency: published.currency,
           minimumOrderQuantity: published.minimumOrderQuantity,
           availableToSell: published.availableToSell,
+          productIdentity: published.productIdentity,
         }, commandId, actorId);
         return published;
       });

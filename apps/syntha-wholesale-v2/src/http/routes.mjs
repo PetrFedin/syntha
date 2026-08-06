@@ -17,6 +17,10 @@ export function createWholesaleRoutes({ platform, catalog, productDevelopment, p
       return productDevelopmentService.publishSizeGrid(commandId, actorId, params[0]);
     }),
     mutate('POST', /^\/v2\/plm\/styles$/, ({ commandId, actorId, body }) => productDevelopmentService.createStyle(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/plm\/styles\/([^/]+)\/skus$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.styleId, params[0], 'styleId');
+      return catalogService.createSku(commandId, actorId, { ...body, styleId: params[0] });
+    }),
     mutate('POST', /^\/v2\/plm\/styles\/([^/]+)\/approve$/, ({ commandId, actorId, params, body }) => {
       sameId(body.styleId, params[0], 'styleId');
       return productDevelopmentService.approveStyle(commandId, actorId, params[0]);

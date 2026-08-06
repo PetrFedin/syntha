@@ -1,6 +1,7 @@
 import { invariant } from '../../core/errors.mjs';
 
 const SKU_PATTERN = /^[A-Z0-9][A-Z0-9._-]{1,63}$/;
+const COLOR_CODE_PATTERN = /^[A-Z0-9][A-Z0-9._-]{0,39}$/;
 
 export function createCatalogSku({
   sku,
@@ -11,6 +12,9 @@ export function createCatalogSku({
   currency,
   minimumOrderQuantity,
   availableQuantity,
+  style,
+  sizeLabel,
+  colorCode,
   createdAt,
 }) {
   invariant(SKU_PATTERN.test(sku ?? ''), 'CATALOG_SKU_INVALID', 'SKU must contain 2-64 uppercase letters, numbers, dots, underscores or dashes');
@@ -21,6 +25,7 @@ export function createCatalogSku({
   invariant(currency === collection.currency, 'CATALOG_CURRENCY_MISMATCH', 'Catalog currency must match collection currency');
   invariant(Number.isInteger(minimumOrderQuantity) && minimumOrderQuantity > 0, 'CATALOG_MOQ_INVALID', 'Minimum order quantity must be a positive integer');
   invariant(Number.isInteger(availableQuantity) && availableQuantity >= 0, 'CATALOG_AVAILABLE_QUANTITY_INVALID', 'Available quantity must be a non-negative integer');
+  const productIdentity = createProductIdentity({ style, sizeLabel, colorCode, collection, brandId });
   return freezeAvailability({
     id: sku,
     sku,
@@ -32,6 +37,7 @@ export function createCatalogSku({
     minimumOrderQuantity,
     availableQuantity,
     reservedQuantity: 0,
+    productIdentity,
     status: 'draft',
     version: 1,
     publishedAt: null,
@@ -97,6 +103,36 @@ export function normalizeAvailability(catalogSku) {
   const availableQuantity = Number.isInteger(catalogSku.availableQuantity) ? catalogSku.availableQuantity : 0;
   const reservedQuantity = Number.isInteger(catalogSku.reservedQuantity) ? catalogSku.reservedQuantity : 0;
   return freezeAvailability({ ...catalogSku, minimumOrderQuantity, availableQuantity, reservedQuantity });
+}
+
+function createProductIdentity({ style, sizeLabel, colorCode, collection, brandId }) {
+  const hasVariantInput = style || sizeLabel !== undefined || colorCode !== undefined;
+  if (!hasVariantInput) return null;
+  invariant(style?.id, 'CATALOG_STYLE_REQUIRED', 'Style-linked SKU requires a Style');
+  invariant(style.status === 'approved', 'CATALOG_STYLE_NOT_APPROVED', 'Catalog SKU requires an approved Style', {
+    styleId: style.id,
+    status: style.status,
+  });
+  invariant(style.brandId === brandId, 'CATALOG_STYLE_BRAND_MISMATCH', 'Style and catalog SKU must belong to the same brand');
+  invariant(style.collectionId === collection.id, 'CATALOG_STYLE_COLLECTION_MISMATCH', 'Style and catalog SKU must belong to the same collection');
+  const normalizedSize = String(sizeLabel ?? '').trim().toUpperCase();
+  invariant(style.sizeGrid?.sizes?.includes(normalizedSize), 'CATALOG_STYLE_SIZE_INVALID', 'SKU size must belong to the approved Style size grid', {
+    styleId: style.id,
+    sizeLabel: normalizedSize,
+    sizes: style.sizeGrid?.sizes ?? [],
+  });
+  const normalizedColor = String(colorCode ?? '').trim().toUpperCase();
+  invariant(COLOR_CODE_PATTERN.test(normalizedColor), 'CATALOG_COLOR_CODE_INVALID', 'Color code must contain 1-40 uppercase letters, numbers, dots, underscores or dashes');
+  return Object.freeze({
+    styleId: style.id,
+    styleCode: style.styleCode,
+    styleVersion: style.version,
+    sizeGridId: style.sizeGrid.id,
+    sizeGridCode: style.sizeGrid.code,
+    sizeGridVersion: style.sizeGrid.version,
+    sizeLabel: normalizedSize,
+    colorCode: normalizedColor,
+  });
 }
 
 function freezeAvailability(value) {

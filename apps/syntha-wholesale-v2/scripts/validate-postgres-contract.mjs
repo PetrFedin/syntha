@@ -30,6 +30,9 @@ const requiredFragments = [
   'collections_id_brand_unique', 'UNIQUE (brand_id, code)', 'UNIQUE (brand_id, style_code)',
   'FOREIGN KEY (collection_id, brand_id)', 'FOREIGN KEY (size_grid_id, brand_id)',
   'product_size_grids_brand_status_idx', 'product_styles_collection_status_idx',
+  'product_styles_id_brand_unique', 'catalog_skus_product_identity_complete',
+  'catalog_skus_style_brand_fk', 'catalog_skus_size_grid_brand_fk',
+  'catalog_skus_style_variant_unique', 'catalog_skus_style_variant_idx',
 ];
 const missing = [];
 for (const table of requiredTables) if (!new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);

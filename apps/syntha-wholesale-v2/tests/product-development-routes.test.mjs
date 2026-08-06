@@ -6,7 +6,10 @@ function services(calls) {
   const noop = new Proxy({}, { get: () => async () => ({}) });
   return {
     platform: noop,
-    catalog: noop,
+    catalog: {
+      async createSku(commandId, actorId, body) { calls.push(['createSku', commandId, actorId, body]); return { sku: body.sku }; },
+      async publishSku() { return {}; },
+    },
     partners: noop,
     collaboration: noop,
     orders: noop,
@@ -40,5 +43,22 @@ test('product development HTTP routes preserve server route identifiers', async 
   const approveStyle = matchWholesaleRoute(routes, 'POST', '/v2/plm/styles/style-1/approve');
   await approveStyle.execute({ commandId: 'cmd-style-approve', actorId: 'product-user', body: {}, params: approveStyle.params });
 
-  assert.deepEqual(calls.map((call) => call[0]), ['createSizeGrid', 'publishSizeGrid', 'createStyle', 'approveStyle']);
+  const createVariant = matchWholesaleRoute(routes, 'POST', '/v2/plm/styles/style-1/skus');
+  const variant = await createVariant.execute({
+    commandId: 'cmd-style-sku',
+    actorId: 'product-user',
+    body: { sku: 'JK-1-BLK-M', styleId: 'style-1', sizeLabel: 'M', colorCode: 'BLK' },
+    params: createVariant.params,
+  });
+  assert.equal(variant.sku, 'JK-1-BLK-M');
+  await assert.rejects(
+    () => createVariant.execute({
+      commandId: 'cmd-style-sku-mismatch', actorId: 'product-user',
+      body: { sku: 'JK-1-BLK-L', styleId: 'style-2', sizeLabel: 'L', colorCode: 'BLK' }, params: createVariant.params,
+    }),
+    (error) => error.code === 'HTTP_IDENTIFIER_MISMATCH',
+  );
+
+  assert.deepEqual(calls.map((call) => call[0]), ['createSizeGrid', 'publishSizeGrid', 'createStyle', 'approveStyle', 'createSku']);
+  assert.equal(calls.at(-1)[3].styleId, 'style-1');
 });

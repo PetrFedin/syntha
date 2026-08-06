@@ -8,7 +8,7 @@ function renderCatalog() {
   );
   box.append(grid);
   const skus = state.workspace.catalogSkus || [];
-  const canCreate = ownOrganisations('brand').length > 0;
+  const canCreate = state.workspace.memberships.some(item => item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role));
   box.append(sectionCard(
     'SKU',
     skus.length ? skus.map(catalogSkuEntity) : [empty('\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 SKU \u043f\u043e\u043a\u0430 \u043d\u0435\u0442.')],
@@ -19,15 +19,19 @@ function renderCatalog() {
 }
 
 function catalogSkuEntity(item) {
-  const ownBrand = ownOrganisations('brand').some(org => org.id === item.brandId);
-  const actions = ownBrand && item.status === 'draft'
+  const canManage = state.workspace.memberships.some(member => member.organisationId === item.brandId && member.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(member.role));
+  const actions = canManage && item.status === 'draft'
     ? [actionButton('\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u0442\u044c', () => mutate(`/v2/catalog/skus/${encodeURIComponent(item.sku)}/publish`, {}), 'primary')]
     : [];
   const ats = Number.isInteger(item.availableToSell)
     ? item.availableToSell
     : Math.max(0, Number(item.availableQuantity || 0) - Number(item.reservedQuantity || 0));
+  const identity = item.productIdentity
+    ? `${item.productIdentity.styleCode} / ${item.productIdentity.colorCode} / ${item.productIdentity.sizeLabel}`
+    : '\u0410\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u044b\u0439 SKU';
   return entity(item.name, item.status, [
     item.sku,
+    identity,
     `${money(item.wholesalePrice)} ${item.currency}`,
     `MOQ: ${item.minimumOrderQuantity || 1}`,
     `ATS: ${ats} / ${item.availableQuantity || 0}`,

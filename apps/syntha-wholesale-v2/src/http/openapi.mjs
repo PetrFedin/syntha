@@ -3,7 +3,7 @@ const auth = [{ bearerAuth: [] }];
 
 export const wholesaleV2OpenApi = Object.freeze({
   openapi: '3.1.0',
-  info: { title: 'Syntha Wholesale V2 API', version: '0.10.0' },
+  info: { title: 'Syntha Wholesale V2 API', version: '0.11.0' },
   servers: [{ url: '/v2' }],
   'x-operational-endpoints': Object.freeze({ liveness: '/health', readiness: '/ready', specification: '/openapi.json' }),
   components: {
@@ -30,6 +30,26 @@ export const wholesaleV2OpenApi = Object.freeze({
           currency: { type: 'string', pattern: '^[A-Z]{3}$' },
           minimumOrderQuantity: { type: 'integer', minimum: 1 },
           availableQuantity: { type: 'integer', minimum: 0 },
+          styleId: { type: 'string', minLength: 1 },
+          sizeLabel: { type: 'string', minLength: 1, maxLength: 16 },
+          colorCode: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{0,39}$' },
+        },
+      },
+      StyleSkuCreate: {
+        type: 'object',
+        required: ['sku', 'collectionId', 'brandId', 'name', 'wholesalePrice', 'currency', 'minimumOrderQuantity', 'availableQuantity', 'sizeLabel', 'colorCode'],
+        additionalProperties: false,
+        properties: {
+          sku: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{1,63}$' },
+          collectionId: { type: 'string' },
+          brandId: { type: 'string' },
+          name: { type: 'string', minLength: 2 },
+          wholesalePrice: { type: 'number', exclusiveMinimum: 0 },
+          currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+          minimumOrderQuantity: { type: 'integer', minimum: 1 },
+          availableQuantity: { type: 'integer', minimum: 0 },
+          sizeLabel: { type: 'string', minLength: 1, maxLength: 16 },
+          colorCode: { type: 'string', pattern: '^[A-Z0-9][A-Z0-9._-]{0,39}$' },
         },
       },
       SizeGridCreate: {
@@ -86,6 +106,7 @@ export const wholesaleV2OpenApi = Object.freeze({
     '/plm/size-grids': { post: { ...operation('createSizeGrid'), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SizeGridCreate' } } } } } },
     '/plm/size-grids/{sizeGridId}/publish': { post: operation('publishSizeGrid', ['sizeGridId']) },
     '/plm/styles': { post: { ...operation('createStyle'), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/StyleCreate' } } } } } },
+    '/plm/styles/{styleId}/skus': { post: { ...operation('createStyleSku', ['styleId']), requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/StyleSkuCreate' } } } } } },
     '/plm/styles/{styleId}/approve': { post: operation('approveStyle', ['styleId']) },
     '/showrooms': { post: operation('createShowroom') },
     '/showrooms/{showroomId}/open': { post: operation('openShowroom', ['showroomId']) },
@@ -121,7 +142,7 @@ function operation(operationId, pathNames = []) {
       401: { description: 'Authentication required' },
       403: { description: 'Capability denied' },
       409: { description: 'Conflict' },
-      422: { description: 'Domain validation failed, including lifecycle, MOQ or availability failures' },
+      422: { description: 'Domain validation failed, including lifecycle, Style variant, MOQ or availability failures' },
     },
   };
 }

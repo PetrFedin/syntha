@@ -22,6 +22,7 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
     '005_catalog_availability.sql',
     '006_order_cancellation.sql',
     '007_product_development.sql',
+    '008_style_catalog_variants.sql',
   ];
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
@@ -53,6 +54,16 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
     assert.equal(tables.rows[0].order_inventory_reservations, 'order_inventory_reservations');
     assert.equal(tables.rows[0].product_size_grids, 'product_size_grids');
     assert.equal(tables.rows[0].product_styles, 'product_styles');
+    const catalogColumns = await pool.query(
+      `SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'catalog_skus'
+          AND column_name = ANY($1::text[])
+        ORDER BY column_name`,
+      [['style_id', 'style_version', 'size_grid_id', 'size_grid_version', 'size_label', 'color_code']],
+    );
+    assert.deepEqual(catalogColumns.rows.map((row) => row.column_name), [
+      'color_code', 'size_grid_id', 'size_grid_version', 'size_label', 'style_id', 'style_version',
+    ]);
 
     for (const file of migrationFiles) await copyFile(path.join(migrationsDir, file), path.join(tempDir, file));
     await appendFile(path.join(tempDir, '005_catalog_availability.sql'), '\n-- changed history must fail\n');

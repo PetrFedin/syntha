@@ -43,15 +43,21 @@ function sizeGridEntity(item) {
 }
 
 function styleEntity(item) {
-  const actions = canManageProductBrand(item.brandId) && item.status === 'draft'
-    ? [actionButton('\u0423\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c', () => mutate(`/v2/plm/styles/${encodeURIComponent(item.id)}/approve`, { styleId: item.id }), 'primary')]
-    : [];
+  const actions = [];
+  if (canManageProductBrand(item.brandId) && item.status === 'draft') {
+    actions.push(actionButton('\u0423\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c', () => mutate(`/v2/plm/styles/${encodeURIComponent(item.id)}/approve`, { styleId: item.id }), 'primary'));
+  }
+  if (canManageProductBrand(item.brandId) && item.status === 'approved') {
+    actions.push(actionButton('\u0421\u043e\u0437\u0434\u0430\u0442\u044c SKU', () => styleSkuForm(item), 'primary'));
+  }
+  const variants = (state.workspace.catalogSkus || []).filter(sku => sku.productIdentity?.styleId === item.id);
   return entity(item.name, item.status, [
     item.styleCode,
     item.category,
     item.gender,
     `\u041a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044f: ${nameById('collections', item.collectionId)}`,
     `Size grid: ${item.sizeGrid.code} v${item.sizeGrid.version}`,
+    `SKU variants: ${variants.length}`,
     `v${item.version}`,
   ], actions);
 }
@@ -132,4 +138,30 @@ function styleForm() {
     finally { if (submit.isConnected) setButtonBusy(submit, false, '\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c'); }
   });
   body.append(head, form); dialog.append(body); dialog.showModal();
+}
+
+function styleSkuForm(style) {
+  const collection = state.workspace.collections.find(item => item.id === style.collectionId);
+  if (!collection) { toast('\u041a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044f Style \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430.', 'error'); return; }
+  openForm(`SKU \u0434\u043b\u044f ${style.styleCode}`, [
+    selectDef('sizeLabel', '\u0420\u0430\u0437\u043c\u0435\u0440', style.sizeGrid.sizes),
+    textDef('colorCode', '\u041a\u043e\u0434 \u0446\u0432\u0435\u0442\u0430'),
+    textDef('sku', 'SKU'),
+    textDef('name', '\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435'),
+    numberDef('wholesalePrice', 'Wholesale price', 0, false),
+    numberDef('minimumOrderQuantity', 'MOQ', 1, true),
+    numberDef('availableQuantity', 'Sellable quantity', 0, true),
+  ], values => mutate(`/v2/plm/styles/${encodeURIComponent(style.id)}/skus`, {
+    styleId: style.id,
+    collectionId: collection.id,
+    brandId: style.brandId,
+    sizeLabel: values.sizeLabel,
+    colorCode: values.colorCode.trim().toUpperCase(),
+    sku: values.sku.trim().toUpperCase(),
+    name: values.name.trim(),
+    wholesalePrice: values.wholesalePrice,
+    currency: collection.currency,
+    minimumOrderQuantity: values.minimumOrderQuantity,
+    availableQuantity: values.availableQuantity,
+  }));
 }
