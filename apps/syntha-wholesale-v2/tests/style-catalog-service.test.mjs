@@ -20,18 +20,21 @@ test('memory and PostgreSQL adapters share Style variant uniqueness semantics', 
   const catalog = createCatalogService({ wholesaleStore: store, catalogStore, clock, nextId });
 
   await platform.registerOrganisation('variant-org', 'system', createOrganisation({ id: 'variant-brand', type: 'brand', name: 'Variant Brand' }));
-  await platform.grantMembership('variant-member', 'system', createMembership({
-    id: 'variant-membership', organisationId: 'variant-brand', organisationType: 'brand', userId: 'variant-product', role: 'product', createdAt: clock(),
+  await platform.grantMembership('variant-owner-member', 'system', createMembership({
+    id: 'variant-owner-membership', organisationId: 'variant-brand', organisationType: 'brand', userId: 'variant-owner', role: 'owner', createdAt: clock(),
   }));
-  const campaign = await platform.createCampaign('variant-campaign', 'variant-product', {
+  await platform.grantMembership('variant-product-member', 'variant-owner', createMembership({
+    id: 'variant-product-membership', organisationId: 'variant-brand', organisationType: 'brand', userId: 'variant-product', role: 'product', createdAt: clock(),
+  }));
+  const campaign = await platform.createCampaign('variant-campaign', 'variant-owner', {
     brandId: 'variant-brand', name: 'Variant Campaign', season: 'AW29',
     startsAt: '2029-01-01T00:00:00.000Z', endsAt: '2029-06-01T00:00:00.000Z',
   });
-  await platform.openCampaign('variant-campaign-open', 'variant-product', campaign.id);
-  const draftCollection = await platform.createCollection('variant-collection', 'variant-product', {
+  await platform.openCampaign('variant-campaign-open', 'variant-owner', campaign.id);
+  const draftCollection = await platform.createCollection('variant-collection', 'variant-owner', {
     campaignId: campaign.id, brandId: 'variant-brand', name: 'Variant Collection', currency: 'EUR',
   });
-  const collection = await platform.publishCollection('variant-collection-publish', 'variant-product', draftCollection.id);
+  const collection = await platform.publishCollection('variant-collection-publish', 'variant-owner', draftCollection.id);
   const draftGrid = await productDevelopment.createSizeGrid('variant-grid', 'variant-product', {
     brandId: 'variant-brand', code: 'ALPHA', name: 'Alpha', sizes: ['S', 'M', 'L'], baseSize: 'M',
   });
