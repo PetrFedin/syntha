@@ -19,16 +19,15 @@ export function createPostgresWorkspaceReader({ pool }) {
         tradePayloads(pool, 'deals', ownIds),
         payloadAny(pool, 'calendar_milestones', 'owner_organisation_id', ownIds),
       ]);
-      const campaignIds = unique(cycles.map((item) => item.campaignId));
+      const cycleCampaignIds = unique(cycles.map((item) => item.campaignId));
       const cycleCollectionIds = unique(cycles.map((item) => item.collectionId));
       const showroomIds = unique([...invitations.map((item) => item.showroomId), ...selections.map((item) => item.showroomId)]);
       const brandIds = memberships.filter((item) => item.organisationType === 'brand').map((item) => item.organisationId);
-      const [campaigns, collections, showrooms] = await Promise.all([
-        payloadByIdsOrOwner(pool, 'campaigns', campaignIds, 'brand_id', brandIds),
-        payloadByIdsOrOwner(pool, 'collections', cycleCollectionIds, 'brand_id', brandIds),
-        payloadByIdsOrOwner(pool, 'showrooms', showroomIds, 'brand_id', brandIds),
-      ]);
+      const showrooms = await payloadByIdsOrOwner(pool, 'showrooms', showroomIds, 'brand_id', brandIds);
       const visibleCollectionIds = unique([...cycleCollectionIds, ...showrooms.map((item) => item.collectionId)]);
+      const collections = await payloadByIdsOrOwner(pool, 'collections', visibleCollectionIds, 'brand_id', brandIds);
+      const campaignIds = unique([...cycleCampaignIds, ...collections.map((item) => item.campaignId)]);
+      const campaigns = await payloadByIdsOrOwner(pool, 'campaigns', campaignIds, 'brand_id', brandIds);
       const [catalogSkus, styles] = await Promise.all([
         visibleCatalogSkus(pool, brandIds, visibleCollectionIds),
         visibleStyles(pool, brandIds, visibleCollectionIds),

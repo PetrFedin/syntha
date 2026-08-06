@@ -1,10 +1,10 @@
 function renderProductDevelopment() {
   const box = el('div');
-  const canManage = ownOrganisations('brand').length > 0;
+  const canManage = state.workspace.memberships.some(item => item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role));
   box.append(toolbar(
     '\u0420\u0430\u0437\u043c\u0435\u0440\u043d\u044b\u0435 \u0441\u0435\u0442\u043a\u0438 \u0438 Style \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438',
-    canManage ? '\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440\u043d\u0443\u044e \u0441\u0435\u0442\u043a\u0443' : '\u041d\u0435\u0442 brand-\u0440\u043e\u043b\u0438',
-    canManage ? sizeGridForm : () => toast('\u0414\u043b\u044f \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0438 \u0438\u0437\u0434\u0435\u043b\u0438\u0439 \u043d\u0443\u0436\u043d\u0430 brand-\u0440\u043e\u043b\u044c.', 'error'),
+    canManage ? '\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440\u043d\u0443\u044e \u0441\u0435\u0442\u043a\u0443' : '\u0422\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440',
+    canManage ? sizeGridForm : () => toast('\u0420\u043e\u043b\u044c \u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442 \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0443 \u0438\u0437\u0434\u0435\u043b\u0438\u0439.', 'error'),
   ));
   const grids = state.workspace.sizeGrids || [];
   const styles = state.workspace.styles || [];
@@ -25,9 +25,12 @@ function renderProductDevelopment() {
   return box;
 }
 
+function canManageProductBrand(brandId) {
+  return state.workspace.memberships.some(item => item.organisationId === brandId && item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role));
+}
+
 function sizeGridEntity(item) {
-  const ownBrand = ownOrganisations('brand').some(org => org.id === item.brandId);
-  const actions = ownBrand && item.status === 'draft'
+  const actions = canManageProductBrand(item.brandId) && item.status === 'draft'
     ? [actionButton('\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u0442\u044c', () => mutate(`/v2/plm/size-grids/${encodeURIComponent(item.id)}/publish`, { sizeGridId: item.id }), 'primary')]
     : [];
   return entity(item.name, item.status, [
@@ -40,8 +43,7 @@ function sizeGridEntity(item) {
 }
 
 function styleEntity(item) {
-  const ownBrand = ownOrganisations('brand').some(org => org.id === item.brandId);
-  const actions = ownBrand && item.status === 'draft'
+  const actions = canManageProductBrand(item.brandId) && item.status === 'draft'
     ? [actionButton('\u0423\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c', () => mutate(`/v2/plm/styles/${encodeURIComponent(item.id)}/approve`, { styleId: item.id }), 'primary')]
     : [];
   return entity(item.name, item.status, [
@@ -55,7 +57,8 @@ function styleEntity(item) {
 }
 
 function sizeGridForm() {
-  const brands = ownOrganisations('brand');
+  const manageableBrandIds = new Set(state.workspace.memberships.filter(item => item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role)).map(item => item.organisationId));
+  const brands = ownOrganisations('brand').filter(item => manageableBrandIds.has(item.id));
   openForm('\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440\u043d\u0443\u044e \u0441\u0435\u0442\u043a\u0443', [
     selectDef('brandId', 'Brand', brands),
     textDef('code', '\u041a\u043e\u0434'),
@@ -72,8 +75,8 @@ function sizeGridForm() {
 }
 
 function styleForm() {
-  const brandIds = new Set(ownOrganisations('brand').map(item => item.id));
-  const collections = state.workspace.collections.filter(item => brandIds.has(item.brandId));
+  const manageableBrandIds = new Set(state.workspace.memberships.filter(item => item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role)).map(item => item.organisationId));
+  const collections = state.workspace.collections.filter(item => manageableBrandIds.has(item.brandId));
   if (!collections.length) { toast('\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u0441\u043e\u0437\u0434\u0430\u0439\u0442\u0435 \u043a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044e.', 'error'); return; }
   const dialog = document.querySelector('#form-dialog'); clear(dialog);
   const body = el('div', { className: 'dialog-body' });

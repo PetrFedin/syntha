@@ -39,8 +39,9 @@ async function fixture() {
 test('published size grid drives an immutable approved Style snapshot', async () => {
   const context = await fixture();
   const draftGrid = await context.productDevelopment.createSizeGrid('pd-grid-create', 'developer-pd', {
-    brandId: 'brand-pd', code: 'women-alpha', name: 'Women Alpha', sizes: ['xs', 's', 'm', 'l'], baseSize: 'm',
+    id: 'client-controlled-grid', brandId: 'brand-pd', code: 'women-alpha', name: 'Women Alpha', sizes: ['xs', 's', 'm', 'l'], baseSize: 'm',
   });
+  assert.notEqual(draftGrid.id, 'client-controlled-grid');
   assert.equal(draftGrid.code, 'WOMEN-ALPHA');
   assert.deepEqual(draftGrid.sizes, ['XS', 'S', 'M', 'L']);
   const grid = await context.productDevelopment.publishSizeGrid('pd-grid-publish', 'developer-pd', draftGrid.id);
@@ -48,9 +49,10 @@ test('published size grid drives an immutable approved Style snapshot', async ()
   assert.equal(grid.version, 2);
 
   const draftStyle = await context.productDevelopment.createStyle('pd-style-create', 'developer-pd', {
-    brandId: 'brand-pd', collectionId: context.collection.id, styleCode: 'jk-100', name: 'Tailored Jacket',
+    id: 'client-controlled-style', brandId: 'brand-pd', collectionId: context.collection.id, styleCode: 'jk-100', name: 'Tailored Jacket',
     category: 'Outerwear', gender: 'women', sizeGridId: grid.id,
   });
+  assert.notEqual(draftStyle.id, 'client-controlled-style');
   assert.equal(draftStyle.styleCode, 'JK-100');
   assert.equal(draftStyle.sizeGrid.version, 2);
   const approved = await context.productDevelopment.approveStyle('pd-style-approve', 'developer-pd', draftStyle.id);

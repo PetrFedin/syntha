@@ -7,6 +7,7 @@ import { createMembership } from '../src/modules/access-control/public.mjs';
 import { createWholesalePlatform } from '../src/application/platform.mjs';
 import { createPartnerAccessService } from '../src/application/partner-access-service.mjs';
 import { createProductDevelopmentService } from '../src/application/product-development-service.mjs';
+import { createShowroomSelectionService } from '../src/application/showroom-selection-service.mjs';
 import { createWorkspaceQueryService } from '../src/application/workspace-query-service.mjs';
 import { createPostgresWholesaleStore } from '../src/infrastructure/postgres-store.mjs';
 import { createPostgresWorkspaceReader } from '../src/infrastructure/postgres-workspace-reader.mjs';
@@ -14,7 +15,7 @@ import { migratePostgres } from '../src/infrastructure/postgres-migrator.mjs';
 
 const databaseUrl = process.env.POSTGRES_TEST_URL;
 
-test('PostgreSQL persists Style development and exposes only approved product data to the shop', { skip: !databaseUrl }, async () => {
+test('PostgreSQL persists Style development and exposes only approved product data through showroom access', { skip: !databaseUrl }, async () => {
   const { Pool } = await import('pg');
   const pool = new Pool({ connectionString: databaseUrl, max: 4 });
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,6 +32,7 @@ test('PostgreSQL persists Style development and exposes only approved product da
     const platform = createWholesalePlatform(options);
     const partners = createPartnerAccessService(options);
     const productDevelopment = createProductDevelopmentService(options);
+    const collaboration = createShowroomSelectionService(options);
     const workspace = createWorkspaceQueryService({ reader: createPostgresWorkspaceReader({ pool }) });
 
     await platform.registerOrganisation('pg-pd-org-brand', 'system', createOrganisation({ id: 'brand-pg-pd', type: 'brand', name: 'PG Product Brand' }));
@@ -51,12 +53,19 @@ test('PostgreSQL persists Style development and exposes only approved product da
       startsAt: '2028-07-01T00:00:00.000Z', endsAt: '2029-01-01T00:00:00.000Z',
     });
     await platform.openCampaign('pg-pd-campaign-open', 'owner-pg-pd', campaign.id);
-    const collection = await platform.createCollection('pg-pd-collection', 'owner-pg-pd', {
+    const draftCollection = await platform.createCollection('pg-pd-collection', 'owner-pg-pd', {
       campaignId: campaign.id, brandId: 'brand-pg-pd', name: 'SS29 Mainline', currency: 'EUR',
     });
-    await platform.startCycle('pg-pd-cycle', 'buyer-pg-pd', {
-      brandId: 'brand-pg-pd', shopId: 'shop-pg-pd', campaignId: campaign.id, collectionId: collection.id,
+    const collection = await platform.publishCollection('pg-pd-collection-publish', 'owner-pg-pd', draftCollection.id);
+    const showroom = await collaboration.createShowroom('pg-pd-showroom', 'owner-pg-pd', {
+      collectionId: collection.id, brandId: 'brand-pg-pd', name: 'SS29 Buyer Preview',
+      opensAt: '2028-08-01T00:00:00.000Z', closesAt: '2028-09-01T00:00:00.000Z',
     });
+    await collaboration.openShowroom('pg-pd-showroom-open', 'owner-pg-pd', showroom.id);
+    const invitation = await partners.inviteShopToShowroom('pg-pd-invitation', 'owner-pg-pd', {
+      showroomId: showroom.id, shopId: 'shop-pg-pd', expiresAt: '2028-08-20T00:00:00.000Z',
+    });
+    await partners.acceptShowroomInvitation('pg-pd-invitation-accept', 'buyer-pg-pd', invitation.id);
 
     const draftGrid = await productDevelopment.createSizeGrid('pg-pd-grid-create', 'developer-pg-pd', {
       brandId: 'brand-pg-pd', code: 'eu-women', name: 'EU Women', sizes: ['36', '38', '40', '42'], baseSize: '38',
@@ -68,6 +77,8 @@ test('PostgreSQL persists Style development and exposes only approved product da
     });
 
     const buyerBeforeApproval = await workspace.loadForActor('buyer-pg-pd');
+    assert.deepEqual(buyerBeforeApproval.collections.map((item) => item.id), [collection.id]);
+    assert.deepEqual(buyerBeforeApproval.showrooms.map((item) => item.id), [showroom.id]);
     assert.equal(buyerBeforeApproval.styles.length, 0);
     assert.equal(buyerBeforeApproval.sizeGrids.length, 0);
 

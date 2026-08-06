@@ -51,7 +51,7 @@ export function createProductDevelopmentService({
           brandId: input.brandId,
           code: input.code,
         });
-        const sizeGrid = createSizeGrid({ id: nextId('size-grid'), ...input, createdAt: clock() });
+        const sizeGrid = createSizeGrid({ ...input, id: nextId('size-grid'), createdAt: clock() });
         await tx.insertSizeGrid(sizeGrid);
         await append(tx, 'size-grid.created', sizeGrid.id, {
           brandId: sizeGrid.brandId,
@@ -89,7 +89,7 @@ export function createProductDevelopmentService({
           brandId: input.brandId,
           styleCode,
         });
-        const style = createStyle({ id: nextId('style'), ...input, collection, sizeGrid, createdAt: clock() });
+        const style = createStyle({ ...input, id: nextId('style'), collection, sizeGrid, createdAt: clock() });
         await tx.insertStyle(style);
         await append(tx, 'style.created', style.id, {
           brandId: style.brandId,
