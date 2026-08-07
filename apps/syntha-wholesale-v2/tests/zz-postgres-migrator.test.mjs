@@ -23,10 +23,11 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
     '006_order_cancellation.sql',
     '007_product_development.sql',
     '008_style_catalog_variants.sql',
+    '009_materials_bom.sql',
   ];
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
-    const clock = () => '2026-07-31T12:00:00.000Z';
+    const clock = () => '2026-08-07T09:00:00.000Z';
     const results = await Promise.all([
       migratePostgres({ pool, migrationsDir, clock }),
       migratePostgres({ pool, migrationsDir, clock }),
@@ -45,15 +46,12 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
               to_regclass('public.catalog_skus') AS catalog_skus,
               to_regclass('public.order_inventory_reservations') AS order_inventory_reservations,
               to_regclass('public.product_size_grids') AS product_size_grids,
-              to_regclass('public.product_styles') AS product_styles`,
+              to_regclass('public.product_styles') AS product_styles,
+              to_regclass('public.product_materials') AS product_materials,
+              to_regclass('public.product_material_revisions') AS product_material_revisions,
+              to_regclass('public.product_boms') AS product_boms`,
     );
-    assert.equal(tables.rows[0].organisations, 'organisations');
-    assert.equal(tables.rows[0].auth_users, 'auth_users');
-    assert.equal(tables.rows[0].auth_login_throttles, 'auth_login_throttles');
-    assert.equal(tables.rows[0].catalog_skus, 'catalog_skus');
-    assert.equal(tables.rows[0].order_inventory_reservations, 'order_inventory_reservations');
-    assert.equal(tables.rows[0].product_size_grids, 'product_size_grids');
-    assert.equal(tables.rows[0].product_styles, 'product_styles');
+    for (const [name, value] of Object.entries(tables.rows[0])) assert.equal(value, name);
     const catalogColumns = await pool.query(
       `SELECT column_name FROM information_schema.columns
         WHERE table_schema = 'public' AND table_name = 'catalog_skus'

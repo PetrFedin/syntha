@@ -1,9 +1,20 @@
 import { invariant } from '../core/errors.mjs';
 
-export function createWholesaleRoutes({ platform, catalog, productDevelopment, partners, collaboration, orders, notifications, workspace }) {
+export function createWholesaleRoutes({
+  platform,
+  catalog,
+  productDevelopment,
+  productSpecification,
+  partners,
+  collaboration,
+  orders,
+  notifications,
+  workspace,
+}) {
   invariant(platform && partners && collaboration && orders && notifications && workspace, 'HTTP_SERVICES_REQUIRED', 'All V2 application services are required');
   const catalogService = catalog ?? unavailableCatalog();
   const productDevelopmentService = productDevelopment ?? unavailableProductDevelopment();
+  const productSpecificationService = productSpecification ?? unavailableProductSpecification();
   return [
     mutate('POST', /^\/v2\/campaigns$/, ({ commandId, actorId, body }) => platform.createCampaign(commandId, actorId, body)),
     mutate('POST', /^\/v2\/campaigns\/([^/]+)\/open$/, ({ commandId, actorId, params }) => platform.openCampaign(commandId, actorId, params[0])),
@@ -24,6 +35,40 @@ export function createWholesaleRoutes({ platform, catalog, productDevelopment, p
     mutate('POST', /^\/v2\/plm\/styles\/([^/]+)\/approve$/, ({ commandId, actorId, params, body }) => {
       sameId(body.styleId, params[0], 'styleId');
       return productDevelopmentService.approveStyle(commandId, actorId, params[0]);
+    }),
+    mutate('POST', /^\/v2\/plm\/materials$/, ({ commandId, actorId, body }) => productSpecificationService.createMaterial(commandId, actorId, body)),
+    mutate('POST', /^\/v2\/plm\/materials\/([^/]+)\/revisions$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.materialId, params[0], 'materialId');
+      return productSpecificationService.createMaterialRevision(commandId, actorId, params[0], body.changes ?? {});
+    }),
+    mutate('POST', /^\/v2\/plm\/material-revisions\/([^/]+)\/approve$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.revisionId, params[0], 'revisionId');
+      return productSpecificationService.approveMaterialRevision(commandId, actorId, params[0]);
+    }),
+    mutate('POST', /^\/v2\/plm\/boms$/, ({ commandId, actorId, body }) => productSpecificationService.createBom(commandId, actorId, body.styleId)),
+    mutate('POST', /^\/v2\/plm\/boms\/([^/]+)\/revisions$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.bomId, params[0], 'bomId');
+      return productSpecificationService.reviseBom(commandId, actorId, params[0]);
+    }),
+    mutate('PUT', /^\/v2\/plm\/boms\/([^/]+)\/lines\/([^/]+)$/, ({ commandId, actorId, params, body }) => {
+      const componentKey = decodeURIComponent(params[1]);
+      sameId(body.bomId, params[0], 'bomId');
+      sameId(body.componentKey, componentKey, 'componentKey');
+      return productSpecificationService.upsertBomLine(commandId, actorId, params[0], { ...body, componentKey });
+    }),
+    mutate('DELETE', /^\/v2\/plm\/boms\/([^/]+)\/lines\/([^/]+)$/, ({ commandId, actorId, params, body }) => {
+      const componentKey = decodeURIComponent(params[1]);
+      sameId(body.bomId, params[0], 'bomId');
+      sameId(body.componentKey, componentKey, 'componentKey');
+      return productSpecificationService.removeBomLine(commandId, actorId, params[0], componentKey);
+    }),
+    mutate('POST', /^\/v2\/plm\/boms\/([^/]+)\/submit$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.bomId, params[0], 'bomId');
+      return productSpecificationService.submitBom(commandId, actorId, params[0]);
+    }),
+    mutate('POST', /^\/v2\/plm\/boms\/([^/]+)\/approve$/, ({ commandId, actorId, params, body }) => {
+      sameId(body.bomId, params[0], 'bomId');
+      return productSpecificationService.approveBom(commandId, actorId, params[0]);
     }),
     mutate('POST', /^\/v2\/showrooms$/, ({ commandId, actorId, body }) => collaboration.createShowroom(commandId, actorId, body)),
     mutate('POST', /^\/v2\/showrooms\/([^/]+)\/open$/, ({ commandId, actorId, params }) => collaboration.openShowroom(commandId, actorId, params[0])),
@@ -85,4 +130,18 @@ function unavailableCatalog() {
 function unavailableProductDevelopment() {
   const fail = () => invariant(false, 'PRODUCT_DEVELOPMENT_SERVICE_REQUIRED', 'Product development service is required');
   return Object.freeze({ createSizeGrid: fail, publishSizeGrid: fail, createStyle: fail, approveStyle: fail });
+}
+function unavailableProductSpecification() {
+  const fail = () => invariant(false, 'PRODUCT_SPECIFICATION_SERVICE_REQUIRED', 'Product specification service is required');
+  return Object.freeze({
+    createMaterial: fail,
+    createMaterialRevision: fail,
+    approveMaterialRevision: fail,
+    createBom: fail,
+    reviseBom: fail,
+    upsertBomLine: fail,
+    removeBomLine: fail,
+    submitBom: fail,
+    approveBom: fail,
+  });
 }

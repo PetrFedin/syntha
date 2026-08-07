@@ -6,6 +6,8 @@ export const CAPABILITIES = Object.freeze({
   COLLECTION_MANAGE: 'collection.manage',
   CATALOG_MANAGE: 'catalog.manage',
   PRODUCT_DEVELOPMENT_MANAGE: 'product-development.manage',
+  PRODUCT_SPECIFICATION_READ: 'product-specification.read',
+  PRODUCT_SPECIFICATION_MANAGE: 'product-specification.manage',
   SHOWROOM_MANAGE: 'showroom.manage',
   PARTNER_RELATIONSHIP_MANAGE: 'partner-relationship.manage',
   SHOWROOM_INVITATION_MANAGE: 'showroom-invitation.manage',
@@ -27,6 +29,8 @@ const ROLE_CAPABILITIES = Object.freeze({
   product: Object.freeze([
     CAPABILITIES.CATALOG_MANAGE,
     CAPABILITIES.PRODUCT_DEVELOPMENT_MANAGE,
+    CAPABILITIES.PRODUCT_SPECIFICATION_READ,
+    CAPABILITIES.PRODUCT_SPECIFICATION_MANAGE,
     CAPABILITIES.CALENDAR_READ,
   ]),
   sales: Object.freeze([
@@ -34,6 +38,7 @@ const ROLE_CAPABILITIES = Object.freeze({
     CAPABILITIES.COLLECTION_MANAGE,
     CAPABILITIES.CATALOG_MANAGE,
     CAPABILITIES.PRODUCT_DEVELOPMENT_MANAGE,
+    CAPABILITIES.PRODUCT_SPECIFICATION_READ,
     CAPABILITIES.SHOWROOM_MANAGE,
     CAPABILITIES.PARTNER_RELATIONSHIP_MANAGE,
     CAPABILITIES.SHOWROOM_INVITATION_MANAGE,
@@ -56,6 +61,7 @@ const ROLE_CAPABILITIES = Object.freeze({
     CAPABILITIES.CALENDAR_READ,
   ]),
   finance: Object.freeze([
+    CAPABILITIES.PRODUCT_SPECIFICATION_READ,
     CAPABILITIES.ORDER_CONFIRM,
     CAPABILITIES.DEAL_READ,
     CAPABILITIES.CALENDAR_READ,
@@ -81,9 +87,13 @@ export function createMembership({ id, organisationId, organisationType, userId,
 
 export function membershipKey(organisationId, userId) { return `${organisationId}:${userId}`; }
 
+export function membershipHasCapability(membership, capability) {
+  return membership?.status === 'active' && Boolean(ROLE_CAPABILITIES[membership.role]?.includes(capability));
+}
+
 export function assertCapability(membership, capability) {
   invariant(membership?.status === 'active', 'ACTIVE_MEMBERSHIP_REQUIRED', 'Active organisation membership is required', { capability });
-  invariant(ROLE_CAPABILITIES[membership.role]?.includes(capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', { role: membership.role, capability, organisationId: membership.organisationId });
+  invariant(membershipHasCapability(membership, capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', { role: membership.role, capability, organisationId: membership.organisationId });
 }
 
 export function assertTradeCapability({ memberships, actorId, brandId, shopId, capability }) {

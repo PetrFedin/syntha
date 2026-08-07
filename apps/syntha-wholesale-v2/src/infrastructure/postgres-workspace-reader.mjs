@@ -1,4 +1,5 @@
 import { invariant } from '../core/errors.mjs';
+import { CAPABILITIES, membershipHasCapability } from '../modules/access-control/public.mjs';
 
 export function createPostgresWorkspaceReader({ pool }) {
   invariant(pool && typeof pool.query === 'function', 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
@@ -22,15 +23,22 @@ export function createPostgresWorkspaceReader({ pool }) {
       const cycleCampaignIds = unique(cycles.map((item) => item.campaignId));
       const cycleCollectionIds = unique(cycles.map((item) => item.collectionId));
       const showroomIds = unique([...invitations.map((item) => item.showroomId), ...selections.map((item) => item.showroomId)]);
-      const brandIds = memberships.filter((item) => item.organisationType === 'brand').map((item) => item.organisationId);
+      const brandMemberships = memberships.filter((item) => item.organisationType === 'brand');
+      const brandIds = brandMemberships.map((item) => item.organisationId);
+      const productSpecificationBrandIds = brandMemberships
+        .filter((item) => membershipHasCapability(item, CAPABILITIES.PRODUCT_SPECIFICATION_READ))
+        .map((item) => item.organisationId);
       const showrooms = await payloadByIdsOrOwner(pool, 'showrooms', showroomIds, 'brand_id', brandIds);
       const visibleCollectionIds = unique([...cycleCollectionIds, ...showrooms.map((item) => item.collectionId)]);
       const collections = await payloadByIdsOrOwner(pool, 'collections', visibleCollectionIds, 'brand_id', brandIds);
       const campaignIds = unique([...cycleCampaignIds, ...collections.map((item) => item.campaignId)]);
       const campaigns = await payloadByIdsOrOwner(pool, 'campaigns', campaignIds, 'brand_id', brandIds);
-      const [catalogSkus, styles] = await Promise.all([
+      const [catalogSkus, styles, materials, materialRevisions, boms] = await Promise.all([
         visibleCatalogSkus(pool, brandIds, visibleCollectionIds),
         visibleStyles(pool, brandIds, visibleCollectionIds),
+        payloadAny(pool, 'product_materials', 'brand_id', productSpecificationBrandIds),
+        payloadAny(pool, 'product_material_revisions', 'brand_id', productSpecificationBrandIds),
+        payloadAny(pool, 'product_boms', 'brand_id', productSpecificationBrandIds),
       ]);
       const sizeGrids = await visibleSizeGrids(pool, brandIds, unique(styles.map((item) => item.sizeGrid?.id)));
       return {
@@ -42,6 +50,9 @@ export function createPostgresWorkspaceReader({ pool }) {
         collections,
         sizeGrids,
         styles,
+        materials,
+        materialRevisions,
+        boms,
         catalogSkus,
         showrooms,
         cycles,
@@ -110,6 +121,7 @@ function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function emptyWorkspace() {
   return {
     memberships: [], organisations: [], relationships: [], invitations: [], campaigns: [], collections: [],
-    sizeGrids: [], styles: [], catalogSkus: [], showrooms: [], cycles: [], selections: [], orders: [], deals: [], calendar: [],
+    sizeGrids: [], styles: [], materials: [], materialRevisions: [], boms: [], catalogSkus: [], showrooms: [],
+    cycles: [], selections: [], orders: [], deals: [], calendar: [],
   };
 }

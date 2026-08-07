@@ -86,7 +86,7 @@ export function normalizeHttpError(error) {
   else if (code === 'CAPABILITY_DENIED' || code.includes('MEMBERSHIP_REQUIRED')) status = 403;
   else if (['HTTP_JSON_INVALID', 'HTTP_IDEMPOTENCY_KEY_REQUIRED', 'HTTP_IDENTIFIER_MISMATCH', 'AUTH_EMAIL_INVALID', 'AUTH_PASSWORD_INVALID'].includes(code)) status = 400;
   else if (code === 'HTTP_BODY_TOO_LARGE') status = 413;
-  else if (code.includes('CONFLICT') || code.includes('ALREADY_EXISTS')) status = 409;
+  else if (code.includes('CONFLICT') || code.includes('ALREADY_EXISTS') || code.endsWith('_EXISTS')) status = 409;
   const retryAfterSeconds = code === 'AUTH_RATE_LIMITED' ? Math.max(1, Math.ceil(Number(error.details?.retryAfterSeconds) || 1)) : undefined;
   return { status, code, message: error.message, details: error.details ?? {}, retryAfterSeconds };
 }

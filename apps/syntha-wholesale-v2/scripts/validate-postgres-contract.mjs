@@ -13,7 +13,7 @@ const requiredTables = [
   'commands', 'outbox_events', 'notifications', 'notification_projections', 'notification_commands',
   'auth_users', 'auth_sessions', 'auth_login_throttles', 'auth_login_audit',
   'catalog_skus', 'catalog_commands', 'catalog_outbox_events', 'order_inventory_reservations',
-  'product_size_grids', 'product_styles',
+  'product_size_grids', 'product_styles', 'product_materials', 'product_material_revisions', 'product_boms',
 ];
 const requiredFragments = [
   'UNIQUE (brand_id, shop_id)', 'UNIQUE (showroom_id, shop_id)', 'cycle_id text NOT NULL UNIQUE',
@@ -33,9 +33,15 @@ const requiredFragments = [
   'product_styles_id_brand_unique', 'catalog_skus_product_identity_complete',
   'catalog_skus_style_brand_fk', 'catalog_skus_size_grid_brand_fk',
   'catalog_skus_style_variant_unique', 'catalog_skus_style_variant_idx',
+  'product_material_revisions_single_draft_idx', 'product_material_revisions_single_approved_idx',
+  'FOREIGN KEY (material_id, brand_id)', 'product_material_revisions_brand_status_idx',
+  'product_boms_single_active_revision_idx', 'product_boms_single_approved_revision_idx',
+  'FOREIGN KEY (style_id, brand_id)', 'product_boms_brand_status_idx',
 ];
 const missing = [];
-for (const table of requiredTables) if (!new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);
+for (const table of requiredTables) {
+  if (!new RegExp(`CREATE TABLE(?: IF NOT EXISTS)?\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);
+}
 for (const fragment of requiredFragments) if (!sql.includes(fragment)) missing.push(`contract:${fragment}`);
 if (missing.length) {
   console.error(`PostgreSQL contract is incomplete:\n${missing.map((item) => `- ${item}`).join('\n')}`);
