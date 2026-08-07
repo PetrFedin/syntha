@@ -24,6 +24,7 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
     '007_product_development.sql',
     '008_style_catalog_variants.sql',
     '009_materials_bom.sql',
+    '010_measurements_fit_techpacks.sql',
   ];
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
@@ -49,7 +50,10 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
               to_regclass('public.product_styles') AS product_styles,
               to_regclass('public.product_materials') AS product_materials,
               to_regclass('public.product_material_revisions') AS product_material_revisions,
-              to_regclass('public.product_boms') AS product_boms`,
+              to_regclass('public.product_boms') AS product_boms,
+              to_regclass('public.product_measurement_charts') AS product_measurement_charts,
+              to_regclass('public.product_fit_samples') AS product_fit_samples,
+              to_regclass('public.product_tech_packs') AS product_tech_packs`,
     );
     for (const [name, value] of Object.entries(tables.rows[0])) assert.equal(value, name);
     const catalogColumns = await pool.query(
