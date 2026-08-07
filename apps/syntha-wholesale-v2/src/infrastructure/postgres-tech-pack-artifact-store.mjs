@@ -1,0 +1,18 @@
+import { invariant } from '../core/errors.mjs';
+
+export function createPostgresTechPackArtifactStore({ pool } = {}) {
+  invariant(pool && typeof pool.connect === 'function', 'POSTGRES_POOL_REQUIRED', 'PostgreSQL pool is required');
+  return Object.freeze({ async transaction(work) { const client=await pool.connect(); try{await client.query('BEGIN');const result=await work(view(client));await client.query('COMMIT');return result;}catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();} } });
+}
+function view(client) { return Object.freeze({
+  getOrganisation:(id)=>payloadOne(client,'organisations','id = $1',[id]), getMembership:(organisationId,userId)=>payloadOne(client,'memberships','organisation_id = $1 AND user_id = $2',[organisationId,userId]), getTechPack:(id)=>payloadOne(client,'product_tech_packs','id = $1',[id]),
+  lockTechPackArtifacts:async(techPackId)=>{await client.query('SELECT pg_advisory_xact_lock(1012, hashtext($1))',[techPackId]);},
+  getArtifact:async(techPackId,format)=>{const result=await client.query('SELECT id, tech_pack_id, brand_id, style_id, format, content_type, filename, size_bytes, sha256, created_at, content FROM product_tech_pack_artifacts WHERE tech_pack_id = $1 AND format = $2',[techPackId,format]);return artifactFromRow(result.rows[0]);},
+  insertArtifact:async(value)=>{try{await client.query('INSERT INTO product_tech_pack_artifacts (id, tech_pack_id, brand_id, style_id, format, content_type, filename, size_bytes, sha256, created_at, content) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[value.id,value.techPackId,value.brandId,value.styleId,value.format,value.contentType,value.filename,value.sizeBytes,value.sha256,value.createdAt,value.content]);}catch(error){if(error?.code==='23505')invariant(false,'TECH_PACK_ARTIFACT_ALREADY_EXISTS','Tech Pack artifact already exists',{techPackId:value.techPackId,format:value.format});throw error;}},
+  getCommand:async(id)=>{const result=await client.query('SELECT id, fingerprint, actor_id, result, completed_at FROM commands WHERE id = $1',[id]);return commandFromRow(result.rows[0]);},
+  insertCommand:async(value)=>{try{await client.query('INSERT INTO commands (id, fingerprint, actor_id, result, completed_at) VALUES ($1,$2,$3,$4::jsonb,$5)',[value.id,value.fingerprint,value.actorId,JSON.stringify(value.result),value.completedAt]);}catch(error){if(error?.code==='23505')invariant(false,'COMMAND_ALREADY_EXISTS','Command already exists',{commandId:value.id});throw error;}},
+  appendOutbox:async(event)=>{try{await client.query("INSERT INTO outbox_events (id,event_type,aggregate_id,status,event,published_at) VALUES ($1,$2,$3,'pending',$4::jsonb,NULL)",[event.id,event.type,event.aggregateId,JSON.stringify(event)]);}catch(error){if(error?.code==='23505')invariant(false,'OUTBOX_EVENT_ALREADY_EXISTS','Outbox event already exists',{eventId:event.id});throw error;}},
+}); }
+async function payloadOne(client,table,where,params){const result=await client.query(`SELECT payload FROM ${table} WHERE ${where} LIMIT 1`,params);return result.rows[0]?.payload;}
+function artifactFromRow(row){if(!row)return undefined;return Object.freeze({id:row.id,techPackId:row.tech_pack_id,brandId:row.brand_id,styleId:row.style_id,format:row.format,contentType:row.content_type,filename:row.filename,sizeBytes:Number(row.size_bytes),sha256:row.sha256,createdAt:row.created_at.toISOString?.()??row.created_at,content:row.content});}
+function commandFromRow(row){if(!row)return undefined;return Object.freeze({id:row.id,fingerprint:row.fingerprint,actorId:row.actor_id,result:row.result,completedAt:row.completed_at.toISOString?.()??row.completed_at});}
