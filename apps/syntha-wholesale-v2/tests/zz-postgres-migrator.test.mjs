@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { appendFile, copyFile, mkdtemp, rm } from 'node:fs/promises';
+import { appendFile, copyFile, mkdtemp, readdir, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,18 +14,7 @@ test('PostgreSQL migration ledger serializes runners and rejects changed history
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const migrationsDir = path.join(root, 'db', 'migrations');
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'syntha-v2-migrations-'));
-  const migrationFiles = [
-    '001_wholesale_v2.sql',
-    '002_auth.sql',
-    '003_auth_security.sql',
-    '004_catalog.sql',
-    '005_catalog_availability.sql',
-    '006_order_cancellation.sql',
-    '007_product_development.sql',
-    '008_style_catalog_variants.sql',
-    '009_materials_bom.sql',
-    '010_measurements_fit_techpacks.sql',
-  ];
+  const migrationFiles = (await readdir(migrationsDir)).filter((name) => name.endsWith('.sql')).sort();
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
     const clock = () => '2026-08-07T09:00:00.000Z';
