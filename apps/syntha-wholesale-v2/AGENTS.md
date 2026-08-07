@@ -1,13 +1,11 @@
-# AGENTS.md — Syntha Wholesale V2
+# Syntha V2 agent rules
 
-Scope: `apps/syntha-wholesale-v2`.
-
-Read `CURSOR_START_HERE.md` first.
-
-Core lifecycle: Campaign → Collection → Showroom → Selection → Order Builder → Order → confirmation → DealSpace.
-
-Brand and Shop are organisation types. Roles belong to organisations.
-
-Calendar and DealSpace are core. PLM, production, BOM, QC and supply chain are outside MVP.
-
-Cross-module imports go only through `public.ts`. Boundary changes require an ADR.
+- Работать только внутри `apps/syntha-wholesale-v2` и специализированного workflow.
+- Не импортировать код из других приложений репозитория.
+- Не подключать внешний identity provider: authentication принадлежит V2.
+- Все cross-module imports идут через `public.mjs`.
+- Все мутации требуют durable command id и транзакционный outbox.
+- Применённые SQL-миграции не редактируются; изменения схемы оформляются новым нумерованным файлом.
+- Сервер, bootstrap и CLI обязаны использовать общий migration ledger.
+- Перед публикацией выполнять `npm run verify`.
+- Приоритет: целостность коммерческого маршрута, PostgreSQL, auth, API, standalone UI, operational hardening, затем новые домены.

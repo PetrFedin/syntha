@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Syntha V2 API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/syntha-wholesale-v2/src/server.mjs",
+      "cwd": "${workspaceFolder}/apps/syntha-wholesale-v2",
+      "envFile": "${workspaceFolder}/apps/syntha-wholesale-v2/.env",
+      "console": "integratedTerminal",
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
