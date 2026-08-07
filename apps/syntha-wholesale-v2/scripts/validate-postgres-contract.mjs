@@ -3,48 +3,9 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const directory = path.join(root, 'db', 'migrations');
-const files = (await readdir(directory)).filter((name) => name.endsWith('.sql')).sort();
-const sql = (await Promise.all(files.map((file) => readFile(path.join(directory, file), 'utf8')))).join('\n');
-const requiredTables = [
-  'organisations', 'memberships', 'counterparty_relationships', 'campaigns', 'collections', 'showrooms',
-  'showroom_invitations', 'commercial_cycles', 'selections', 'orders', 'deals', 'calendar_milestones',
-  'commands', 'outbox_events', 'notifications', 'notification_projections', 'notification_commands',
-  'auth_users', 'auth_sessions', 'auth_login_throttles', 'auth_login_audit',
-  'catalog_skus', 'catalog_commands', 'catalog_outbox_events', 'order_inventory_reservations',
-  'product_size_grids', 'product_styles', 'product_materials', 'product_material_revisions', 'product_boms',
-];
-const requiredFragments = [
-  'UNIQUE (brand_id, shop_id)', 'UNIQUE (showroom_id, shop_id)', 'cycle_id text NOT NULL UNIQUE',
-  "status text NOT NULL CHECK (status IN ('pending', 'published'))", 'outbox_status_idx',
-  'notifications_recipient_status_idx', 'version integer NOT NULL CHECK (version > 0)',
-  'email_normalized text NOT NULL UNIQUE', 'token_hash char(64) NOT NULL UNIQUE', 'auth_sessions_expiry_idx',
-  "outcome text NOT NULL CHECK (outcome IN ('succeeded', 'failed', 'blocked'))", 'auth_login_throttles_blocked_idx',
-  'auth_login_audit_key_time_idx', "status text NOT NULL CHECK (status IN ('draft', 'published'))",
-  'wholesale_price numeric(20, 4) NOT NULL CHECK (wholesale_price > 0)', 'catalog_skus_collection_status_idx',
-  'catalog_outbox_status_idx', 'minimum_order_quantity integer NOT NULL DEFAULT 1',
-  'available_quantity integer NOT NULL DEFAULT 0', 'reserved_quantity integer NOT NULL DEFAULT 0',
-  'catalog_skus_reserved_not_above_available', 'order_inventory_reservations_sku_idx',
-  'reserve_inventory_on_order_attach', 'orders_reserve_inventory_on_attach', 'FOR UPDATE',
-  'collections_id_brand_unique', 'UNIQUE (brand_id, code)', 'UNIQUE (brand_id, style_code)',
-  'FOREIGN KEY (collection_id, brand_id)', 'FOREIGN KEY (size_grid_id, brand_id)',
-  'product_size_grids_brand_status_idx', 'product_styles_collection_status_idx',
-  'product_styles_id_brand_unique', 'catalog_skus_product_identity_complete',
-  'catalog_skus_style_brand_fk', 'catalog_skus_size_grid_brand_fk',
-  'catalog_skus_style_variant_unique', 'catalog_skus_style_variant_idx',
-  'product_material_revisions_single_draft_idx', 'product_material_revisions_single_approved_idx',
-  'FOREIGN KEY (material_id, brand_id)', 'product_material_revisions_brand_status_idx',
-  'product_boms_single_active_revision_idx', 'product_boms_single_approved_revision_idx',
-  'FOREIGN KEY (style_id, brand_id)', 'product_boms_brand_status_idx',
-];
-const missing = [];
-for (const table of requiredTables) {
-  if (!new RegExp(`CREATE TABLE(?: IF NOT EXISTS)?\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`);
-}
-for (const fragment of requiredFragments) if (!sql.includes(fragment)) missing.push(`contract:${fragment}`);
-if (missing.length) {
-  console.error(`PostgreSQL contract is incomplete:\n${missing.map((item) => `- ${item}`).join('\n')}`);
-  process.exit(1);
-}
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'); const directory = path.join(root, 'db', 'migrations'); const files = (await readdir(directory)).filter((name) => name.endsWith('.sql')).sort(); const sql = (await Promise.all(files.map((file) => readFile(path.join(directory, file), 'utf8')))).join('\n');
+const requiredTables = ['organisations','memberships','counterparty_relationships','campaigns','collections','showrooms','showroom_invitations','commercial_cycles','selections','orders','deals','calendar_milestones','commands','outbox_events','notifications','notification_projections','notification_commands','auth_users','auth_sessions','auth_login_throttles','auth_login_audit','catalog_skus','catalog_commands','catalog_outbox_events','order_inventory_reservations','product_size_grids','product_styles','product_materials','product_material_revisions','product_boms','product_measurement_charts','product_fit_samples','product_tech_packs'];
+const requiredFragments = ['UNIQUE (brand_id, shop_id)','UNIQUE (showroom_id, shop_id)','cycle_id text NOT NULL UNIQUE',"status text NOT NULL CHECK (status IN ('pending', 'published'))",'outbox_status_idx','notifications_recipient_status_idx','version integer NOT NULL CHECK (version > 0)','email_normalized text NOT NULL UNIQUE','token_hash char(64) NOT NULL UNIQUE','auth_sessions_expiry_idx',"outcome text NOT NULL CHECK (outcome IN ('succeeded', 'failed', 'blocked'))",'auth_login_throttles_blocked_idx','auth_login_audit_key_time_idx',"status text NOT NULL CHECK (status IN ('draft', 'published'))",'wholesale_price numeric(20, 4) NOT NULL CHECK (wholesale_price > 0)','catalog_skus_collection_status_idx','catalog_outbox_status_idx','minimum_order_quantity integer NOT NULL DEFAULT 1','available_quantity integer NOT NULL DEFAULT 0','reserved_quantity integer NOT NULL DEFAULT 0','catalog_skus_reserved_not_above_available','order_inventory_reservations_sku_idx','reserve_inventory_on_order_attach','orders_reserve_inventory_on_attach','FOR UPDATE','collections_id_brand_unique','UNIQUE (brand_id, code)','UNIQUE (brand_id, style_code)','FOREIGN KEY (collection_id, brand_id)','FOREIGN KEY (size_grid_id, brand_id)','product_size_grids_brand_status_idx','product_styles_collection_status_idx','product_styles_id_brand_unique','catalog_skus_product_identity_complete','catalog_skus_style_brand_fk','catalog_skus_size_grid_brand_fk','catalog_skus_style_variant_unique','catalog_skus_style_variant_idx','product_material_revisions_single_draft_idx','product_material_revisions_single_approved_idx','FOREIGN KEY (material_id, brand_id)','product_material_revisions_brand_status_idx','product_boms_single_active_revision_idx','product_boms_single_approved_revision_idx','FOREIGN KEY (style_id, brand_id)','product_boms_brand_status_idx','product_measurement_charts_single_active_revision_idx','product_measurement_charts_single_approved_revision_idx','product_measurement_charts_brand_status_idx',"sample_type text NOT NULL CHECK (sample_type IN ('proto', 'fit', 'size-set', 'pps'))", "verdict text NOT NULL CHECK (verdict IN ('pending', 'pass', 'fail'))",'product_fit_samples_chart_status_idx','FOREIGN KEY (chart_id, style_id, brand_id)','UNIQUE (style_id, source_fingerprint)','product_tech_packs_brand_style_idx'];
+const missing = []; for (const table of requiredTables) { if (!new RegExp(`CREATE TABLE(?: IF NOT EXISTS)?\\s+${table}\\s*\\(`, 'i').test(sql)) missing.push(`table:${table}`); } for (const fragment of requiredFragments) if (!sql.includes(fragment)) missing.push(`contract:${fragment}`);
+if (missing.length) { console.error(`PostgreSQL contract is incomplete:\n${missing.map((item) => `- ${item}`).join('\n')}`); process.exit(1); }
 console.log(`PostgreSQL contract OK (${requiredTables.length} tables across ${files.length} migrations).`);

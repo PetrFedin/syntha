@@ -1,0 +1,4 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { wholesaleV2OpenApi } from '../src/http/openapi-technical.mjs';
+test('OpenAPI publishes the complete Measurement, Fit and Tech Pack transport contract', () => { for (const path of ['/plm/styles/{styleId}/measurement-charts','/plm/measurement-charts/{chartId}/points/{pointCode}','/plm/measurement-charts/{chartId}/fit-samples','/plm/fit-samples/{sampleId}/measurements/{pointCode}','/plm/fit-samples/{sampleId}/evaluate','/plm/fit-samples/{sampleId}/approve','/plm/fit-samples/{sampleId}/reject','/plm/tech-packs','/plm/tech-packs/{techPackId}/manifest']) assert.ok(wholesaleV2OpenApi.paths[path], path); assert.equal(wholesaleV2OpenApi.info.version, '0.13.0'); assert.ok(wholesaleV2OpenApi.components.schemas.MeasurementPointInput); assert.ok(wholesaleV2OpenApi.components.schemas.FitSampleCreate); assert.ok(wholesaleV2OpenApi.components.schemas.TechPackCreate); });

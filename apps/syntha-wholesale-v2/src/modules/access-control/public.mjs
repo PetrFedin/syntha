@@ -8,6 +8,8 @@ export const CAPABILITIES = Object.freeze({
   PRODUCT_DEVELOPMENT_MANAGE: 'product-development.manage',
   PRODUCT_SPECIFICATION_READ: 'product-specification.read',
   PRODUCT_SPECIFICATION_MANAGE: 'product-specification.manage',
+  TECHNICAL_DEVELOPMENT_READ: 'technical-development.read',
+  TECHNICAL_DEVELOPMENT_MANAGE: 'technical-development.manage',
   SHOWROOM_MANAGE: 'showroom.manage',
   PARTNER_RELATIONSHIP_MANAGE: 'partner-relationship.manage',
   SHOWROOM_INVITATION_MANAGE: 'showroom-invitation.manage',
@@ -31,6 +33,8 @@ const ROLE_CAPABILITIES = Object.freeze({
     CAPABILITIES.PRODUCT_DEVELOPMENT_MANAGE,
     CAPABILITIES.PRODUCT_SPECIFICATION_READ,
     CAPABILITIES.PRODUCT_SPECIFICATION_MANAGE,
+    CAPABILITIES.TECHNICAL_DEVELOPMENT_READ,
+    CAPABILITIES.TECHNICAL_DEVELOPMENT_MANAGE,
     CAPABILITIES.CALENDAR_READ,
   ]),
   sales: Object.freeze([
@@ -86,16 +90,11 @@ export function createMembership({ id, organisationId, organisationType, userId,
 }
 
 export function membershipKey(organisationId, userId) { return `${organisationId}:${userId}`; }
-
-export function membershipHasCapability(membership, capability) {
-  return membership?.status === 'active' && Boolean(ROLE_CAPABILITIES[membership.role]?.includes(capability));
-}
-
+export function membershipHasCapability(membership, capability) { return membership?.status === 'active' && Boolean(ROLE_CAPABILITIES[membership.role]?.includes(capability)); }
 export function assertCapability(membership, capability) {
   invariant(membership?.status === 'active', 'ACTIVE_MEMBERSHIP_REQUIRED', 'Active organisation membership is required', { capability });
   invariant(membershipHasCapability(membership, capability), 'CAPABILITY_DENIED', 'Role does not grant required capability', { role: membership.role, capability, organisationId: membership.organisationId });
 }
-
 export function assertTradeCapability({ memberships, actorId, brandId, shopId, capability }) {
   const membership = memberships.find((candidate) => candidate.userId === actorId && candidate.status === 'active' && (candidate.organisationId === brandId || candidate.organisationId === shopId));
   invariant(membership, 'TRADE_MEMBERSHIP_REQUIRED', 'Actor must belong to one of the trade organisations', { actorId, brandId, shopId, capability });
