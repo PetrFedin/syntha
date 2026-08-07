@@ -48,9 +48,11 @@ h3 { margin: 0 0 14px; font-size: 17px; }
 .entity-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
 .entity-title { font-weight: 750; overflow-wrap: anywhere; }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; color: var(--muted); font-size: 12px; }
+.bom-line { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
 .badge { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
-.badge.active, .badge.open, .badge.published, .badge.accepted, .badge.ready, .badge.deal-space { border-color: rgba(116,230,167,.4); color: var(--success); }
-.badge.pending, .badge.draft, .badge.campaign, .badge.collection, .badge.showroom, .badge.selection, .badge.order-builder, .badge.order, .badge.confirmation { color: var(--warning); }
+.badge.active, .badge.open, .badge.published, .badge.accepted, .badge.ready, .badge.approved, .badge.deal-space { border-color: rgba(116,230,167,.4); color: var(--success); }
+.badge.pending, .badge.draft, .badge.submitted, .badge.campaign, .badge.collection, .badge.showroom, .badge.selection, .badge.order-builder, .badge.order, .badge.confirmation { color: var(--warning); }
+.badge.superseded { color: var(--muted); }
 .button { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--panel-2); color: var(--text); }
 .button:hover { border-color: #58636f; }
 .button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 800; }

@@ -11,11 +11,13 @@ assertAscii(index, indexPath);
 const html = index.toString('ascii');
 const sources = [...html.matchAll(/<script defer src="([^"]+)"/g)].map((match) => match[1]);
 const requiredPrefix = ['/ui/dom-1.js', '/ui/dom-2.js', '/ui/api.js', '/ui/open-form.js', '/ui/app-core.js'];
+const productDevelopmentIndex = sources.indexOf('/ui/product-development.js');
 if (
   sources.length < 10 ||
   sources.at(-1) !== '/ui/app-start.js' ||
   sources.includes('/app.js') ||
-  !sources.includes('/ui/product-development.js') ||
+  productDevelopmentIndex < 0 ||
+  sources[productDevelopmentIndex + 1] !== '/ui/product-specification.js' ||
   requiredPrefix.some((source, index) => sources[index] !== source)
 ) {
   console.error('Standalone UI script order is invalid.');

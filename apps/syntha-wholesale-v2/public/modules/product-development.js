@@ -2,7 +2,7 @@ function renderProductDevelopment() {
   const box = el('div');
   const canManage = state.workspace.memberships.some(item => item.organisationType === 'brand' && ['owner', 'admin', 'product', 'sales'].includes(item.role));
   box.append(toolbar(
-    '\u0420\u0430\u0437\u043c\u0435\u0440\u043d\u044b\u0435 \u0441\u0435\u0442\u043a\u0438 \u0438 Style \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438',
+    'Size Grid / Style / Material Library / BOM',
     canManage ? '\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440\u043d\u0443\u044e \u0441\u0435\u0442\u043a\u0443' : '\u0422\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440',
     canManage ? sizeGridForm : () => toast('\u0420\u043e\u043b\u044c \u043d\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442 \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0443 \u0438\u0437\u0434\u0435\u043b\u0438\u0439.', 'error'),
   ));
@@ -22,6 +22,7 @@ function renderProductDevelopment() {
     ),
   );
   box.append(grid);
+  if (typeof renderProductSpecification === 'function') box.append(renderProductSpecification());
   return box;
 }
 
@@ -48,9 +49,13 @@ function styleEntity(item) {
     actions.push(actionButton('\u0423\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c', () => mutate(`/v2/plm/styles/${encodeURIComponent(item.id)}/approve`, { styleId: item.id }), 'primary'));
   }
   if (canManageProductBrand(item.brandId) && item.status === 'approved') {
-    actions.push(actionButton('\u0421\u043e\u0437\u0434\u0430\u0442\u044c SKU', () => styleSkuForm(item), 'primary'));
+    actions.push(formButton('\u0421\u043e\u0437\u0434\u0430\u0442\u044c SKU', () => styleSkuForm(item), 'primary'));
   }
   const variants = (state.workspace.catalogSkus || []).filter(sku => sku.productIdentity?.styleId === item.id);
+  const boms = (state.workspace.boms || []).filter(bom => bom.styleId === item.id).sort((a, b) => b.revisionNumber - a.revisionNumber);
+  if (item.status === 'approved' && !boms.length && typeof canManageProductSpecificationBrand === 'function' && canManageProductSpecificationBrand(item.brandId)) {
+    actions.push(actionButton('\u0421\u043e\u0437\u0434\u0430\u0442\u044c BOM', () => createBomForStyle(item)));
+  }
   return entity(item.name, item.status, [
     item.styleCode,
     item.category,
@@ -58,6 +63,7 @@ function styleEntity(item) {
     `\u041a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044f: ${nameById('collections', item.collectionId)}`,
     `Size grid: ${item.sizeGrid.code} v${item.sizeGrid.version}`,
     `SKU variants: ${variants.length}`,
+    boms.length ? `BOM: r${boms[0].revisionNumber} / ${statusLabel(boms[0].status)}` : 'BOM: \u2014',
     `v${item.version}`,
   ], actions);
 }

@@ -54,3 +54,39 @@ test('actor without active membership receives an empty workspace', async () => 
   const workspace = await service().loadForActor('unknown');
   assert.ok(Object.values(workspace).every((items) => items.length === 0));
 });
+
+test('memory workspace mirrors product specification read isolation', async () => {
+  const roleSource = {
+    ...source,
+    memberships: [
+      { userId: 'product-user', organisationId: 'brand-1', organisationType: 'brand', role: 'product', status: 'active' },
+      { userId: 'sales-user', organisationId: 'brand-1', organisationType: 'brand', role: 'sales', status: 'active' },
+      { userId: 'viewer-user', organisationId: 'brand-1', organisationType: 'brand', role: 'viewer', status: 'active' },
+      { userId: 'buyer-user', organisationId: 'shop-1', organisationType: 'shop', role: 'buyer', status: 'active' },
+    ],
+  };
+  const specificationSource = {
+    materials: [{ id: 'material-1', brandId: 'brand-1' }],
+    materialRevisions: [{ id: 'revision-1', materialId: 'material-1', brandId: 'brand-1' }],
+    boms: [{ id: 'bom-1', styleId: 'style-1', brandId: 'brand-1' }],
+  };
+  const query = createWorkspaceQueryService({
+    reader: createMemoryWorkspaceReader({
+      store: store(roleSource),
+      catalogStore: store(catalogSource),
+      productSpecificationStore: store(specificationSource),
+    }),
+  });
+  for (const actorId of ['product-user', 'sales-user']) {
+    const workspace = await query.loadForActor(actorId);
+    assert.deepEqual(workspace.materials.map((item) => item.id), ['material-1']);
+    assert.deepEqual(workspace.materialRevisions.map((item) => item.id), ['revision-1']);
+    assert.deepEqual(workspace.boms.map((item) => item.id), ['bom-1']);
+  }
+  for (const actorId of ['viewer-user', 'buyer-user']) {
+    const workspace = await query.loadForActor(actorId);
+    assert.deepEqual(workspace.materials, []);
+    assert.deepEqual(workspace.materialRevisions, []);
+    assert.deepEqual(workspace.boms, []);
+  }
+});

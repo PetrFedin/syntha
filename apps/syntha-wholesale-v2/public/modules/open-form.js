@@ -1,5 +1,5 @@
 function openForm(title, fields, submitAction) {
-  const unavailable = fields.find(field => field.kind === 'select' && field.options.length === 0);
+  const unavailable = fields.find(field => field.kind === 'select' && field.required !== false && field.options.length === 0);
   if (unavailable) { toast(`\u041d\u0435\u0442 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445: ${unavailable.label}`, 'error'); return; }
   const dialog = document.querySelector('#form-dialog'); clear(dialog);
   const body = el('div', { className: 'dialog-body' });
@@ -14,10 +14,17 @@ function openForm(title, fields, submitAction) {
     event.preventDefault(); setButtonBusy(submit,true,'\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0435\u043c\u2026');
     try {
       const values = {};
-      fields.forEach(field => { const raw = controls.get(field.name).value; values[field.name] = field.kind === 'number' ? (field.integer ? Number.parseInt(raw,10) : Number(raw)) : raw; });
+      fields.forEach(field => {
+        const raw = controls.get(field.name).value;
+        if (field.kind === 'number') {
+          values[field.name] = raw.trim() === '' ? undefined : (field.integer ? Number.parseInt(raw,10) : Number(raw));
+        } else {
+          values[field.name] = raw;
+        }
+      });
       await submitAction(values); dialog.close(); await reload(); renderApp(); toast('\u0418\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b','success');
     } catch (error) { showInlineError(form,error.message); }
-    finally { setButtonBusy(submit,false,'\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c'); }
+    finally { if(submit.isConnected)setButtonBusy(submit,false,'\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c'); }
   });
   body.append(head,form); dialog.append(body); dialog.showModal();
 }
