@@ -23,7 +23,8 @@ test('PostgreSQL completes material revision to approved BOM with RBAC and immut
   let id = 0;
   let tick = 0;
   const nextId = (prefix) => `${prefix}_pg_${++id}`;
-  const clock = () => `2026-08-07T11:00:${String(tick++).padStart(2, '0')}.000Z`;
+  const baseTime = Date.parse('2026-08-07T11:00:00.000Z');
+  const clock = () => new Date(baseTime + tick++ * 1_000).toISOString();
   try {
     await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
     await migratePostgres({ pool, migrationsDir, clock });
