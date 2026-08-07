@@ -4,6 +4,8 @@ const NOTIFICATION_TYPES = Object.freeze([
   'selection-submitted',
   'order-terms-accepted',
   'deal-opened',
+  'style-approved',
+  'showroom-styles-available',
 ]);
 
 export function createNotification({

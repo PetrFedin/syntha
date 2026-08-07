@@ -39,7 +39,7 @@ test('material and BOM routes keep path identifiers authoritative', async () => 
     commandId: 'cmd-material-revise', actorId: 'product-user', params: reviseMaterial.params,
     body: { materialId: 'material-1', changes: { unitCostMinor: 300 } },
   });
-  await assert.rejects(
+  assert.throws(
     () => reviseMaterial.execute({
       commandId: 'cmd-material-mismatch', actorId: 'product-user', params: reviseMaterial.params,
       body: { materialId: 'material-2', changes: { unitCostMinor: 300 } },

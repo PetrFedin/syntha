@@ -22,7 +22,10 @@ async function fixture() {
   await platform.grantMembership('pd-product', 'owner-pd', createMembership({
     id: 'membership-pd-product', organisationId: 'brand-pd', organisationType: 'brand', userId: 'developer-pd', role: 'product', createdAt: clock(),
   }));
-  await platform.grantMembership('pd-buyer', 'system', createMembership({
+  await platform.grantMembership('pd-shop-owner', 'system', createMembership({
+    id: 'membership-pd-shop-owner', organisationId: 'shop-pd', organisationType: 'shop', userId: 'owner-shop-pd', role: 'owner', createdAt: clock(),
+  }));
+  await platform.grantMembership('pd-buyer', 'owner-shop-pd', createMembership({
     id: 'membership-pd-buyer', organisationId: 'shop-pd', organisationType: 'shop', userId: 'buyer-pd', role: 'buyer', createdAt: clock(),
   }));
   const campaign = await platform.createCampaign('pd-campaign', 'owner-pd', {

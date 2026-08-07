@@ -44,7 +44,10 @@ test('PostgreSQL completes material revision to approved BOM with RBAC and immut
         id: `membership-pg-spec-${role}`, organisationId: 'brand-pg-spec', organisationType: 'brand', userId, role, createdAt: clock(),
       }));
     }
-    await platform.grantMembership('pg-spec-buyer-membership', 'system', createMembership({
+    await platform.grantMembership('pg-spec-shop-owner-membership', 'system', createMembership({
+      id: 'membership-pg-spec-shop-owner', organisationId: 'shop-pg-spec', organisationType: 'shop', userId: 'owner-shop-pg-spec', role: 'owner', createdAt: clock(),
+    }));
+    await platform.grantMembership('pg-spec-buyer-membership', 'owner-shop-pg-spec', createMembership({
       id: 'membership-pg-spec-buyer', organisationId: 'shop-pg-spec', organisationType: 'shop', userId: 'buyer-pg-spec', role: 'buyer', createdAt: clock(),
     }));
 

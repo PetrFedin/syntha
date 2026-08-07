@@ -49,7 +49,10 @@ test('PostgreSQL completes approved Style to SKU, Selection, reserved Order and 
     await platform.grantMembership('pg-pd-product', 'owner-pg-pd', createMembership({
       id: 'membership-pg-pd-product', organisationId: 'brand-pg-pd', organisationType: 'brand', userId: 'developer-pg-pd', role: 'product', createdAt: clock(),
     }));
-    await platform.grantMembership('pg-pd-buyer', 'system', createMembership({
+    await platform.grantMembership('pg-pd-shop-owner', 'system', createMembership({
+      id: 'membership-pg-pd-shop-owner', organisationId: 'shop-pg-pd', organisationType: 'shop', userId: 'owner-shop-pg-pd', role: 'owner', createdAt: clock(),
+    }));
+    await platform.grantMembership('pg-pd-buyer', 'owner-shop-pg-pd', createMembership({
       id: 'membership-pg-pd-buyer', organisationId: 'shop-pg-pd', organisationType: 'shop', userId: 'buyer-pg-pd', role: 'buyer', createdAt: clock(),
     }));
     const relationship = await partners.requestRelationship('pg-pd-relationship', 'owner-pg-pd', { brandId: 'brand-pg-pd', shopId: 'shop-pg-pd' });
@@ -90,27 +93,14 @@ test('PostgreSQL completes approved Style to SKU, Selection, reserved Order and 
 
     const approved = await productDevelopment.approveStyle('pg-pd-style-approve', 'developer-pg-pd', draftStyle.id);
     const draftSku = await catalog.createSku('pg-pd-style-sku-create', 'developer-pg-pd', {
-      sku: 'DR-2901-BLK-38',
-      collectionId: collection.id,
-      brandId: 'brand-pg-pd',
-      styleId: approved.id,
-      sizeLabel: '38',
-      colorCode: 'BLK',
-      name: 'Draped Dress Black 38',
-      wholesalePrice: 150,
-      currency: 'EUR',
-      minimumOrderQuantity: 2,
-      availableQuantity: 10,
+      sku: 'DR-2901-BLK-38', collectionId: collection.id, brandId: 'brand-pg-pd', styleId: approved.id,
+      sizeLabel: '38', colorCode: 'BLK', name: 'Draped Dress Black 38', wholesalePrice: 150,
+      currency: 'EUR', minimumOrderQuantity: 2, availableQuantity: 10,
     });
     assert.deepEqual(draftSku.productIdentity, {
-      styleId: approved.id,
-      styleCode: 'DR-2901',
-      styleVersion: 2,
-      sizeGridId: grid.id,
-      sizeGridCode: 'EU-WOMEN',
-      sizeGridVersion: 2,
-      sizeLabel: '38',
-      colorCode: 'BLK',
+      styleId: approved.id, styleCode: 'DR-2901', styleVersion: 2,
+      sizeGridId: grid.id, sizeGridCode: 'EU-WOMEN', sizeGridVersion: 2,
+      sizeLabel: '38', colorCode: 'BLK',
     });
     const publishedSku = await catalog.publishSku('pg-pd-style-sku-publish', 'developer-pg-pd', draftSku.sku);
 
@@ -126,19 +116,13 @@ test('PostgreSQL completes approved Style to SKU, Selection, reserved Order and 
     cycle = await platform.advanceCycle('pg-pd-cycle-collection', 'buyer-pg-pd', cycle.id, 'collection');
     cycle = await platform.advanceCycle('pg-pd-cycle-showroom', 'buyer-pg-pd', cycle.id, 'showroom');
     const created = await collaboration.createSelection('pg-pd-selection', 'buyer-pg-pd', { cycleId: cycle.id, showroomId: showroom.id });
-    const edited = await collaboration.upsertSelectionLine('pg-pd-selection-line', 'buyer-pg-pd', created.selection.id, {
-      sku: publishedSku.sku,
-      quantity: 4,
-    });
+    const edited = await collaboration.upsertSelectionLine('pg-pd-selection-line', 'buyer-pg-pd', created.selection.id, { sku: publishedSku.sku, quantity: 4 });
     assert.equal(edited.lines[0].unitPrice, 150);
     assert.equal(edited.lines[0].catalogVersion, 2);
     const submitted = await collaboration.submitSelection('pg-pd-selection-submit', 'buyer-pg-pd', edited.id);
     let order = await orders.createOrderDraft('pg-pd-order', 'buyer-pg-pd', {
       selectionId: submitted.selection.id,
-      terms: {
-        incoterm: 'DAP', paymentDays: 30, prepaymentPercent: 20,
-        deliveryStart: '2028-10-01', deliveryEnd: '2028-10-31',
-      },
+      terms: { incoterm: 'DAP', paymentDays: 30, prepaymentPercent: 20, deliveryStart: '2028-10-01', deliveryEnd: '2028-10-31' },
     });
     order = await orders.acceptTerms('pg-pd-order-shop-accept', 'buyer-pg-pd', { orderId: order.id, organisationId: 'shop-pg-pd' });
     order = await orders.acceptTerms('pg-pd-order-brand-accept', 'owner-pg-pd', { orderId: order.id, organisationId: 'brand-pg-pd' });

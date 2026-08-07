@@ -33,7 +33,7 @@ test('product development HTTP routes preserve server route identifiers', async 
 
   const publishGrid = matchWholesaleRoute(routes, 'POST', '/v2/plm/size-grids/grid-1/publish');
   await publishGrid.execute({ commandId: 'cmd-grid-publish', actorId: 'product-user', body: { sizeGridId: 'grid-1' }, params: publishGrid.params });
-  await assert.rejects(
+  assert.throws(
     () => publishGrid.execute({ commandId: 'cmd-grid-mismatch', actorId: 'product-user', body: { sizeGridId: 'grid-2' }, params: publishGrid.params }),
     (error) => error.code === 'HTTP_IDENTIFIER_MISMATCH',
   );
@@ -51,7 +51,7 @@ test('product development HTTP routes preserve server route identifiers', async 
     params: createVariant.params,
   });
   assert.equal(variant.sku, 'JK-1-BLK-M');
-  await assert.rejects(
+  assert.throws(
     () => createVariant.execute({
       commandId: 'cmd-style-sku-mismatch', actorId: 'product-user',
       body: { sku: 'JK-1-BLK-L', styleId: 'style-2', sizeLabel: 'L', colorCode: 'BLK' }, params: createVariant.params,
