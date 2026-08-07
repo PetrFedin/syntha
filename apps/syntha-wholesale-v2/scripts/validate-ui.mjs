@@ -18,6 +18,7 @@ if (
   sources.includes('/app.js') ||
   productDevelopmentIndex < 0 ||
   sources[productDevelopmentIndex + 1] !== '/ui/product-specification.js' ||
+  sources[productDevelopmentIndex + 2] !== '/ui/measurement-development.js' ||
   requiredPrefix.some((source, index) => sources[index] !== source)
 ) {
   console.error('Standalone UI script order is invalid.');
