@@ -17,6 +17,7 @@ import { shouldMountUIStateProvider } from '@/lib/layout/ui-state-route';
 import { cn } from '@/lib/utils';
 import { isPlatformCoreMode } from '@/lib/cabinet-core-mode';
 import { isCabinetPathname } from '@/lib/layout/cabinet-route-match';
+import { isInvestorBriefPathname } from '@/lib/investors/investor-brief-route';
 import { CoreModeHeader } from '@/components/layout/core-mode-header';
 import { PlatformCoreBootstrapBanner } from '@/components/platform/PlatformCoreBootstrapBanner';
 import GlobalPodcastPlayer from './global-podcast-player';
@@ -26,6 +27,7 @@ const CartSheet = dynamic(() => import('@/components/layout/cart-sheet'), { ssr:
 const WishlistSheet = dynamic(() => import('@/components/layout/wishlist-sheet'), { ssr: false });
 const PreOrderSheet = dynamic(() => import('@/components/layout/pre-order-sheet'), { ssr: false });
 const ComparisonPanel = dynamic(() => import('../comparison-panel'), { ssr: false });
+
 export default function ClientLayout({
   children,
 }: Readonly<{
@@ -35,6 +37,7 @@ export default function ClientLayout({
   const platformCore = isPlatformCoreMode();
   const isCabinet = isCabinetPathname(pathname);
   const isPlatformHub = pathname === '/platform';
+  const isInvestorBrief = isInvestorBriefPathname(pathname);
   const uiStateChrome = shouldMountUIStateProvider(pathname) && !platformCore;
 
   return (
@@ -44,29 +47,34 @@ export default function ClientLayout({
           <RegisterServiceWorker />
           <RunwayAnalyticsGate />
           <div className="relative flex min-h-screen flex-col">
-            <OfflineBanner />
+            {!isInvestorBrief ? <OfflineBanner /> : null}
             {uiStateChrome ? <GlobalPodcastPlayer /> : null}
-            {/* Core: hub — минимальный header; кабинеты — свой chrome, без B2C nav. */}
+            {/* Core: hub — минимальный header; кабинеты — свой chrome, без B2C nav. Investor brief — собственный presentation chrome. */}
             {platformCore ? (
               <>
                 {!isCabinet ? <CoreModeHeader /> : null}
                 <PlatformCoreBootstrapBanner />
               </>
-            ) : (
+            ) : isInvestorBrief ? null : (
               <Header />
             )}
             {/* Иначе fixed z-[100] перекрывает собственный сайдбар кабинета (бренд z-30) и «съедает» клики слева. */}
-            {!isCabinet && !platformCore ? <LeftSidebarNav /> : null}
-            <main className={cn('flex-1', isCabinet || isPlatformHub ? '' : 'pb-32')}>
+            {!isCabinet && !platformCore && !isInvestorBrief ? <LeftSidebarNav /> : null}
+            <main
+              className={cn(
+                'flex-1',
+                isCabinet || isPlatformHub || isInvestorBrief ? '' : 'pb-32'
+              )}
+            >
               {children}
             </main>
-            {!isCabinet && !platformCore && <Footer />}
+            {!isCabinet && !platformCore && !isInvestorBrief ? <Footer /> : null}
             {uiStateChrome ? <CartSheet /> : null}
             {uiStateChrome ? <WishlistSheet /> : null}
             {uiStateChrome ? <PreOrderSheet /> : null}
             {uiStateChrome ? <AiStylist /> : null}
             {uiStateChrome ? <ComparisonPanel /> : null}
-            <RolePanelGate />
+            {!isInvestorBrief ? <RolePanelGate /> : null}
             <Toaster />
           </div>
         </RouteGuardGate>
