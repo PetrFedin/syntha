@@ -61,10 +61,7 @@ export default function ClientLayout({
             {/* Иначе fixed z-[100] перекрывает собственный сайдбар кабинета (бренд z-30) и «съедает» клики слева. */}
             {!isCabinet && !platformCore && !isInvestorBrief ? <LeftSidebarNav /> : null}
             <main
-              className={cn(
-                'flex-1',
-                isCabinet || isPlatformHub || isInvestorBrief ? '' : 'pb-32'
-              )}
+              className={cn('flex-1', isCabinet || isPlatformHub || isInvestorBrief ? '' : 'pb-32')}
             >
               {children}
             </main>
