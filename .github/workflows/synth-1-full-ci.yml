@@ -55,6 +55,16 @@ jobs:
           sudo mkswap /swapfile
           sudo swapon /swapfile
           free -h
+      - name: Capture canonical Prettier output for investor presentation
+        run: npx prettier --write src/components/investors/InvestorBriefPageClient.tsx src/components/layout/client-layout.tsx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: investor-prettier-output
+          path: |
+            _ai-share/synth-1-full/src/components/investors/InvestorBriefPageClient.tsx
+            _ai-share/synth-1-full/src/components/layout/client-layout.tsx
+          if-no-files-found: error
+          retention-days: 1
       - run: npm run format:check
       - run: npm run lint
       - name: Legacy archive API guard
