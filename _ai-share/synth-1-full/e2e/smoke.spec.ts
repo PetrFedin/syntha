@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 /**
- * Light smoke (ci-fast): v1 wholesale spine routes only.
+ * Light smoke (ci-fast): v1 wholesale spine routes + public product brief.
  */
 
 const GOTO_OPTS = { waitUntil: 'domcontentloaded' as const, timeout: 60_000 };
@@ -43,6 +43,7 @@ async function waitForSmokeShell(page: Page): Promise<void> {
 }
 
 const SMOKE_ROUTES = [
+  { path: '/investors', name: 'Public investor product brief' },
   { path: '/shop/b2b/matrix?collection=SS27', name: 'Shop B2B matrix' },
   { path: '/shop/b2b/showroom?collection=SS27', name: 'Shop B2B showroom' },
   { path: '/shop/b2b/tracking?collection=SS27', name: 'Shop B2B tracking' },
