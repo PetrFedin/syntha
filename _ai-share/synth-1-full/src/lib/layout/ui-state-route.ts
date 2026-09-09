@@ -1,4 +1,5 @@
 import { isCabinetPathname } from '@/lib/layout/cabinet-route-match';
+import { isInvestorBriefPathname } from '@/lib/investors/investor-brief-route';
 
 /**
  * Хабы, где useUIState нужен только на страницах настроек (pulseMode).
@@ -28,10 +29,11 @@ function matchesPrefix(pathname: string, prefix: string): boolean {
 /**
  * Нужен ли `UIStateProvider` (~690 строк + products + cart repos).
  * Brand — всегда; factory/distributor/admin/shop — только settings;
- * client — me/wishlist/outfits; academy/wallet — нет.
+ * client — me/wishlist/outfits; academy/wallet и investor brief — нет.
  */
 export function shouldMountUIStateProvider(pathname: string | null | undefined): boolean {
   if (!pathname) return true;
+  if (isInvestorBriefPathname(pathname)) return false;
   if (!isCabinetPathname(pathname)) return true;
 
   const normalized = pathname.replace(/\/$/, '') || '/';
