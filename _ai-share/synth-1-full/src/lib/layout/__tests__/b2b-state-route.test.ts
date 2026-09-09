@@ -1,9 +1,11 @@
 import { shouldMountB2BStateProvider } from '@/lib/layout/b2b-state-route';
 
 describe('shouldMountB2BStateProvider', () => {
-  it('mounts on public routes', () => {
+  it('mounts on public commerce routes but skips the lightweight investor brief', () => {
     expect(shouldMountB2BStateProvider('/')).toBe(true);
     expect(shouldMountB2BStateProvider('/catalog')).toBe(true);
+    expect(shouldMountB2BStateProvider('/investors')).toBe(false);
+    expect(shouldMountB2BStateProvider('/investors/preview')).toBe(false);
   });
 
   it('mounts on shop/brand Platform Core cabinets', () => {
