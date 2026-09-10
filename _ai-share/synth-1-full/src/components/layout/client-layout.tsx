@@ -44,8 +44,8 @@ export default function ClientLayout({
     <ThemeProvider>
       <TooltipProvider>
         <RouteGuardGate>
-          <RegisterServiceWorker />
-          <RunwayAnalyticsGate />
+          {!isInvestorBrief ? <RegisterServiceWorker /> : null}
+          {!isInvestorBrief ? <RunwayAnalyticsGate /> : null}
           <div className="relative flex min-h-screen flex-col">
             {!isInvestorBrief ? <OfflineBanner /> : null}
             {uiStateChrome ? <GlobalPodcastPlayer /> : null}
