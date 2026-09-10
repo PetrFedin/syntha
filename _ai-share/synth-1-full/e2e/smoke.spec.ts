@@ -75,7 +75,11 @@ test('smoke: investor brief keeps the public QR and Platform Core contract', asy
     .first();
   await expect(platformCta).toHaveAttribute('href', '/platform');
   await expect(page.getByText('Canonical URL')).toBeVisible();
-  await expect(page.getByTitle('QR-код публичной страницы Syntha')).toBeVisible();
+  await expect(
+    page.locator('svg').filter({
+      has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }),
+    })
+  ).toBeVisible();
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
