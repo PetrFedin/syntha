@@ -1,0 +1,27 @@
+name: investors public endpoint verify
+
+on:
+  push:
+    branches: [agent/10-investor-product-page]
+    paths:
+      - '.github/workflows/investors-public-verify.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify public investors endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://syntha-investors.onrender.com/investors'
+          FINAL_URL=$(curl --fail --silent --show-error --location --max-time 90 \
+            --retry 3 --retry-delay 5 \
+            -o /tmp/investors.html \
+            -w '%{url_effective}' "$URL")
+          test "$FINAL_URL" = "$URL"
+          grep -Fq 'От артикула до закрытия заказа' /tmp/investors.html
+          grep -Fq 'https://syntha-investors.onrender.com/investors' /tmp/investors.html
+          grep -Fq 'Посмотреть Platform Core' /tmp/investors.html
+          grep -Fq 'href="/platform"' /tmp/investors.html
+          echo "Verified: $FINAL_URL"
