@@ -62,11 +62,13 @@ jobs:
           done
           grep -Fq '"ok":true' /tmp/investors-health.json
           grep -Fq '"qrReady":true' /tmp/investors-health.json
-          curl --fail --silent http://127.0.0.1:4173/investors >/tmp/investors-public.html
+          curl --fail --silent --dump-header /tmp/investors-headers.txt \
+            http://127.0.0.1:4173/investors >/tmp/investors-public.html
           grep -Fq 'От артикула до закрытия заказа' /tmp/investors-public.html
           grep -Fq 'https://syntha-fashion-os.onrender.com/investors' /tmp/investors-public.html
           grep -Fq 'QR-код публичной страницы Syntha' /tmp/investors-public.html
-          grep -Fq 'frame-ancestors' /dev/null || true
+          grep -Fiq 'x-frame-options: DENY' /tmp/investors-headers.txt
+          grep -Fiq "content-security-policy: default-src 'self'" /tmp/investors-headers.txt
       - run: npm ci
       - run: npx playwright install chromium --with-deps
       - name: Run investor page browser QA
