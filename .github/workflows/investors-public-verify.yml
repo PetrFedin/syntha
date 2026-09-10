@@ -15,16 +15,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          URL='https://syntha-investors.onrender.com/investors'
+          URL='https://syntha-fashion-os.onrender.com/investors'
           echo 'DNS:'
-          getent ahostsv4 syntha-investors.onrender.com | head -n 3 || true
+          getent ahostsv4 syntha-fashion-os.onrender.com | head -n 3 || true
           FINAL_URL=$(curl --fail --silent --show-error --location \
-            --connect-timeout 10 --max-time 30 \
+            --connect-timeout 10 --max-time 45 \
             -o /tmp/investors.html \
             -w '%{url_effective}' "$URL")
           test "$FINAL_URL" = "$URL"
           grep -Fq 'От артикула до закрытия заказа' /tmp/investors.html
-          grep -Fq 'https://syntha-investors.onrender.com/investors' /tmp/investors.html
+          grep -Fq 'https://syntha-fashion-os.onrender.com/investors' /tmp/investors.html
           grep -Fq 'Посмотреть Platform Core' /tmp/investors.html
           grep -Fq 'href="/platform"' /tmp/investors.html
           echo "Verified: $FINAL_URL"
