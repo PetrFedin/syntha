@@ -65,21 +65,57 @@ const roles: Array<{ icon: LucideIcon; name: string; key: string; text: string }
 ];
 
 const pillars = [
-  ['01', 'Разработка продукта', 'Карточка артикула, спецификация, стоимость и подготовка к следующему этапу.'],
+  [
+    '01',
+    'Разработка продукта',
+    'Карточка артикула, спецификация, стоимость и подготовка к следующему этапу.',
+  ],
   ['02', 'Образцы', 'Заказ образца, измерения, качество, документы и решение о готовности.'],
   ['03', 'Заказ коллекции', 'Матрица, выбор байера, коммерческие условия и подтверждение заказа.'],
-  ['04', 'Производство заказа', 'Производственный заказ, мощности, материалы, выпуск, качество и отгрузка.'],
-  ['05', 'Коммуникации', 'Сообщения, календарь, документы, события, сроки и эскалации в контексте процесса.'],
+  [
+    '04',
+    'Производство заказа',
+    'Производственный заказ, мощности, материалы, выпуск, качество и отгрузка.',
+  ],
+  [
+    '05',
+    'Коммуникации',
+    'Сообщения, календарь, документы, события, сроки и эскалации в контексте процесса.',
+  ],
 ] as const;
 
 const journey: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: Shirt, title: 'Артикул', text: 'Единая карточка продукта и контекст разработки.' },
-  { icon: Layers3, title: 'Коллекция', text: 'Ассортимент объединяется в управляемый сезонный контур.' },
-  { icon: ShoppingBag, title: 'Заказ', text: 'Коммерческое решение превращается в подтверждённый заказ.' },
-  { icon: Factory, title: 'Производство', text: 'Мощности, материалы, выпуск и контроль качества.' },
-  { icon: Boxes, title: 'Поставщик', text: 'Условия, материалы и обязательства связаны с заказом.' },
-  { icon: Truck, title: 'Отгрузка', text: 'Факт поставки передаётся следующему участнику цепочки.' },
-  { icon: FileCheck2, title: 'Закрытие', text: 'Документы, решения и финальный статус сохраняют историю.' },
+  {
+    icon: Layers3,
+    title: 'Коллекция',
+    text: 'Ассортимент объединяется в управляемый сезонный контур.',
+  },
+  {
+    icon: ShoppingBag,
+    title: 'Заказ',
+    text: 'Коммерческое решение превращается в подтверждённый заказ.',
+  },
+  {
+    icon: Factory,
+    title: 'Производство',
+    text: 'Мощности, материалы, выпуск и контроль качества.',
+  },
+  {
+    icon: Boxes,
+    title: 'Поставщик',
+    text: 'Условия, материалы и обязательства связаны с заказом.',
+  },
+  {
+    icon: Truck,
+    title: 'Отгрузка',
+    text: 'Факт поставки передаётся следующему участнику цепочки.',
+  },
+  {
+    icon: FileCheck2,
+    title: 'Закрытие',
+    text: 'Документы, решения и финальный статус сохраняют историю.',
+  },
 ];
 
 const businessValue: Array<{ icon: LucideIcon; title: string; text: string }> = [
@@ -187,11 +223,27 @@ const platformLogic: Array<{ icon: LucideIcon; title: string; text: string }> = 
 ];
 
 const architecture = [
-  ['Интерфейс', 'Next.js 15 / App Router', 'Публичные поверхности, кабинеты ролей и Platform Core.'],
-  ['Сервисный слой', 'FastAPI + Next BFF', 'API, контракты данных, сервисы и интеграционные границы.'],
-  ['Данные', 'PostgreSQL + Redis', 'Постоянные данные, кеш и tenant-aware хранение по организациям.'],
+  [
+    'Интерфейс',
+    'Next.js 15 / App Router',
+    'Публичные поверхности, кабинеты ролей и Platform Core.',
+  ],
+  [
+    'Сервисный слой',
+    'FastAPI + Next BFF',
+    'API, контракты данных, сервисы и интеграционные границы.',
+  ],
+  [
+    'Данные',
+    'PostgreSQL + Redis',
+    'Постоянные данные, кеш и tenant-aware хранение по организациям.',
+  ],
   ['Доступ', 'JWT + RBAC', 'JWT-аутентификация и RBAC — ролевая модель прав доступа.'],
-  ['AI-контур', 'LLM + CLIP / FAISS + agents', 'Языковые модели, визуальное сходство, агенты и обратная связь.'],
+  [
+    'AI-контур',
+    'LLM + CLIP / FAISS + agents',
+    'Языковые модели, визуальное сходство, агенты и обратная связь.',
+  ],
 ] as const;
 
 const implemented = [
@@ -228,13 +280,7 @@ function SectionHeading({
   );
 }
 
-function StatusList({
-  items,
-  tone,
-}: {
-  items: readonly string[];
-  tone: 'done' | 'progress';
-}) {
+function StatusList({ items, tone }: { items: readonly string[]; tone: 'done' | 'progress' }) {
   const done = tone === 'done';
 
   return (
@@ -308,7 +354,10 @@ export function InvestorBriefPageClient() {
             <a className="text-sm font-medium text-slate-600 hover:text-slate-950" href="#process">
               Сквозной процесс
             </a>
-            <a className="text-sm font-medium text-slate-600 hover:text-slate-950" href="#architecture">
+            <a
+              className="text-sm font-medium text-slate-600 hover:text-slate-950"
+              href="#architecture"
+            >
               Архитектура
             </a>
             <a className="text-sm font-medium text-slate-600 hover:text-slate-950" href="#status">
@@ -337,8 +386,8 @@ export function InvestorBriefPageClient() {
                 От артикула до закрытия заказа — одна операционная среда fashion-бизнеса
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-                Syntha связывает бренд, магазин, производителя и поставщика в единый процесс разработки
-                коллекции, заказа, производства, поставки и контроля исполнения.
+                Syntha связывает бренд, магазин, производителя и поставщика в единый процесс
+                разработки коллекции, заказа, производства, поставки и контроля исполнения.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
@@ -403,8 +452,12 @@ export function InvestorBriefPageClient() {
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-slate-300">
                   {journey.map((step, index) => (
                     <span key={step.title} className="inline-flex items-center gap-2">
-                      <span className="rounded-md border border-slate-800 px-2 py-1.5">{step.title}</span>
-                      {index < journey.length - 1 ? <span className="text-slate-600">→</span> : null}
+                      <span className="rounded-md border border-slate-800 px-2 py-1.5">
+                        {step.title}
+                      </span>
+                      {index < journey.length - 1 ? (
+                        <span className="text-slate-600">→</span>
+                      ) : null}
                     </span>
                   ))}
                 </div>
@@ -412,8 +465,8 @@ export function InvestorBriefPageClient() {
               <div className="mt-4 flex items-start gap-3 rounded-xl border border-sky-900/70 bg-sky-950/50 p-4">
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" aria-hidden="true" />
                 <p className="text-xs leading-5 text-slate-300">
-                  Коммуникации, календарь, документы, события и исключения работают поверх общей цепочки,
-                  а не как отдельные несвязанные инструменты.
+                  Коммуникации, календарь, документы, события и исключения работают поверх общей
+                  цепочки, а не как отдельные несвязанные инструменты.
                 </p>
               </div>
             </div>
@@ -429,12 +482,27 @@ export function InvestorBriefPageClient() {
             />
             <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {[
-                ['Разные роли', 'Каждый участник работает в своём контуре, но передаёт проверяемый факт следующему.'],
-                ['Разные системы', 'Объекты связываются едиными идентификаторами и общей историей изменений.'],
-                ['Разные состояния', 'План, согласование и фактическое исполнение не подменяют друг друга.'],
-                ['Разные исключения', 'Просрочка, дефект или изменение возвращаются в управляемый процесс.'],
+                [
+                  'Разные роли',
+                  'Каждый участник работает в своём контуре, но передаёт проверяемый факт следующему.',
+                ],
+                [
+                  'Разные системы',
+                  'Объекты связываются едиными идентификаторами и общей историей изменений.',
+                ],
+                [
+                  'Разные состояния',
+                  'План, согласование и фактическое исполнение не подменяют друг друга.',
+                ],
+                [
+                  'Разные исключения',
+                  'Просрочка, дефект или изменение возвращаются в управляемый процесс.',
+                ],
               ].map(([title, text]) => (
-                <article key={title} className="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <article
+                  key={title}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm"
+                >
                   <p className="text-base font-semibold text-slate-950">{title}</p>
                   <p className="mt-3 text-sm leading-6 text-slate-600">{text}</p>
                 </article>
@@ -452,7 +520,10 @@ export function InvestorBriefPageClient() {
             />
             <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {businessValue.map(({ icon: Icon, title, text }) => (
-                <article key={title} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <article
+                  key={title}
+                  className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
@@ -464,7 +535,10 @@ export function InvestorBriefPageClient() {
           </div>
         </section>
 
-        <section id="platform" className="scroll-mt-24 border-b border-slate-200 bg-white py-16 sm:py-24">
+        <section
+          id="platform"
+          className="scroll-mt-24 border-b border-slate-200 bg-white py-16 sm:py-24"
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="КОМУ ПРЕДНАЗНАЧЕНА ПЛАТФОРМА"
@@ -473,7 +547,10 @@ export function InvestorBriefPageClient() {
             />
             <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {roles.map(({ icon: Icon, name, key, text }) => (
-                <article key={key} className="rounded-xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                <article
+                  key={key}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-6 shadow-sm"
+                >
                   <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
@@ -488,8 +565,12 @@ export function InvestorBriefPageClient() {
 
             <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-200 px-5 py-4 sm:px-6">
-                <p className="text-sm font-semibold text-slate-950">Пять сквозных контуров Platform Core</p>
-                <p className="mt-1 text-xs text-slate-500">Каноническая продуктовая модель текущего ядра Syntha.</p>
+                <p className="text-sm font-semibold text-slate-950">
+                  Пять сквозных контуров Platform Core
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Каноническая продуктовая модель текущего ядра Syntha.
+                </p>
               </div>
               <div className="divide-y divide-slate-100">
                 {pillars.map(([index, title, text]) => (
@@ -507,7 +588,10 @@ export function InvestorBriefPageClient() {
           </div>
         </section>
 
-        <section id="process" className="scroll-mt-24 border-b border-slate-200 bg-slate-50 py-16 sm:py-24">
+        <section
+          id="process"
+          className="scroll-mt-24 border-b border-slate-200 bg-slate-50 py-16 sm:py-24"
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="СКВОЗНОЙ ПРОЦЕСС"
@@ -516,7 +600,10 @@ export function InvestorBriefPageClient() {
             />
             <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
               {journey.map(({ icon: Icon, title, text }, index) => (
-                <article key={title} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <article
+                  key={title}
+                  className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                >
                   <div className="flex items-center justify-between">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
                       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -537,7 +624,10 @@ export function InvestorBriefPageClient() {
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {operations.map(({ icon: Icon, title, text }) => (
-                  <article key={title} className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <article
+                    key={title}
+                    className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+                  >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
@@ -562,13 +652,16 @@ export function InvestorBriefPageClient() {
                 Почему Syntha может масштабироваться как единая операционная платформа
               </h2>
               <p className="mt-4 text-base leading-7 text-slate-300 sm:text-lg">
-                Это описание продуктовой архитектуры, а не оценка рынка, стоимости компании или обещание
-                финансового результата.
+                Это описание продуктовой архитектуры, а не оценка рынка, стоимости компании или
+                обещание финансового результата.
               </p>
             </div>
             <div className="mt-10 grid gap-4 md:grid-cols-2">
               {platformLogic.map(({ icon: Icon, title, text }) => (
-                <article key={title} className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                <article
+                  key={title}
+                  className="rounded-xl border border-slate-800 bg-slate-900 p-6"
+                >
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-950 text-sky-300">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
@@ -580,7 +673,10 @@ export function InvestorBriefPageClient() {
           </div>
         </section>
 
-        <section id="architecture" className="scroll-mt-24 border-b border-slate-200 bg-white py-16 sm:py-24">
+        <section
+          id="architecture"
+          className="scroll-mt-24 border-b border-slate-200 bg-white py-16 sm:py-24"
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="ТЕХНОЛОГИЧЕСКАЯ ОСНОВА"
@@ -605,27 +701,31 @@ export function InvestorBriefPageClient() {
               <div className="space-y-4">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
                   <BrainCircuit className="h-6 w-6 text-sky-700" aria-hidden="true" />
-                  <h3 className="mt-4 text-lg font-semibold text-slate-950">AI — прикладной слой над данными</h3>
+                  <h3 className="mt-4 text-lg font-semibold text-slate-950">
+                    AI — прикладной слой над данными
+                  </h3>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
                     В архитектуре предусмотрены языковые модели, маршрутизация запросов, embeddings,
-                    визуальный поиск, агенты и обратная связь. Источником истины остаются доменные данные и
-                    факты процесса.
+                    визуальный поиск, агенты и обратная связь. Источником истины остаются доменные
+                    данные и факты процесса.
                   </p>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
                   <LockKeyhole className="h-6 w-6 text-sky-700" aria-hidden="true" />
                   <h3 className="mt-4 text-lg font-semibold text-slate-950">Организации и роли</h3>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Данные разделяются по организациям; доступ строится через JWT и RBAC — ролевую модель
-                    прав.
+                    Данные разделяются по организациям; доступ строится через JWT и RBAC — ролевую
+                    модель прав.
                   </p>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
                   <Database className="h-6 w-6 text-sky-700" aria-hidden="true" />
-                  <h3 className="mt-4 text-lg font-semibold text-slate-950">Единая доменная модель</h3>
+                  <h3 className="mt-4 text-lg font-semibold text-slate-950">
+                    Единая доменная модель
+                  </h3>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Интеграции расширяют платформу через API, не создавая параллельный источник истины для
-                    ключевых объектов процесса.
+                    Интеграции расширяют платформу через API, не создавая параллельный источник
+                    истины для ключевых объектов процесса.
                   </p>
                 </div>
               </div>
@@ -633,7 +733,10 @@ export function InvestorBriefPageClient() {
           </div>
         </section>
 
-        <section id="status" className="scroll-mt-24 border-b border-slate-200 bg-slate-50 py-16 sm:py-24">
+        <section
+          id="status"
+          className="scroll-mt-24 border-b border-slate-200 bg-slate-50 py-16 sm:py-24"
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="ТЕКУЩАЯ СТЕПЕНЬ ГОТОВНОСТИ"
@@ -646,7 +749,9 @@ export function InvestorBriefPageClient() {
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   Реализовано
                 </div>
-                <h3 className="mt-5 text-lg font-semibold text-slate-950">Существенное ядро уже в коде</h3>
+                <h3 className="mt-5 text-lg font-semibold text-slate-950">
+                  Существенное ядро уже в коде
+                </h3>
                 <StatusList items={implemented} tone="done" />
               </article>
 
@@ -670,14 +775,14 @@ export function InvestorBriefPageClient() {
                   Бизнес-эффект публикуется только после проверки
                 </h3>
                 <p className="mt-4 text-sm leading-6 text-slate-600">
-                  На странице намеренно нет неподтверждённых размеров рынка, ROI, выручки, числа клиентов,
-                  сроков внедрения или процентов эффективности. Такие показатели должны появляться только
-                  после отдельной верификации.
+                  На странице намеренно нет неподтверждённых размеров рынка, ROI, выручки, числа
+                  клиентов, сроков внедрения или процентов эффективности. Такие показатели должны
+                  появляться только после отдельной верификации.
                 </p>
                 <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs leading-5 text-slate-600">
-                    Полный межролевой сценарий пока проходит сквозную квалификацию, поэтому презентация не
-                    называет весь контур окончательно промышленно подтверждённым.
+                    Полный межролевой сценарий пока проходит сквозную квалификацию, поэтому
+                    презентация не называет весь контур окончательно промышленно подтверждённым.
                   </p>
                 </div>
               </article>
@@ -689,13 +794,15 @@ export function InvestorBriefPageClient() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-8 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 p-6 text-white shadow-xl shadow-slate-200/50 sm:p-10 lg:grid-cols-[1fr_320px] lg:items-center lg:p-12">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-400">QR · ПУБЛИЧНАЯ ССЫЛКА</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-400">
+                  QR · ПУБЛИЧНАЯ ССЫЛКА
+                </p>
                 <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
                   Один адрес для встречи, презентации и следующего разговора
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
-                  QR формируется внутри платформы из постоянного адреса страницы. Метки аналитики можно
-                  менять отдельно, не меняя сам QR-код.
+                  QR формируется внутри платформы из постоянного адреса страницы. Метки аналитики
+                  можно менять отдельно, не меняя сам QR-код.
                 </p>
                 {canonicalUrl ? (
                   <div className="mt-6 max-w-2xl rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -773,7 +880,8 @@ export function InvestorBriefPageClient() {
             <p className="text-sm font-semibold text-slate-950">Syntha · Fashion OS</p>
             <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">
               Публичный обзор основан на текущей архитектуре и внутреннем аудите Syntha. Финансовые
-              показатели и оценки рынка публикуются только после отдельной проверки источников и расчётов.
+              показатели и оценки рынка публикуются только после отдельной проверки источников и
+              расчётов.
             </p>
           </div>
           <Link
