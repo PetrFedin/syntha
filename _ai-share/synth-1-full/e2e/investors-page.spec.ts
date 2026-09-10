@@ -18,12 +18,20 @@ test.describe('Syntha public investor brief', () => {
     await expect(page.getByText('Golden path: от артикула до закрытия')).toBeVisible();
     await expect(page.getByText('Подтверждено в source')).toBeVisible();
 
-    const platformCta = page.getByRole('link', { name: /Открыть Platform Core|Посмотреть Platform Core/ }).first();
+    const platformCta = page
+      .getByRole('link', { name: /Открыть Platform Core|Посмотреть Platform Core/ })
+      .first();
     await expect(platformCta).toHaveAttribute('href', '/platform');
 
     await expect(page.getByText('Canonical URL')).toBeVisible();
     await expect(page.getByText('Syntha / investors')).toBeVisible();
-    await expect(page.locator('svg').filter({ has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }) })).toBeVisible();
+    await expect(
+      page.locator('svg').filter({
+        has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }),
+      })
+    ).toBeVisible();
+
+    await page.screenshot({ path: 'test-results/investors-desktop.png', fullPage: true });
   });
 
   test('fits the QR-first mobile viewport without horizontal overflow', async ({ page }) => {
@@ -33,5 +41,7 @@ test.describe('Syntha public investor brief', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 60_000 });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
+
+    await page.screenshot({ path: 'test-results/investors-mobile.png', fullPage: true });
   });
 });
