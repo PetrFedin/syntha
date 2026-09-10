@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/investors-prettier-capture.yml'
 
+permissions:
+  contents: write
+
 jobs:
   format-capture:
     runs-on: ubuntu-latest
@@ -14,6 +17,9 @@ jobs:
         working-directory: _ai-share/synth-1-full
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/10-investor-product-page
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -22,11 +28,15 @@ jobs:
       - run: npm ci
       - name: Apply repository Prettier
         run: npx prettier --write src/app/investors/opengraph-image.tsx src/components/investors/InvestorBriefPageClient.tsx
-      - uses: actions/upload-artifact@v4
-        with:
-          name: investors-prettier-output
-          path: |
-            _ai-share/synth-1-full/src/app/investors/opengraph-image.tsx
-            _ai-share/synth-1-full/src/components/investors/InvestorBriefPageClient.tsx
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit canonical formatting
+        working-directory: .
+        run: |
+          if git diff --quiet -- _ai-share/synth-1-full/src/app/investors/opengraph-image.tsx _ai-share/synth-1-full/src/components/investors/InvestorBriefPageClient.tsx; then
+            echo "Already formatted"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _ai-share/synth-1-full/src/app/investors/opengraph-image.tsx _ai-share/synth-1-full/src/components/investors/InvestorBriefPageClient.tsx
+          git commit -m "style(investors): apply canonical Prettier formatting"
+          git push origin HEAD:agent/10-investor-product-page
