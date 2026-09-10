@@ -58,3 +58,25 @@ for (const { path, name } of SMOKE_ROUTES) {
     await waitForSmokeShell(page);
   });
 }
+
+test('smoke: investor brief keeps the public QR and Platform Core contract', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 393, height: 852 });
+  await openSmokeRoute(page, '/investors');
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'От артикула до закрытия заказа — одна операционная среда fashion-бизнеса',
+    })
+  ).toBeVisible({ timeout: 90_000 });
+
+  const platformCta = page
+    .getByRole('link', { name: /Открыть Platform Core|Посмотреть Platform Core/ })
+    .first();
+  await expect(platformCta).toHaveAttribute('href', '/platform');
+  await expect(page.getByText('Canonical URL')).toBeVisible();
+  await expect(page.getByTitle('QR-код публичной страницы Syntha')).toBeVisible();
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
