@@ -1,0 +1,40 @@
+name: runtime dependency audit capture
+
+on:
+  push:
+    branches: [agent/13-runtime-dependency-audit]
+    paths:
+      - '.github/workflows/runtime-dependency-audit-capture.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: _ai-share/synth-1-full
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+          cache: npm
+          cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - name: Capture production-only npm audit
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > runtime-audit.json
+          STATUS=$?
+          set -e
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('runtime-audit.json', 'utf8'));
+          console.log(JSON.stringify(data.metadata?.vulnerabilities ?? {}, null, 2));
+          NODE
+          echo "audit_exit_code=$STATUS" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-dependency-audit
+          path: _ai-share/synth-1-full/runtime-audit.json
+          if-no-files-found: error
+          retention-days: 1
