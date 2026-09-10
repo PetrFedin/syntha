@@ -1,0 +1,32 @@
+name: investors prettier capture
+
+on:
+  push:
+    branches: [agent/10-investor-product-page]
+    paths:
+      - '.github/workflows/investors-prettier-capture.yml'
+
+jobs:
+  format-capture:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: _ai-share/synth-1-full
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - run: npm ci
+      - name: Apply repository Prettier
+        run: npx prettier --write src/app/investors/opengraph-image.tsx src/components/investors/InvestorBriefPageClient.tsx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: investors-prettier-output
+          path: |
+            _ai-share/synth-1-full/src/app/investors/opengraph-image.tsx
+            _ai-share/synth-1-full/src/components/investors/InvestorBriefPageClient.tsx
+          if-no-files-found: error
+          retention-days: 1
