@@ -14,17 +14,17 @@ test.describe('Syntha public investor brief', () => {
       })
     ).toBeVisible({ timeout: 60_000 });
 
-    await expect(page.getByText('4 роли × 5 столпов — один Platform Core')).toBeVisible();
-    await expect(page.getByText('Golden path: от артикула до закрытия')).toBeVisible();
-    await expect(page.getByText('Подтверждено в source')).toBeVisible();
+    await expect(page.getByText('Четыре стороны одной fashion-цепочки')).toBeVisible();
+    await expect(page.getByText('От артикула до закрытия — один маршрут данных и решений')).toBeVisible();
+    await expect(page.getByText('Реализовано', { exact: true })).toBeVisible();
 
     const platformCta = page
-      .getByRole('link', { name: /Открыть Platform Core|Посмотреть Platform Core/ })
+      .getByRole('link', { name: /Открыть платформу|Посмотреть платформу/ })
       .first();
     await expect(platformCta).toHaveAttribute('href', '/platform');
 
-    await expect(page.getByText('Canonical URL', { exact: true })).toBeVisible();
-    await expect(page.getByText('Syntha / investors')).toBeVisible();
+    await expect(page.getByTestId('investors-canonical-url')).toBeVisible();
+    await expect(page.getByText('Syntha · Fashion OS').last()).toBeVisible();
     await expect(
       page.locator('svg').filter({
         has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }),
