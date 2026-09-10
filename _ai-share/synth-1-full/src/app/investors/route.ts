@@ -1,6 +1,4 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { QRCodeSVG } from 'qrcode.react';
+import QRCode from 'qrcode';
 import renderer from '@/lib/investors/investor-brief-html.cjs';
 import {
   resolveCanonicalInvestorUrl,
@@ -34,17 +32,12 @@ export async function GET(request: Request) {
     resolveCanonicalInvestorUrl(process.env.NEXT_PUBLIC_INVESTORS_URL, runtimeOrigin) ??
     `${runtimeOrigin}/investors`;
   const contactUrl = resolveInvestorContactUrl(process.env.NEXT_PUBLIC_INVESTOR_CONTACT_URL) ?? '';
-  const qrSvg = renderToStaticMarkup(
-    createElement(QRCodeSVG, {
-      value: canonicalUrl,
-      size: 204,
-      level: 'Q',
-      bgColor: '#FFFFFF',
-      fgColor: '#0F172A',
-      marginSize: 4,
-      title: 'QR-код публичной страницы Syntha',
-    })
-  );
+  const qrSvg = await QRCode.toString(canonicalUrl, {
+    type: 'svg',
+    errorCorrectionLevel: 'Q',
+    margin: 4,
+    color: { dark: '#0F172A', light: '#FFFFFF' },
+  });
   const html = renderInvestorBriefHtml({
     canonicalUrl,
     platformHref: '/platform',
