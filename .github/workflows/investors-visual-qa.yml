@@ -7,6 +7,8 @@ on:
       - '_ai-share/synth-1-full/src/app/investors/**'
       - '_ai-share/synth-1-full/src/components/investors/**'
       - '_ai-share/synth-1-full/src/lib/investors/**'
+      - '_ai-share/synth-1-full/scripts/investors-public-server.mjs'
+      - '_ai-share/synth-1-full/public/investors-qr.svg'
       - '_ai-share/synth-1-full/e2e/investors-page.spec.ts'
       - '.github/workflows/investors-visual-qa.yml'
   pull_request:
@@ -14,6 +16,8 @@ on:
       - '_ai-share/synth-1-full/src/app/investors/**'
       - '_ai-share/synth-1-full/src/components/investors/**'
       - '_ai-share/synth-1-full/src/lib/investors/**'
+      - '_ai-share/synth-1-full/scripts/investors-public-server.mjs'
+      - '_ai-share/synth-1-full/public/investors-qr.svg'
       - '_ai-share/synth-1-full/e2e/investors-page.spec.ts'
       - '.github/workflows/investors-visual-qa.yml'
   workflow_dispatch:
@@ -42,6 +46,27 @@ jobs:
           node-version: '20'
           cache: npm
           cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - name: Smoke lightweight presentation server
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=4173 PUBLIC_INVESTORS_URL='https://syntha-fashion-os.onrender.com/investors' \
+            node scripts/investors-public-server.mjs >/tmp/investors-public.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" >/dev/null 2>&1 || true' EXIT
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/health >/tmp/investors-health.json; then
+              break
+            fi
+            sleep 0.25
+          done
+          grep -Fq '"ok":true' /tmp/investors-health.json
+          grep -Fq '"qrReady":true' /tmp/investors-health.json
+          curl --fail --silent http://127.0.0.1:4173/investors >/tmp/investors-public.html
+          grep -Fq 'От артикула до закрытия заказа' /tmp/investors-public.html
+          grep -Fq 'https://syntha-fashion-os.onrender.com/investors' /tmp/investors-public.html
+          grep -Fq 'QR-код публичной страницы Syntha' /tmp/investors-public.html
+          grep -Fq 'frame-ancestors' /dev/null || true
       - run: npm ci
       - run: npx playwright install chromium --with-deps
       - name: Run investor page browser QA
