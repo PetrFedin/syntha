@@ -7,9 +7,27 @@ describe('dev-bootstrap-flags', () => {
     process.env = { ...env };
   });
 
-  it('never skips in production even when SYNTH_SKIP_ENTERPRISE_BOOTSTRAP=1', () => {
+  it('never skips in production from the legacy dev flag alone', () => {
     process.env.NODE_ENV = 'production';
     process.env.SYNTH_SKIP_ENTERPRISE_BOOTSTRAP = '1';
+    delete process.env.SYNTH_PUBLIC_PRESENTATION_ONLY;
+    delete process.env.E2E;
+    delete process.env.NEXT_PUBLIC_E2E;
+    expect(shouldSkipEnterpriseBootstrap()).toBe(false);
+  });
+
+  it('skips in production for an explicit public presentation-only host', () => {
+    process.env.NODE_ENV = 'production';
+    process.env.SYNTH_PUBLIC_PRESENTATION_ONLY = '1';
+    delete process.env.E2E;
+    delete process.env.NEXT_PUBLIC_E2E;
+    expect(shouldSkipEnterpriseBootstrap()).toBe(true);
+  });
+
+  it('does not skip in production when presentation-only is disabled', () => {
+    process.env.NODE_ENV = 'production';
+    process.env.SYNTH_PUBLIC_PRESENTATION_ONLY = '0';
+    delete process.env.SYNTH_SKIP_ENTERPRISE_BOOTSTRAP;
     delete process.env.E2E;
     delete process.env.NEXT_PUBLIC_E2E;
     expect(shouldSkipEnterpriseBootstrap()).toBe(false);
