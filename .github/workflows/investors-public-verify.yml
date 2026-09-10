@@ -9,14 +9,17 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - name: Verify public investors endpoint
         shell: bash
         run: |
           set -euo pipefail
           URL='https://syntha-investors.onrender.com/investors'
-          FINAL_URL=$(curl --fail --silent --show-error --location --max-time 90 \
-            --retry 3 --retry-delay 5 \
+          echo 'DNS:'
+          getent ahostsv4 syntha-investors.onrender.com | head -n 3 || true
+          FINAL_URL=$(curl --fail --silent --show-error --location \
+            --connect-timeout 10 --max-time 30 \
             -o /tmp/investors.html \
             -w '%{url_effective}' "$URL")
           test "$FINAL_URL" = "$URL"
