@@ -20,7 +20,9 @@ export default function OpenGraphImage() {
           fontFamily: 'Arial, sans-serif',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <div
               style={{
@@ -37,7 +39,9 @@ export default function OpenGraphImage() {
             >
               S
             </div>
-            <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.03em' }}>SYNTHA</div>
+            <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.03em' }}>
+              SYNTHA
+            </div>
           </div>
           <div
             style={{
@@ -55,7 +59,14 @@ export default function OpenGraphImage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 1020 }}>
-          <div style={{ color: '#38bdf8', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>
+          <div
+            style={{
+              color: '#38bdf8',
+              fontSize: 20,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+            }}
+          >
             ЕДИНАЯ ОПЕРАЦИОННАЯ СРЕДА
           </div>
           <div
@@ -69,12 +80,22 @@ export default function OpenGraphImage() {
           >
             От артикула до закрытия заказа
           </div>
-          <div style={{ marginTop: 26, color: '#cbd5e1', fontSize: 27, lineHeight: 1.35 }}>
+          <div
+            style={{ marginTop: 26, color: '#cbd5e1', fontSize: 27, lineHeight: 1.35 }}
+          >
             Бренд · Магазин · Производитель · Поставщик — в одном сквозном fashion-процессе
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, color: '#94a3b8', fontSize: 18 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 18,
+            color: '#94a3b8',
+            fontSize: 18,
+          }}
+        >
           <span>Разработка</span>
           <span>→</span>
           <span>Коллекция</span>
