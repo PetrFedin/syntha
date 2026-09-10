@@ -71,10 +71,10 @@ test('smoke: investor brief keeps the public QR and Platform Core contract', asy
   ).toBeVisible({ timeout: 90_000 });
 
   const platformCta = page
-    .getByRole('link', { name: /Открыть Platform Core|Посмотреть Platform Core/ })
+    .getByRole('link', { name: /Открыть платформу|Посмотреть платформу/ })
     .first();
   await expect(platformCta).toHaveAttribute('href', '/platform');
-  await expect(page.getByText('Canonical URL')).toBeVisible();
+  await expect(page.getByTestId('investors-canonical-url')).toBeVisible();
   await expect(
     page.locator('svg').filter({
       has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }),
