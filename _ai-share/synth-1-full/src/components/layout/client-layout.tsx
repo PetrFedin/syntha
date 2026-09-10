@@ -49,13 +49,13 @@ export default function ClientLayout({
           <div className="relative flex min-h-screen flex-col">
             {!isInvestorBrief ? <OfflineBanner /> : null}
             {uiStateChrome ? <GlobalPodcastPlayer /> : null}
-            {/* Core: hub — минимальный header; кабинеты — свой chrome, без B2C nav. Investor brief — собственный presentation chrome. */}
-            {platformCore ? (
+            {/* Investor brief owns its presentation chrome even when Platform Core mode is enabled. */}
+            {isInvestorBrief ? null : platformCore ? (
               <>
                 {!isCabinet ? <CoreModeHeader /> : null}
                 <PlatformCoreBootstrapBanner />
               </>
-            ) : isInvestorBrief ? null : (
+            ) : (
               <Header />
             )}
             {/* Иначе fixed z-[100] перекрывает собственный сайдбар кабинета (бренд z-30) и «съедает» клики слева. */}
