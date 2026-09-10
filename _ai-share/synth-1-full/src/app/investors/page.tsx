@@ -22,7 +22,7 @@ export function generateMetadata(): Metadata {
       siteName: 'Syntha',
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description,
     },
