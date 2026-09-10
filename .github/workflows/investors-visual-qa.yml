@@ -1,0 +1,58 @@
+name: investors visual QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '_ai-share/synth-1-full/src/app/investors/**'
+      - '_ai-share/synth-1-full/src/components/investors/**'
+      - '_ai-share/synth-1-full/src/lib/investors/**'
+      - '_ai-share/synth-1-full/e2e/investors-page.spec.ts'
+      - '.github/workflows/investors-visual-qa.yml'
+  pull_request:
+    paths:
+      - '_ai-share/synth-1-full/src/app/investors/**'
+      - '_ai-share/synth-1-full/src/components/investors/**'
+      - '_ai-share/synth-1-full/src/lib/investors/**'
+      - '_ai-share/synth-1-full/e2e/investors-page.spec.ts'
+      - '.github/workflows/investors-visual-qa.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: investors-visual-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  investors-visual-qa:
+    name: Investor page E2E + screenshots
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_USE_B2C_SHOP_API: 'true'
+      NEXT_PUBLIC_DISABLE_FONTS: '1'
+      SYNTH_SKIP_ENTERPRISE_BOOTSTRAP: '1'
+    defaults:
+      run:
+        working-directory: _ai-share/synth-1-full
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - run: npm ci
+      - run: npx playwright install chromium --with-deps
+      - name: Run investor page browser QA
+        run: npx playwright test e2e/investors-page.spec.ts --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: investors-visual-qa
+          path: |
+            _ai-share/synth-1-full/test-results/investors-desktop.png
+            _ai-share/synth-1-full/test-results/investors-mobile.png
+            _ai-share/synth-1-full/playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
