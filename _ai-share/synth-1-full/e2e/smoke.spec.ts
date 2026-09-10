@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 /**
- * Light smoke (ci-fast): v1 wholesale spine routes only.
+ * Light smoke (ci-fast): v1 wholesale spine routes + public product brief.
  */
 
 const GOTO_OPTS = { waitUntil: 'domcontentloaded' as const, timeout: 60_000 };
@@ -43,6 +43,7 @@ async function waitForSmokeShell(page: Page): Promise<void> {
 }
 
 const SMOKE_ROUTES = [
+  { path: '/investors', name: 'Public investor product brief' },
   { path: '/shop/b2b/matrix?collection=SS27', name: 'Shop B2B matrix' },
   { path: '/shop/b2b/showroom?collection=SS27', name: 'Shop B2B showroom' },
   { path: '/shop/b2b/tracking?collection=SS27', name: 'Shop B2B tracking' },
@@ -57,3 +58,29 @@ for (const { path, name } of SMOKE_ROUTES) {
     await waitForSmokeShell(page);
   });
 }
+
+test('smoke: investor brief keeps the public QR and Platform Core contract', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 393, height: 852 });
+  await openSmokeRoute(page, '/investors');
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'От артикула до закрытия заказа — одна операционная среда fashion-бизнеса',
+    })
+  ).toBeVisible({ timeout: 90_000 });
+
+  const platformCta = page
+    .getByRole('link', { name: /Открыть платформу|Посмотреть платформу/ })
+    .first();
+  await expect(platformCta).toHaveAttribute('href', '/platform');
+  await expect(page.getByTestId('investors-canonical-url')).toBeVisible();
+  await expect(
+    page.locator('svg').filter({
+      has: page.locator('title', { hasText: 'QR-код публичной страницы Syntha' }),
+    })
+  ).toBeVisible();
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});

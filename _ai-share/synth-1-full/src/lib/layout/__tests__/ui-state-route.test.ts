@@ -1,8 +1,10 @@
 import { shouldMountUIStateProvider } from '@/lib/layout/ui-state-route';
 
 describe('shouldMountUIStateProvider', () => {
-  it('mounts on public and brand routes', () => {
+  it('mounts on public commerce and brand routes but skips the investor brief', () => {
     expect(shouldMountUIStateProvider('/')).toBe(true);
+    expect(shouldMountUIStateProvider('/investors')).toBe(false);
+    expect(shouldMountUIStateProvider('/investors/preview')).toBe(false);
     expect(shouldMountUIStateProvider('/brand/production')).toBe(true);
     expect(shouldMountUIStateProvider('/brand/settings')).toBe(true);
   });

@@ -1,7 +1,7 @@
 import { isRouteGuardPublicPath } from '@/lib/auth/route-guard-public-path';
 
 describe('isRouteGuardPublicPath', () => {
-  it('allows retail shell and legal pages', () => {
+  it('allows retail shell, product brief and legal pages', () => {
     expect(isRouteGuardPublicPath('/')).toBe(true);
     expect(isRouteGuardPublicPath('/catalog')).toBe(false);
     expect(isRouteGuardPublicPath('/terms')).toBe(true);
@@ -10,6 +10,8 @@ describe('isRouteGuardPublicPath', () => {
     expect(isRouteGuardPublicPath('/auth/callback')).toBe(true);
     expect(isRouteGuardPublicPath('/b/demo')).toBe(true);
     expect(isRouteGuardPublicPath('/platform')).toBe(true);
+    expect(isRouteGuardPublicPath('/investors')).toBe(true);
+    expect(isRouteGuardPublicPath('/investors/preview')).toBe(true);
     expect(isRouteGuardPublicPath('/o/order-1')).toBe(true);
     expect(isRouteGuardPublicPath('/s/share')).toBe(true);
   });
