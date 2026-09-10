@@ -1,0 +1,60 @@
+name: security transitive critical upgrade
+
+on:
+  push:
+    branches: [agent/13-runtime-dependency-audit]
+    paths:
+      - '.github/workflows/security-transitive-critical-upgrade.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-critical-transitives:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: _ai-share/synth-1-full
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/13-runtime-dependency-audit
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+      - name: Refresh only vulnerable transitive packages within parent ranges
+        env:
+          HUSKY: '0'
+        run: npm update handlebars protobufjs websocket-driver --package-lock-only --ignore-scripts
+      - name: Assert production critical count is zero
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > /tmp/runtime-audit-after-transitives.json
+          STATUS=$?
+          set -e
+          node - <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('/tmp/runtime-audit-after-transitives.json','utf8'));
+          const meta=data.metadata?.vulnerabilities ?? {};
+          console.log('runtime audit after critical transitives:', JSON.stringify(meta));
+          for (const name of ['handlebars','protobufjs','websocket-driver']) {
+            const finding=data.vulnerabilities?.[name];
+            console.log(name, finding ? `${finding.severity} ${finding.range}` : 'clear');
+          }
+          if ((meta.critical ?? 0) !== 0) process.exit(1);
+          NODE
+          echo "npm_audit_exit_after_transitives=$STATUS" >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit lockfile refresh
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _ai-share/synth-1-full/package-lock.json
+          if git diff --cached --quiet; then
+            echo 'No lockfile diff to commit'
+            exit 0
+          fi
+          git commit -m "fix(security): clear critical transitive advisories"
+          git push origin HEAD:agent/13-runtime-dependency-audit
