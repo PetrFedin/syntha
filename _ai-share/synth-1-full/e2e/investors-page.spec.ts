@@ -23,7 +23,7 @@ test.describe('Syntha public investor brief', () => {
       .first();
     await expect(platformCta).toHaveAttribute('href', '/platform');
 
-    await expect(page.getByText('Canonical URL')).toBeVisible();
+    await expect(page.getByText('Canonical URL', { exact: true })).toBeVisible();
     await expect(page.getByText('Syntha / investors')).toBeVisible();
     await expect(
       page.locator('svg').filter({
