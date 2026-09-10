@@ -19,6 +19,17 @@ jobs:
           node-version: '20.20.2'
           cache: npm
           cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - name: Install production dependency tree without lifecycle scripts
+        run: npm ci --omit=dev --ignore-scripts
+      - name: Trace critical dependency paths
+        shell: bash
+        run: |
+          set +e
+          for PACKAGE in next handlebars protobufjs websocket-driver sharp pdfjs-dist; do
+            echo "===== npm explain $PACKAGE ====="
+            npm explain "$PACKAGE"
+          done
+          set -e
       - name: Capture production-only npm audit
         shell: bash
         run: |
