@@ -61,12 +61,20 @@ function send(res, statusCode, body, contentType, extraHeaders = {}) {
     ...securityHeaders,
     ...extraHeaders,
   });
+  if (res.req?.method === 'HEAD') {
+    res.end();
+    return;
+  }
   res.end(body);
 }
 
 const server = createServer((req, res) => {
   const host = req.headers.host || 'localhost';
   const url = new URL(req.url || '/', `http://${host}`);
+
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return send(res, 405, 'Method Not Allowed', 'text/plain; charset=utf-8', { Allow: 'GET, HEAD' });
+  }
 
   if (url.pathname === '/health') {
     return send(
