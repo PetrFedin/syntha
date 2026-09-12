@@ -69,6 +69,12 @@ jobs:
           grep -Fq 'QR-код публичной страницы Syntha' /tmp/investors-public.html
           grep -Fiq 'x-frame-options: DENY' /tmp/investors-headers.txt
           grep -Fiq "content-security-policy: default-src 'self'" /tmp/investors-headers.txt
+          curl --fail --silent --head http://127.0.0.1:4173/health >/tmp/investors-head.txt
+          grep -Fiq 'HTTP/' /tmp/investors-head.txt
+          POST_STATUS=$(curl --silent --output /tmp/investors-post.txt --dump-header /tmp/investors-post-headers.txt \
+            --write-out '%{http_code}' --request POST http://127.0.0.1:4173/investors)
+          test "$POST_STATUS" = '405'
+          grep -Fiq 'allow: GET, HEAD' /tmp/investors-post-headers.txt
       - run: npm ci
       - run: npx playwright install chromium --with-deps
       - name: Run investor page browser QA
