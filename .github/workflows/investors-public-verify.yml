@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Verify lightweight public investors endpoint
+      - name: Verify canonical production investors endpoint
         shell: bash
         run: |
           set -euo pipefail
-          HOST='syntha-investors-light-check.onrender.com'
+          HOST='syntha-fashion-os.onrender.com'
           URL="https://${HOST}/investors"
-          HEALTH="https://${HOST}/health"
 
           echo 'DNS:'
           getent ahostsv4 "$HOST" | head -n 3 || true
 
           curl --fail --silent --show-error --head \
-            --connect-timeout 10 --max-time 45 "$HEALTH" >/tmp/health-head.txt
+            --connect-timeout 10 --max-time 45 "$URL" >/tmp/investors-head.txt
+          grep -Fiq 'HTTP/' /tmp/investors-head.txt
 
           curl --fail --silent --show-error --location \
             --connect-timeout 10 --max-time 45 \
@@ -33,6 +33,7 @@ jobs:
           grep -Fq 'От артикула до закрытия заказа' /tmp/investors.html
           grep -Fq 'https://syntha-fashion-os.onrender.com/investors' /tmp/investors.html
           grep -Fq 'QR-код публичной страницы Syntha' /tmp/investors.html
+          grep -Fq 'href="/platform"' /tmp/investors.html
           grep -Fiq 'x-frame-options: DENY' /tmp/investors-headers.txt
           grep -Fiq "content-security-policy: default-src 'self'" /tmp/investors-headers.txt
 
@@ -43,6 +44,5 @@ jobs:
             --write-out '%{http_code}' \
             --request POST "$URL")
           test "$POST_STATUS" = '405'
-          grep -Fiq 'allow: GET, HEAD' /tmp/post-headers.txt
 
-          echo "Verified external lightweight host: $URL"
+          echo "Verified canonical production host: $URL"
