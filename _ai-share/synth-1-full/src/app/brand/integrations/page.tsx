@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowUpRight, Network, Plug, ShieldCheck } from 'lucide-react';
 import { CabinetPageContent } from '@/components/layout/cabinet-page-content';
