@@ -104,11 +104,7 @@ function InventoryWorkspace() {
 
 export default function BrandInventoryPage() {
   return (
-    <CabinetPageContent
-      maxWidth="6xl"
-      className="space-y-6"
-      data-testid="brand-inventory-page"
-    >
+    <CabinetPageContent maxWidth="6xl" className="space-y-6" data-testid="brand-inventory-page">
       <PlatformCoreListChrome highlightRole="brand" pillarId="order_production">
         <Suspense fallback={null}>
           <InventoryWorkspace />

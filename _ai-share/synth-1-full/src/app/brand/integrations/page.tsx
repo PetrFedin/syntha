@@ -10,9 +10,18 @@ import { ROUTES } from '@/lib/routes';
 
 const PHASE_META = {
   1: { title: 'Операционный контур РФ', description: 'ERP, условия оплаты и закупочные сервисы.' },
-  2: { title: 'Оптовая коммерция', description: 'Совместная закупка, маржа, события и условия заказа.' },
-  3: { title: 'AI и контент', description: 'Прикладные AI-инструменты и формирование коммерческой селекции.' },
-  4: { title: 'Рабочее место байера', description: 'Мобильные и кабинетные сценарии для закупки и партнёров.' },
+  2: {
+    title: 'Оптовая коммерция',
+    description: 'Совместная закупка, маржа, события и условия заказа.',
+  },
+  3: {
+    title: 'AI и контент',
+    description: 'Прикладные AI-инструменты и формирование коммерческой селекции.',
+  },
+  4: {
+    title: 'Рабочее место байера',
+    description: 'Мобильные и кабинетные сценарии для закупки и партнёров.',
+  },
 } as const;
 
 const relatedLinks = [
@@ -44,17 +53,14 @@ export default function BrandIntegrationsPage() {
                 Интеграции
               </h1>
               <p className="text-text-secondary mt-2 max-w-3xl text-sm leading-6">
-                Единая карта внешних и межмодульных интеграций Syntha. Здесь показывается продуктовый
-                контракт и точки входа; статус фактического подключения не имитируется и должен
-                поступать только из runtime health конкретного коннектора.
+                Единая карта внешних и межмодульных интеграций Syntha. Здесь показывается
+                продуктовый контракт и точки входа; статус фактического подключения не имитируется и
+                должен поступать только из runtime health конкретного коннектора.
               </p>
             </div>
           </div>
           <Button asChild size="sm" className="shrink-0">
-            <Link
-              href={ROUTES.brand.b2bOrders}
-              data-testid="brand-integrations-b2b-registry-card"
-            >
+            <Link href={ROUTES.brand.b2bOrders} data-testid="brand-integrations-b2b-registry-card">
               Реестр B2B-заказов
               <ArrowUpRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" />
             </Link>
@@ -79,9 +85,12 @@ export default function BrandIntegrationsPage() {
         </Card>
         <Card className="border-border-subtle p-5 shadow-sm">
           <Plug className="text-accent-primary h-5 w-5" aria-hidden="true" />
-          <h2 className="text-text-primary mt-4 text-sm font-bold">{INTEGRATION_MODULES.length} capability entries</h2>
+          <h2 className="text-text-primary mt-4 text-sm font-bold">
+            {INTEGRATION_MODULES.length} capability entries
+          </h2>
           <p className="text-text-secondary mt-2 text-xs leading-5">
-            Модули сгруппированы по назначению, чтобы не смешивать ERP, commerce, AI и buyer tooling.
+            Модули сгруппированы по назначению, чтобы не смешивать ERP, commerce, AI и buyer
+            tooling.
           </p>
         </Card>
       </section>
