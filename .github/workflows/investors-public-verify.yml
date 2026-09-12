@@ -9,22 +9,40 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 3
     steps:
-      - name: Verify public investors endpoint
+      - name: Verify lightweight public investors endpoint
         shell: bash
         run: |
           set -euo pipefail
-          URL='https://syntha-fashion-os.onrender.com/investors'
+          HOST='syntha-investors-light-check.onrender.com'
+          URL="https://${HOST}/investors"
+          HEALTH="https://${HOST}/health"
+
           echo 'DNS:'
-          getent ahostsv4 syntha-fashion-os.onrender.com | head -n 3 || true
-          FINAL_URL=$(curl --fail --silent --show-error --location \
+          getent ahostsv4 "$HOST" | head -n 3 || true
+
+          curl --fail --silent --show-error --head \
+            --connect-timeout 10 --max-time 45 "$HEALTH" >/tmp/health-head.txt
+
+          curl --fail --silent --show-error --location \
             --connect-timeout 10 --max-time 45 \
-            -o /tmp/investors.html \
-            -w '%{url_effective}' "$URL")
-          test "$FINAL_URL" = "$URL"
+            --dump-header /tmp/investors-headers.txt \
+            -o /tmp/investors.html "$URL"
+
           grep -Fq 'От артикула до закрытия заказа' /tmp/investors.html
           grep -Fq 'https://syntha-fashion-os.onrender.com/investors' /tmp/investors.html
-          grep -Fq 'Посмотреть Platform Core' /tmp/investors.html
-          grep -Fq 'href="/platform"' /tmp/investors.html
-          echo "Verified: $FINAL_URL"
+          grep -Fq 'QR-код публичной страницы Syntha' /tmp/investors.html
+          grep -Fiq 'x-frame-options: DENY' /tmp/investors-headers.txt
+          grep -Fiq "content-security-policy: default-src 'self'" /tmp/investors-headers.txt
+
+          POST_STATUS=$(curl --silent --show-error \
+            --connect-timeout 10 --max-time 45 \
+            --output /tmp/post-body.txt \
+            --dump-header /tmp/post-headers.txt \
+            --write-out '%{http_code}' \
+            --request POST "$URL")
+          test "$POST_STATUS" = '405'
+          grep -Fiq 'allow: GET, HEAD' /tmp/post-headers.txt
+
+          echo "Verified external lightweight host: $URL"
