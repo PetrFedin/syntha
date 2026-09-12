@@ -1,0 +1,42 @@
+name: qa baseline canonical formatting
+
+on:
+  push:
+    branches: [agent/12-unified-e2e-baseline]
+    paths:
+      - '.github/workflows/qa-baseline-prettier-capture.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: _ai-share/synth-1-full
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/12-unified-e2e-baseline
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+          cache: npm
+          cache-dependency-path: _ai-share/synth-1-full/package-lock.json
+      - run: npm ci
+      - name: Apply repository Prettier contract
+        run: npx prettier --write src/app/brand/integrations/page.tsx src/app/brand/inventory/page.tsx
+      - name: Commit canonical formatting
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _ai-share/synth-1-full/src/app/brand/integrations/page.tsx _ai-share/synth-1-full/src/app/brand/inventory/page.tsx
+          if git diff --cached --quiet; then
+            echo 'No formatting diff'
+            exit 0
+          fi
+          git commit -m "style(qa): apply canonical formatting"
+          git push origin HEAD:agent/12-unified-e2e-baseline
