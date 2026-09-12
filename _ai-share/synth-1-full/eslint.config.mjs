@@ -1,5 +1,7 @@
 import coreWebVitals from 'eslint-config-next/core-web-vitals';
 import typescript from 'eslint-config-next/typescript';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import tailwindPlugin from 'eslint-plugin-tailwindcss';
 
 export default [
@@ -21,6 +23,10 @@ export default [
   ...typescript,
   ...tailwindPlugin.configs['flat/recommended'],
   {
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+    },
     rules: {
       'tailwindcss/no-custom-classname': 'off',
       'tailwindcss/no-arbitrary-value': 'off',
