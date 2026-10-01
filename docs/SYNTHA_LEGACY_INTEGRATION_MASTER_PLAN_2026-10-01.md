@@ -225,3 +225,62 @@ Do not:
 10. SYNTHA-INT-09 Retirement/migration closure.
 
 **Implementation instruction:** every successful legacy capability should reduce long-term duplication, not increase it.
+
+## Additional wave — reproducible AI datasets and model evaluation
+
+### DVC evaluation-corpus versioning — ADOPT
+
+Reference: https://github.com/iterative/dvc
+
+Version large AI/RAG evaluation artefacts outside Git while keeping pointers/config in the repository.
+
+Use for:
+
+- image/reference sets;
+- extraction benchmark documents;
+- RAG corpora snapshots;
+- labelled fashion/product test sets;
+- migration comparison datasets.
+
+Every Promptfoo/Langfuse evaluation should be able to reference an exact corpus version.
+
+### MLflow experiment registry — ADAPT
+
+Reference: https://github.com/mlflow/mlflow
+
+Use for research experiments where prompt/model metrics alone are insufficient:
+
+- embedding-model comparisons;
+- classifier/extractor variants;
+- local vs hosted model experiments;
+- cost/latency/quality tradeoffs.
+
+Record code SHA + DVC dataset ID + configuration.
+
+MLflow is a research registry only; it cannot promote a capability to Synth-v2.
+
+### Evidently evaluation/drift reports — ADAPT
+
+Reference: https://github.com/evidentlyai/evidently
+
+Use where a model/extractor has measurable distributions:
+
+- attribute extraction quality;
+- classification label mix;
+- embedding retrieval metrics;
+- input-data drift over time.
+
+Drift alert means "review the capability", not "automatically retrain/replace production behavior".
+
+### Graduation rule extension
+
+A capability graduating to Synth-v2 must now carry:
+
+- DVC/evaluation dataset reference where data-heavy;
+- Promptfoo/Langfuse evidence;
+- MLflow run reference where applicable;
+- documented failure/drift thresholds;
+- explicit owner and rollback path.
+
+**Sequencing:** DVC first, then research registry/reporting; do not add MLflow/Evidently where Promptfoo alone already fully describes the experiment.
+
