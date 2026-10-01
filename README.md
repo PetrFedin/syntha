@@ -107,3 +107,11 @@ Copy `.env.example` to `.env`. Required: `SECRET_KEY`, `DATABASE_URL`.
 ## License
 
 Proprietary.
+
+## Planned integration roadmap
+
+Canonical implementation plan:
+
+- [docs/SYNTHA_LEGACY_INTEGRATION_MASTER_PLAN_2026-10-01.md](./docs/SYNTHA_LEGACY_INTEGRATION_MASTER_PLAN_2026-10-01.md)
+
+This file is a **planned implementation source**, not evidence that all listed capabilities are already live. Future full-roadmap implementation should cite this filename explicitly and follow its phases, authority boundaries, dependencies and acceptance gates.
