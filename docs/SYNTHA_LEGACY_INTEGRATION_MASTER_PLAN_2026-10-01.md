@@ -284,3 +284,89 @@ A capability graduating to Synth-v2 must now carry:
 
 **Sequencing:** DVC first, then research registry/reporting; do not add MLflow/Evidently where Promptfoo alone already fully describes the experiment.
 
+## Additional wave — RAG evaluation, prompt programming and AI red-team qualification
+
+Syntha is the right place for aggressive AI experimentation precisely because it is **not** the product authority. This wave makes those experiments measurable before anything can graduate to Synth-v2.
+
+### Ragas retrieval/RAG evaluation — ADOPT/ADAPT
+
+Reference: https://github.com/vibrantlabsai/ragas
+
+Use Ragas on versioned DVC corpora to evaluate retrieval and answer pipelines.
+
+Evaluation set should contain, where applicable:
+
+- question/task;
+- expected source documents;
+- acceptable answer facts;
+- required citation/source anchors;
+- known failure/abstention cases.
+
+Track dimensions such as retrieval relevance/coverage, groundedness/faithfulness and answer usefulness, but do not accept one aggregate score as sufficient for production promotion.
+
+Every run references:
+
+`code SHA + prompt/program version + model/provider + embedding/retriever version + DVC corpus/eval set`
+
+### DSPy program optimisation lab — ADAPT
+
+Reference: https://github.com/stanfordnlp/dspy
+
+Use DSPy only in the R&D contour to test whether declarative/optimised LM programs outperform manually maintained prompts for bounded tasks such as:
+
+- attribute extraction;
+- product classification;
+- document-to-structured-record conversion;
+- RAG synthesis.
+
+Optimised programs are artefacts that still pass the same Promptfoo/Ragas/domain evaluation gates.
+
+Do not allow automated prompt/program optimisation to modify production Synth-v2 behaviour directly.
+
+### Garak adversarial evaluation — ADOPT/CI FOR AI LAB
+
+Reference: https://github.com/NVIDIA/garak
+
+Run targeted LLM security/red-team probes against relevant Syntha AI surfaces before graduation:
+
+- prompt injection;
+- data leakage;
+- unsafe tool invocation;
+- system-prompt extraction;
+- hallucinated authority;
+- retrieval poisoning scenarios where applicable.
+
+Results become qualification evidence, not an automatic "secure/insecure" verdict.
+
+Tools exposed to agents should be mocked/sandboxed during hostile probes so an evaluation cannot mutate real business state.
+
+### AI Capability Graduation Scorecard — ADOPT
+
+Add a native, human-reviewed record for every AI capability proposed for Synth-v2:
+
+- capability/use case;
+- owner;
+- DVC dataset/eval version;
+- Promptfoo suite/result;
+- Ragas result where retrieval is involved;
+- Garak/security result where applicable;
+- MLflow/Langfuse references;
+- cost/latency;
+- known failure classes;
+- data sensitivity;
+- fallback/rollback;
+- proposed Synth-v2 authority boundary;
+- decision: EXPERIMENT / PILOT / GRADUATE / REJECT / RETIRE.
+
+This scorecard is the single promotion gate; no individual tool score can bypass it.
+
+### Additional acceptance
+
+- every RAG experiment is evaluated on a versioned corpus and test set;
+- DSPy optimisation is reproducible and compared to a baseline;
+- red-team tests cannot mutate authoritative systems;
+- graduation requires explicit human decision and Synth-v2 boundary;
+- failed/retired experiments remain visible for audit/learning.
+
+**Sequencing:** DVC/Promptfoo/Langfuse first -> Ragas -> DSPy experiments -> Garak qualification -> graduation scorecard decision.
+
