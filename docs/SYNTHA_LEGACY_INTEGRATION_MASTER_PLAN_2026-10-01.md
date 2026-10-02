@@ -370,3 +370,92 @@ This scorecard is the single promotion gate; no individual tool score can bypass
 
 **Sequencing:** DVC/Promptfoo/Langfuse first -> Ragas -> DSPy experiments -> Garak qualification -> graduation scorecard decision.
 
+## Additional wave — human ground truth and adjudicated AI evaluation
+
+This wave fills the main gap left after automated evals: reliable human-labelled truth for fashion/document AI experiments.
+
+### Label Studio annotation sidecar — ADOPT/ADAPT
+
+Reference: https://github.com/HumanSignal/label-studio
+
+Use Label Studio as a bounded annotation workspace for versioned Syntha R&D datasets.
+
+Candidate tasks:
+
+- product attribute labels;
+- category/classification;
+- material/colour/feature extraction truth;
+- image similarity/relevance judgments;
+- document field extraction;
+- RAG answer/source relevance;
+- AI output preference/error classification.
+
+Data flow:
+
+DVC dataset snapshot -> annotation task export -> Label Studio project -> reviewer/adjudication -> versioned annotation export -> DVC/evaluation corpus
+
+Label Studio must never connect directly to Synth-v2 production tables.
+
+### Annotation Schema Registry — ADOPT
+
+Keep label definitions/configurations in Git/Syntha with explicit versions:
+
+- label name;
+- definition;
+- examples/counterexamples;
+- allowed values;
+- annotation instructions;
+- schema version;
+- owner.
+
+This prevents evaluation drift caused by changing human definitions.
+
+### Reviewer Agreement and Adjudication — ADOPT
+
+For important benchmark sets, store:
+
+- independent annotators;
+- disagreement;
+- adjudicator;
+- final accepted label;
+- reason/category of ambiguity.
+
+A model should not be penalized as wrong where humans themselves cannot agree without recording that ambiguity.
+
+### Failure-driven Sampling Queue — ADOPT
+
+Generate new labeling candidates from:
+
+- Promptfoo failures;
+- Ragas weak retrieval/grounding cases;
+- Garak adversarial failures;
+- production-like synthetic edge cases;
+- high-disagreement model ensembles;
+- migration mismatches vs Synth-v2.
+
+Sampling creates annotation work only. It must not auto-retrain or auto-promote a model.
+
+### Golden Evaluation Set — ADOPT
+
+Maintain a small, highly reviewed frozen set separate from exploratory training/annotation data.
+
+Rules:
+
+- stable IDs;
+- immutable released versions;
+- no tuning directly against hidden/final labels;
+- documented coverage;
+- periodic deliberate version bump when product definitions change.
+
+### Additional acceptance
+
+- every benchmark result resolves to exact annotation/dataset/schema versions;
+- sensitive documents/images are only sent to an annotation deployment approved for that data;
+- reviewer disagreement is visible;
+- golden-set changes require explicit version/review;
+- no annotation-sidecar record becomes business/product authority.
+
+**Sequencing:** DVC + automated eval stack -> Label Studio -> adjudication -> golden set -> failure-driven active sampling.
+
+**Dependency note:** Label Studio is currently an actively maintained open-source project; pin an approved version and review deployment/privacy settings before using internal fashion/business data.
+
