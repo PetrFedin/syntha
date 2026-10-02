@@ -459,3 +459,73 @@ Rules:
 
 **Dependency note:** Label Studio is currently an actively maintained open-source project; pin an approved version and review deployment/privacy settings before using internal fashion/business data.
 
+## Additional integration wave — label-quality diagnostics and benchmark hygiene
+
+This wave protects the AI lab from promoting a model against a noisy or self-contradictory evaluation set.
+
+### Cleanlab label-quality diagnostics — ADAPT
+
+Reference:
+
+https://github.com/cleanlab/cleanlab
+
+Use Cleanlab selectively on suitable classification-style labelled datasets to flag:
+
+- likely label errors;
+- ambiguous/outlier samples;
+- suspicious class overlap;
+- examples whose labels conflict strongly with model/data evidence.
+
+Cleanlab output is a review queue, not an automatic relabeling authority.
+
+### Benchmark Hygiene Queue — ADOPT
+
+Every flagged evaluation item should support:
+
+- dataset/item ID;
+- label/schema version;
+- flag reason/source;
+- original annotator(s);
+- reviewer;
+- adjudication outcome;
+- keep/relabel/exclude decision;
+- reason.
+
+If an item is changed, create a new dataset/evaluation-set version.
+
+### Train / Eval Leakage Guard — ADOPT
+
+Maintain explicit membership manifests for:
+
+- training/tuning data;
+- exploratory validation;
+- golden evaluation;
+- red-team/adversarial set.
+
+Before a benchmark run, detect exact/hash/near-duplicate overlap where feasible.
+
+A result from a contaminated evaluation set must be marked invalid rather than quietly reported.
+
+### Evaluation Difficulty Bands — ADOPT
+
+Classify benchmark cases:
+
+- straightforward;
+- ambiguous;
+- adversarial;
+- missing-context / should-abstain.
+
+This prevents a single aggregate metric from hiding where a capability actually fails.
+
+### Additional acceptance
+
+- Cleanlab flags never auto-change ground truth;
+- every adjudicated label change bumps dataset/evaluation version;
+- benchmark manifests identify train/eval membership;
+- known leakage invalidates the affected score;
+- model graduation still requires the existing human Graduation Scorecard.
+
+**Sequencing:** Label Studio + annotation schema -> benchmark dataset -> Cleanlab review queue -> adjudication -> leakage guard -> revised golden set.
+
+**Dependency note:** Cleanlab is currently actively maintained and Apache-2.0 upstream; use only where its statistical assumptions fit the task.
+
