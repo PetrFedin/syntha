@@ -1,0 +1,92 @@
+.showroomDescription {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.showroomEditForm {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+
+.showroomEditForm label,
+.showroomInlineAction {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.showroomEditForm label > span,
+.lifecycleForm textarea + span {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.showroomEditForm input,
+.showroomEditForm textarea,
+.lifecycleForm textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.showroomEditForm textarea,
+.lifecycleForm textarea {
+  min-height: 96px;
+}
+
+.showroomEditForm input:focus,
+.showroomEditForm textarea:focus,
+.lifecycleForm textarea:focus {
+  outline: 2px solid rgb(215 255 84 / 45%);
+  outline-offset: 2px;
+}
+
+.showroomEditForm .button,
+.showroomInlineAction .button {
+  min-height: 44px;
+  justify-content: center;
+}
+
+.showroomSnapshot {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgb(215 255 84 / 26%);
+  border-radius: var(--radius-sm);
+  background: rgb(215 255 84 / 5%);
+}
+
+.showroomSnapshot h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.showroomSnapshot > p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 767px) {
+  .showroomInlineAction,
+  .showroomInlineAction .button,
+  .showroomEditForm .button {
+    width: 100%;
+  }
+}

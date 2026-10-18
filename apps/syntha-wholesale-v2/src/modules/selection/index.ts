@@ -1,0 +1,61 @@
+export {
+  SelectionDomainError,
+  addSelectionItem,
+  archiveSelection,
+  createSelection,
+  grantShowroomAccess,
+  markSelectionReady,
+  revokeShowroomAccess,
+  selectionId,
+  selectionItemId,
+  setSelectionBudget,
+  setSelectionSizeCurve,
+  showroomAccessGrantId,
+  type Selection,
+  type SelectionId,
+  type SelectionItem,
+  type SelectionItemId,
+  type SelectionStatus,
+  type ShowroomAccessGrant,
+  type ShowroomAccessGrantId,
+  type ShowroomAccessStatus,
+  type SizeCurveEntry,
+} from './domain/selection';
+export type {
+  SelectionAuditAction,
+  SelectionAuditRecord,
+  SelectionEventName,
+  SelectionOutboxEvent,
+  SelectionRepository,
+} from './application/selection-repository';
+export {
+  SelectionAccessRevoked,
+  SelectionAlreadyExists,
+  SelectionNotFound,
+  SelectionVersionConflict,
+  ShowroomAccessAlreadyExists,
+  ShowroomAccessNotFound,
+  ShowroomAccessVersionConflict,
+  ShowroomNotPublishedForBuyerAccess,
+  ShowroomUnavailableForBuyerAccess,
+  addSelectionItemUseCase,
+  archiveSelectionUseCase,
+  createSelectionUseCase,
+  getSelection,
+  grantShowroomAccessUseCase,
+  listBuyerSelections,
+  listBuyerShowroomAccess,
+  markSelectionReadyUseCase,
+  revokeShowroomAccessUseCase,
+  setSelectionBudgetUseCase,
+  setSelectionSizeCurveUseCase,
+  type SelectionClock,
+  type SelectionIdGenerator,
+} from './application/selection-workflows';
+export { InMemorySelectionRepository } from './infrastructure/in-memory-selection-repository';
+export { PostgresSelectionRepository } from './infrastructure/postgres-selection-repository';
+export { runSelectionMigrations, selectionMigrations } from './infrastructure/selection-migrations';
+export {
+  getSelectionRepository,
+  resetSelectionRuntime,
+} from './infrastructure/selection-runtime';
