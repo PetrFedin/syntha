@@ -1,0 +1,81 @@
+name: Syntha V2 Foundation
+
+on:
+  pull_request:
+    paths:
+      - 'apps/syntha-wholesale-v2/**'
+      - '.github/workflows/syntha-v2-architecture.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/syntha-wholesale-v2/**'
+      - '.github/workflows/syntha-v2-architecture.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: apps/syntha-wholesale-v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/syntha-wholesale-v2/package-lock.json
+      - name: Install V2 package from lock
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate V2 governance and architecture
+        run: npm run preflight
+      - name: Typecheck V2
+        id: typecheck
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck -- --pretty false 2>&1 | tee typecheck.log
+      - name: Upload typecheck diagnostics
+        if: failure() && steps.typecheck.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-typecheck
+          path: apps/syntha-wholesale-v2/typecheck.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Lint V2
+        id: lint
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee lint.log
+      - name: Upload lint diagnostics
+        if: failure() && steps.lint.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-lint
+          path: apps/syntha-wholesale-v2/lint.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Run V2 unit tests
+        run: npm run test
+      - name: Build V2 production runtime
+        run: npm run build
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run V2 browser smoke test
+        id: browser-smoke
+        run: npm run test:e2e
+      - name: Upload Playwright diagnostics
+        if: failure() && steps.browser-smoke.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: syntha-v2-playwright
+          path: |
+            apps/syntha-wholesale-v2/playwright-report
+            apps/syntha-wholesale-v2/test-results
+          if-no-files-found: warn
+          retention-days: 7
