@@ -1,0 +1,111 @@
+import { domainEvent } from '../core/events.mjs';
+import { invariant } from '../core/errors.mjs';
+import { CAPABILITIES, assertCapability } from '../modules/access-control/public.mjs';
+import { createCatalogSku, publishCatalogSku } from '../modules/catalog/public.mjs';
+
+export function createCatalogService({ wholesaleStore, catalogStore, clock = () => new Date().toISOString(), nextId = defaultIdGenerator() } = {}) {
+  invariant(wholesaleStore && typeof wholesaleStore.transaction === 'function', 'WHOLESALE_STORE_REQUIRED', 'Wholesale store is required');
+  invariant(catalogStore && typeof catalogStore.transaction === 'function', 'CATALOG_STORE_REQUIRED', 'Catalog store is required');
+
+  async function context(input, actorId) {
+    return wholesaleStore.transaction(async (tx) => {
+      const collection = requireEntity(await tx.getCollection(input.collectionId), 'COLLECTION_NOT_FOUND', { collectionId: input.collectionId });
+      const membership = await tx.getMembership(collection.brandId, actorId);
+      assertCapability(membership, CAPABILITIES.CATALOG_MANAGE);
+      const style = input.styleId
+        ? requireEntity(await tx.getStyle(input.styleId), 'STYLE_NOT_FOUND', { styleId: input.styleId })
+        : undefined;
+      return Object.freeze({ collection, style });
+    });
+  }
+
+  function execute(commandId, fingerprint, actorId, action) {
+    invariant(commandId, 'COMMAND_ID_REQUIRED', 'Every mutation requires commandId');
+    return catalogStore.transaction(async (tx) => {
+      const previous = await tx.getCommand(commandId);
+      if (previous) {
+        invariant(previous.fingerprint === fingerprint, 'COMMAND_ID_CONFLICT', 'commandId was already used by another mutation', { commandId });
+        return previous.result;
+      }
+      const result = await action(tx);
+      await tx.insertCommand(Object.freeze({ id: commandId, fingerprint, actorId, result, completedAt: clock() }));
+      return result;
+    });
+  }
+
+  async function append(tx, type, aggregateId, payload, commandId, actorId) {
+    await tx.appendOutbox(domainEvent({
+      id: nextId('event'), type, aggregateId, occurredAt: clock(), payload, metadata: { commandId, actorId },
+    }));
+  }
+
+  async function syncAvailability(sku) {
+    await wholesaleStore.transaction(async (tx) => {
+      await tx.syncCatalogInventory?.(sku);
+    });
+  }
+
+  return Object.freeze({
+    async createSku(commandId, actorId, input) {
+      const { collection, style } = await context(input, actorId);
+      const result = await execute(commandId, `createCatalogSku:${actorId}:${JSON.stringify(input)}`, actorId, async (tx) => {
+        invariant(!await tx.getSku(input.sku), 'CATALOG_SKU_ALREADY_EXISTS', 'Catalog SKU already exists', { sku: input.sku });
+        const sku = createCatalogSku({ ...input, collection, style, createdAt: clock() });
+        if (sku.productIdentity) {
+          const duplicate = await tx.getSkuByProductIdentity?.(
+            sku.productIdentity.styleId,
+            sku.productIdentity.colorCode,
+            sku.productIdentity.sizeLabel,
+          );
+          invariant(!duplicate, 'CATALOG_STYLE_VARIANT_EXISTS', 'Style color and size variant already has a catalog SKU', {
+            styleId: sku.productIdentity.styleId,
+            colorCode: sku.productIdentity.colorCode,
+            sizeLabel: sku.productIdentity.sizeLabel,
+            existingSku: duplicate?.sku,
+          });
+        }
+        await tx.insertSku(sku);
+        await append(tx, 'catalog-sku.created', sku.sku, {
+          collectionId: sku.collectionId,
+          brandId: sku.brandId,
+          minimumOrderQuantity: sku.minimumOrderQuantity,
+          availableQuantity: sku.availableQuantity,
+          productIdentity: sku.productIdentity,
+        }, commandId, actorId);
+        return sku;
+      });
+      await syncAvailability(result);
+      return result;
+    },
+
+    async publishSku(commandId, actorId, skuCode) {
+      const current = requireEntity(await catalogStore.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
+      const { collection } = await context({ collectionId: current.collectionId }, actorId);
+      const result = await execute(commandId, `publishCatalogSku:${actorId}:${skuCode}`, actorId, async (tx) => {
+        const locked = requireEntity(await tx.getSku(skuCode), 'CATALOG_SKU_NOT_FOUND', { sku: skuCode });
+        const published = publishCatalogSku(locked, collection, clock());
+        await tx.saveSku(published, locked.version);
+        await append(tx, 'catalog-sku.published', skuCode, {
+          collectionId: published.collectionId,
+          price: published.wholesalePrice,
+          currency: published.currency,
+          minimumOrderQuantity: published.minimumOrderQuantity,
+          availableToSell: published.availableToSell,
+          productIdentity: published.productIdentity,
+        }, commandId, actorId);
+        return published;
+      });
+      await syncAvailability(result);
+      return result;
+    },
+
+    getSku(skuCode) { return catalogStore.getSku(skuCode); },
+    async getPublishedSku(skuCode) {
+      const sku = await catalogStore.getSku(skuCode);
+      return sku?.status === 'published' ? sku : undefined;
+    },
+  });
+}
+
+function requireEntity(entity, code, details) { invariant(entity, code, 'Entity not found', details); return entity; }
+function defaultIdGenerator() { let sequence = 0; return (prefix) => `${prefix}_${++sequence}`; }

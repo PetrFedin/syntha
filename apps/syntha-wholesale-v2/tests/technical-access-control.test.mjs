@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { CAPABILITIES, createMembership, membershipHasCapability } from '../src/modules/access-control/public.mjs';
+function membership(role) { return createMembership({ id: `m-${role}`, organisationId: 'brand-1', organisationType: 'brand', userId: `u-${role}`, role, createdAt: '2026-08-07T00:00:00.000Z' }); }
+test('technical development is restricted to product-authoring roles', () => { for (const role of ['owner', 'admin', 'product']) { assert.equal(membershipHasCapability(membership(role), CAPABILITIES.TECHNICAL_DEVELOPMENT_READ), true, role); assert.equal(membershipHasCapability(membership(role), CAPABILITIES.TECHNICAL_DEVELOPMENT_MANAGE), true, role); } for (const role of ['sales', 'finance', 'viewer']) { assert.equal(membershipHasCapability(membership(role), CAPABILITIES.TECHNICAL_DEVELOPMENT_READ), false, role); assert.equal(membershipHasCapability(membership(role), CAPABILITIES.TECHNICAL_DEVELOPMENT_MANAGE), false, role); } });
