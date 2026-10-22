@@ -4,6 +4,7 @@ import { validateShopMatrixSizeRunServer } from '@/lib/server/shop-matrix-size-r
 import { validateShopMatrixCartSizeRunsServer } from '@/lib/server/shop-matrix-size-run-cart-validate-server';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
 import { getWorkshop2B2bCartSession } from '@/lib/production/workshop2-b2b-wave23-parity';
+import { readWorkshop2B2bCartSessionFromFile } from '@/lib/server/workshop2-b2b-cart-session-file-store';
 import {
   parseShopMatrixQtyBySize,
   parseShopMatrixQtyBySizeQuery,
@@ -85,7 +86,8 @@ export async function POST(req: NextRequest) {
   const sessionId = typeof body.sessionId === 'string' ? body.sessionId.trim() : '';
 
   if (sessionId) {
-    const session = getWorkshop2B2bCartSession(sessionId);
+    // Preserve dev/HMR cart continuity: in-memory first, file-store fallback.
+    const session = getWorkshop2B2bCartSession(sessionId) ?? readWorkshop2B2bCartSessionFromFile(sessionId);
     if (!session) {
       return NextResponse.json(
         { ok: false, messageRu: 'Сессия корзины не найдена.' },
