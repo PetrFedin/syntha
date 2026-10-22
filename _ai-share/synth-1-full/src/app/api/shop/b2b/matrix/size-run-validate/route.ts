@@ -3,32 +3,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateShopMatrixSizeRunServer } from '@/lib/server/shop-matrix-size-run-validate-server';
 import { validateShopMatrixCartSizeRunsServer } from '@/lib/server/shop-matrix-size-run-cart-validate-server';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
-import { resolveWorkshop2B2bCartSession } from '@/lib/production/workshop2-b2b-wave23-parity';
+import { getWorkshop2B2bCartSession } from '@/lib/production/workshop2-b2b-wave23-parity';
+import { readWorkshop2B2bCartSessionFromFile } from '@/lib/server/workshop2-b2b-cart-session-file-store';
+import {
+  parseShopMatrixQtyBySize,
+  parseShopMatrixQtyBySizeQuery,
+} from '@/lib/b2b/shop-matrix-size-run-quantity-input';
 
-function parseQtyBySizeFromSearchParams(params: URLSearchParams): Record<string, number> {
-  const raw = params.get('qtyBySize')?.trim();
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw) as Record<string, unknown>;
-      const out: Record<string, number> = {};
-      for (const [size, qty] of Object.entries(parsed)) {
-        const n = Number(qty);
-        if (Number.isFinite(n) && n > 0) out[size] = Math.round(n);
-      }
-      return out;
-    } catch {
-      return {};
-    }
-  }
-  const out: Record<string, number> = {};
-  for (const [key, value] of params.entries()) {
-    if (!key.startsWith('size_')) continue;
-    const size = key.slice('size_'.length).trim();
-    const n = Number(value);
-    if (size && Number.isFinite(n) && n > 0) out[size] = Math.round(n);
-  }
-  return out;
-}
+type RawBody = {
+  collectionId?: unknown;
+  articleId?: unknown;
+  qtyBySize?: unknown;
+  sessionId?: unknown;
+  articles?: unknown;
+};
+
+const badRequest = (messageRu: string) =>
+  NextResponse.json({ ok: false, messageRu }, { status: 400 });
 
 async function runValidate(input: {
   collectionId: string;
@@ -52,7 +43,7 @@ async function runValidate(input: {
   });
 }
 
-/** GET — validate matrix qty distribution vs W2 size curve + MOQ (query params). */
+/** GET — read-only validation; invalid quantities must not be silently rounded away. */
 export async function GET(req: NextRequest) {
   const checkoutAuth = await guardShopB2bCheckoutRoute(req);
   if (checkoutAuth instanceof NextResponse) return checkoutAuth;
@@ -60,50 +51,80 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const collectionId = params.get('collectionId')?.trim() ?? '';
   const articleId = params.get('articleId')?.trim() ?? '';
-  const qtyBySize = parseQtyBySizeFromSearchParams(params);
-
   if (!collectionId || !articleId) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'collectionId и articleId обязательны.' },
-      { status: 400 }
-    );
+    return badRequest('collectionId и articleId обязательны.');
   }
 
-  return runValidate({ collectionId, articleId, qtyBySize });
+  const parsed = parseShopMatrixQtyBySizeQuery(params);
+  if (!parsed.ok) return badRequest(parsed.messageRu);
+
+  return runValidate({ collectionId, articleId, qtyBySize: parsed.qtyBySize });
 }
 
-/** POST — validate matrix qty distribution vs W2 size curve + MOQ. */
+/** POST — validation for an article, a group of articles, or a persisted cart session. */
 export async function POST(req: NextRequest) {
   const checkoutAuth = await guardShopB2bCheckoutRoute(req);
   if (checkoutAuth instanceof NextResponse) return checkoutAuth;
 
-  let body: {
-    collectionId?: string;
-    articleId?: string;
-    qtyBySize?: Record<string, number>;
-    sessionId?: string;
-    articles?: Array<{ articleId: string; qtyBySize: Record<string, number> }>;
-  } = {};
+  let body: RawBody;
   try {
-    body = (await req.json()) as typeof body;
+    const input: unknown = await req.json();
+    if (!input || typeof input !== 'object' || Array.isArray(input)) {
+      return badRequest('Тело запроса должно быть объектом.');
+    }
+    body = input as RawBody;
   } catch {
-    return NextResponse.json({ ok: false, messageRu: 'Некорректное тело.' }, { status: 400 });
+    return badRequest('Некорректное тело.');
   }
 
-  const collectionId = body.collectionId?.trim() ?? '';
-  if (!collectionId) {
-    return NextResponse.json({ ok: false, messageRu: 'collectionId обязателен.' }, { status: 400 });
-  }
+  const collectionId = typeof body.collectionId === 'string' ? body.collectionId.trim() : '';
+  if (!collectionId) return badRequest('collectionId обязателен.');
 
-  const sessionId = body.sessionId?.trim();
+  if (body.sessionId !== undefined && typeof body.sessionId !== 'string') {
+    return badRequest('sessionId должен быть строкой.');
+  }
+  const sessionId = typeof body.sessionId === 'string' ? body.sessionId.trim() : '';
+
   if (sessionId) {
-    const session = resolveWorkshop2B2bCartSession(sessionId);
+    // Preserve dev/HMR cart continuity: in-memory first, file-store fallback.
+    const session =
+      getWorkshop2B2bCartSession(sessionId) ?? readWorkshop2B2bCartSessionFromFile(sessionId);
+    if (!session) {
+      return NextResponse.json(
+        { ok: false, messageRu: 'Сессия корзины не найдена.' },
+        { status: 404 }
+      );
+    }
+    // Session identifiers are not credentials: deny cross-buyer reads in JWT mode.
+    if (
+      checkoutAuth.mode === 'jwt' &&
+      (!session.buyerId || session.buyerId !== checkoutAuth.buyerId)
+    ) {
+      return NextResponse.json(
+        { ok: false, messageRu: 'Сессия корзины принадлежит другому байеру.' },
+        { status: 403 }
+      );
+    }
+    if (session.lines.some((line) => line.collectionId !== collectionId)) {
+      return NextResponse.json(
+        { ok: false, messageRu: 'Корзина содержит товары другой коллекции.' },
+        { status: 409 }
+      );
+    }
+    for (const line of session.lines) {
+      if (!line.articleId?.trim()) return badRequest('В корзине не указан артикул.');
+      if (typeof line.size !== 'string' || !line.size.trim()) {
+        return badRequest('В корзине не указан размер.');
+      }
+      const parsed = parseShopMatrixQtyBySize({ [line.size]: line.qty });
+      if (!parsed.ok) return badRequest(parsed.messageRu);
+    }
     const batch = await validateShopMatrixCartSizeRunsServer({
       collectionId,
-      lines: (session?.lines ?? []).map((l) => ({
-        articleId: l.articleId,
-        size: l.size,
-        qty: l.qty,
+      lines: session.lines.map((line) => ({
+        articleId: line.articleId,
+        size: line.size,
+        qty: line.qty,
       })),
     });
     return NextResponse.json({
@@ -114,18 +135,33 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const articles = body.articles?.filter((a) => a.articleId?.trim());
-  if (articles && articles.length > 0) {
-    const batch = await validateShopMatrixCartSizeRunsServer({
-      collectionId,
-      lines: articles.flatMap((a) =>
-        Object.entries(a.qtyBySize ?? {}).map(([size, qty]) => ({
-          articleId: a.articleId.trim(),
-          size,
-          qty: Math.max(0, Math.round(Number(qty) || 0)),
-        }))
-      ),
-    });
+  if (body.articles !== undefined) {
+    if (!Array.isArray(body.articles) || body.articles.length > 128) {
+      return badRequest('articles должен быть массивом не более 128 позиций.');
+    }
+    const seen = new Set<string>();
+    const lines: Array<{ articleId: string; size: string; qty: number }> = [];
+    for (const entry of body.articles) {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+        return badRequest('Некорректная позиция в articles.');
+      }
+      const item = entry as { articleId?: unknown; qtyBySize?: unknown };
+      const articleId = typeof item.articleId === 'string' ? item.articleId.trim() : '';
+      if (!articleId) return badRequest('Каждая позиция должна содержать articleId.');
+      if (seen.has(articleId)) {
+        return badRequest(`Артикул «${articleId}» указан повторно.`);
+      }
+      seen.add(articleId);
+      const parsed = parseShopMatrixQtyBySize(item.qtyBySize);
+      if (!parsed.ok) return badRequest(`${articleId}: ${parsed.messageRu}`);
+      for (const [size, qty] of Object.entries(parsed.qtyBySize)) {
+        lines.push({ articleId, size, qty });
+      }
+    }
+    if (lines.length === 0) {
+      return badRequest('Необходимо передать хотя бы одну позицию с размером.');
+    }
+    const batch = await validateShopMatrixCartSizeRunsServer({ collectionId, lines });
     return NextResponse.json({
       ok: batch.ok,
       results: batch.results,
@@ -134,14 +170,12 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const articleId = body.articleId?.trim() ?? '';
-  const qtyBySize = body.qtyBySize ?? {};
+  const articleId = typeof body.articleId === 'string' ? body.articleId.trim() : '';
   if (!articleId) {
-    return NextResponse.json(
-      { ok: false, messageRu: 'articleId обязателен (или sessionId / articles).' },
-      { status: 400 }
-    );
+    return badRequest('articleId обязателен (или sessionId / articles).');
   }
+  const parsed = parseShopMatrixQtyBySize(body.qtyBySize ?? {});
+  if (!parsed.ok) return badRequest(parsed.messageRu);
 
-  return runValidate({ collectionId, articleId, qtyBySize });
+  return runValidate({ collectionId, articleId, qtyBySize: parsed.qtyBySize });
 }
