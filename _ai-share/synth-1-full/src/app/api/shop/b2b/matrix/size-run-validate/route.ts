@@ -87,7 +87,8 @@ export async function POST(req: NextRequest) {
 
   if (sessionId) {
     // Preserve dev/HMR cart continuity: in-memory first, file-store fallback.
-    const session = getWorkshop2B2bCartSession(sessionId) ?? readWorkshop2B2bCartSessionFromFile(sessionId);
+    const session =
+      getWorkshop2B2bCartSession(sessionId) ?? readWorkshop2B2bCartSessionFromFile(sessionId);
     if (!session) {
       return NextResponse.json(
         { ok: false, messageRu: 'Сессия корзины не найдена.' },
