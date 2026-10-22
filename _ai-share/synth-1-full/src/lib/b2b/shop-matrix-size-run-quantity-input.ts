@@ -66,9 +66,7 @@ export function parseShopMatrixQtyBySize(value: unknown): ShopMatrixQtyParseResu
 }
 
 /** Query supports JSON qtyBySize or repeated size_M=6 keys (not both). */
-export function parseShopMatrixQtyBySizeQuery(
-  params: URLSearchParams
-): ShopMatrixQtyParseResult {
+export function parseShopMatrixQtyBySizeQuery(params: URLSearchParams): ShopMatrixQtyParseResult {
   const jsonRaw = params.get('qtyBySize');
   if (jsonRaw !== null) {
     if (params.getAll('qtyBySize').length !== 1) {
