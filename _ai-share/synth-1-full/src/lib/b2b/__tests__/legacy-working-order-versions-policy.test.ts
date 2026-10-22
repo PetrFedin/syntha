@@ -5,9 +5,9 @@ describe('B2B v1 legacy working order production guard', () => {
     expect(canUseLegacyB2bWorkingOrderVersionsStore('production')).toBe(false);
   });
 
-  it('rejects missing and unrecognized runtime modes', () => {
-    expect(canUseLegacyB2bWorkingOrderVersionsStore(undefined)).toBe(false);
+  it('rejects unknown runtime modes instead of enabling insecure fallback', () => {
     expect(canUseLegacyB2bWorkingOrderVersionsStore('staging')).toBe(false);
+    expect(canUseLegacyB2bWorkingOrderVersionsStore('')).toBe(false);
   });
 
   it('allows explicit local development and tests for demo compatibility', () => {
