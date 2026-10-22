@@ -2,10 +2,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateRequestId } from '@/lib/api/response-contract';
 import { getApiContractMode } from '@/lib/runtime-mode';
 import type { WorkingOrderVersion } from '@/lib/b2b/working-order-version.types';
+import { canUseLegacyB2bWorkingOrderVersionsStore } from '@/lib/b2b/legacy-working-order-versions-policy';
 import {
   loadWorkingOrderVersionsPersisted,
   saveWorkingOrderVersionsPersisted,
 } from '@/lib/b2b/b2b-working-order-versions-persistence.file';
+
+/**
+ * The legacy list/replace API has no organization scope. It is demo-only.
+ * Do not rely on caller-controlled role headers to grant access to this store.
+ */
+function legacyDemoOnlyResponse(requestId: string, mode: ReturnType<typeof getApiContractMode>) {
+  return NextResponse.json(
+    {
+      ok: false as const,
+      error: {
+        code: 'LEGACY_DEMO_STORE_DISABLED',
+        message: 'Legacy Working Order versions store is disabled in production.',
+      },
+      meta: { requestId, mode, apiVersion: 'v1' as const },
+    },
+    {
+      status: 403,
+      headers: { 'x-request-id': requestId, 'Cache-Control': 'no-store' },
+    }
+  );
+}
 
 function isValidVersion(v: unknown): v is WorkingOrderVersion {
   if (!v || typeof v !== 'object') return false;
@@ -28,6 +50,9 @@ function isValidVersion(v: unknown): v is WorkingOrderVersion {
 export async function GET(req: NextRequest) {
   const requestId = getOrCreateRequestId(req);
   const mode = getApiContractMode();
+  if (!canUseLegacyB2bWorkingOrderVersionsStore()) {
+    return legacyDemoOnlyResponse(requestId, mode);
+  }
   const wholesaleOrderId = req.nextUrl.searchParams.get('wholesaleOrderId')?.trim();
   let versions = loadWorkingOrderVersionsPersisted();
   if (wholesaleOrderId) {
@@ -39,7 +64,7 @@ export async function GET(req: NextRequest) {
       data: { versions },
       meta: { requestId, mode, apiVersion: 'v1' as const },
     },
-    { headers: { 'x-request-id': requestId } }
+    { headers: { 'x-request-id': requestId, 'Cache-Control': 'no-store' } }
   );
 }
 
@@ -50,6 +75,9 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const requestId = getOrCreateRequestId(req);
   const mode = getApiContractMode();
+  if (!canUseLegacyB2bWorkingOrderVersionsStore()) {
+    return legacyDemoOnlyResponse(requestId, mode);
+  }
   let body: unknown;
   try {
     body = await req.json();
@@ -94,6 +122,6 @@ export async function PUT(req: NextRequest) {
       data: { count: raw.length },
       meta: { requestId, mode, apiVersion: 'v1' as const },
     },
-    { headers: { 'x-request-id': requestId } }
+    { headers: { 'x-request-id': requestId, 'Cache-Control': 'no-store' } }
   );
 }
