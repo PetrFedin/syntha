@@ -71,6 +71,9 @@ export function parseShopMatrixQtyBySizeQuery(
 ): ShopMatrixQtyParseResult {
   const jsonRaw = params.get('qtyBySize');
   if (jsonRaw !== null) {
+    if (params.getAll('qtyBySize').length !== 1) {
+      return { ok: false, messageRu: 'qtyBySize указан повторно.' };
+    }
     if ([...params.keys()].some((key) => key.startsWith('size_'))) {
       return { ok: false, messageRu: 'Передайте размеры одним способом: qtyBySize или size_*.' };
     }
