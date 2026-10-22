@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateShopMatrixSizeRunServer } from '@/lib/server/shop-matrix-size-run-validate-server';
 import { validateShopMatrixCartSizeRunsServer } from '@/lib/server/shop-matrix-size-run-cart-validate-server';
 import { guardShopB2bCheckoutRoute } from '@/lib/server/shop-b2b-checkout-route-auth';
-import { resolveWorkshop2B2bCartSession } from '@/lib/production/workshop2-b2b-wave23-parity';
+import { getWorkshop2B2bCartSession } from '@/lib/production/workshop2-b2b-wave23-parity';
 import {
   parseShopMatrixQtyBySize,
   parseShopMatrixQtyBySizeQuery,
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
   const sessionId = typeof body.sessionId === 'string' ? body.sessionId.trim() : '';
 
   if (sessionId) {
-    const session = resolveWorkshop2B2bCartSession(sessionId);
+    const session = getWorkshop2B2bCartSession(sessionId);
     if (!session) {
       return NextResponse.json(
         { ok: false, messageRu: 'Сессия корзины не найдена.' },
@@ -110,6 +110,9 @@ export async function POST(req: NextRequest) {
     }
     for (const line of session.lines) {
       if (!line.articleId?.trim()) return badRequest('В корзине не указан артикул.');
+      if (typeof line.size !== 'string' || !line.size.trim()) {
+        return badRequest('В корзине не указан размер.');
+      }
       const parsed = parseShopMatrixQtyBySize({ [line.size]: line.qty });
       if (!parsed.ok) return badRequest(parsed.messageRu);
     }
